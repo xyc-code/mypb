@@ -368,7 +368,9 @@
   }
 
   function bindWorkbench() {
-    $('#dwRefreshBtn').on('click', loadTasks);
+    $('#dwRefreshBtn').on('click', function () {
+      loadTasks();
+    });
     $('#dwReceiverSelect').on('change', function () {
       updateDispatchButton(state.selectedTask);
     });
@@ -1042,7 +1044,9 @@
 
   function bindPersonTree() {
     $('#dwPersonDeleteBtn').prop('disabled', true).addClass('is-disabled');
-    $('#dwPersonRefreshBtn').on('click', loadPersons);
+    $('#dwPersonRefreshBtn').on('click', function () {
+      loadPersons();
+    });
     $('#dwPersonToggleAllBtn').on('click', function () {
       var tree = buildPersonTree();
       if (!personTreeHasExpandableNode(tree)) {

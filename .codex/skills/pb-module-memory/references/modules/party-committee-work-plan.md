@@ -662,3 +662,18 @@
   - `scripts/verify-dwworkplan.ps1` passed.
   - Tomcat restarted; port 8080 is listening and login page returned 200.
   - Task-list API returned platform login redirect 302 when unauthenticated, proving the route is active rather than missing.
+
+## 2026-06-28 Workbench Width And Refresh Button Fix
+
+- User reported:
+  - In the workbench, non-task-pool tab content width did not align with the title/header width.
+  - The workbench refresh button and person-tree refresh button threw errors.
+- Frontend changes:
+  - `dwworkplan.css` now sets all `.dw-workbench-section .dw-panel` to `max-width: none`, so batch, dispatch, feedback, and task-pool panels use the same page width.
+  - `dwworkplan.js` refresh handlers now call `loadTasks()` and `loadPersons()` inside explicit click callbacks.
+  - Root cause: jQuery passed the click event object into `loadTasks(done)`, and `loadTasks` later tried to execute that event object as a callback.
+- Verification:
+  - `node --check WebRoot/static/pb-modern/dwworkplan/dwworkplan.js` passed.
+  - `scripts/verify-dwworkplan.ps1` passed.
+  - PB frontend guardrail scan on changed JS/CSS returned only the existing CSS INFO warning.
+  - Local Tomcat served updated JS/CSS with HTTP 200 and the returned content contains both refresh-handler fixes and the width fix.

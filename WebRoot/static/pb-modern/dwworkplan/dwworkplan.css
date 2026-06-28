@@ -151,10 +151,6 @@
 }
 
 .dw-workbench-section .dw-panel {
-  max-width: 980px;
-}
-
-.dw-workbench-section[data-tab-panel="tasks"] .dw-panel {
   max-width: none;
 }
 
