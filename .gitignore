@@ -9,6 +9,7 @@ WebRoot/upload/
 WebRoot/attachment/
 WebRoot/temp/
 WebRoot/tmp/
+WebRoot/import/
 logs/
 *.log
 
