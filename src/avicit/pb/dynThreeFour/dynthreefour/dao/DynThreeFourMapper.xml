@@ -1,0 +1,1204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.dynThreeFour.dynthreefour.dao.DynThreeFourDAO">
+<resultMap id="DynThreeFourDTOMap" type="avicit.pb.dynThreeFour.dynthreefour.dto.DynThreeFourDTO">
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="joinMeetOrg" column="JOIN_MEET_ORG" jdbcType="VARCHAR" />
+	<result property="meetDate" column="MEET_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="meetPlace" column="MEET_PLACE" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="meetName" column="MEET_NAME" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+    <result property="joinPeople" column="JOIN_PEOPLE" jdbcType="CLOB" javaType="String" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="meetType" column="MEET_TYPE" jdbcType="VARCHAR" />
+	<result property="meetOutline" column="MEET_OUTLINE" jdbcType="VARCHAR" />
+	<result property="hoursRecordYn" column="HOURS_RECORD_YN" jdbcType="VARCHAR" />
+	<result property="learnHours" column="LEARN_HOURS" jdbcType="DECIMAL" />
+	<result property="meetTheme" column="MEET_THEME" jdbcType="VARCHAR" />
+	<result property="duePeopleNum" column="DUE_PEOPLE_NUM" jdbcType="DECIMAL" />
+	<result property="actualPeopleNum" column="ACTUAL_PEOPLE_NUM" jdbcType="DECIMAL" />
+	<result property="leavePeopleNum" column="LEAVE_PEOPLE_NUM" jdbcType="DECIMAL" />
+	<result property="joinMeetRate" column="JOIN_MEET_RATE" jdbcType="DECIMAL" />
+    <result property="leavePeople" column="LEAVE_PEOPLE" jdbcType="CLOB" javaType="String" />
+	<result property="speaker" column="SPEAKER" jdbcType="VARCHAR" />
+	<result property="lecturer" column="LECTURER" jdbcType="VARCHAR" />
+	<result property="hostTaker" column="HOST_TAKER" jdbcType="VARCHAR" />
+	<result property="noteTaker" column="NOTE_TAKER" jdbcType="VARCHAR" />
+	<result property="meetResult" column="MEET_RESULT" jdbcType="VARCHAR" />
+	<result property="remarks" column="REMARKS" jdbcType="VARCHAR" />
+	<result property="joinOrg" column="JOIN_ORG" jdbcType="VARCHAR" />
+	<result property="joinPeopleNew" column="JOIN_PEOPLE_NEW" jdbcType="VARCHAR" />
+	<result property="joinOrgId" column="JOIN_ORG_ID" jdbcType="VARCHAR" />
+	<result property="joinPeopleId" column="JOIN_PEOPLE_ID" jdbcType="VARCHAR" />
+	<result property="secretLevel" column="SECRET_LEVEL" jdbcType="VARCHAR" />
+	<result property="speakerOutYn" column="SPEAKER_OUT_YN" jdbcType="VARCHAR" />
+	<result property="lecturerOutYn" column="LECTURER_OUT_YN" jdbcType="VARCHAR" />
+	<result property="hostTakerOutYn" column="HOST_TAKER_OUT_YN" jdbcType="VARCHAR" />
+	<result property="noteTakerOutYn" column="NOTE_TAKER_OUT_YN" jdbcType="VARCHAR" />
+	<result property="leavePeopleNew" column="LEAVE_PEOPLE_NEW" jdbcType="VARCHAR" />
+	<result property="leavelPeople" column="LEAVEL_PEOPLE" jdbcType="VARCHAR" />
+	<result property="requestUser" column="REQUEST_USER" jdbcType="VARCHAR" />
+	<result property="partyName" column="PARTY_NAME" jdbcType="VARCHAR" />
+	<result property="partyId" column="PARTY_ID" jdbcType="VARCHAR" />
+	<result property="autoCode" column="AUTO_CODE" jdbcType="VARCHAR" />
+	<result property="partyNameNew" column="PARTY_NAME_NEW" jdbcType="VARCHAR" />
+	<result property="requestTel" column="REQUEST_TEL" jdbcType="VARCHAR" />
+	<result property="partyType" column="PARTY_TYPE" jdbcType="VARCHAR" />
+	<result property="lxPosen" column="LX_POSEN" jdbcType="VARCHAR" />
+	<result property="meetZj" column="MEET_ZJ" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.CREATED_BY,
+	t1.JOIN_MEET_ORG,
+	t1.MEET_DATE,
+	t1.LAST_UPDATED_BY,
+	t1.MEET_PLACE,
+	t1.CREATION_DATE,
+	t1.MEET_NAME,
+	t1.LAST_UPDATE_DATE,
+	t1.JOIN_PEOPLE,
+	t1.VERSION,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ORG_IDENTITY,
+	t1.LAST_UPDATE_IP,
+	t1.MEET_TYPE,
+	t1.MEET_OUTLINE,
+	t1.HOURS_RECORD_YN,
+	t1.LEARN_HOURS,
+	t1.MEET_THEME,
+	t1.DUE_PEOPLE_NUM,
+	t1.ACTUAL_PEOPLE_NUM,
+	t1.LEAVE_PEOPLE_NUM,
+	t1.JOIN_MEET_RATE,
+	t1.LEAVE_PEOPLE,
+	t1.SPEAKER,
+	t1.LECTURER,
+	t1.HOST_TAKER,
+	t1.NOTE_TAKER,
+	t1.MEET_RESULT,
+	t1.REMARKS,
+	t1.JOIN_ORG,
+	t1.JOIN_PEOPLE_NEW,
+	t1.JOIN_ORG_ID,
+	t1.JOIN_PEOPLE_ID,
+	t1.SECRET_LEVEL,
+	t1.SPEAKER_OUT_YN,
+	t1.LECTURER_OUT_YN,
+	t1.HOST_TAKER_OUT_YN,
+	t1.NOTE_TAKER_OUT_YN,
+	t1.LEAVE_PEOPLE_NEW,
+	t1.LEAVEL_PEOPLE,
+	t1.REQUEST_USER,
+	t1.PARTY_NAME,
+	t1.PARTY_ID,
+	t1.AUTO_CODE,
+	t1.PARTY_NAME_NEW,
+	t1.REQUEST_TEL,
+	t1.PARTY_TYPE,
+	t1.LX_POSEN,
+	t1.MEET_ZJ,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.joinMeetOrg != null and bean.joinMeetOrg != ''">
+		and t1.JOIN_MEET_ORG like concat(concat('%',#{bean.joinMeetOrg}),'%')
+	</if>
+	<if test="bean.meetDateBegin != null">
+		and t1.MEET_DATE &gt;= #{bean.meetDateBegin}
+	</if>
+	<if test="bean.meetDateEnd != null">
+		and t1.MEET_DATE &lt;= #{bean.meetDateEnd}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.meetPlace != null and bean.meetPlace != ''">
+		and t1.MEET_PLACE like concat(concat('%',#{bean.meetPlace}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.meetName != null and bean.meetName != ''">
+		and t1.MEET_NAME like concat(concat('%',#{bean.meetName}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.joinPeople != null and bean.joinPeople != ''">
+		and t1.JOIN_PEOPLE like concat(concat('%',#{bean.joinPeople}),'%')
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.meetType != null and bean.meetType != ''">
+		and t1.MEET_TYPE like concat(concat('%',#{bean.meetType}),'%')
+	</if>
+	<if test="bean.meetOutline != null and bean.meetOutline != ''">
+		and t1.MEET_OUTLINE like concat(concat('%',#{bean.meetOutline}),'%')
+	</if>
+	<if test="bean.hoursRecordYn != null and bean.hoursRecordYn != ''">
+		and t1.HOURS_RECORD_YN like concat(concat('%',#{bean.hoursRecordYn}),'%')
+	</if>
+	<if test="bean.learnHours != null">
+		and t1.LEARN_HOURS = #{bean.learnHours}
+	</if>
+	<if test="bean.meetTheme != null and bean.meetTheme != ''">
+		and t1.MEET_THEME like concat(concat('%',#{bean.meetTheme}),'%')
+	</if>
+	<if test="bean.duePeopleNum != null">
+		and t1.DUE_PEOPLE_NUM = #{bean.duePeopleNum}
+	</if>
+	<if test="bean.actualPeopleNum != null">
+		and t1.ACTUAL_PEOPLE_NUM = #{bean.actualPeopleNum}
+	</if>
+	<if test="bean.leavePeopleNum != null">
+		and t1.LEAVE_PEOPLE_NUM = #{bean.leavePeopleNum}
+	</if>
+	<if test="bean.joinMeetRate != null">
+		and t1.JOIN_MEET_RATE = #{bean.joinMeetRate}
+	</if>
+	<if test="bean.leavePeople != null and bean.leavePeople != ''">
+		and t1.LEAVE_PEOPLE like concat(concat('%',#{bean.leavePeople}),'%')
+	</if>
+	<if test="bean.speaker != null and bean.speaker != ''">
+		and t1.SPEAKER like concat(concat('%',#{bean.speaker}),'%')
+	</if>
+	<if test="bean.lecturer != null and bean.lecturer != ''">
+		and t1.LECTURER like concat(concat('%',#{bean.lecturer}),'%')
+	</if>
+	<if test="bean.hostTaker != null and bean.hostTaker != ''">
+		and t1.HOST_TAKER like concat(concat('%',#{bean.hostTaker}),'%')
+	</if>
+	<if test="bean.noteTaker != null and bean.noteTaker != ''">
+		and t1.NOTE_TAKER like concat(concat('%',#{bean.noteTaker}),'%')
+	</if>
+	<if test="bean.meetResult != null and bean.meetResult != ''">
+		and t1.MEET_RESULT like concat(concat('%',#{bean.meetResult}),'%')
+	</if>
+	<if test="bean.remarks != null and bean.remarks != ''">
+		and t1.REMARKS like concat(concat('%',#{bean.remarks}),'%')
+	</if>
+	<if test="bean.joinOrg != null and bean.joinOrg != ''">
+		and t1.JOIN_ORG like concat(concat('%',#{bean.joinOrg}),'%')
+	</if>
+	<if test="bean.joinPeopleNew != null and bean.joinPeopleNew != ''">
+		and t1.JOIN_PEOPLE_NEW like concat(concat('%',#{bean.joinPeopleNew}),'%')
+	</if>
+	<if test="bean.joinOrgId != null and bean.joinOrgId != ''">
+		and t1.JOIN_ORG_ID like concat(concat('%',#{bean.joinOrgId}),'%')
+	</if>
+	<if test="bean.joinPeopleId != null and bean.joinPeopleId != ''">
+		and t1.JOIN_PEOPLE_ID like concat(concat('%',#{bean.joinPeopleId}),'%')
+	</if>
+	<if test="bean.secretLevel != null and bean.secretLevel != ''">
+		and t1.SECRET_LEVEL = #{bean.secretLevel}
+	</if>
+	<if test="bean.speakerOutYn != null and bean.speakerOutYn != ''">
+		and t1.SPEAKER_OUT_YN like concat(concat('%',#{bean.speakerOutYn}),'%')
+	</if>
+	<if test="bean.lecturerOutYn != null and bean.lecturerOutYn != ''">
+		and t1.LECTURER_OUT_YN like concat(concat('%',#{bean.lecturerOutYn}),'%')
+	</if>
+	<if test="bean.hostTakerOutYn != null and bean.hostTakerOutYn != ''">
+		and t1.HOST_TAKER_OUT_YN like concat(concat('%',#{bean.hostTakerOutYn}),'%')
+	</if>
+	<if test="bean.noteTakerOutYn != null and bean.noteTakerOutYn != ''">
+		and t1.NOTE_TAKER_OUT_YN like concat(concat('%',#{bean.noteTakerOutYn}),'%')
+	</if>
+	<if test="bean.leavePeopleNew != null and bean.leavePeopleNew != ''">
+		and t1.LEAVE_PEOPLE_NEW like concat(concat('%',#{bean.leavePeopleNew}),'%')
+	</if>
+	<if test="bean.leavelPeople != null and bean.leavelPeople != ''">
+		and t1.LEAVEL_PEOPLE like concat(concat('%',#{bean.leavelPeople}),'%')
+	</if>
+	<if test="bean.requestUser != null and bean.requestUser != ''">
+		and t1.REQUEST_USER like concat(concat('%',#{bean.requestUser}),'%')
+	</if>
+	<if test="bean.partyName != null and bean.partyName != ''">
+		and t1.PARTY_NAME like concat(concat('%',#{bean.partyName}),'%')
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		and t1.PARTY_ID like concat(concat('%',#{bean.partyId}),'%')
+	</if>
+	<if test="bean.autoCode != null and bean.autoCode != ''">
+		and t1.AUTO_CODE like concat(concat('%',#{bean.autoCode}),'%')
+	</if>
+	<if test="bean.partyNameNew != null and bean.partyNameNew != ''">
+		and t1.PARTY_NAME_NEW like concat(concat('%',#{bean.partyNameNew}),'%')
+	</if>
+	<if test="bean.requestTel != null and bean.requestTel != ''">
+		and t1.REQUEST_TEL like concat(concat('%',#{bean.requestTel}),'%')
+	</if>
+	<if test="bean.partyType != null and bean.partyType != ''">
+		and t1.PARTY_TYPE like concat(concat('%',#{bean.partyType}),'%')
+	</if>
+	<if test="bean.lxPosen != null and bean.lxPosen != ''">
+		and t1.LX_POSEN like concat(concat('%',#{bean.lxPosen}),'%')
+	</if>
+	<if test="bean.meetZj != null and bean.meetZj != ''">
+		and t1.MEET_ZJ like concat(concat('%',#{bean.meetZj}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.joinMeetOrg != null and bean.joinMeetOrg != ''">
+		or t1.JOIN_MEET_ORG like concat(concat('%',#{bean.joinMeetOrg}),'%')
+	</if>
+	<if test="bean.meetDateBegin != null">
+		or t1.MEET_DATE &gt;= #{bean.meetDateBegin}
+	</if>
+	<if test="bean.meetDateEnd != null">
+		or t1.MEET_DATE &lt;= #{bean.meetDateEnd}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.meetPlace != null and bean.meetPlace != ''">
+		or t1.MEET_PLACE like concat(concat('%',#{bean.meetPlace}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.meetName != null and bean.meetName != ''">
+		or t1.MEET_NAME like concat(concat('%',#{bean.meetName}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.joinPeople != null and bean.joinPeople != ''">
+		or t1.JOIN_PEOPLE like concat(concat('%',#{bean.joinPeople}),'%')
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.meetType != null and bean.meetType != ''">
+		or t1.MEET_TYPE like concat(concat('%',#{bean.meetType}),'%')
+	</if>
+	<if test="bean.meetOutline != null and bean.meetOutline != ''">
+		or t1.MEET_OUTLINE like concat(concat('%',#{bean.meetOutline}),'%')
+	</if>
+	<if test="bean.hoursRecordYn != null and bean.hoursRecordYn != ''">
+		or t1.HOURS_RECORD_YN like concat(concat('%',#{bean.hoursRecordYn}),'%')
+	</if>
+	<if test="bean.learnHours != null">
+		or t1.LEARN_HOURS = #{bean.learnHours}
+	</if>
+	<if test="bean.meetTheme != null and bean.meetTheme != ''">
+		or t1.MEET_THEME like concat(concat('%',#{bean.meetTheme}),'%')
+	</if>
+	<if test="bean.duePeopleNum != null">
+		or t1.DUE_PEOPLE_NUM = #{bean.duePeopleNum}
+	</if>
+	<if test="bean.actualPeopleNum != null">
+		or t1.ACTUAL_PEOPLE_NUM = #{bean.actualPeopleNum}
+	</if>
+	<if test="bean.leavePeopleNum != null">
+		or t1.LEAVE_PEOPLE_NUM = #{bean.leavePeopleNum}
+	</if>
+	<if test="bean.joinMeetRate != null">
+		or t1.JOIN_MEET_RATE = #{bean.joinMeetRate}
+	</if>
+	<if test="bean.leavePeople != null and bean.leavePeople != ''">
+		or t1.LEAVE_PEOPLE like concat(concat('%',#{bean.leavePeople}),'%')
+	</if>
+	<if test="bean.speaker != null and bean.speaker != ''">
+		or t1.SPEAKER like concat(concat('%',#{bean.speaker}),'%')
+	</if>
+	<if test="bean.lecturer != null and bean.lecturer != ''">
+		or t1.LECTURER like concat(concat('%',#{bean.lecturer}),'%')
+	</if>
+	<if test="bean.hostTaker != null and bean.hostTaker != ''">
+		or t1.HOST_TAKER like concat(concat('%',#{bean.hostTaker}),'%')
+	</if>
+	<if test="bean.noteTaker != null and bean.noteTaker != ''">
+		or t1.NOTE_TAKER like concat(concat('%',#{bean.noteTaker}),'%')
+	</if>
+	<if test="bean.meetResult != null and bean.meetResult != ''">
+		or t1.MEET_RESULT like concat(concat('%',#{bean.meetResult}),'%')
+	</if>
+	<if test="bean.remarks != null and bean.remarks != ''">
+		or t1.REMARKS like concat(concat('%',#{bean.remarks}),'%')
+	</if>
+	<if test="bean.joinOrg != null and bean.joinOrg != ''">
+		or t1.JOIN_ORG like concat(concat('%',#{bean.joinOrg}),'%')
+	</if>
+	<if test="bean.joinPeopleNew != null and bean.joinPeopleNew != ''">
+		or t1.JOIN_PEOPLE_NEW like concat(concat('%',#{bean.joinPeopleNew}),'%')
+	</if>
+	<if test="bean.joinOrgId != null and bean.joinOrgId != ''">
+		or t1.JOIN_ORG_ID like concat(concat('%',#{bean.joinOrgId}),'%')
+	</if>
+	<if test="bean.joinPeopleId != null and bean.joinPeopleId != ''">
+		or t1.JOIN_PEOPLE_ID like concat(concat('%',#{bean.joinPeopleId}),'%')
+	</if>
+	<if test="bean.secretLevel != null and bean.secretLevel != ''">
+		or t1.SECRET_LEVEL = #{bean.secretLevel}
+	</if>
+	<if test="bean.speakerOutYn != null and bean.speakerOutYn != ''">
+		or t1.SPEAKER_OUT_YN like concat(concat('%',#{bean.speakerOutYn}),'%')
+	</if>
+	<if test="bean.lecturerOutYn != null and bean.lecturerOutYn != ''">
+		or t1.LECTURER_OUT_YN like concat(concat('%',#{bean.lecturerOutYn}),'%')
+	</if>
+	<if test="bean.hostTakerOutYn != null and bean.hostTakerOutYn != ''">
+		or t1.HOST_TAKER_OUT_YN like concat(concat('%',#{bean.hostTakerOutYn}),'%')
+	</if>
+	<if test="bean.noteTakerOutYn != null and bean.noteTakerOutYn != ''">
+		or t1.NOTE_TAKER_OUT_YN like concat(concat('%',#{bean.noteTakerOutYn}),'%')
+	</if>
+	<if test="bean.leavePeopleNew != null and bean.leavePeopleNew != ''">
+		or t1.LEAVE_PEOPLE_NEW like concat(concat('%',#{bean.leavePeopleNew}),'%')
+	</if>
+	<if test="bean.leavelPeople != null and bean.leavelPeople != ''">
+		or t1.LEAVEL_PEOPLE like concat(concat('%',#{bean.leavelPeople}),'%')
+	</if>
+	<if test="bean.requestUser != null and bean.requestUser != ''">
+		or t1.REQUEST_USER like concat(concat('%',#{bean.requestUser}),'%')
+	</if>
+	<if test="bean.partyName != null and bean.partyName != ''">
+		or t1.PARTY_NAME like concat(concat('%',#{bean.partyName}),'%')
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		or t1.PARTY_ID like concat(concat('%',#{bean.partyId}),'%')
+	</if>
+	<if test="bean.autoCode != null and bean.autoCode != ''">
+		or t1.AUTO_CODE like concat(concat('%',#{bean.autoCode}),'%')
+	</if>
+	<if test="bean.partyNameNew != null and bean.partyNameNew != ''">
+		or t1.PARTY_NAME_NEW like concat(concat('%',#{bean.partyNameNew}),'%')
+	</if>
+	<if test="bean.requestTel != null and bean.requestTel != ''">
+		or t1.REQUEST_TEL like concat(concat('%',#{bean.requestTel}),'%')
+	</if>
+	<if test="bean.partyType != null and bean.partyType != ''">
+		or t1.PARTY_TYPE like concat(concat('%',#{bean.partyType}),'%')
+	</if>
+	<if test="bean.lxPosen != null and bean.lxPosen != ''">
+		or t1.LX_POSEN like concat(concat('%',#{bean.lxPosen}),'%')
+	</if>
+	<if test="bean.meetZj != null and bean.meetZj != ''">
+		or t1.MEET_ZJ like concat(concat('%',#{bean.meetZj}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_THREE_FOUR -->
+<select id="searchDynThreeFourByPage" parameterType="java.util.Map" resultMap="DynThreeFourDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_THREE_FOUR t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_THREE_FOUR -->
+<select id="searchDynThreeFour" parameterType="java.util.Map" resultMap="DynThreeFourDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_THREE_FOUR t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_THREE_FOUR（导出） -->
+<select id="searchDynThreeFourForExport" parameterType="java.util.Map" resultMap="DynThreeFourDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_THREE_FOUR t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_THREE_FOUR -->
+<select id="findDynThreeFourById" parameterType="java.lang.String" resultMap="DynThreeFourDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_THREE_FOUR t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_THREE_FOUR -->
+<insert id="insertDynThreeFour" parameterType="avicit.pb.dynThreeFour.dynthreefour.dto.DynThreeFourDTO">
+	insert into DYN_THREE_FOUR
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="joinMeetOrg != null">
+			JOIN_MEET_ORG,
+		</if>
+		<if test="meetDate != null">
+			MEET_DATE,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="meetPlace != null">
+			MEET_PLACE,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="meetName != null">
+			MEET_NAME,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="joinPeople != null">
+			JOIN_PEOPLE,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="meetType != null">
+			MEET_TYPE,
+		</if>
+		<if test="meetOutline != null">
+			MEET_OUTLINE,
+		</if>
+		<if test="hoursRecordYn != null">
+			HOURS_RECORD_YN,
+		</if>
+		<if test="learnHours != null">
+			LEARN_HOURS,
+		</if>
+		<if test="meetTheme != null">
+			MEET_THEME,
+		</if>
+		<if test="duePeopleNum != null">
+			DUE_PEOPLE_NUM,
+		</if>
+		<if test="actualPeopleNum != null">
+			ACTUAL_PEOPLE_NUM,
+		</if>
+		<if test="leavePeopleNum != null">
+			LEAVE_PEOPLE_NUM,
+		</if>
+		<if test="joinMeetRate != null">
+			JOIN_MEET_RATE,
+		</if>
+		<if test="leavePeople != null">
+			LEAVE_PEOPLE,
+		</if>
+		<if test="speaker != null">
+			SPEAKER,
+		</if>
+		<if test="lecturer != null">
+			LECTURER,
+		</if>
+		<if test="hostTaker != null">
+			HOST_TAKER,
+		</if>
+		<if test="noteTaker != null">
+			NOTE_TAKER,
+		</if>
+		<if test="meetResult != null">
+			MEET_RESULT,
+		</if>
+		<if test="remarks != null">
+			REMARKS,
+		</if>
+		<if test="joinOrg != null">
+			JOIN_ORG,
+		</if>
+		<if test="joinPeopleNew != null">
+			JOIN_PEOPLE_NEW,
+		</if>
+		<if test="joinOrgId != null">
+			JOIN_ORG_ID,
+		</if>
+		<if test="joinPeopleId != null">
+			JOIN_PEOPLE_ID,
+		</if>
+		<if test="secretLevel != null">
+			SECRET_LEVEL,
+		</if>
+		<if test="speakerOutYn != null">
+			SPEAKER_OUT_YN,
+		</if>
+		<if test="lecturerOutYn != null">
+			LECTURER_OUT_YN,
+		</if>
+		<if test="hostTakerOutYn != null">
+			HOST_TAKER_OUT_YN,
+		</if>
+		<if test="noteTakerOutYn != null">
+			NOTE_TAKER_OUT_YN,
+		</if>
+		<if test="leavePeopleNew != null">
+			LEAVE_PEOPLE_NEW,
+		</if>
+		<if test="leavelPeople != null">
+			LEAVEL_PEOPLE,
+		</if>
+		<if test="requestUser != null">
+			REQUEST_USER,
+		</if>
+		<if test="partyName != null">
+			PARTY_NAME,
+		</if>
+		<if test="partyId != null">
+			PARTY_ID,
+		</if>
+		<if test="autoCode != null">
+			AUTO_CODE,
+		</if>
+		<if test="partyNameNew != null">
+			PARTY_NAME_NEW,
+		</if>
+		<if test="requestTel != null">
+			REQUEST_TEL,
+		</if>
+		<if test="partyType != null">
+			PARTY_TYPE,
+		</if>
+		<if test="lxPosen != null">
+			LX_POSEN,
+		</if>
+		<if test="meetZj != null">
+			MEET_ZJ,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="joinMeetOrg != null">
+			#{joinMeetOrg,jdbcType = VARCHAR},
+		</if>
+		<if test="meetDate != null">
+			#{meetDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="meetPlace != null">
+			#{meetPlace,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="meetName != null">
+			#{meetName,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="joinPeople != null">
+			#{joinPeople,jdbcType = CLOB},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="meetType != null">
+			#{meetType,jdbcType = VARCHAR},
+		</if>
+		<if test="meetOutline != null">
+			#{meetOutline,jdbcType = VARCHAR},
+		</if>
+		<if test="hoursRecordYn != null">
+			#{hoursRecordYn,jdbcType = VARCHAR},
+		</if>
+		<if test="learnHours != null">
+			#{learnHours,jdbcType = DECIMAL},
+		</if>
+		<if test="meetTheme != null">
+			#{meetTheme,jdbcType = VARCHAR},
+		</if>
+		<if test="duePeopleNum != null">
+			#{duePeopleNum,jdbcType = DECIMAL},
+		</if>
+		<if test="actualPeopleNum != null">
+			#{actualPeopleNum,jdbcType = DECIMAL},
+		</if>
+		<if test="leavePeopleNum != null">
+			#{leavePeopleNum,jdbcType = DECIMAL},
+		</if>
+		<if test="joinMeetRate != null">
+			#{joinMeetRate,jdbcType = DECIMAL},
+		</if>
+		<if test="leavePeople != null">
+			#{leavePeople,jdbcType = CLOB},
+		</if>
+		<if test="speaker != null">
+			#{speaker,jdbcType = VARCHAR},
+		</if>
+		<if test="lecturer != null">
+			#{lecturer,jdbcType = VARCHAR},
+		</if>
+		<if test="hostTaker != null">
+			#{hostTaker,jdbcType = VARCHAR},
+		</if>
+		<if test="noteTaker != null">
+			#{noteTaker,jdbcType = VARCHAR},
+		</if>
+		<if test="meetResult != null">
+			#{meetResult,jdbcType = VARCHAR},
+		</if>
+		<if test="remarks != null">
+			#{remarks,jdbcType = VARCHAR},
+		</if>
+		<if test="joinOrg != null">
+			#{joinOrg,jdbcType = VARCHAR},
+		</if>
+		<if test="joinPeopleNew != null">
+			#{joinPeopleNew,jdbcType = VARCHAR},
+		</if>
+		<if test="joinOrgId != null">
+			#{joinOrgId,jdbcType = VARCHAR},
+		</if>
+		<if test="joinPeopleId != null">
+			#{joinPeopleId,jdbcType = VARCHAR},
+		</if>
+		<if test="secretLevel != null">
+			#{secretLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="speakerOutYn != null">
+			#{speakerOutYn,jdbcType = VARCHAR},
+		</if>
+		<if test="lecturerOutYn != null">
+			#{lecturerOutYn,jdbcType = VARCHAR},
+		</if>
+		<if test="hostTakerOutYn != null">
+			#{hostTakerOutYn,jdbcType = VARCHAR},
+		</if>
+		<if test="noteTakerOutYn != null">
+			#{noteTakerOutYn,jdbcType = VARCHAR},
+		</if>
+		<if test="leavePeopleNew != null">
+			#{leavePeopleNew,jdbcType = VARCHAR},
+		</if>
+		<if test="leavelPeople != null">
+			#{leavelPeople,jdbcType = VARCHAR},
+		</if>
+		<if test="requestUser != null">
+			#{requestUser,jdbcType = VARCHAR},
+		</if>
+		<if test="partyName != null">
+			#{partyName,jdbcType = VARCHAR},
+		</if>
+		<if test="partyId != null">
+			#{partyId,jdbcType = VARCHAR},
+		</if>
+		<if test="autoCode != null">
+			#{autoCode,jdbcType = VARCHAR},
+		</if>
+		<if test="partyNameNew != null">
+			#{partyNameNew,jdbcType = VARCHAR},
+		</if>
+		<if test="requestTel != null">
+			#{requestTel,jdbcType = VARCHAR},
+		</if>
+		<if test="partyType != null">
+			#{partyType,jdbcType = VARCHAR},
+		</if>
+		<if test="lxPosen != null">
+			#{lxPosen,jdbcType = VARCHAR},
+		</if>
+		<if test="meetZj != null">
+			#{meetZj,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_THREE_FOUR -->
+<insert id="insertDynThreeFourList" parameterType="java.util.List">
+	insert into DYN_THREE_FOUR(
+	CREATED_BY ,
+	JOIN_MEET_ORG ,
+	MEET_DATE ,
+	LAST_UPDATED_BY ,
+	MEET_PLACE ,
+	CREATION_DATE ,
+	MEET_NAME ,
+	LAST_UPDATE_DATE ,
+	JOIN_PEOPLE ,
+	VERSION ,
+	ID ,
+	CREATED_DEPT ,
+	ORG_IDENTITY ,
+	LAST_UPDATE_IP ,
+	MEET_TYPE ,
+	MEET_OUTLINE ,
+	HOURS_RECORD_YN ,
+	LEARN_HOURS ,
+	MEET_THEME ,
+	DUE_PEOPLE_NUM ,
+	ACTUAL_PEOPLE_NUM ,
+	LEAVE_PEOPLE_NUM ,
+	JOIN_MEET_RATE ,
+	LEAVE_PEOPLE ,
+	SPEAKER ,
+	LECTURER ,
+	HOST_TAKER ,
+	NOTE_TAKER ,
+	MEET_RESULT ,
+	REMARKS ,
+	JOIN_ORG ,
+	JOIN_PEOPLE_NEW ,
+	JOIN_ORG_ID ,
+	JOIN_PEOPLE_ID ,
+	SECRET_LEVEL ,
+	SPEAKER_OUT_YN ,
+	LECTURER_OUT_YN ,
+	HOST_TAKER_OUT_YN ,
+	NOTE_TAKER_OUT_YN ,
+	LEAVE_PEOPLE_NEW ,
+	LEAVEL_PEOPLE ,
+	REQUEST_USER ,
+	PARTY_NAME ,
+	PARTY_ID ,
+	AUTO_CODE ,
+	PARTY_NAME_NEW ,
+	REQUEST_TEL ,
+	PARTY_TYPE ,
+	LX_POSEN ,
+	MEET_ZJ )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.joinMeetOrg,jdbcType = VARCHAR} ,
+	#{item.meetDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.meetPlace,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.meetName,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.joinPeople,jdbcType = CLOB} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.meetType,jdbcType = VARCHAR} ,
+	#{item.meetOutline,jdbcType = VARCHAR} ,
+	#{item.hoursRecordYn,jdbcType = VARCHAR} ,
+	#{item.learnHours,jdbcType = DECIMAL} ,
+	#{item.meetTheme,jdbcType = VARCHAR} ,
+	#{item.duePeopleNum,jdbcType = DECIMAL} ,
+	#{item.actualPeopleNum,jdbcType = DECIMAL} ,
+	#{item.leavePeopleNum,jdbcType = DECIMAL} ,
+	#{item.joinMeetRate,jdbcType = DECIMAL} ,
+	#{item.leavePeople,jdbcType = CLOB} ,
+	#{item.speaker,jdbcType = VARCHAR} ,
+	#{item.lecturer,jdbcType = VARCHAR} ,
+	#{item.hostTaker,jdbcType = VARCHAR} ,
+	#{item.noteTaker,jdbcType = VARCHAR} ,
+	#{item.meetResult,jdbcType = VARCHAR} ,
+	#{item.remarks,jdbcType = VARCHAR} ,
+	#{item.joinOrg,jdbcType = VARCHAR} ,
+	#{item.joinPeopleNew,jdbcType = VARCHAR} ,
+	#{item.joinOrgId,jdbcType = VARCHAR} ,
+	#{item.joinPeopleId,jdbcType = VARCHAR} ,
+	#{item.secretLevel,jdbcType = VARCHAR} ,
+	#{item.speakerOutYn,jdbcType = VARCHAR} ,
+	#{item.lecturerOutYn,jdbcType = VARCHAR} ,
+	#{item.hostTakerOutYn,jdbcType = VARCHAR} ,
+	#{item.noteTakerOutYn,jdbcType = VARCHAR} ,
+	#{item.leavePeopleNew,jdbcType = VARCHAR} ,
+	#{item.leavelPeople,jdbcType = VARCHAR} ,
+	#{item.requestUser,jdbcType = VARCHAR} ,
+	#{item.partyName,jdbcType = VARCHAR} ,
+	#{item.partyId,jdbcType = VARCHAR} ,
+	#{item.autoCode,jdbcType = VARCHAR} ,
+	#{item.partyNameNew,jdbcType = VARCHAR} ,
+	#{item.requestTel,jdbcType = VARCHAR} ,
+	#{item.partyType,jdbcType = VARCHAR} ,
+	#{item.lxPosen,jdbcType = VARCHAR} ,
+	#{item.meetZj,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_THREE_FOUR -->
+<update id="updateDynThreeFourSensitive" parameterType="avicit.pb.dynThreeFour.dynthreefour.dto.DynThreeFourDTO">
+	update DYN_THREE_FOUR
+	<set>
+		<trim suffixOverrides=",">
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="joinMeetOrg != null">
+				JOIN_MEET_ORG = #{joinMeetOrg,jdbcType = VARCHAR},
+			</if>
+			<if test="meetDate != null">
+				MEET_DATE = #{meetDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="meetPlace != null">
+				MEET_PLACE = #{meetPlace,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="meetName != null">
+				MEET_NAME = #{meetName,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="joinPeople != null">
+				JOIN_PEOPLE = #{joinPeople,jdbcType = CLOB},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="meetType != null">
+				MEET_TYPE = #{meetType,jdbcType = VARCHAR},
+			</if>
+			<if test="meetOutline != null">
+				MEET_OUTLINE = #{meetOutline,jdbcType = VARCHAR},
+			</if>
+			<if test="hoursRecordYn != null">
+				HOURS_RECORD_YN = #{hoursRecordYn,jdbcType = VARCHAR},
+			</if>
+			<if test="learnHours != null">
+				LEARN_HOURS = #{learnHours,jdbcType = DECIMAL},
+			</if>
+			<if test="meetTheme != null">
+				MEET_THEME = #{meetTheme,jdbcType = VARCHAR},
+			</if>
+			<if test="duePeopleNum != null">
+				DUE_PEOPLE_NUM = #{duePeopleNum,jdbcType = DECIMAL},
+			</if>
+			<if test="actualPeopleNum != null">
+				ACTUAL_PEOPLE_NUM = #{actualPeopleNum,jdbcType = DECIMAL},
+			</if>
+			<if test="leavePeopleNum != null">
+				LEAVE_PEOPLE_NUM = #{leavePeopleNum,jdbcType = DECIMAL},
+			</if>
+			<if test="joinMeetRate != null">
+				JOIN_MEET_RATE = #{joinMeetRate,jdbcType = DECIMAL},
+			</if>
+			<if test="leavePeople != null">
+				LEAVE_PEOPLE = #{leavePeople,jdbcType = CLOB},
+			</if>
+			<if test="speaker != null">
+				SPEAKER = #{speaker,jdbcType = VARCHAR},
+			</if>
+			<if test="lecturer != null">
+				LECTURER = #{lecturer,jdbcType = VARCHAR},
+			</if>
+			<if test="hostTaker != null">
+				HOST_TAKER = #{hostTaker,jdbcType = VARCHAR},
+			</if>
+			<if test="noteTaker != null">
+				NOTE_TAKER = #{noteTaker,jdbcType = VARCHAR},
+			</if>
+			<if test="meetResult != null">
+				MEET_RESULT = #{meetResult,jdbcType = VARCHAR},
+			</if>
+			<if test="remarks != null">
+				REMARKS = #{remarks,jdbcType = VARCHAR},
+			</if>
+			<if test="joinOrg != null">
+				JOIN_ORG = #{joinOrg,jdbcType = VARCHAR},
+			</if>
+			<if test="joinPeopleNew != null">
+				JOIN_PEOPLE_NEW = #{joinPeopleNew,jdbcType = VARCHAR},
+			</if>
+			<if test="joinOrgId != null">
+				JOIN_ORG_ID = #{joinOrgId,jdbcType = VARCHAR},
+			</if>
+			<if test="joinPeopleId != null">
+				JOIN_PEOPLE_ID = #{joinPeopleId,jdbcType = VARCHAR},
+			</if>
+			<if test="secretLevel != null">
+				SECRET_LEVEL = #{secretLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="speakerOutYn != null">
+				SPEAKER_OUT_YN = #{speakerOutYn,jdbcType = VARCHAR},
+			</if>
+			<if test="lecturerOutYn != null">
+				LECTURER_OUT_YN = #{lecturerOutYn,jdbcType = VARCHAR},
+			</if>
+			<if test="hostTakerOutYn != null">
+				HOST_TAKER_OUT_YN = #{hostTakerOutYn,jdbcType = VARCHAR},
+			</if>
+			<if test="noteTakerOutYn != null">
+				NOTE_TAKER_OUT_YN = #{noteTakerOutYn,jdbcType = VARCHAR},
+			</if>
+			<if test="leavePeopleNew != null">
+				LEAVE_PEOPLE_NEW = #{leavePeopleNew,jdbcType = VARCHAR},
+			</if>
+			<if test="leavelPeople != null">
+				LEAVEL_PEOPLE = #{leavelPeople,jdbcType = VARCHAR},
+			</if>
+			<if test="requestUser != null">
+				REQUEST_USER = #{requestUser,jdbcType = VARCHAR},
+			</if>
+			<if test="partyName != null">
+				PARTY_NAME = #{partyName,jdbcType = VARCHAR},
+			</if>
+			<if test="partyId != null">
+				PARTY_ID = #{partyId,jdbcType = VARCHAR},
+			</if>
+			<if test="autoCode != null">
+				AUTO_CODE = #{autoCode,jdbcType = VARCHAR},
+			</if>
+			<if test="partyNameNew != null">
+				PARTY_NAME_NEW = #{partyNameNew,jdbcType = VARCHAR},
+			</if>
+			<if test="requestTel != null">
+				REQUEST_TEL = #{requestTel,jdbcType = VARCHAR},
+			</if>
+			<if test="partyType != null">
+				PARTY_TYPE = #{partyType,jdbcType = VARCHAR},
+			</if>
+			<if test="lxPosen != null">
+				LX_POSEN = #{lxPosen,jdbcType = VARCHAR},
+			</if>
+			<if test="meetZj != null">
+				MEET_ZJ = #{meetZj,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_THREE_FOUR -->
+<update id="updateDynThreeFourAll" parameterType="avicit.pb.dynThreeFour.dynthreefour.dto.DynThreeFourDTO">
+	update DYN_THREE_FOUR
+	set
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	JOIN_MEET_ORG = #{joinMeetOrg,jdbcType = VARCHAR} ,
+	MEET_DATE = #{meetDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	MEET_PLACE = #{meetPlace,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	MEET_NAME = #{meetName,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	JOIN_PEOPLE = #{joinPeople,jdbcType = CLOB} ,
+	VERSION = version+1 ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	MEET_TYPE = #{meetType,jdbcType = VARCHAR} ,
+	MEET_OUTLINE = #{meetOutline,jdbcType = VARCHAR} ,
+	HOURS_RECORD_YN = #{hoursRecordYn,jdbcType = VARCHAR} ,
+	LEARN_HOURS = #{learnHours,jdbcType = DECIMAL} ,
+	MEET_THEME = #{meetTheme,jdbcType = VARCHAR} ,
+	DUE_PEOPLE_NUM = #{duePeopleNum,jdbcType = DECIMAL} ,
+	ACTUAL_PEOPLE_NUM = #{actualPeopleNum,jdbcType = DECIMAL} ,
+	LEAVE_PEOPLE_NUM = #{leavePeopleNum,jdbcType = DECIMAL} ,
+	JOIN_MEET_RATE = #{joinMeetRate,jdbcType = DECIMAL} ,
+	LEAVE_PEOPLE = #{leavePeople,jdbcType = CLOB} ,
+	SPEAKER = #{speaker,jdbcType = VARCHAR} ,
+	LECTURER = #{lecturer,jdbcType = VARCHAR} ,
+	HOST_TAKER = #{hostTaker,jdbcType = VARCHAR} ,
+	NOTE_TAKER = #{noteTaker,jdbcType = VARCHAR} ,
+	MEET_RESULT = #{meetResult,jdbcType = VARCHAR} ,
+	REMARKS = #{remarks,jdbcType = VARCHAR} ,
+	JOIN_ORG = #{joinOrg,jdbcType = VARCHAR} ,
+	JOIN_PEOPLE_NEW = #{joinPeopleNew,jdbcType = VARCHAR} ,
+	JOIN_ORG_ID = #{joinOrgId,jdbcType = VARCHAR} ,
+	JOIN_PEOPLE_ID = #{joinPeopleId,jdbcType = VARCHAR} ,
+	SECRET_LEVEL = #{secretLevel,jdbcType = VARCHAR} ,
+	SPEAKER_OUT_YN = #{speakerOutYn,jdbcType = VARCHAR} ,
+	LECTURER_OUT_YN = #{lecturerOutYn,jdbcType = VARCHAR} ,
+	HOST_TAKER_OUT_YN = #{hostTakerOutYn,jdbcType = VARCHAR} ,
+	NOTE_TAKER_OUT_YN = #{noteTakerOutYn,jdbcType = VARCHAR} ,
+	LEAVE_PEOPLE_NEW = #{leavePeopleNew,jdbcType = VARCHAR} ,
+	LEAVEL_PEOPLE = #{leavelPeople,jdbcType = VARCHAR} ,
+	REQUEST_USER = #{requestUser,jdbcType = VARCHAR} ,
+	PARTY_NAME = #{partyName,jdbcType = VARCHAR} ,
+	PARTY_ID = #{partyId,jdbcType = VARCHAR} ,
+	AUTO_CODE = #{autoCode,jdbcType = VARCHAR} ,
+	PARTY_NAME_NEW = #{partyNameNew,jdbcType = VARCHAR} ,
+	REQUEST_TEL = #{requestTel,jdbcType = VARCHAR} ,
+	PARTY_TYPE = #{partyType,jdbcType = VARCHAR} ,
+	LX_POSEN = #{lxPosen,jdbcType = VARCHAR} ,
+	MEET_ZJ = #{meetZj,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_THREE_FOUR -->
+<update id="updateDynThreeFourList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_THREE_FOUR
+		set
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		JOIN_MEET_ORG = #{item.joinMeetOrg,jdbcType = VARCHAR} ,
+		MEET_DATE = #{item.meetDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		MEET_PLACE = #{item.meetPlace,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		MEET_NAME = #{item.meetName,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		JOIN_PEOPLE = #{item.joinPeople,jdbcType = CLOB} ,
+		VERSION = version+1  ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		MEET_TYPE = #{item.meetType,jdbcType = VARCHAR} ,
+		MEET_OUTLINE = #{item.meetOutline,jdbcType = VARCHAR} ,
+		HOURS_RECORD_YN = #{item.hoursRecordYn,jdbcType = VARCHAR} ,
+		LEARN_HOURS = #{item.learnHours,jdbcType = DECIMAL} ,
+		MEET_THEME = #{item.meetTheme,jdbcType = VARCHAR} ,
+		DUE_PEOPLE_NUM = #{item.duePeopleNum,jdbcType = DECIMAL} ,
+		ACTUAL_PEOPLE_NUM = #{item.actualPeopleNum,jdbcType = DECIMAL} ,
+		LEAVE_PEOPLE_NUM = #{item.leavePeopleNum,jdbcType = DECIMAL} ,
+		JOIN_MEET_RATE = #{item.joinMeetRate,jdbcType = DECIMAL} ,
+		LEAVE_PEOPLE = #{item.leavePeople,jdbcType = CLOB} ,
+		SPEAKER = #{item.speaker,jdbcType = VARCHAR} ,
+		LECTURER = #{item.lecturer,jdbcType = VARCHAR} ,
+		HOST_TAKER = #{item.hostTaker,jdbcType = VARCHAR} ,
+		NOTE_TAKER = #{item.noteTaker,jdbcType = VARCHAR} ,
+		MEET_RESULT = #{item.meetResult,jdbcType = VARCHAR} ,
+		REMARKS = #{item.remarks,jdbcType = VARCHAR} ,
+		JOIN_ORG = #{item.joinOrg,jdbcType = VARCHAR} ,
+		JOIN_PEOPLE_NEW = #{item.joinPeopleNew,jdbcType = VARCHAR} ,
+		JOIN_ORG_ID = #{item.joinOrgId,jdbcType = VARCHAR} ,
+		JOIN_PEOPLE_ID = #{item.joinPeopleId,jdbcType = VARCHAR} ,
+		SECRET_LEVEL = #{item.secretLevel,jdbcType = VARCHAR} ,
+		SPEAKER_OUT_YN = #{item.speakerOutYn,jdbcType = VARCHAR} ,
+		LECTURER_OUT_YN = #{item.lecturerOutYn,jdbcType = VARCHAR} ,
+		HOST_TAKER_OUT_YN = #{item.hostTakerOutYn,jdbcType = VARCHAR} ,
+		NOTE_TAKER_OUT_YN = #{item.noteTakerOutYn,jdbcType = VARCHAR} ,
+		LEAVE_PEOPLE_NEW = #{item.leavePeopleNew,jdbcType = VARCHAR} ,
+		LEAVEL_PEOPLE = #{item.leavelPeople,jdbcType = VARCHAR} ,
+		REQUEST_USER = #{item.requestUser,jdbcType = VARCHAR} ,
+		PARTY_NAME = #{item.partyName,jdbcType = VARCHAR} ,
+		PARTY_ID = #{item.partyId,jdbcType = VARCHAR} ,
+		AUTO_CODE = #{item.autoCode,jdbcType = VARCHAR} ,
+		PARTY_NAME_NEW = #{item.partyNameNew,jdbcType = VARCHAR} ,
+		REQUEST_TEL = #{item.requestTel,jdbcType = VARCHAR} ,
+		PARTY_TYPE = #{item.partyType,jdbcType = VARCHAR} ,
+		LX_POSEN = #{item.lxPosen,jdbcType = VARCHAR} ,
+		MEET_ZJ = #{item.meetZj,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_THREE_FOUR -->
+<delete id="deleteDynThreeFourById" parameterType="java.lang.String">
+	delete from DYN_THREE_FOUR  where id = #{id}
+</delete>
+</mapper>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html style="min-width: 300px;">
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="iconfont/iconfont.css" />		
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" />
+		<script src="js/echarts.min.js"></script>
+    	<script src="js/jquery1.42.min.js"></script>
+	</head>
+
+	<body>
+		<div class="content_box  clearfix">
+			<div class="screen_tab">
+				<ul>
+					<li class="act screen_list" onclick="changeTab(0)">总体概要统计</li>
+					<li>丨</li>
+					<li class="screen_list " onclick="changeTab(2)">成员工作统计</li>
+					<li>丨</li>
+					<li class="screen_list " onclick="changeTab(4)">项目统计</li>
+					<li>丨</li>
+					<li class="screen_list " onclick="changeTab(6)">仓库统计</li>
+					<li>丨</li>
+					<li class="screen_list " onclick="changeTab(8)">开源统计</li>
+					<li>丨</li>
+					<li class="screen_list " onclick="changeTab(10)">所有成员动态</li>
+				</ul>
+			</div>
+			<div class="title_switch box_title ">
+				<div class="title">任务完成率</div>
+				<div class="box_title_right">
+					<div class="icon_more">
+						<i
+						class="iconfont icon-refresh"
+						title="刷新"
+						></i>
+					</div>
+				</div>
+			</div>
+			<div class="content_inner">
+				<div id="tongjiLine" style="height: 260px;"></div>
+			  </div>
+		</div>
+		<script type="text/javascript">
+		var tongjiEchart = echarts.init(document.getElementById("tongjiLine"));
+
+		var tongjiOption = {
+			tooltip: {
+				trigger: "axis",
+				axisPointer: {
+					type: "cross"
+				}
+			},
+			color: ["#338FE5", "#238F41"],
+			grid: {
+				top: 20,
+				left: "3%",
+				right: "1%",
+				bottom: "1%",
+				containLabel: true
+			},
+			xAxis: {
+				type: "category",
+				boundaryGap: false,
+				data: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+				splitLine: {
+					lineStyle: {
+					dashOffset: 10
+					}
+				}
+			},
+			yAxis: {
+				type: "value",
+				splitLine: {
+					lineStyle: {
+					type: "dashed"
+					}
+				}
+			},
+			series: [
+			{
+				name: "2021",
+				type: "line",
+				data: [12, 72, 10, 34, 70, 30, 21, 12, 32, 10, 34, 70]
+			},
+			{
+				name: "2020",
+				type: "line",
+				data: [34, 10, 30, 75, 12, 32, 12, 32, 10, 34, 70, 30]
+			}
+			]
+		};
+
+		tongjiEchart.setOption(tongjiOption);
+		$(window).resize(function() { //重置容器高宽 
+			tongjiEchart.resize(); 
+		});
+		function changeTab(value){
+			if(value%2 === 0 || value == 0){
+				$(".screen_tab ul li").eq(value).addClass('act')
+				$(".screen_tab ul li").not($(".screen_tab ul li").eq(value)).removeClass('act')
+			}
+		}
+			
+		</script>
+	</body>
+
+</html>

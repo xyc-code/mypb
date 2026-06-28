@@ -1,0 +1,116 @@
+@charset "utf-8";
+/* CSS Document */
+* {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border: none;
+  text-decoration: none;
+  font-family: "微软雅黑";
+  outline: none;
+}
+body {
+  background: url(../img/login_bg.png) no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  -webkit-background-size: cover;
+}
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
+}
+.login {
+  position: absolute;
+  width: 430px;
+  height: 480px;
+  top: 50%;
+  margin-top: -240px;
+  left: 50%;
+  margin-left: -215px;
+}
+.logo {
+  width: 300px;
+  height: 60px;
+  margin: 0 auto 0;
+}
+.logo img {
+  float: left;
+  margin-right: 20px;
+}
+.logo h2 {
+  font-size: 37px;
+  color: #ffffff;
+  padding: 4px 0 0 0;
+  margin: 0;
+  font-weight: normal;
+}
+.login-title {
+  color: #007bff;
+  font-size: 24px;
+  font-weight: 400;
+  text-align: center;
+  margin: 10px 0 20px;
+}
+.loginform {
+  width: 440px;
+  height: 380px;
+  padding: 100px 28px;
+  overflow: hidden;
+  position: relative;
+  background: #ffffff;
+  background: url(../img/login_box_bg.png) no-repeat;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.inputstyle {
+  line-height: 36px;
+  color: #fff;
+  font-size: 14px;
+  float: left;
+  margin-left: 30px;
+  width: 330px;
+  height: 42px;
+  padding: 0 0 0 50px;
+}
+.uin-bg {
+  background: url(../img/userinput_bg.png) no-repeat;
+}
+.pwd-bg {
+  background: url(../img/password_bg.png) no-repeat;
+}
+.uinArea {
+  /* background: url(../img/logindemo10-name.png) no-repeat; */
+  width: 325px;
+  height: 36px;
+  margin-top: 35px;
+  /* border: 1px solid #ced4da; */
+  border-radius: 4px;
+}
+.pwdArea {
+  /* background: url(../img/logindemo10-mima.png) no-repeat; */
+  width: 325px;
+  height: 36px;
+  margin-top: 30px;
+  /* border: 1px solid #ced4da; */
+  border-radius: 4px;
+}
+
+.btn {
+  background: #5777e6;
+  width: 325px;
+  height: 40px;
+  color: white;
+  font-size: 18px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  margin-top: 45px;
+  margin-left: 32px;
+}

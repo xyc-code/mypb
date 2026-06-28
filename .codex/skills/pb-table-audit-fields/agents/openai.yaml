@@ -1,0 +1,7 @@
+interface:
+  display_name: "PB Table Audit Fields"
+  short_description: "Require standard audit fields on PB data tables."
+  default_prompt: "Use $pb-table-audit-fields to verify mandatory PB table audit columns."
+
+policy:
+  allow_implicit_invocation: true

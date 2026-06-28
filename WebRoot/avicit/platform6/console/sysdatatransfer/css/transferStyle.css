@@ -1,0 +1,241 @@
+@charset "utf-8";
+img{
+    border:0;
+    vertical-align:middle;
+    max-width:100%;
+}
+
+body {
+    font-size: 12px;
+    font-family: 'PingFang SC','Hiragino Sans GB','PingHei','Open Sans','sans-serif','Helvetica Neue','Helvetica','Microsoft YaHei','SimSun','Arial';
+    color: #666666;
+}
+
+html,body,div,
+dl,dt,dd,ul,
+ol,li,h1,h2,
+h3,h4,h5,h6,
+pre,form,input,
+textarea,p,table,
+tr,th,td,span,
+strong,em{
+    padding:0;
+    margin:0;
+    font-style:normal;
+    font-size:12px;
+}
+
+/**
+    *manager开始
+ */
+.btn-sm, .btn-group-sm > .btn {
+    padding: 0px 10px;
+}
+.transfer{
+    margin-left: 0px;
+}
+/*.transfer .toolbar{
+    padding: 0px 5px 2px 8px !important;
+}
+#myTab{
+    margin-left: 8px;
+    padding-bottom: 1px;
+}*/
+.toolbar{
+    padding-left: 0px;
+}
+.nav-tabs>li>a {
+    border: 1px solid #e8e8e8;
+    background-color: #fafafa;
+    color: #454545!important;
+}
+
+.content{
+    margin: 20px 0 0 0px;
+}
+.shownorth .layout-panel-north {
+    overflow:visible!important;
+}
+.cicon{
+    color: #cccccc;
+}
+.icon_active{
+    color:#337ab7;
+}
+.flow-operation{
+    padding:6px 10px 0px 10px;
+    display: inline-block;
+    width:100%;
+}
+.flow-operation-box{
+    float:left;
+    margin:5px 2px 0 0;
+}
+.layui-layer-title{
+    background:#f7f7f7!important;
+}
+/**
+    *manager结束
+ */
+
+.checkbox-title-multi {
+    padding-left: 4px !important;
+    vertical-align: middle !important;
+}
+/**
+    *data开始
+ */
+.checkedbox-list .cb-tool .btns li.del:before {
+    content: "\e639";
+}
+.transfer-flow .col-lg-3,
+.transfer-flow .col-lg-4{
+    border: 1px solid #e8e8e8;
+}
+.transfer-flow .col-lg-3{
+    border-right: none;
+}
+.move-list .c-list-right i{
+    width: 34px;
+    height: 34px;
+    position: absolute;
+    top: 50%;
+    left: 34%;
+    transition: all .3s;
+    font-family: "iconfont" !important;
+    font-size: 34px;
+    color: #c5c5c5;
+    margin-top: -17px;
+}
+#selectedViewCheckAll {
+    margin-left: 10px;
+}
+#selectedViewDeleteAll {
+    margin: 0px 10px 0px 0px;
+    display: inline-block;
+    vertical-align: middle;
+    color: rgb(136, 136, 136);
+    font-size: 13px;
+}
+.transfer-flow .col-lg-3,
+.transfer-flow .col-lg-4,
+.transfer-flow .col-lg-1{
+    padding: 0px;
+}
+.role-checkbox-title{
+    margin-left: 12px;
+}
+.selected-check-all{
+    padding-left: 2px !important;
+}
+/**
+    *ztree图标
+ */
+.ztree li span.button.root_open:before {
+    font-family: iconfont;
+    padding-top: 13px;
+    content: "\e65a";
+}
+.ztree li span.button.root_close:before {
+    font-family: iconfont;
+    padding-top: 13px;
+    content: "\e65f";
+}
+.ztree li span.button.switch.bottom_close{
+    top: 8px;
+}
+.ztree li span.button.switch.bottom_open{
+    top: 8px;
+}
+.ztree li a,
+.ztree li a.curSelectedNode{
+    padding: 0px 40px 4px 26px;
+    height: 30px;
+    line-height: 30px;
+}
+.ztree li a > span.button {
+    margin: 4px 6px 8px 4px;
+}
+
+.ztree li span.button.switch.center_close {
+    top: 8px;
+}
+.ztree li span.button.switch.center_open {
+    top: 6px;
+}
+.ztree li span.button.switch.root_close {
+    top: 2px;
+}
+/**
+    *data结束
+ */
+.container-fluid {
+    padding: 0;
+}
+.layout-panel-north .panel-body{
+    padding: 15px 0;
+    box-shadow: 1px 1px 6px #efefef;
+}
+.row.transfer-flow{
+    margin: 0;
+}
+.nav-tabs {
+    border-bottom: 1px solid #e8e8e8;
+}
+.row.content {
+    padding: 0 15px;
+}
+.ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td:first-child {
+    padding-top: 4px;
+}
+.toolbar-left.selected-check-all input{
+    float: left;
+}
+.toolbar-left.selected-check-all span{
+    float: left;
+    line-height: 15px;
+    margin-left: 8px;
+}
+.toolbar-right.role-delete-all {
+    padding: 0;
+}
+
+label#selectedDeleteAll,label#selectedViewDeleteAll {
+    margin-top: 6px;
+}
+.toolbar-left.selected-check-all{
+    padding-top: 8px;
+}
+.ui-jqgrid tr.jqgrow.ui-priority-secondary{
+    background: #ffffff;
+}
+.table>tbody>tr.active>td,
+.table>tbody>tr.active>th,
+.table>tbody>tr>td.active,
+.table>tbody>tr>th.active,
+.table>tfoot>tr.active>td,
+.table>tfoot>tr.active>th,
+.table>tfoot>tr>td.active,
+.table>tfoot>tr>th.active,
+.table>thead>tr.active>td,
+.table>thead>tr.active>th,
+.table>thead>tr>td.active,
+.table>thead>tr>th.active {
+    background-color: #e5f3ff;
+}
+#jqGrid_cb.active, .jqgrow.success td {
+    background: #e5f3ff !important;
+}
+span.icon-close {
+    top: 0px;
+    left: -4px;
+    font-size: 12px;
+}
+.row-add{
+    padding: 0px;
+    border: 1px solid #e8e8e8;
+    float: left;
+    position: relative;
+    min-height: 1px;
+    height: 540px;
+}

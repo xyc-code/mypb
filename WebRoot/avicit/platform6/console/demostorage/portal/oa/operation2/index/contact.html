@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>通讯录</title>
+			<link rel="stylesheet" href="./source/css/workbench.css" />
+			<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+			<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+		.contact_search{
+			width: 100%;
+			height: 34px;
+			border: 1px solid #D7D7D7;
+			box-sizing: border-box;
+		}
+		.contact_search input{
+			line-height: 32px;
+			width: 90%;
+			padding-left: 10px;
+			border:none;
+			outline:medium;
+			color: #7F7F7F;
+			font-size: 14px;
+		}
+		.contact_body>p{
+			margin: 10px 0;
+			font-size: 14px;
+			color: #333333;
+		}
+		.contact_content ul li{
+			overflow: hidden;
+		}
+		.contact_content ul li>.contact_head{
+			width: 32px;
+			height: 32px;
+			float: left;
+		}
+		.contact_name{
+			float: left;
+			font-size: 14px;
+			color: #333333;
+			line-height: 32px;
+			margin-left: 4px;
+		}
+		.company{
+			float: left;
+			overflow: hidden;
+			margin-left: 10px;
+			width:74px;
+		}
+		.department,.telephone{
+			float: left;
+			overflow: hidden;
+			margin-left: 10px;
+		}
+		.company>.icon,.department>.icon,.telephone>.icon{
+			float: left;
+			margin-top: 9px;
+		}
+		.company>.iconfont{
+			float: left;
+			font-size: 14px;
+			margin-top: 9px;
+		}
+		.department>.iconfont{
+			float: left;
+			font-size: 14px;
+			margin-top: 9px;
+		}
+		.telephone>.iconfont{
+			float: left;
+			font-size: 14px;
+			margin-top: 9px;
+		}
+		.company>p,.department>p,.telephone>p{
+			float: left;
+			font-size: 14px;
+			color: #333333;
+			line-height: 32px;
+			margin-left: 4px;
+		}
+		.contact_top{
+			margin-top: 12px;
+		}
+		.items {
+			max-width: 49px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>通讯录</h4>
+				<span class="box_title_right">
+<!--				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('contact')"></i>-->
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="contact_body">
+					<div class="contact_search">
+						<input type="text" value="输入姓名/手机号查找"/>
+					</div>
+					<p>我的常用联系人：</p>
+					<div class="contact_content">
+						<ul>
+							<li>
+								<img class="contact_head" src="./source/img/head-boy.png" />
+								<p class="contact_name">安某某</p>
+								<div class="company">
+									<i class="icon iconfont icon-an-bank" style="color: #7F7F7F;"></i>
+									<p>金航数码</p>
+								</div>
+								<div class="department">
+									<i class="icon iconfont icon-an-flag" style="color: #7F7F7F;"></i>
+									<p>研发中心</p>
+								</div>
+								<div class="telephone">
+									<i class="icon iconfont icon-an-customerservice" style="color: #7F7F7F;"></i>
+									<p class="items" title="18611111111">18611111111</p>
+								</div>
+							</li>
+							<li class="contact_top">
+								<img class="contact_head" src="./source/img/head-boy.png" />
+								<p class="contact_name">张晓艺</p>
+								<div class="company">
+									<i class="icon iconfont icon-an-bank" style="color: #7F7F7F;"></i>
+									<p>631所</p>
+								</div>
+								<div class="department">
+									<i class="icon iconfont icon-an-flag" style="color: #7F7F7F;"></i>
+									<p>研发中心</p>
+								</div>
+								<div class="telephone">
+									<i class="icon iconfont icon-an-customerservice" style="color: #7F7F7F;"></i>
+									<p class="items" title="18611111111">18611111111</p>
+								</div>
+							</li>
+							<li class="contact_top">
+								<img class="contact_head" src="./source/img/head-boy.png" />
+								<p class="contact_name">李大钊</p>
+								<div class="company">
+									<i class="icon iconfont icon-an-bank" style="color: #7F7F7F;"></i>
+									<p>金航数码</p>
+								</div>
+								<div class="department">
+									<i class="icon iconfont icon-an-flag" style="color: #7F7F7F;"></i>
+									<p>研发中心</p>
+								</div>
+								<div class="telephone">
+									<i class="icon iconfont icon-an-customerservice" style="color: #7F7F7F;"></i>
+									<p class="items" title="18611111111">18611111111</p>
+								</div>
+							</li>
+							<li class="contact_top">
+								<img class="contact_head" src="./source/img/head-boy.png" />
+								<p class="contact_name">张二义</p>
+								<div class="company">
+									<i class="icon iconfont icon-an-bank" style="color: #7F7F7F;"></i>
+									<p>金航数码</p>
+								</div>
+								<div class="department">
+									<i class="icon iconfont icon-an-flag" style="color: #7F7F7F;"></i>
+									<p>研发中心</p>
+								</div>
+								<div class="telephone">
+									<i class="icon iconfont icon-an-customerservice" style="color: #7F7F7F;"></i>
+									<p class="items" title="18611111111">18611111111</p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

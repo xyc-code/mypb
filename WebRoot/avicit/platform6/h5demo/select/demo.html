@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="compent/bootstrap/3.3.4/css_default/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="compent/layer-v2.3/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="compent/avicSelect/css/avicSelect.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+</head>
+
+<body>
+    <div class="main">
+        <div class="row">
+            <div class="col-lg-4">
+                <h3>单选LI例子</h3>
+                <div id="test1" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list">
+                        <ul>
+                            <li class="av-child" data-val="测试1">测试1</li>
+                            <li class="av-child" data-val="测试2">测试2</li>
+                            <li class="av-child" data-val="测试3">测试3</li>
+                            <li class="av-child" data-val="测试4">测试4</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3>多选LI例子</h3>
+                <div id="test2" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list">
+                        <ul>
+                            <li class="av-child" data-val="测试1">测试1</li>
+                            <li class="av-child" data-val="测试2">测试2</li>
+                            <li class="av-child" data-val="测试3">测试3</li>
+                            <li class="av-child" data-val="测试4">测试4</li>
+                            <li class="av-child" data-val="测试5">测试5</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3>checkbox、radio混合例子</h3>
+                <div id="test3" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list">
+                        <label>
+                            <input type="checkbox" value="测试1">测试1</label>
+                        <label>
+                            <input type="radio" value="测试2">测试2</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <h3>iframe单选例子</h3>
+                <div id="test4" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3>iframe多选例子</h3>
+                <div id="test5" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list"></div>
+                </div>
+            </div>
+            <div class="col-lg-4" style="height: 200px;">
+                <h3>data List例子 - 此例子预设了对应input，默认使用hidden的input</h3>
+                <div id="test6" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list"></div>
+                    <br>
+                    <div style="position: absolute;left:0">
+                        <input type="text" placeholder="id回填，被设置过滤" name="id" value="">
+                        <input type="text" placeholder="name回填" name="name" value="">
+                        <input type="text" placeholder="age回填" name="age" value="">
+                        <input type="text" placeholder="work回填" name="work" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+        	<div class="col-lg-4">
+                <h3>data List例子 使用格式化的输出 单选</h3>
+                <div id="test7" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3>data List例子 使用格式化的输出 多选</h3>
+                <div id="test8" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3>data List例子 隐藏传值框  多选</h3>
+                <div id="test9" class="input-group avicselect">
+                    <input type="text" class="form-control">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default avicselect-act">
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="avicselect-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="demoDom" style="padding:50px;background:#ddd;color:#000;margin:20px 0;"></div>
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="compent/layer-v2.3/layer/layer.js"></script>
+    <script type="text/javascript" src="compent/avicSelect/js/avicSelect.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
+</body>
+
+</html>

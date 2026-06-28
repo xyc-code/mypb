@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.organize.partyorganmember.dao.PartyOrganMemberDAO">
+<resultMap id="PartyOrganMemberDTOMap" type="avicit.pb.organize.partyorganmember.dto.PartyOrganMemberDTO">
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="userId" column="USER_ID" jdbcType="VARCHAR" />
+	<result property="userName" column="USER_NAME" jdbcType="VARCHAR" />
+	<result property="deptId" column="DEPT_ID" jdbcType="VARCHAR" />
+	<result property="deptName" column="DEPT_NAME" jdbcType="VARCHAR" />
+	<result property="userPost" column="USER_POST" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="validFlag" column="VALID_FLAG" jdbcType="VARCHAR" />
+	<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+	<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+	<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+	<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+	<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+	<result property="attribute06" column="ATTRIBUTE_06" jdbcType="VARCHAR" />
+	<result property="attribute07" column="ATTRIBUTE_07" jdbcType="VARCHAR" />
+	<result property="attribute08" column="ATTRIBUTE_08" jdbcType="VARCHAR" />
+	<result property="attribute09" column="ATTRIBUTE_09" jdbcType="VARCHAR" />
+	<result property="attribute10" column="ATTRIBUTE_10" jdbcType="VARCHAR" />
+	<result property="partyId" column="PARTY_ID" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	t1.ID,
+	t1.USER_ID,
+	t1.USER_NAME,
+	t1.DEPT_ID,
+	t1.DEPT_NAME,
+	t1.USER_POST,
+	t1.CREATED_BY,
+	t1.CREATION_DATE,
+	t1.LAST_UPDATED_BY,
+	t1.LAST_UPDATE_DATE,
+	t1.LAST_UPDATE_IP,
+	t1.VERSION,
+	t1.ORG_IDENTITY,
+	t1.CREATED_DEPT,
+	t1.VALID_FLAG,
+	t1.ATTRIBUTE_01,
+	t1.ATTRIBUTE_02,
+	t1.ATTRIBUTE_03,
+	t1.ATTRIBUTE_04,
+	t1.ATTRIBUTE_05,
+	t1.ATTRIBUTE_06,
+	t1.ATTRIBUTE_07,
+	t1.ATTRIBUTE_08,
+	t1.ATTRIBUTE_09,
+	t1.ATTRIBUTE_10,
+	t1.PARTY_ID</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.userId != null and bean.userId != ''">
+		and t1.USER_ID = #{bean.userId}
+	</if>
+	<if test="bean.userName != null and bean.userName != ''">
+		and t1.USER_NAME like concat(concat('%',#{bean.userName}),'%')
+	</if>
+	<if test="bean.deptId != null and bean.deptId != ''">
+		and t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%')
+	</if>
+	<if test="bean.deptName != null and bean.deptName != ''">
+		and t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.userPost != null and bean.userPost != ''">
+		and t1.USER_POST = #{bean.userPost}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.validFlag != null and bean.validFlag != ''">
+		and t1.VALID_FLAG like concat(concat('%',#{bean.validFlag}),'%')
+	</if>
+	<if test="bean.attribute01 != null and bean.attribute01 != ''">
+		and t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%')
+	</if>
+	<if test="bean.attribute02 != null and bean.attribute02 != ''">
+		and t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%')
+	</if>
+	<if test="bean.attribute03 != null and bean.attribute03 != ''">
+		and t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%')
+	</if>
+	<if test="bean.attribute04 != null and bean.attribute04 != ''">
+		and t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%')
+	</if>
+	<if test="bean.attribute05 != null and bean.attribute05 != ''">
+		and t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%')
+	</if>
+	<if test="bean.attribute06 != null and bean.attribute06 != ''">
+		and t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%')
+	</if>
+	<if test="bean.attribute07 != null and bean.attribute07 != ''">
+		and t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%')
+	</if>
+	<if test="bean.attribute08 != null and bean.attribute08 != ''">
+		and t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%')
+	</if>
+	<if test="bean.attribute09 != null and bean.attribute09 != ''">
+		and t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%')
+	</if>
+	<if test="bean.attribute10 != null and bean.attribute10 != ''">
+		and t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%')
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		and t1.PARTY_ID = #{bean.partyId}
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.userId != null and bean.userId != ''">
+		or t1.USER_ID = #{bean.userId}
+	</if>
+	<if test="bean.userName != null and bean.userName != ''">
+		or t1.USER_NAME like concat(concat('%',#{bean.userName}),'%')
+	</if>
+	<if test="bean.deptId != null and bean.deptId != ''">
+		or t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%')
+	</if>
+	<if test="bean.deptName != null and bean.deptName != ''">
+		or t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.userPost != null and bean.userPost != ''">
+		or t1.USER_POST = #{bean.userPost}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.validFlag != null and bean.validFlag != ''">
+		or t1.VALID_FLAG like concat(concat('%',#{bean.validFlag}),'%')
+	</if>
+	<if test="bean.attribute01 != null and bean.attribute01 != ''">
+		or t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%')
+	</if>
+	<if test="bean.attribute02 != null and bean.attribute02 != ''">
+		or t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%')
+	</if>
+	<if test="bean.attribute03 != null and bean.attribute03 != ''">
+		or t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%')
+	</if>
+	<if test="bean.attribute04 != null and bean.attribute04 != ''">
+		or t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%')
+	</if>
+	<if test="bean.attribute05 != null and bean.attribute05 != ''">
+		or t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%')
+	</if>
+	<if test="bean.attribute06 != null and bean.attribute06 != ''">
+		or t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%')
+	</if>
+	<if test="bean.attribute07 != null and bean.attribute07 != ''">
+		or t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%')
+	</if>
+	<if test="bean.attribute08 != null and bean.attribute08 != ''">
+		or t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%')
+	</if>
+	<if test="bean.attribute09 != null and bean.attribute09 != ''">
+		or t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%')
+	</if>
+	<if test="bean.attribute10 != null and bean.attribute10 != ''">
+		or t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 PARTY_ORGAN_MEMBER -->
+<select id="searchPartyOrganMemberByPage" parameterType="java.util.Map" resultMap="PartyOrganMemberDTOMap">
+	select
+	<include refid="commonColums"/>
+	<choose>
+		<when test="keyWord != null and keyWord != '' ">
+			from (select * from PARTY_ORGAN_MEMBER t where t.PARTY_ID=#{bean.partyId}) t1
+		</when>
+		<otherwise>
+			from PARTY_ORGAN_MEMBER t1
+		</otherwise>
+	</choose>
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 PARTY_ORGAN_MEMBER -->
+<select id="searchPartyOrganMember" parameterType="java.util.Map" resultMap="PartyOrganMemberDTOMap">
+	select
+	<include refid="commonColums"/>
+	<choose>
+		<when test="keyWord != null and keyWord != '' ">
+			from (select * from PARTY_ORGAN_MEMBER t where t.PARTY_ID=#{bean.partyId}) t1
+		</when>
+		<otherwise>
+			from PARTY_ORGAN_MEMBER t1
+		</otherwise>
+	</choose>
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 PARTY_ORGAN_MEMBER（导出） -->
+<select id="searchPartyOrganMemberForExport" parameterType="java.util.Map" resultMap="PartyOrganMemberDTOMap">
+	select
+	<include refid="commonColums"/>
+	from PARTY_ORGAN_MEMBER t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 PARTY_ORGAN_MEMBER -->
+<select id="findPartyOrganMemberById" parameterType="java.lang.String" resultMap="PartyOrganMemberDTOMap">
+	select
+	<include refid="commonColums"/>
+	from PARTY_ORGAN_MEMBER t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 PARTY_ORGAN_MEMBER -->
+<insert id="insertPartyOrganMember" parameterType="avicit.pb.organize.partyorganmember.dto.PartyOrganMemberDTO">
+	insert into PARTY_ORGAN_MEMBER
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="userId != null">
+			USER_ID,
+		</if>
+		<if test="userName != null">
+			USER_NAME,
+		</if>
+		<if test="deptId != null">
+			DEPT_ID,
+		</if>
+		<if test="deptName != null">
+			DEPT_NAME,
+		</if>
+		<if test="userPost != null">
+			USER_POST,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="validFlag != null">
+			VALID_FLAG,
+		</if>
+		<if test="attribute01 != null">
+			ATTRIBUTE_01,
+		</if>
+		<if test="attribute02 != null">
+			ATTRIBUTE_02,
+		</if>
+		<if test="attribute03 != null">
+			ATTRIBUTE_03,
+		</if>
+		<if test="attribute04 != null">
+			ATTRIBUTE_04,
+		</if>
+		<if test="attribute05 != null">
+			ATTRIBUTE_05,
+		</if>
+		<if test="attribute06 != null">
+			ATTRIBUTE_06,
+		</if>
+		<if test="attribute07 != null">
+			ATTRIBUTE_07,
+		</if>
+		<if test="attribute08 != null">
+			ATTRIBUTE_08,
+		</if>
+		<if test="attribute09 != null">
+			ATTRIBUTE_09,
+		</if>
+		<if test="attribute10 != null">
+			ATTRIBUTE_10,
+		</if>
+		<if test="partyId != null">
+			PARTY_ID,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="userId != null">
+			#{userId,jdbcType = VARCHAR},
+		</if>
+		<if test="userName != null">
+			#{userName,jdbcType = VARCHAR},
+		</if>
+		<if test="deptId != null">
+			#{deptId,jdbcType = VARCHAR},
+		</if>
+		<if test="deptName != null">
+			#{deptName,jdbcType = VARCHAR},
+		</if>
+		<if test="userPost != null">
+			#{userPost,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="validFlag != null">
+			#{validFlag,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute01 != null">
+			#{attribute01,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute02 != null">
+			#{attribute02,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute03 != null">
+			#{attribute03,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute04 != null">
+			#{attribute04,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute05 != null">
+			#{attribute05,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute06 != null">
+			#{attribute06,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute07 != null">
+			#{attribute07,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute08 != null">
+			#{attribute08,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute09 != null">
+			#{attribute09,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute10 != null">
+			#{attribute10,jdbcType = VARCHAR},
+		</if>
+		<if test="partyId != null">
+			#{partyId,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 PARTY_ORGAN_MEMBER -->
+<insert id="insertPartyOrganMemberList" parameterType="java.util.List">
+	insert into PARTY_ORGAN_MEMBER(
+	ID ,
+	USER_ID ,
+	USER_NAME ,
+	DEPT_ID ,
+	DEPT_NAME ,
+	USER_POST ,
+	CREATED_BY ,
+	CREATION_DATE ,
+	LAST_UPDATED_BY ,
+	LAST_UPDATE_DATE ,
+	LAST_UPDATE_IP ,
+	VERSION ,
+	ORG_IDENTITY ,
+	CREATED_DEPT ,
+	VALID_FLAG ,
+	ATTRIBUTE_01 ,
+	ATTRIBUTE_02 ,
+	ATTRIBUTE_03 ,
+	ATTRIBUTE_04 ,
+	ATTRIBUTE_05 ,
+	ATTRIBUTE_06 ,
+	ATTRIBUTE_07 ,
+	ATTRIBUTE_08 ,
+	ATTRIBUTE_09 ,
+	ATTRIBUTE_10 ,
+	PARTY_ID )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.userId,jdbcType = VARCHAR} ,
+	#{item.userName,jdbcType = VARCHAR} ,
+	#{item.deptId,jdbcType = VARCHAR} ,
+	#{item.deptName,jdbcType = VARCHAR} ,
+	#{item.userPost,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.validFlag,jdbcType = VARCHAR} ,
+	#{item.attribute01,jdbcType = VARCHAR} ,
+	#{item.attribute02,jdbcType = VARCHAR} ,
+	#{item.attribute03,jdbcType = VARCHAR} ,
+	#{item.attribute04,jdbcType = VARCHAR} ,
+	#{item.attribute05,jdbcType = VARCHAR} ,
+	#{item.attribute06,jdbcType = VARCHAR} ,
+	#{item.attribute07,jdbcType = VARCHAR} ,
+	#{item.attribute08,jdbcType = VARCHAR} ,
+	#{item.attribute09,jdbcType = VARCHAR} ,
+	#{item.attribute10,jdbcType = VARCHAR} ,
+	#{item.partyId,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 PARTY_ORGAN_MEMBER -->
+<update id="updatePartyOrganMemberSensitive" parameterType="avicit.pb.organize.partyorganmember.dto.PartyOrganMemberDTO">
+	update PARTY_ORGAN_MEMBER
+	<set>
+		<trim suffixOverrides=",">
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="userId != null">
+				USER_ID = #{userId,jdbcType = VARCHAR},
+			</if>
+			<if test="userName != null">
+				USER_NAME = #{userName,jdbcType = VARCHAR},
+			</if>
+			<if test="deptId != null">
+				DEPT_ID = #{deptId,jdbcType = VARCHAR},
+			</if>
+			<if test="deptName != null">
+				DEPT_NAME = #{deptName,jdbcType = VARCHAR},
+			</if>
+			<if test="userPost != null">
+				USER_POST = #{userPost,jdbcType = VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="validFlag != null">
+				VALID_FLAG = #{validFlag,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				ATTRIBUTE_01 = #{attribute01,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				ATTRIBUTE_02 = #{attribute02,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				ATTRIBUTE_03 = #{attribute03,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				ATTRIBUTE_04 = #{attribute04,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				ATTRIBUTE_05 = #{attribute05,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				ATTRIBUTE_06 = #{attribute06,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				ATTRIBUTE_07 = #{attribute07,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute08 != null">
+				ATTRIBUTE_08 = #{attribute08,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute09 != null">
+				ATTRIBUTE_09 = #{attribute09,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute10 != null">
+				ATTRIBUTE_10 = #{attribute10,jdbcType = VARCHAR},
+			</if>
+			<if test="partyId != null">
+				PARTY_ID = #{partyId,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 PARTY_ORGAN_MEMBER -->
+<update id="updatePartyOrganMemberAll" parameterType="avicit.pb.organize.partyorganmember.dto.PartyOrganMemberDTO">
+	update PARTY_ORGAN_MEMBER
+	set
+	ID = #{id,jdbcType = VARCHAR} ,
+	USER_ID = #{userId,jdbcType = VARCHAR} ,
+	USER_NAME = #{userName,jdbcType = VARCHAR} ,
+	DEPT_ID = #{deptId,jdbcType = VARCHAR} ,
+	DEPT_NAME = #{deptName,jdbcType = VARCHAR} ,
+	USER_POST = #{userPost,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	VALID_FLAG = #{validFlag,jdbcType = VARCHAR} ,
+	ATTRIBUTE_01 = #{attribute01,jdbcType = VARCHAR} ,
+	ATTRIBUTE_02 = #{attribute02,jdbcType = VARCHAR} ,
+	ATTRIBUTE_03 = #{attribute03,jdbcType = VARCHAR} ,
+	ATTRIBUTE_04 = #{attribute04,jdbcType = VARCHAR} ,
+	ATTRIBUTE_05 = #{attribute05,jdbcType = VARCHAR} ,
+	ATTRIBUTE_06 = #{attribute06,jdbcType = VARCHAR} ,
+	ATTRIBUTE_07 = #{attribute07,jdbcType = VARCHAR} ,
+	ATTRIBUTE_08 = #{attribute08,jdbcType = VARCHAR} ,
+	ATTRIBUTE_09 = #{attribute09,jdbcType = VARCHAR} ,
+	ATTRIBUTE_10 = #{attribute10,jdbcType = VARCHAR} ,
+	PARTY_ID = #{partyId,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   PARTY_ORGAN_MEMBER -->
+<update id="updatePartyOrganMemberList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update PARTY_ORGAN_MEMBER
+		set
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		USER_ID = #{item.userId,jdbcType = VARCHAR} ,
+		USER_NAME = #{item.userName,jdbcType = VARCHAR} ,
+		DEPT_ID = #{item.deptId,jdbcType = VARCHAR} ,
+		DEPT_NAME = #{item.deptName,jdbcType = VARCHAR} ,
+		USER_POST = #{item.userPost,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		VALID_FLAG = #{item.validFlag,jdbcType = VARCHAR} ,
+		ATTRIBUTE_01 = #{item.attribute01,jdbcType = VARCHAR} ,
+		ATTRIBUTE_02 = #{item.attribute02,jdbcType = VARCHAR} ,
+		ATTRIBUTE_03 = #{item.attribute03,jdbcType = VARCHAR} ,
+		ATTRIBUTE_04 = #{item.attribute04,jdbcType = VARCHAR} ,
+		ATTRIBUTE_05 = #{item.attribute05,jdbcType = VARCHAR} ,
+		ATTRIBUTE_06 = #{item.attribute06,jdbcType = VARCHAR} ,
+		ATTRIBUTE_07 = #{item.attribute07,jdbcType = VARCHAR} ,
+		ATTRIBUTE_08 = #{item.attribute08,jdbcType = VARCHAR} ,
+		ATTRIBUTE_09 = #{item.attribute09,jdbcType = VARCHAR} ,
+		ATTRIBUTE_10 = #{item.attribute10,jdbcType = VARCHAR} ,
+		PARTY_ID = #{item.partyId,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 PARTY_ORGAN_MEMBER -->
+<delete id="deletePartyOrganMemberById" parameterType="java.lang.String">
+	delete from PARTY_ORGAN_MEMBER  where id = #{id}
+</delete>
+<!-- 主键查询对象 PARTY_ORGAN_MEMBER -->
+<select id="findPartyOrganMemberByOrganizationId" parameterType="java.lang.String" resultMap="PartyOrganMemberDTOMap">
+	select
+	<include refid="commonColums"/>
+	from PARTY_ORGAN_MEMBER t1
+	where t1.party_id = #{partyId}
+</select>
+</mapper>

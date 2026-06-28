@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.pojo.partyRestPojo.dynhuanjiedydh.dao.DynHuanjieDydhDAO">
+<resultMap id="DynHuanjieDydhDTOMap" type="avicit.pb.pojo.partyRestPojo.dynhuanjiedydh.dto.DynHuanjieDydhDTO">
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="deptName" column="DEPT_NAME" jdbcType="VARCHAR" />
+	<result property="autoCode" column="AUTO_CODE" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="userName" column="USER_NAME" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="partyName" column="PARTY_NAME" jdbcType="VARCHAR" />
+	<result property="requstDate" column="REQUST_DATE" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="partyId" column="PARTY_ID" jdbcType="VARCHAR" />
+	<result property="electionTime" column="ELECTION_TIME" jdbcType="TIMESTAMP" />
+	<result property="partyYinggai" column="PARTY_YINGGAI" jdbcType="DECIMAL" />
+	<result property="partyShiji" column="PARTY_SHIJI" jdbcType="DECIMAL" />
+	<result property="threeFourName" column="THREE_FOUR_NAME" jdbcType="VARCHAR" />
+	<result property="threeFourId" column="THREE_FOUR_ID" jdbcType="VARCHAR" />
+	<result property="threeFourName1" column="THREE_FOUR_NAME1" jdbcType="VARCHAR" />
+	<result property="threeFourId1" column="THREE_FOUR_ID1" jdbcType="VARCHAR" />
+	<result property="partyNameNew" column="PARTY_NAME_NEW" jdbcType="VARCHAR" />
+	<result property="partyType" column="PARTY_TYPE" jdbcType="VARCHAR" />
+	<result property="userTel" column="USER_TEL" jdbcType="VARCHAR" />
+	<result property="sfjw" column="SFJW" jdbcType="VARCHAR" />
+	<result property="jwTime" column="JW_TIME" jdbcType="TIMESTAMP" />
+	<result property="jwYingga" column="JW_YINGGA" jdbcType="DECIMAL" />
+	<result property="jwShiji" column="JW_SHIJI" jdbcType="DECIMAL" />
+	<result property="jwCyl" column="JW_CYL" jdbcType="DECIMAL" />
+	<result property="jwThree" column="JW_THREE" jdbcType="VARCHAR" />
+	<result property="jwThreeId" column="JW_THREE_ID" jdbcType="VARCHAR" />
+	<result property="partyNewId" column="PARTY_NEW_ID" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.CREATED_BY,
+	t1.LAST_UPDATED_BY,
+	t1.DEPT_NAME,
+	t1.AUTO_CODE,
+	t1.CREATION_DATE,
+	t1.USER_NAME,
+	t1.LAST_UPDATE_DATE,
+	t1.VERSION,
+	t1.PARTY_NAME,
+	t1.REQUST_DATE,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ORG_IDENTITY,
+	t1.LAST_UPDATE_IP,
+	t1.PARTY_ID,
+	t1.ELECTION_TIME,
+	t1.PARTY_YINGGAI,
+	t1.PARTY_SHIJI,
+	t1.THREE_FOUR_NAME,
+	t1.THREE_FOUR_ID,
+	t1.THREE_FOUR_NAME1,
+	t1.THREE_FOUR_ID1,
+	t1.PARTY_NAME_NEW,
+	t1.PARTY_TYPE,
+	t1.USER_TEL,
+	t1.SFJW,
+	t1.JW_TIME,
+	t1.JW_YINGGA,
+	t1.JW_SHIJI,
+	t1.JW_CYL,
+	t1.JW_THREE,
+	t1.JW_THREE_ID,
+	t1.PARTY_NEW_ID,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.deptName != null and bean.deptName != ''">
+		and t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.autoCode != null and bean.autoCode != ''">
+		and t1.AUTO_CODE like concat(concat('%',#{bean.autoCode}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.userName != null and bean.userName != ''">
+		and t1.USER_NAME like concat(concat('%',#{bean.userName}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.partyName != null and bean.partyName != ''">
+		and t1.PARTY_NAME like concat(concat('%',#{bean.partyName}),'%')
+	</if>
+	<if test="bean.requstDate != null and bean.requstDate != ''">
+		and t1.REQUST_DATE like concat(concat('%',#{bean.requstDate}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		and t1.PARTY_ID like concat(concat('%',#{bean.partyId}),'%')
+	</if>
+	<if test="bean.electionTimeBegin != null">
+		and t1.ELECTION_TIME &gt;= #{bean.electionTimeBegin}
+	</if>
+	<if test="bean.electionTimeEnd != null">
+		and t1.ELECTION_TIME &lt;= #{bean.electionTimeEnd}
+	</if>
+	<if test="bean.partyYinggai != null">
+		and t1.PARTY_YINGGAI = #{bean.partyYinggai}
+	</if>
+	<if test="bean.partyShiji != null">
+		and t1.PARTY_SHIJI = #{bean.partyShiji}
+	</if>
+	<if test="bean.threeFourName != null and bean.threeFourName != ''">
+		and t1.THREE_FOUR_NAME like concat(concat('%',#{bean.threeFourName}),'%')
+	</if>
+	<if test="bean.threeFourId != null and bean.threeFourId != ''">
+		and t1.THREE_FOUR_ID like concat(concat('%',#{bean.threeFourId}),'%')
+	</if>
+	<if test="bean.threeFourName1 != null and bean.threeFourName1 != ''">
+		and t1.THREE_FOUR_NAME1 like concat(concat('%',#{bean.threeFourName1}),'%')
+	</if>
+	<if test="bean.threeFourId1 != null and bean.threeFourId1 != ''">
+		and t1.THREE_FOUR_ID1 like concat(concat('%',#{bean.threeFourId1}),'%')
+	</if>
+	<if test="bean.partyNameNew != null and bean.partyNameNew != ''">
+		and t1.PARTY_NAME_NEW like concat(concat('%',#{bean.partyNameNew}),'%')
+	</if>
+	<if test="bean.partyType != null and bean.partyType != ''">
+		and t1.PARTY_TYPE like concat(concat('%',#{bean.partyType}),'%')
+	</if>
+	<if test="bean.userTel != null and bean.userTel != ''">
+		and t1.USER_TEL like concat(concat('%',#{bean.userTel}),'%')
+	</if>
+	<if test="bean.sfjw != null and bean.sfjw != ''">
+		and t1.SFJW like concat(concat('%',#{bean.sfjw}),'%')
+	</if>
+	<if test="bean.jwTimeBegin != null">
+		and t1.JW_TIME &gt;= #{bean.jwTimeBegin}
+	</if>
+	<if test="bean.jwTimeEnd != null">
+		and t1.JW_TIME &lt;= #{bean.jwTimeEnd}
+	</if>
+	<if test="bean.jwYingga != null">
+		and t1.JW_YINGGA = #{bean.jwYingga}
+	</if>
+	<if test="bean.jwShiji != null">
+		and t1.JW_SHIJI = #{bean.jwShiji}
+	</if>
+	<if test="bean.jwCyl != null">
+		and t1.JW_CYL = #{bean.jwCyl}
+	</if>
+	<if test="bean.jwThree != null and bean.jwThree != ''">
+		and t1.JW_THREE like concat(concat('%',#{bean.jwThree}),'%')
+	</if>
+	<if test="bean.jwThreeId != null and bean.jwThreeId != ''">
+		and t1.JW_THREE_ID like concat(concat('%',#{bean.jwThreeId}),'%')
+	</if>
+	<if test="bean.partyNewId != null and bean.partyNewId != ''">
+		and t1.PARTY_NEW_ID like concat(concat('%',#{bean.partyNewId}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.deptName != null and bean.deptName != ''">
+		or t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.autoCode != null and bean.autoCode != ''">
+		or t1.AUTO_CODE like concat(concat('%',#{bean.autoCode}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.userName != null and bean.userName != ''">
+		or t1.USER_NAME like concat(concat('%',#{bean.userName}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.partyName != null and bean.partyName != ''">
+		or t1.PARTY_NAME like concat(concat('%',#{bean.partyName}),'%')
+	</if>
+	<if test="bean.requstDate != null and bean.requstDate != ''">
+		or t1.REQUST_DATE like concat(concat('%',#{bean.requstDate}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		or t1.PARTY_ID like concat(concat('%',#{bean.partyId}),'%')
+	</if>
+	<if test="bean.electionTimeBegin != null">
+		or t1.ELECTION_TIME &gt;= #{bean.electionTimeBegin}
+	</if>
+	<if test="bean.electionTimeEnd != null">
+		or t1.ELECTION_TIME &lt;= #{bean.electionTimeEnd}
+	</if>
+	<if test="bean.partyYinggai != null">
+		or t1.PARTY_YINGGAI = #{bean.partyYinggai}
+	</if>
+	<if test="bean.partyShiji != null">
+		or t1.PARTY_SHIJI = #{bean.partyShiji}
+	</if>
+	<if test="bean.threeFourName != null and bean.threeFourName != ''">
+		or t1.THREE_FOUR_NAME like concat(concat('%',#{bean.threeFourName}),'%')
+	</if>
+	<if test="bean.threeFourId != null and bean.threeFourId != ''">
+		or t1.THREE_FOUR_ID like concat(concat('%',#{bean.threeFourId}),'%')
+	</if>
+	<if test="bean.threeFourName1 != null and bean.threeFourName1 != ''">
+		or t1.THREE_FOUR_NAME1 like concat(concat('%',#{bean.threeFourName1}),'%')
+	</if>
+	<if test="bean.threeFourId1 != null and bean.threeFourId1 != ''">
+		or t1.THREE_FOUR_ID1 like concat(concat('%',#{bean.threeFourId1}),'%')
+	</if>
+	<if test="bean.partyNameNew != null and bean.partyNameNew != ''">
+		or t1.PARTY_NAME_NEW like concat(concat('%',#{bean.partyNameNew}),'%')
+	</if>
+	<if test="bean.partyType != null and bean.partyType != ''">
+		or t1.PARTY_TYPE like concat(concat('%',#{bean.partyType}),'%')
+	</if>
+	<if test="bean.userTel != null and bean.userTel != ''">
+		or t1.USER_TEL like concat(concat('%',#{bean.userTel}),'%')
+	</if>
+	<if test="bean.sfjw != null and bean.sfjw != ''">
+		or t1.SFJW like concat(concat('%',#{bean.sfjw}),'%')
+	</if>
+	<if test="bean.jwTimeBegin != null">
+		or t1.JW_TIME &gt;= #{bean.jwTimeBegin}
+	</if>
+	<if test="bean.jwTimeEnd != null">
+		or t1.JW_TIME &lt;= #{bean.jwTimeEnd}
+	</if>
+	<if test="bean.jwYingga != null">
+		or t1.JW_YINGGA = #{bean.jwYingga}
+	</if>
+	<if test="bean.jwShiji != null">
+		or t1.JW_SHIJI = #{bean.jwShiji}
+	</if>
+	<if test="bean.jwCyl != null">
+		or t1.JW_CYL = #{bean.jwCyl}
+	</if>
+	<if test="bean.jwThree != null and bean.jwThree != ''">
+		or t1.JW_THREE like concat(concat('%',#{bean.jwThree}),'%')
+	</if>
+	<if test="bean.jwThreeId != null and bean.jwThreeId != ''">
+		or t1.JW_THREE_ID like concat(concat('%',#{bean.jwThreeId}),'%')
+	</if>
+	<if test="bean.partyNewId != null and bean.partyNewId != ''">
+		or t1.PARTY_NEW_ID like concat(concat('%',#{bean.partyNewId}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_HUANJIE_DYDH -->
+<select id="searchDynHuanjieDydhByPage" parameterType="java.util.Map" resultMap="DynHuanjieDydhDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_HUANJIE_DYDH t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_HUANJIE_DYDH -->
+<select id="searchDynHuanjieDydh" parameterType="java.util.Map" resultMap="DynHuanjieDydhDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_HUANJIE_DYDH t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_HUANJIE_DYDH（导出） -->
+<select id="searchDynHuanjieDydhForExport" parameterType="java.util.Map" resultMap="DynHuanjieDydhDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_HUANJIE_DYDH t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_HUANJIE_DYDH -->
+<select id="findDynHuanjieDydhById" parameterType="java.lang.String" resultMap="DynHuanjieDydhDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_HUANJIE_DYDH t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_HUANJIE_DYDH -->
+<insert id="insertDynHuanjieDydh" parameterType="avicit.pb.pojo.partyRestPojo.dynhuanjiedydh.dto.DynHuanjieDydhDTO">
+	insert into DYN_HUANJIE_DYDH
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="deptName != null">
+			DEPT_NAME,
+		</if>
+		<if test="autoCode != null">
+			AUTO_CODE,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="userName != null">
+			USER_NAME,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="partyName != null">
+			PARTY_NAME,
+		</if>
+		<if test="requstDate != null">
+			REQUST_DATE,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="partyId != null">
+			PARTY_ID,
+		</if>
+		<if test="electionTime != null">
+			ELECTION_TIME,
+		</if>
+		<if test="partyYinggai != null">
+			PARTY_YINGGAI,
+		</if>
+		<if test="partyShiji != null">
+			PARTY_SHIJI,
+		</if>
+		<if test="threeFourName != null">
+			THREE_FOUR_NAME,
+		</if>
+		<if test="threeFourId != null">
+			THREE_FOUR_ID,
+		</if>
+		<if test="threeFourName1 != null">
+			THREE_FOUR_NAME1,
+		</if>
+		<if test="threeFourId1 != null">
+			THREE_FOUR_ID1,
+		</if>
+		<if test="partyNameNew != null">
+			PARTY_NAME_NEW,
+		</if>
+		<if test="partyType != null">
+			PARTY_TYPE,
+		</if>
+		<if test="userTel != null">
+			USER_TEL,
+		</if>
+		<if test="sfjw != null">
+			SFJW,
+		</if>
+		<if test="jwTime != null">
+			JW_TIME,
+		</if>
+		<if test="jwYingga != null">
+			JW_YINGGA,
+		</if>
+		<if test="jwShiji != null">
+			JW_SHIJI,
+		</if>
+		<if test="jwCyl != null">
+			JW_CYL,
+		</if>
+		<if test="jwThree != null">
+			JW_THREE,
+		</if>
+		<if test="jwThreeId != null">
+			JW_THREE_ID,
+		</if>
+		<if test="partyNewId != null">
+			PARTY_NEW_ID,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="deptName != null">
+			#{deptName,jdbcType = VARCHAR},
+		</if>
+		<if test="autoCode != null">
+			#{autoCode,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="userName != null">
+			#{userName,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="partyName != null">
+			#{partyName,jdbcType = VARCHAR},
+		</if>
+		<if test="requstDate != null">
+			#{requstDate,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="partyId != null">
+			#{partyId,jdbcType = VARCHAR},
+		</if>
+		<if test="electionTime != null">
+			#{electionTime,jdbcType = TIMESTAMP},
+		</if>
+		<if test="partyYinggai != null">
+			#{partyYinggai,jdbcType = DECIMAL},
+		</if>
+		<if test="partyShiji != null">
+			#{partyShiji,jdbcType = DECIMAL},
+		</if>
+		<if test="threeFourName != null">
+			#{threeFourName,jdbcType = VARCHAR},
+		</if>
+		<if test="threeFourId != null">
+			#{threeFourId,jdbcType = VARCHAR},
+		</if>
+		<if test="threeFourName1 != null">
+			#{threeFourName1,jdbcType = VARCHAR},
+		</if>
+		<if test="threeFourId1 != null">
+			#{threeFourId1,jdbcType = VARCHAR},
+		</if>
+		<if test="partyNameNew != null">
+			#{partyNameNew,jdbcType = VARCHAR},
+		</if>
+		<if test="partyType != null">
+			#{partyType,jdbcType = VARCHAR},
+		</if>
+		<if test="userTel != null">
+			#{userTel,jdbcType = VARCHAR},
+		</if>
+		<if test="sfjw != null">
+			#{sfjw,jdbcType = VARCHAR},
+		</if>
+		<if test="jwTime != null">
+			#{jwTime,jdbcType = TIMESTAMP},
+		</if>
+		<if test="jwYingga != null">
+			#{jwYingga,jdbcType = DECIMAL},
+		</if>
+		<if test="jwShiji != null">
+			#{jwShiji,jdbcType = DECIMAL},
+		</if>
+		<if test="jwCyl != null">
+			#{jwCyl,jdbcType = DECIMAL},
+		</if>
+		<if test="jwThree != null">
+			#{jwThree,jdbcType = VARCHAR},
+		</if>
+		<if test="jwThreeId != null">
+			#{jwThreeId,jdbcType = VARCHAR},
+		</if>
+		<if test="partyNewId != null">
+			#{partyNewId,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_HUANJIE_DYDH -->
+<insert id="insertDynHuanjieDydhList" parameterType="java.util.List">
+	insert into DYN_HUANJIE_DYDH(
+	CREATED_BY ,
+	LAST_UPDATED_BY ,
+	DEPT_NAME ,
+	AUTO_CODE ,
+	CREATION_DATE ,
+	USER_NAME ,
+	LAST_UPDATE_DATE ,
+	VERSION ,
+	PARTY_NAME ,
+	REQUST_DATE ,
+	ID ,
+	CREATED_DEPT ,
+	ORG_IDENTITY ,
+	LAST_UPDATE_IP ,
+	PARTY_ID ,
+	ELECTION_TIME ,
+	PARTY_YINGGAI ,
+	PARTY_SHIJI ,
+	THREE_FOUR_NAME ,
+	THREE_FOUR_ID ,
+	THREE_FOUR_NAME1 ,
+	THREE_FOUR_ID1 ,
+	PARTY_NAME_NEW ,
+	PARTY_TYPE ,
+	USER_TEL ,
+	SFJW ,
+	JW_TIME ,
+	JW_YINGGA ,
+	JW_SHIJI ,
+	JW_CYL ,
+	JW_THREE ,
+	JW_THREE_ID ,
+	PARTY_NEW_ID )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.deptName,jdbcType = VARCHAR} ,
+	#{item.autoCode,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.userName,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.partyName,jdbcType = VARCHAR} ,
+	#{item.requstDate,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.partyId,jdbcType = VARCHAR} ,
+	#{item.electionTime,jdbcType = TIMESTAMP} ,
+	#{item.partyYinggai,jdbcType = DECIMAL} ,
+	#{item.partyShiji,jdbcType = DECIMAL} ,
+	#{item.threeFourName,jdbcType = VARCHAR} ,
+	#{item.threeFourId,jdbcType = VARCHAR} ,
+	#{item.threeFourName1,jdbcType = VARCHAR} ,
+	#{item.threeFourId1,jdbcType = VARCHAR} ,
+	#{item.partyNameNew,jdbcType = VARCHAR} ,
+	#{item.partyType,jdbcType = VARCHAR} ,
+	#{item.userTel,jdbcType = VARCHAR} ,
+	#{item.sfjw,jdbcType = VARCHAR} ,
+	#{item.jwTime,jdbcType = TIMESTAMP} ,
+	#{item.jwYingga,jdbcType = DECIMAL} ,
+	#{item.jwShiji,jdbcType = DECIMAL} ,
+	#{item.jwCyl,jdbcType = DECIMAL} ,
+	#{item.jwThree,jdbcType = VARCHAR} ,
+	#{item.jwThreeId,jdbcType = VARCHAR} ,
+	#{item.partyNewId,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_HUANJIE_DYDH -->
+<update id="updateDynHuanjieDydhSensitive" parameterType="avicit.pb.pojo.partyRestPojo.dynhuanjiedydh.dto.DynHuanjieDydhDTO">
+	update DYN_HUANJIE_DYDH
+	<set>
+		<trim suffixOverrides=",">
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="deptName != null">
+				DEPT_NAME = #{deptName,jdbcType = VARCHAR},
+			</if>
+			<if test="autoCode != null">
+				AUTO_CODE = #{autoCode,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="userName != null">
+				USER_NAME = #{userName,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="partyName != null">
+				PARTY_NAME = #{partyName,jdbcType = VARCHAR},
+			</if>
+			<if test="requstDate != null">
+				REQUST_DATE = #{requstDate,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="partyId != null">
+				PARTY_ID = #{partyId,jdbcType = VARCHAR},
+			</if>
+			<if test="electionTime != null">
+				ELECTION_TIME = #{electionTime,jdbcType = TIMESTAMP},
+			</if>
+			<if test="partyYinggai != null">
+				PARTY_YINGGAI = #{partyYinggai,jdbcType = DECIMAL},
+			</if>
+			<if test="partyShiji != null">
+				PARTY_SHIJI = #{partyShiji,jdbcType = DECIMAL},
+			</if>
+			<if test="threeFourName != null">
+				THREE_FOUR_NAME = #{threeFourName,jdbcType = VARCHAR},
+			</if>
+			<if test="threeFourId != null">
+				THREE_FOUR_ID = #{threeFourId,jdbcType = VARCHAR},
+			</if>
+			<if test="threeFourName1 != null">
+				THREE_FOUR_NAME1 = #{threeFourName1,jdbcType = VARCHAR},
+			</if>
+			<if test="threeFourId1 != null">
+				THREE_FOUR_ID1 = #{threeFourId1,jdbcType = VARCHAR},
+			</if>
+			<if test="partyNameNew != null">
+				PARTY_NAME_NEW = #{partyNameNew,jdbcType = VARCHAR},
+			</if>
+			<if test="partyType != null">
+				PARTY_TYPE = #{partyType,jdbcType = VARCHAR},
+			</if>
+			<if test="userTel != null">
+				USER_TEL = #{userTel,jdbcType = VARCHAR},
+			</if>
+			<if test="sfjw != null">
+				SFJW = #{sfjw,jdbcType = VARCHAR},
+			</if>
+			<if test="jwTime != null">
+				JW_TIME = #{jwTime,jdbcType = TIMESTAMP},
+			</if>
+			<if test="jwYingga != null">
+				JW_YINGGA = #{jwYingga,jdbcType = DECIMAL},
+			</if>
+			<if test="jwShiji != null">
+				JW_SHIJI = #{jwShiji,jdbcType = DECIMAL},
+			</if>
+			<if test="jwCyl != null">
+				JW_CYL = #{jwCyl,jdbcType = DECIMAL},
+			</if>
+			<if test="jwThree != null">
+				JW_THREE = #{jwThree,jdbcType = VARCHAR},
+			</if>
+			<if test="jwThreeId != null">
+				JW_THREE_ID = #{jwThreeId,jdbcType = VARCHAR},
+			</if>
+			<if test="partyNewId != null">
+				PARTY_NEW_ID = #{partyNewId,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_HUANJIE_DYDH -->
+<update id="updateDynHuanjieDydhAll" parameterType="avicit.pb.pojo.partyRestPojo.dynhuanjiedydh.dto.DynHuanjieDydhDTO">
+	update DYN_HUANJIE_DYDH
+	set
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	DEPT_NAME = #{deptName,jdbcType = VARCHAR} ,
+	AUTO_CODE = #{autoCode,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	USER_NAME = #{userName,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	VERSION = version+1 ,
+	PARTY_NAME = #{partyName,jdbcType = VARCHAR} ,
+	REQUST_DATE = #{requstDate,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	PARTY_ID = #{partyId,jdbcType = VARCHAR} ,
+	ELECTION_TIME = #{electionTime,jdbcType = TIMESTAMP} ,
+	PARTY_YINGGAI = #{partyYinggai,jdbcType = DECIMAL} ,
+	PARTY_SHIJI = #{partyShiji,jdbcType = DECIMAL} ,
+	THREE_FOUR_NAME = #{threeFourName,jdbcType = VARCHAR} ,
+	THREE_FOUR_ID = #{threeFourId,jdbcType = VARCHAR} ,
+	THREE_FOUR_NAME1 = #{threeFourName1,jdbcType = VARCHAR} ,
+	THREE_FOUR_ID1 = #{threeFourId1,jdbcType = VARCHAR} ,
+	PARTY_NAME_NEW = #{partyNameNew,jdbcType = VARCHAR} ,
+	PARTY_TYPE = #{partyType,jdbcType = VARCHAR} ,
+	USER_TEL = #{userTel,jdbcType = VARCHAR} ,
+	SFJW = #{sfjw,jdbcType = VARCHAR} ,
+	JW_TIME = #{jwTime,jdbcType = TIMESTAMP} ,
+	JW_YINGGA = #{jwYingga,jdbcType = DECIMAL} ,
+	JW_SHIJI = #{jwShiji,jdbcType = DECIMAL} ,
+	JW_CYL = #{jwCyl,jdbcType = DECIMAL} ,
+	JW_THREE = #{jwThree,jdbcType = VARCHAR} ,
+	JW_THREE_ID = #{jwThreeId,jdbcType = VARCHAR} ,
+	PARTY_NEW_ID = #{partyNewId,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_HUANJIE_DYDH -->
+<update id="updateDynHuanjieDydhList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_HUANJIE_DYDH
+		set
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		DEPT_NAME = #{item.deptName,jdbcType = VARCHAR} ,
+		AUTO_CODE = #{item.autoCode,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		USER_NAME = #{item.userName,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		VERSION = version+1  ,
+		PARTY_NAME = #{item.partyName,jdbcType = VARCHAR} ,
+		REQUST_DATE = #{item.requstDate,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		PARTY_ID = #{item.partyId,jdbcType = VARCHAR} ,
+		ELECTION_TIME = #{item.electionTime,jdbcType = TIMESTAMP} ,
+		PARTY_YINGGAI = #{item.partyYinggai,jdbcType = DECIMAL} ,
+		PARTY_SHIJI = #{item.partyShiji,jdbcType = DECIMAL} ,
+		THREE_FOUR_NAME = #{item.threeFourName,jdbcType = VARCHAR} ,
+		THREE_FOUR_ID = #{item.threeFourId,jdbcType = VARCHAR} ,
+		THREE_FOUR_NAME1 = #{item.threeFourName1,jdbcType = VARCHAR} ,
+		THREE_FOUR_ID1 = #{item.threeFourId1,jdbcType = VARCHAR} ,
+		PARTY_NAME_NEW = #{item.partyNameNew,jdbcType = VARCHAR} ,
+		PARTY_TYPE = #{item.partyType,jdbcType = VARCHAR} ,
+		USER_TEL = #{item.userTel,jdbcType = VARCHAR} ,
+		SFJW = #{item.sfjw,jdbcType = VARCHAR} ,
+		JW_TIME = #{item.jwTime,jdbcType = TIMESTAMP} ,
+		JW_YINGGA = #{item.jwYingga,jdbcType = DECIMAL} ,
+		JW_SHIJI = #{item.jwShiji,jdbcType = DECIMAL} ,
+		JW_CYL = #{item.jwCyl,jdbcType = DECIMAL} ,
+		JW_THREE = #{item.jwThree,jdbcType = VARCHAR} ,
+		JW_THREE_ID = #{item.jwThreeId,jdbcType = VARCHAR} ,
+		PARTY_NEW_ID = #{item.partyNewId,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_HUANJIE_DYDH -->
+<delete id="deleteDynHuanjieDydhById" parameterType="java.lang.String">
+	delete from DYN_HUANJIE_DYDH  where id = #{id}
+</delete>
+</mapper>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="./iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.page.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/page.css">
+    <title>我的待办</title>
+    <style>
+      .metodo-content{
+        background-color: #fff;
+        width:100%;
+        height:308px;
+      }
+      /* .metodo-content > h3{
+        display: inline-block;margin-left:20px;margin-right:20px;
+      } */
+      .metodo-more{
+        color: #A8ADB4;
+      }
+      /* .metodo-more > i{
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .metodo-more > i:last-child{
+        margin-right: 0;
+      } */
+      .metodo-more > ul{
+        height: 48px;
+        line-height: 48px;
+        position: absolute;
+        right: 90px;
+      }
+      .metodo-active{
+        color:#1593F5;
+      }
+      .metodo-active > i{
+        color:#1593F5;
+      }
+      .metodo-more > ul > li{
+        list-style: none;
+        display: inline-block;
+        font-size:14px;
+        font-weight: 500;
+        margin-right:10px;
+        cursor: pointer;
+      }
+      .metodo-more > ul > li:hover{
+        color: #1593F5;
+      }
+      .metodo-more > ul > li > i{
+        margin-top: -33px;
+        position: absolute;
+        margin-left: 13px;
+        font-size: 55px;
+      }
+      .metodo-list{
+        padding: 0 ;
+        width:100%;
+      }
+      .metodo-list-hover-tr:hover{
+        background: #f7f7f7;
+      }
+      .metodo-title{
+      }
+      .metodo-title-other{
+        color: #403333;
+      }
+      .metodo-other{
+        color:#666;
+        font-size:12px;
+      }
+      .metodo-fee{
+        width:20%;
+        font-size:18px;
+        color:#F59140;
+      }
+      .metodo-title i{
+        font-size: 18px;
+        color: #fff;
+        display: inline-block;
+      }
+      .metodo-title p{
+        height: 30px;
+        width: 30px;
+        line-height: 30px;
+        text-align: center;
+        display: inline-block;
+        border-radius: 50%;
+        margin: 0px 5px 0px 0;
+      }
+      .metodo-title span{
+        line-height: 30px;
+        display: inline-block;
+        margin-top: 5px;
+      }
+      .metodo-title label{
+        font-size: 12px;
+        color: red;
+        background-color: #FBF0EA;
+        display: inline-block;
+        height: 18px;
+        line-height: 18px;
+        padding: 0 8px;
+        margin-left: 5px;
+      }
+      .metodo-opeartion a{
+      	text-decoration: none;
+      	color:#526ECC;
+      }
+      .metodo-opeartion i{
+        font-size: 14px !important;
+        margin-right: 8px;
+        color:#526ECC;
+        margin-right: 3px;
+      }
+      th{
+        color: #403333;
+        font-size:14px;
+        padding:5px 10px;
+      }
+      td{
+        text-align:center;
+        font-size:14px;
+        text-overflow: ellipsis; 
+        overflow: hidden;
+        white-space: nowrap;
+        padding:5px 10px;
+      }
+      .clam{
+        background-color: #388FF3;
+      }
+      .primary{
+        background-color: #34C8CA;
+      }
+      .orange{
+        background-color: #F59140;
+      }
+      .pink{
+        background-color: #FB6594;
+      }
+      .purple{
+        background-color: #577CEF;
+      }
+			.left-align{
+				text-align: left;
+			}
+			.right-align{
+				text-align: right;
+			}
+			.center-align{
+				text-align: center;
+			}
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>我的待办</h4>
+      <span class="metodo-more box_title_right">
+        <ul>
+          <li class="metodo-active" onclick="changeStatus(0)">
+            <p>待我审核(16)</p>
+            <i class="iconfont icon-line"></i>
+          </li>
+          <li onclick="changeStatus(1)">
+            <p>超期审核(6)</p>
+            <i class="iconfont icon-line" style="display: none;"></i>
+            <!-- <i class="iconfont icon-line"></i> -->
+          </li>
+          <li onclick="changeStatus(2)">
+            <p>我提交的(12)</p>
+            <i class="iconfont icon-line" style="display: none;"></i>
+          </li>
+          <li onclick="changeStatus(3)">
+            <p>被退回的(1)</p>
+            <i class="iconfont icon-line" style="display: none;"></i>
+          </li>
+        </ul>
+        <i class="iconfont icon-refresh" title="刷新"></i>
+      </span>
+      </div>
+      <div class="metodo-content content_inner">
+        <table class="metodo-list" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <th class="metodo-title left-align" width="50%">类型名称</th>
+            <th class="metodo-title-other center-align" width="10%">发起人</th>
+            <th class="metodo-title-other center-align" width="15%">发起时间</th>
+            <th class="metodo-title-other right-align" width="15%">金额</th>
+            <th class="metodo-title-other left-align">操作</th>
+          </tr>
+          <tr class="metodo-list-hover-tr">
+            <td class="metodo-title left-align">
+              <p class="clam">
+                <i class="iconfont icon-assets"></i>
+              </p>
+              <span>费用报销单009-项目经理审核</span>
+              <label>紧急</label>
+            </td>
+            <td class="metodo-other center-align">张红生</td>
+            <td class="metodo-other center-align">2021-7-21</td>
+            <td class="metodo-fee right-align">￥600.00</td>
+            <td class="metodo-opeartion left-align">
+              <a href="#"><i class="iconfont icon-edit2"></i>办理</a>
+            </td>
+          </tr>
+          <tr class="metodo-list-hover-tr">
+            <td class="metodo-title left-align">
+              <p class="primary">
+                <i  class="iconfont icon-plant"></i>
+              </p>
+              <span>差旅费报销单-项目经理审核</span>
+            </td>
+            <td class="metodo-other center-align">张红生</td>
+            <td class="metodo-other center-align">2021-7-21</td>
+            <td class="metodo-fee right-align">￥600.00</td>
+            <td class="metodo-opeartion left-align">
+              <a href="#"><i class="iconfont icon-edit2"></i>办理</a>
+            </td>
+          </tr>
+          <tr class="metodo-list-hover-tr">
+            <td class="metodo-title left-align">
+              <p class="orange">
+                <i  class="iconfont icon-coffee-full"></i>
+              </p>
+              <span>招待费费报销单-项目经理审核</span>
+            </td>
+            <td class="metodo-other center-align">张红生</td>
+            <td class="metodo-other center-align">2021-7-21</td>
+            <td class="metodo-fee right-align">￥600.00</td>
+            <td class="metodo-opeartion left-align">
+              <a href="#"><i class="iconfont icon-edit2"></i>办理</a>
+            </td>
+          </tr>
+          <tr class="metodo-list-hover-tr">
+            <td class="metodo-title left-align">
+              <p class="pink">
+                <i  class="iconfont icon-bus"></i>
+              </p>
+              <span>交通费报销单-项目经理审核</span>
+            </td>
+            <td class="metodo-other center-align">张红生</td>
+            <td class="metodo-other center-align">2021-7-21</td>
+            <td class="metodo-fee right-align">￥600.00</td>
+            <td class="metodo-opeartion left-align">
+              <a href="#"><i class="iconfont icon-edit2"></i>办理</a>
+            </td>
+          </tr>
+        </table>
+        <div class="tcdPageCode"></div>
+      </div>
+    </div>
+    <script>
+      function downloadFile(fileName){
+        let a = document.createElement("a");
+        a.href = '/download/template3/'+fileName+".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+      function handleClick () {
+        window.open('metodoList.html');
+      }
+      function changeStatus(value){
+        $("ul li").eq(value).addClass('metodo-active')
+        $("ul li").not($("ul li").eq(value)).removeClass('metodo-active')
+        $("ul li i").eq(value).removeAttr("style")
+        $("ul li i").not($("ul li i").eq(value)).css('display','none')
+      }
+      function openAll(){
+        var a = document.getElementById('open');
+        if(a.style.display == 'block'){
+          a.style.display="none";
+        }else{
+          a.style.display="block";
+        }
+      }
+      $(".tcdPageCode").createPage({
+        pageCount:6,
+        current:1,
+        backFn:function(p){
+            console.log(p);
+        }
+    });
+    </script>
+  </body>
+</html>

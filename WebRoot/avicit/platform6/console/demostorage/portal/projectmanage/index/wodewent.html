@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" />
+		<link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+		<script src="js/jquery1.42.min.js"></script>
+	</head>
+
+	<body style="overflow: hidden;width: 418px;">
+		<div class="content_box">
+			<div class="title_switch box_title went-tab">
+				<ul class="clearfix">
+					<li class="act">
+						<p>我的问题</p>
+						<div class="title_switch_on"></div>
+						<i class="item_number">5</i>
+					</li>
+					<li>
+						<p>问题反馈</p>
+						<div class="title_switch_on"></div>
+						<i class="item_number">5</i>
+					</li>
+				</ul>
+				<div class="box_title_right">
+					<div class="icon_more">
+						<i
+						class="iconfont icon-refresh"
+						title="刷新"
+						></i>
+					</div>
+					<div class="icon_refresh"></div>
+				</div>
+			</div>
+			<div class="content_inner problem_box">
+				<ul class="clearfix">
+					<li class="on">
+						<div class="clearfix">
+							<i class="lis"></i>
+							<p>物资未采购齐备物资未采购齐备物资未采购齐备</p>
+							<i class="problem_state red">超期未处理</i>
+						</div>
+						<div class="clearfix problem_text">
+							<span class="text_left">类型：质量问题</span><span class="text_left">，</span><span class="text_left">处理人：陈伟光</span><span class="text_left">，</span><span class="text_left">截止时间：12-15</span>
+						</div>
+
+					</li>
+					<li>
+						<div class="clearfix">
+							<i class="lis "></i>
+							<p>物资未采购齐备</p>
+							<i class="problem_state red">超期未处理</i>
+						</div>
+						<div class="clearfix problem_text">
+							<span class="text_left">类型：质量问题</span><span class="text_center">处理人：陈伟光</span><span class="text_right">截止时间：12-15</span>
+						</div>
+					</li>
+					<li>
+						<div class="clearfix">
+							<i class="lis "></i>
+							<p>物资未采购齐备，无法生产无法</p>
+							<i class="problem_state org">已超期</i>
+						</div>
+						<div class="clearfix problem_text">
+							<span class="text_left">类型：质量问题</span><span class="text_center">处理人：陈伟光</span><span class="text_right">截止时间：12-15</span>
+						</div>
+					</li>
+					<li>
+						<div class="clearfix">
+							<i class="lis "></i>
+							<p>物资未采购齐备，无法生产物资未采购齐备无法生产</p>
+							<i class="problem_state green">已完成</i>
+						</div>
+						<div class="clearfix problem_text">
+							<span class="text_left">类型：质量问题</span><span class="text_center">处理人：陈伟光</span><span class="text_right">截止时间：12-15</span>
+						</div>
+					</li>
+					<li>
+						<div class="clearfix">
+							<i class="lis "></i>
+							<p>物资未采购齐备，无法生产</p>
+							<i class="problem_state green">超期</i>
+						</div>
+						<div class="clearfix problem_text">
+							<span class="text_left">类型：质量问题</span><span class="text_center">处理人：陈伟光</span><span class="text_right">截止时间：12-15</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(".went-tab ul li").click(function(){
+				$(".went-tab ul li").eq($(this).index()).addClass('act')
+				$(".went-tab ul li").not($(".went-tab ul li").eq($(this).index())).removeClass('act')
+			})
+		</script>
+	</body>
+
+</html>

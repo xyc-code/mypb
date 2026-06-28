@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>任务完成情况</title>
+    <link href="./iconfont/iconfont.css" type="text/css" rel="stylesheet" />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+    <script src="./js/echarts.min.js"></script>
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>任务完成情况</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('commonFunction')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="content">
+          <li class="con-item">
+            <h2>2236</h2>
+            <p>
+              <span>其中</span><span class="num">1200条</span
+              ><span>已完成</span>
+            </p>
+          </li>
+          <li
+            id="nextPie"
+            style="width: 44%; height: 125px;"
+            class="echart"
+          ></li>
+        </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var nextEchart = echarts.init(document.getElementById("nextPie"));
+
+      var nextOption = {
+        tooltip: {
+          trigger: "item"
+        },
+        legend: {
+          show: false
+        },
+        gird: {},
+        title: {
+          text: "完成情况",
+          top: "30%",
+          left: "45%",
+          textStyle: {
+            color: "#ccc",
+            fontSize: "12px"
+          },
+          subtext: "60%",
+          subtextStyle: {
+            color: "#000",
+            fontSize: "26px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+        color: ["#2787FE", "#EBEDF1"],
+        series: [
+          {
+            name: "任务完成情况",
+            type: "pie",
+            radius: ["80%", "90%"],
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+              position: "center"
+            },
+            left: "-10px",
+            emphasis: {
+              label: {
+                show: false,
+                fontSize: "40",
+                fontWeight: "bold"
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 60, name: "已完成" },
+              { value: 40, name: "未完成" }
+            ]
+          }
+        ]
+      };
+
+      nextEchart.setOption(nextOption);
+
+      function handleClick() {
+        window.open("taskComplete.html");
+      }
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      .content {
+        height: 88%;
+        margin: 0;
+      }
+      .con-item {
+        float: left;
+        width: 49%;
+        margin: 40px 0;
+        padding: 0 0 0 22px;
+      }
+      .num {
+        color: #108de9;
+        margin: 0 5px;
+      }
+      .echart {
+        float: left;
+      }
+    </style>
+  </body>
+</html>

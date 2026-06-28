@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>常用应用</title>
+    <style>
+      .application-content{
+        background-color: #fff;
+        width:100%;
+        height:268px;
+      }
+      .application-content > h3{
+        display: inline-block;
+        margin-left:10px;
+      }
+      .application-list{
+        margin: 0;padding: 0 5px;
+      }
+      .application-list > li{
+        display: inline-block;
+        text-align: center;
+        width: 70px;
+      }
+      .application-list > li > div > span{
+        height: 30px;
+        width: 30px;
+        line-height: 30px;
+        display: inline-block;
+        border-radius: 4px;
+        text-align: center;
+      }
+      .application-list > li > div > span > i{
+        font-size:24px;
+        color: #fff;
+      }
+      .application-list > li > label{
+        display: block;line-height: 30px;font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>常用应用</h4>
+      <span class="box_title_right">
+        <i
+        class="iconfont icon-plus"
+        title="刷新"
+        onclick="addApplication()"
+        ></i>
+      </span>
+      </div>
+      <div class="content_inner application-content">
+        <ul class="application-list">
+          <li>
+            <div>
+              <span style="background-color:#338EE4;">
+                <i  class="iconfont icon-project-fill" ></i>
+              </span>
+            </div>
+            <label>项目管理</label>
+          </li>
+          <li>
+            <div>
+              <span style="background-color:#6966FD;">
+                <i  class="iconfont icon-file-fill" ></i>
+              </span>
+            </div>
+            <label>审批</label>
+          </li>
+          <li>
+            <div>
+              <span style="background-color:#F7B51B;">
+                <i  class="iconfont icon-metting-fill" ></i>
+              </span>
+            </div>
+            <label>会议</label>
+          </li>
+          <li>
+            <div>
+              <span style="background-color:#639EF6;">
+                <i  class="iconfont icon-calendar-fill" ></i>
+              </span>
+            </div>
+            <label>请假管理</label>
+          </li>
+          <li>
+            <div>
+              <span style="background-color:#38B781;">
+                <i  class="iconfont icon-plant-fill" ></i>
+              </span>
+            </div>
+            <label>出差报销</label>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+    <script>
+      var count =0;
+      function addApplication(){
+        var name = "name"+ count++;
+        var temp =' <li><div><span style="background-color:#338EE4;"><i  class="iconfont icon-project-fill" ></i></span></div><label contenteditable id="'+name+'"> 应用名称</label></li>'
+        $('.application-list').append(temp)
+        $("#"+name).focus();
+      }
+      </script>
+  </body>
+</html>

@@ -1,0 +1,619 @@
+<style type="text/css">
+	.help-button {
+		display: inline-block;
+		height: 22px;
+		width: 22px;
+		line-height: 22px;
+		text-align: center;
+		padding: 0;
+		background-color: #65bcda;
+		color: #FFF;
+		font-size: 12px;
+		font-weight: bold;
+		cursor: default;
+		margin-left: 4px;
+		border-radius: 100%;
+		border-color: #FFF;
+		border: 2px solid #FFF;
+		-webkit-box-shadow: 0px 1px 0px 1px rgba(0, 0, 0, 0.2);
+		box-shadow: 0px 1px 0px 1px rgba(0, 0, 0, 0.2);
+	}
+
+	.help-button:hover {
+		background-color: #65bcda;
+		text-shadow: none;
+	}
+</style>
+<form>
+
+	<div class="form-group property-control">
+		<input type="hidden" id="id" name="id"
+			   isnull="false" class="form-control input-sm">
+	</div>
+
+<div class="form-group property-control">
+	<label>控件名称</label><input type="text" id="name" name="name" value="文本框"
+		isnull="false" class="form-control input-sm" placeholder="控件名称">
+</div>
+
+	<div class="form-group property-control">
+		<label>是否编辑</label>
+		<select id="isedit" name="isedit" isnull="false" class="form-control input-sm">
+			<option value="Y" selected>是</option>
+			<option value="N" >否</option>
+		</select>
+	</div>
+	<div class="form-group property-control">
+		<label>是否必填</label>
+		<select id="ismust" name="ismust" isnull="false" class="form-control input-sm">
+			<option value="Y" >是</option>
+			<option value="N" selected>否</option>
+		</select>
+	</div>
+	<div class="form-group property-control">
+		<label>是否唯一</label>
+		<select id="isUnique" name="isUnique" isnull="false" class="form-control input-sm">
+			<option value="Y" >是</option>
+			<option value="N" selected>否</option>
+		</select>
+	</div>
+	<div class="form-group property-control">
+		<label>控件类型</label>
+		<select id="formControl" name="formControl" isnull="false" class="form-control input-sm">
+			<option value="text" selected>文本框</option>
+			<option value="date">日期框</option>
+			<option value="dateTime">时间框</option>
+			<option value="number">数值框</option>
+			<!-- 			<option value="select">通用代码</option> -->
+			<option value="select">下拉框</option>
+			<!-- <option value="userSelect">选人</option> -->
+			<option value="user">选用户</option>
+			<option value="org">选组织</option>
+			<option value="dept">选部门</option>
+			<option value="group">选群组</option>
+			<option value="position">选岗位</option>
+			<option value="role">选角色</option>
+			<option value="dictionary">数据字典</option>
+			<option value="linkage">联动控件</option>
+			<option value="url">地址控件</option>
+			<option value="secret">密级控件</option>
+			<!--<option value="customPage">自定义页面</option>-->
+		</select>
+	</div>
+	<div id="div_text_area" class="showhidearea" style="display: block">
+		<div class="form-group property-control">
+			<label>change事件</label>
+			<textarea class="form-control input-sm event-box" rows="5" title="change事件" name="event_text_change" id="event_text_change" readonly></textarea>
+		</div>
+	</div>
+
+	<div id="div_date_area" class="showhidearea" style="display:none">
+	<div class="form-group property-control">
+		<label>change事件</label>
+		<textarea class="form-control input-sm event-box" rows="5" title="change事件" name="event_date_change" id="event_date_change" readonly></textarea>
+	</div>
+	</div>
+
+	<div id="div_dateTime_area" class="showhidearea" style="display:none">
+	<div class="form-group property-control" >
+		<label>change事件</label>
+		<textarea class="form-control input-sm event-box" rows="5" title="change事件" name="event_datetime_change" id="event_datetime_change" readonly></textarea>
+	</div>
+	</div>
+
+	<div id="div_number_area" class="showhidearea" style="display:none">
+	<div  class="form-group property-control">
+		<label>change事件</label>
+		<textarea class="form-control input-sm event-box" rows="5" title="change事件" name="event_number_change" id="event_number_change" readonly></textarea>
+	</div>
+	</div>
+
+	<div id="div_select_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control" >
+			<label>change事件</label>
+			<textarea class="form-control input-sm event-box" rows="5" title="change事件" name="event_select_change" id="event_select_change" readonly></textarea>
+		</div>
+		<div class="form-group property-control" >
+		<div id="selectarea"></div>
+		</div>
+
+	</div>
+
+	<div id="div_user_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>单选多选</label>
+			<select id="userselectModel" name="userselectModel" isnull="false" class="form-control input-sm">
+				<option value="single" selected>单选</option>
+				<option value="multi">多选</option>
+			</select>
+		</div>
+		<div class="form-group property-control">
+			<label>关联密级字段</label>
+			<select id="secretCol" name="secretCol" isnull="false" class="form-control input-sm">
+			</select>
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+								data-content="参数：user 选中的用户对象</br>user.loginNames:登录名</br>user.usernames:用户姓名</br>user.userids:用户ID</br>user.userdeptnames:用户所属部门</br>user.userdeptids:用户所属部门ID</br>user.orgIdentitys:用户所属组织分类">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" 
+						  data-content="参数：user 选中的用户对象</br>user.loginNames:登录名</br>user.usernames:用户姓名</br>user.userids:用户ID</br>user.userdeptnames:用户所属部门</br>user.userdeptids:用户所属部门ID</br>user.orgIdentitys:用户所属组织分类"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_user_callback" id="event_user_callback" readonly></textarea>
+		</div>
+	</div>
+
+	<div id="div_org_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>单选多选</label>
+			<select id="orgselectModel" name="orgselectModel" isnull="false" class="form-control input-sm">
+				<option value="single" selected>单选</option>
+				<option value="multi">多选</option>
+			</select>
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+							 data-content="参数：org 选中的组织对象</br>org.orgids:组织ID</br>org.orgnames:组织名称</br>org.orgIdentitys:组织所属组织分类">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" 
+						  data-content="参数：org 选中的组织对象</br>org.orgids:组织ID</br>org.orgnames:组织名称</br>org.orgIdentitys:组织所属组织分类"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_org_callback" id="event_org_callback" readonly></textarea>
+		</div>
+	</div>
+
+	<div id="div_dept_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>单选多选</label>
+			<select id="deptselectModel" name="deptselectModel" isnull="false" class="form-control input-sm">
+				<option value="single" selected>单选</option>
+				<option value="multi">多选</option>
+			</select>
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+							 data-content="参数：dept 选中的部门对象</br>dept.deptids:部门ID</br>dept.deptnames:部门名称</br>dept.orgIdentitys:部门所属组织分类">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" 
+						  data-content="参数：dept 选中的部门对象</br>dept.deptids:部门ID</br>dept.deptnames:部门名称</br>dept.orgIdentitys:部门所属组织分类"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_dept_callback" id="event_dept_callback" readonly></textarea>
+
+		</div>
+	</div>
+
+	<div id="div_group_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>单选多选</label>
+			<select id="groupselectModel" name="groupselectModel" isnull="false" class="form-control input-sm">
+				<option value="single" selected>单选</option>
+				<option value="multi">多选</option>
+			</select>
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+							 data-content="参数：group 选中的群组对象</br>group.groupids:群组ID</br>group.groupNames:群组名称</br>group.orgIdentitys:群组所属组织分类">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" 
+						  data-content="参数：group 选中的群组对象</br>group.groupids:群组ID</br>group.groupNames:群组名称</br>group.orgIdentitys:群组所属组织分类"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_group_callback" id="event_group_callback" readonly></textarea>
+		</div>
+	</div>
+
+	<div id="div_position_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>单选多选</label>
+			<select id="positionselectModel" name="positionselectModel" isnull="false" class="form-control input-sm">
+				<option value="single" selected>单选</option>
+				<option value="multi">多选</option>
+			</select>
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+							 data-content="参数：position 选中的岗位对象</br>position.positionids:岗位ID</br>position.positionName:岗位名称</br>position.orgIdentitys:岗位所属组织分类">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" 
+							 data-content="参数：position 选中的岗位对象</br>position.positionids:岗位ID</br>position.positionName:岗位名称</br>position.orgIdentitys:岗位所属组织分类"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_position_callback" id="event_position_callback" readonly></textarea>
+		</div>
+	</div>
+
+	<div id="div_role_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>单选多选</label>
+			<select id="roleselectModel" name="roleselectModel" isnull="false" class="form-control input-sm">
+				<option value="single" selected>单选</option>
+				<option value="multi">多选</option>
+			</select>
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+							 data-content="参数：role 选中的角色对象</br>role.roleids:角色ID</br>role.roleNames:角色名称</br>role.roleType:角色类型</br>role.orgIdentitys:角色所属组织分类">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" 
+						  data-content="参数：role 选中的角色对象</br>role.roleids:角色ID</br>role.roleNames:角色名称</br>role.roleType:角色类型</br>role.orgIdentitys:角色所属组织分类"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_role_callback" id="event_role_callback" readonly></textarea>
+		</div>
+	</div>
+
+	<div id="div_dictionary_area" class="showhidearea" style="display:none">
+		<input type="hidden" name="rowCount" id="rowCount"/>
+		<input type="hidden" name="event_queryStatement" id="queryStatement"/>
+		<input type="hidden" name="event_dictionaryPara" id="dictionaryPara">
+		<input type="hidden" class="form-control input-sm" id="dataCombox" name="dataCombox" />
+		<input type="hidden" class="form-control input-sm" id="dataComboxType" name="dataComboxType" />
+		<input type="hidden" class="form-control input-sm" id="dataComboxText" name="dataComboxText" />
+		<input type="hidden" name="event_jsSuccess" id="jsSuccess"/>
+		<input type="hidden" name="event_jsBefore" id="jsBefore"/>
+		<input type="hidden" name="event_jsAfter" id="jsAfter">
+
+		<input type="hidden" name="isMuti" id="isMuti">
+		<input type="hidden" name="waitSelect" id="waitSelect">
+		<input type="hidden" name="inputChk" id="inputChk">
+		<input type="hidden" name="inputDetail" id="inputDetail">
+		<input type="hidden" name="detail" id="detail">
+		<input type="hidden" name="detailpagefileId" id="detailpagefileId">
+		<input type="hidden" name="detailpagePath" id="detailpagePath">
+		<input type="hidden" name="detailpagefileName" id="detailpagefileName">
+		<div class="form-group property-control">
+			<label class="control-label">数据字典配置</label>
+			<div class="form_input_box" style="padding-top: 4px">
+				<a title="数据字典配置" id="propertyBtn" style="line-height: 2"><i
+						class="fa fa-fw fa-lg fa-pencil-square-o"></i></a>
+			</div>
+		</div>
+		<div class="form-group property-control">
+			<!--<label class="control-label">键值存储：<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示" data-content="配置数据字典是否按key-value形式存储，</br>key为隐藏字段(入库)，value为显示字段(不入库)。">?</span></label>-->
+			<label class="control-label">键值存储：<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="配置数据字典是否按key-value形式存储，</br>key为隐藏字段(入库)，value为显示字段(不入库)。"></i></label>
+			<div class="form_input_box" style="padding-top: 4px">
+				<input type="checkbox" name="colIsKeyValue" value="Y" class="form-control item-width">
+			</div>
+		</div>
+		<div class="form-group property-control" id="dicAutoTransformDiv">
+			<!--<label class="control-label">自动转换：<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+													data-content="如果配置键值存储为'是'，</br>可配置是否自动转换数据字典key为value，</br>默认为'是'。">?</span></label>-->
+			<label class="control-label">自动转换：<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-content="如果配置键值存储为'是'，</br>可配置是否自动转换数据字典key为value，</br>默认为'是'。"></i></label>
+			<div class="form_input_box" style="padding-top: 4px">
+				<input type="checkbox" name="dicAutoTransform" value="Y" class="form-control item-width">
+			</div>
+		</div>
+	</div>
+
+
+	<div id="div_linkage_area" class="showhidearea" style="display:none">
+		<input type="hidden" name="linkageResultType" id="linkageResultType"/>
+		<input type="hidden" name="linkageColumnid" id="linkageColumnid"/>
+		<input type="hidden" name="event_linkagePara" id="linkagePara"/>
+		<input type="hidden" name="linkageImpl" id="linkageImpl">
+		<div class="form-group property-control">
+			<label class="control-label">联动属性配置</label>
+			<a title="联动属性配置" id="propertyLinkBtn" style="line-height: 2"><i
+					class="fa fa-fw fa-lg fa-pencil-square-o"></i></a>
+		</div>
+	</div>
+	<div id="div_url_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control">
+			<label>弹窗大小</label>
+			<select id="ynMax" name="ynMax" isnull="false" class="form-control input-sm">
+				<option value="max" selected>最大化</option>
+				<option value="setting">设置</option>
+			</select>
+		</div>
+		<!--<div class="form-group property-control" >
+			<label> </label>
+			<span>宽</span>
+			<input type="text" name="width" id="width" class="form-control input-sm" style="width:30%;display: inline-block">&nbsp;&nbsp;
+			<span>高</span>
+			<input type="text" name="height" id="height" class="form-control input-sm" style="width:30%;display: inline-block">
+		</div>-->
+		<div id="layerarea" style="display: inline-block; position: relative; width: 100%;">
+			<div class="form-group property-control" style="width:50%;float: left">
+				<label>宽度</label>
+				<input type="text" class="form-control input-sm" name="width" id="width">
+			</div>
+
+			<div class="form-group property-control" style="width:50%;float: left">
+				<label>高度</label>
+				<input type="text" class="form-control input-sm" name="height" id="height">
+			</div>
+		</div>
+		<div class="form-group property-control">
+			<label class="control-label">URL地址</label>
+			<input type="text" name="urlAddress" id="urlAddress" class="form-control input-sm" style="width:100%">
+		</div>
+		<div  class="form-group property-control">
+			<!--<label>回调事件<span class="help-button" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left" data-original-title="提示"
+							 data-content="参数：</br>obj 返回对象</br>setJqGridColData(colName,colValue):回填当前行方法</br>rowId:行Id</br>elem:地址控件单元格对象">?</span></label>-->
+			<label>回调事件<i class="tips-iconhelp icon iconfont icon-question-circle" data-rel="popover" data-html="true" data-trigger="hover" data-placement="left"
+							 data-content="参数：</br>obj 返回对象</br>setJqGridColData(colName,colValue):回填当前行方法</br>rowId:行Id</br>elem:地址控件单元格对象"></i></label>
+			<textarea class="form-control input-sm event-box" rows="5" title="选择框回调事件" name="event_url_callback" id="event_url_callback" readonly></textarea>
+		</div>
+	</div>
+	<div id="div_secret_area" class="showhidearea" style="display:none">
+		<div class="form-group property-control" >
+			<label>change事件</label>
+			<textarea class="form-control input-sm event-box" rows="5" title="change事件" name="event_select_change" id="event_select_change" readonly></textarea>
+		</div>
+		<div class="form-group property-control" >
+			<div id="selectarea"></div>
+		</div>
+
+	</div>
+
+
+</form>
+<script src="static/h5/avicSelectBar/compent/lookupTypeSelect/lookupTypeSelect.js" type="text/javascript"></script>
+<script src="static/js/platform/eform/selectarea.js"></script>
+<script type="text/javascript">
+	$('[data-rel=popover]').popover({container:'body'});
+
+	function showhidearea(type){
+		$(".showhidearea").hide();
+		var area = "div_"+type+"_area";
+		$("#"+area).show();
+	}
+
+	function initSelect(treeNode){
+		$("#selectarea").html("");
+		var aa = new selectarea("selectarea",{
+			lookup_url:"avicit/platform6/eform/formdesign/js/plugins/check-box/addLookup.jsp",
+			onInit : function(selectarea){
+				if (treeNode&&treeNode.attribute.hasOwnProperty("selectedvalues")){
+					var values = [],options = [],array=[];
+					values = treeNode.attribute.selectedvalues.split(",");
+					options = treeNode.attribute.selectedoption.split(",");
+					for (var o=0;o<values.length-1;o++){
+						var obj = {};
+						obj.lookupCode = values[o];
+						obj.lookupName = options[o].replace(/(^\s*)|(\s*$)/g, "");
+						array.push(obj);
+					}
+					//增加通用代码显示通用代码类型及名称功能
+					if(treeNode.attribute.hasOwnProperty("showLookupType")){
+						var ob = new Object();
+						ob.rows = array;
+						ob.lookupType = treeNode.attribute.showLookupType;
+						ob.lookupTypeName = treeNode.attribute.showLookupTypeName;
+						selectarea.setSelect(ob);
+					}else{
+						selectarea.setSelect(array);
+					}
+
+				}
+				selectarea.selectedvalues.on("keyup",function(){
+					engine.changSave();
+				});
+
+				selectarea.defaultselectOption.on("change",function(){
+					engine.changSave();
+				})
+			}
+		});
+	}
+	if (!engine.clickedNode.attribute.hasOwnProperty("formControl")){
+        if ($('#id').val()==''){
+            $('#id').val(engine.clickedNode.attribute.id);
+        }
+		engine.changSave();
+	}
+
+	var dataJsonList = [];
+	var nodes = engine.clickedNode.getParentNode().getParentNode().children;
+	for (var i=0;i<nodes.length;i++){
+		var obj = {};
+		var node = nodes[i];
+		obj.colName = node.id;
+		obj.domId = node.id;
+		obj.colLabel = node.name;
+
+		if (node.isParent){
+			obj.elementType = node.children[0].attribute.formControl;
+			obj.colIsKeyValue = node.children[0].attribute.colIsKeyValue;
+			obj.transform = obj.elementType;
+		}else{
+			obj.elementType = 'text';
+			obj.transform = node.attribute.transform;
+		}
+		var data = {data:obj};
+		dataJsonList.push(data);
+	}
+
+$(function(){
+	initSelect();
+
+	$("#secretCol").append("<option value=''>请选择</option>");
+	var pid = engine.clickedNode.pid;
+	for(var i=0;i<nodes.length;i++){
+		if(pid != nodes[i].id){
+			$("#secretCol").append("<option value='"+nodes[i].id+"'>"+nodes[i].name+"</option>");
+		}
+	}
+
+	$('select[name=ynMax]').change(function() {
+		if (this.value == 'max') {
+			//$("#width").parent().css("display", "none");
+			$("#layerarea").hide();
+		}
+		else if (this.value == 'setting') {
+			//$("#width").parent().css("display", "");
+			$("#layerarea").show();
+		}
+	});
+
+	$(".event-box").click(function () {
+		var _this = this;
+		eventEdit(_this, $(this).attr("title"));
+	});
+	$("#propertyLinkBtn").click(function () {
+
+		linkagedialog = top.layer.open({
+			type: 2,
+			title: '联动属性维护',
+			skin: 'bs-modal',
+			area: ['45%', '85%'],
+			maxmin: false,
+			content: "avicit/platform6/eform/formdesign/js/plugins/linkage-box/linkage-property.jsp",
+			btn: ['确定', '取消'],
+			yes: function(index, layero){
+				var frm = layero.find('iframe')[0].contentWindow;
+				var reData = frm.commitForm();
+				if (reData == false){
+					return false;
+				}
+				$("#linkageColumnid").val(reData.linkageColumnid);
+				$("#linkageResultType").val(reData.linkageResultType);
+				$("#linkageImpl").val(reData.linkageImpl);
+				$("#linkagePara").val(JSON.stringify(reData.datagridData)).trigger("keyup");
+
+				top.layer.close(index);
+
+			},
+			no: function(index, layero){
+				layero.close(index);
+			},
+			success: function(layero,index){
+				var frm = layero.find('iframe')[0].contentWindow;
+				if(frm != null){
+					//frm.setChildTableLinkageData(dataJsonList);
+					var linkageColumnid = $("#linkageColumnid").val();
+					var linkageResultType = $("#linkageResultType").val();
+					var linkageImpl = $("#linkageImpl").val();
+					var linkagePara = $("#linkagePara").val();
+
+					frm.initFormByParam(linkageColumnid,linkageResultType,linkageImpl,linkagePara,dataJsonList);
+				}
+			}
+		});
+	});
+
+	$("input[name='colIsKeyValue']").on("change",function(){
+		engine.changSave();
+		var isChecked = $("input[name='colIsKeyValue']").prop("checked");
+		if(isChecked){
+			$("#dicAutoTransformDiv").show();
+			$("input[name='dicAutoTransform']").prop('checked',true);
+		}else{
+			$("#dicAutoTransformDiv").hide();
+		}
+	})
+
+	$("#propertyBtn").click(function () {
+		var colIsKeyValue = $("input[name='colIsKeyValue']:checked").val();
+		dictionarydialog = top.layer.open({
+			type: 2,
+			title: '数据字典配置维护',
+			skin: 'bs-modal',
+			area: ['60%', '85%'],
+			maxmin: false,
+			content: "avicit/platform6/eform/formdesign/js/plugins/dictionary-box/dictionary-property.jsp?isMain=2&colIsKeyValue="+colIsKeyValue,
+			btn: ['确定', '取消'],
+			success: function (layero, index) {
+				//传入参数，并赋值给iframe的元素
+				var iframeWin = layero.find('iframe')[0].contentWindow;
+				var dictionaryPara = $('#dictionaryPara').val();
+				var rowCount = $('#rowCount').val();
+				var queryStatement = $('#queryStatement').val();
+
+				var jsSuccess = $('#jsSuccess').val();
+				var jsBefore = $('#jsBefore').val();
+				var jsAfter = $('#jsAfter').val();
+
+				var isMuti = $('#isMuti').val();
+				var waitSelect = $('#waitSelect').val();
+				var inputChk = $('#inputChk').val();
+				var inputDetail = $('#inputDetail').val();
+				var detail = $('#detail').val();
+				var detailpagefileId = $('#detailpagefileId').val();
+				var detailpagePath = $('#detailpagePath').val();
+				var detailpagefileName = $('#detailpagefileName').val();
+
+				var dataCombox = $('#dataCombox').val();
+				var dataComboxType = $('#dataComboxType').val();
+				var dataComboxText = $('#dataComboxText').val();
+
+				iframeWin.initForm(rowCount,queryStatement,dictionaryPara,jsSuccess,
+						jsBefore,jsAfter,dataCombox,dataComboxType,dataComboxText,isMuti,waitSelect,
+						inputChk,inputDetail,detail,detailpagefileId,detailpagePath,detailpagefileName,"0");
+
+
+				for(var i = 0; i < dataJsonList.length; i++){
+					if(parent.engine.clickedNode.pid == dataJsonList[i].data.domId &&
+							parent.engine.clickedNode.attribute.colIsKeyValue != undefined){
+						dataJsonList[i].data.colIsKeyValue = parent.engine.clickedNode.attribute.colIsKeyValue;
+					}
+				}
+				iframeWin.changeTargetNameFunc(dataJsonList);
+			},
+			yes: function(index, layero){
+				var frm = layero.find('iframe')[0].contentWindow;
+				var reData = frm.commitForm();
+				if (reData == false){
+					return false;
+				}
+				//$("#dictionaryName").val(reData.dictionaryName);
+				$("#rowCount").val(reData.rowCount);
+				$("#queryStatement").val(reData.queryStatement);
+				$("#jsBefore").val(reData.jsBefore);
+				$("#jsAfter").val(reData.jsAfter);
+
+				$("#isMuti").val(reData.isMuti);
+				$("#waitSelect").val(reData.waitSelect);
+				$("#inputChk").val(reData.inputChk);
+				$("#inputDetail").val(reData.inputDetail);
+				$("#detail").val(reData.detail);
+				$("#detailpagefileId").val(reData.detailpagefileId);
+				$("#detailpagePath").val(reData.detailpagePath);
+				$("#detailpagefileName").val(reData.detailpagefileName);
+
+				$("#dataCombox").val(reData.dataCombox);
+				$("#dataComboxType").val(reData.dataComboxType);
+				$("#dataComboxText").val(reData.dataComboxText);
+
+				$("#dictionaryPara").val(JSON.stringify(reData.datagridData)).trigger("keyup");
+
+				top.layer.close(index);
+
+			},
+			no: function(index, layero){
+				layero.close(index);
+			}
+		});
+	});
+
+
+
+
+	$(".form-control").bind('change', function(){
+		engine.changSave();
+    });
+
+	$("#formControl").on("change",function(){
+		var text = $(this).find("option:selected").text();
+		$("#name").val(text);
+		showhidearea($(this).val());
+
+		//数据字典默认选中自动转换
+		if($(this).val() == "dictionary"){
+			$("#dicAutoTransformDiv").hide();
+			$("input[name='dicAutoTransform']").prop('checked',true);
+		}
+		engine.changSave();
+	});
+
+    $("#LookupTypeName").bind("click", function(){
+		new H5CommonLookupTypeSelect({type:'lookupSelect', idFiled:'LookupType',textFiled:'LookupTypeName', callBack: function(rowdata){
+			$("#LookupTypeName").val(rowdata.lookupType);
+			engine.changSave();
+				
+		}});
+	});
+
+});
+self.propertyPageInit = function(treeNode){
+	showhidearea(treeNode.attribute.formControl);
+	initSelect(treeNode);
+
+	if(treeNode.attribute.colIsKeyValue == "Y"){
+		$("#dicAutoTransformDiv").show();
+	}else{
+		$("#dicAutoTransformDiv").hide();
+	}
+	if(treeNode.attribute.ynMax == "max"){
+		//$("#width").parent().css("display", "none");
+		$("#layerarea").hide();
+	}
+};
+
+
+</script>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准工时排名</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+    <div class="box">
+        <div class="box_title">
+          <h4>标准工时排名</h4>
+          <span class="box_title_right">
+<!--            <i class="iconfont icon-download-fill" title="下载" onclick="downloadFile('taskTime')"></i>-->
+            <i class="iconfont icon-refresh" title="刷新"></i>
+          </span>
+        </div>
+        <div class="metodo-content content_inner">
+            <table class="metodo-list">
+              <tr>
+                <th class="metodo-title">排名</th>
+                <th class="metodo-title-other">部门</th>
+                <th class="metodo-title-other" style="text-align: right;">工时</th>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <div class="sales-analyse-order">
+                  <i class="iconfont icon-guanjun"></i>
+                </div>
+                  <span>王思雨</span>
+                </td>
+                <td class="metodo-other">01车间</td>
+                <td class="metodo-other time">12,454h</td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <div class="sales-analyse-order">
+                  <i class="iconfont icon-yajun"></i>
+                </div>
+                  <span>李玟</span>
+                </td>
+                <td class="metodo-other">02车间</td>
+                <td class="metodo-other time">10,340h</td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <div class="sales-analyse-order">
+                  <i class="iconfont icon-jijun"></i>
+                </div>
+                  <span>齐天新</span>
+                </td>
+                <td class="metodo-other">01车间</td>
+                <td class="metodo-other time">9,125h</td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <div class="sales-analyse-order">
+                    <i class="numberbg">4</i>
+                  </div>
+                  <span>吴东天</span>
+                </td>
+                <td class="metodo-other">05车间</td>
+                <td class="metodo-other time">6,875h</td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <div class="sales-analyse-order">
+                   <i class="numberbg">5</i>
+                  </div>
+                  <span>李秋红</span>
+                </td>
+                <td class="metodo-other">08车间</td>
+                <td class="metodo-other time">5,325h</td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <div class="sales-analyse-order">
+                    <i class="numberbg">6</i>
+                  </div>
+                  <span>薛世燕</span>
+                </td>
+                <td class="metodo-other">08车间</td>
+                <td class="metodo-other time">5,005h</td>
+              </tr>
+            </table>
+        </div>
+      </div>
+    
+</body>
+<script type="text/javascript">
+    function downloadFile(fileName) {
+      let a = document.createElement("a");
+      a.href = "/download/template5/" + fileName + ".rar";
+      a.download = fileName + ".rar";
+      a.click();
+    }
+</script>
+<style>
+    .metodo-content{
+      background-color: #fff;
+      width:100%;
+      height:340px;
+    }
+    .metodo-more{
+      color: #A8ADB4;
+    }
+    .metodo-more > ul{
+      height: 48px;
+      line-height: 48px;
+      position: absolute;
+      right: 90px;
+    }
+    .metodo-active{
+      color:#1593F5;
+    }
+    .metodo-active > i{
+      color:#1593F5;
+    }
+    .metodo-more > ul > li{
+      list-style: none;
+      display: inline-block;
+      font-size:14px;
+      font-weight: 500;
+      margin-right:10px;
+    }
+    .metodo-more > ul > li > i{
+      margin-top: -33px;
+      position: absolute;
+      margin-left: 13px;
+      font-size: 55px;
+    }
+    .metodo-list{
+      padding: 0 20px;width:100%
+    }
+    .metodo-title{
+      width:40%;text-align: left;
+    }
+    .metodo-title-other{
+      width:15%;
+      color: #403333;
+      font-size:12px;
+    }
+    .metodo-other{
+      width:15%;
+      color:#666;
+      font-size:12px;
+    }
+    .metodo-title p{
+      height: 30px;
+      width: 30px;
+      line-height: 30px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      margin: 5px 5px -2px 0;
+    }
+    .metodo-title span{
+      line-height: 30px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+    .sales-analyse-order{
+          font-weight: 500;
+          display: inline-block;
+          color: #666;
+          height: 26px;
+          line-height: 26px;
+          text-align: center;
+          width: 26px;
+          margin-right: 4px;
+        }
+    .icon-guanjun{
+        color:#FAC72B
+    }
+    .icon-yajun{
+        color:#F9C279
+    }
+    .icon-jijun{
+        color:#CBCBCB
+    }
+    .sales-analyse-order i.iconfont{
+        font-size: 22px;
+    }
+    .sales-analyse-order i.numberbg{
+        font-size: 14px;
+        background-color: #F0F2F5;
+        border-radius: 50%;
+        color: #666666;
+        width: 22px;
+        height:22px;
+        margin: 0 2px;
+        display: block;
+        font-style: normal;
+    }
+    tr{
+      line-height: 30px;height:30px;
+    }
+    th{
+      color: #403333;
+      font-size:14px;
+      border-bottom: 1px solid #EDEDED;
+      padding: 3px 5px;
+    }
+    td{
+      text-align:center;
+      font-size:14px;
+      text-overflow: ellipsis; 
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid #EDEDED;
+      padding: 3px 5px;
+    }
+    .grey{
+      background-color: #F0F2F5;
+    }
+    .time {
+      font-family: 'DIN Light', 'DIN';
+      font-weight: 300;
+      font-style: normal;
+      font-size: 14px;
+      color: rgba(102, 102, 102, 0.996078431372549);
+      text-align: right;  
+    }
+</style>
+</html>

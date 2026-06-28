@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.test.test3.dao.DynTestDao">
+
+<resultMap id="DynTestDtoMap" type="avicit.test.test3.dto.DynTestDto">
+		<result property="DATA_1" column="DATA_1" jdbcType="VARCHAR" />
+		<result property="LAST_UPDATE_IP" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="CREATED_DEPT" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="CREATION_DATE" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="DATA_2" column="DATA_2" jdbcType="VARCHAR" />
+		<result property="CREATED_BY" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="VERSION" column="VERSION" jdbcType="DECIMAL" />
+		<result property="ID" column="ID" jdbcType="VARCHAR" />
+		<result property="LAST_UPDATE_DATE" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="LAST_UPDATED_BY" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="ORG_IDENTITY" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="ACTIVITYALIAS_" column="activityalias_" jdbcType="VARCHAR" />
+		<result property="BUSINESSSTATE_" column="businessstate_" jdbcType="VARCHAR" />
+</resultMap>
+
+<!-- 分页查询 DYN_TEST -->
+<select id="searchDynTestByPage" parameterType="avicit.test.test3.dto.DynTestDto" resultMap="DynTestDtoMap">
+	select
+        t1.DATA_1     ,
+                t1.LAST_UPDATE_IP     ,
+                t1.CREATED_DEPT     ,
+                t1.CREATION_DATE     ,
+                t1.DATA_2     ,
+                t1.CREATED_BY     ,
+                t1.VERSION     ,
+                t1.ID     ,
+                t1.LAST_UPDATE_DATE     ,
+                t1.LAST_UPDATED_BY     ,
+                t1.ORG_IDENTITY     	from DYN_TEST 	t1
+		<where>
+			<if test="bean != null">
+						   		   			<if test="bean.DATA_1 != null and bean.DATA_1 != ''">
+		                		                  and t1.DATA_1 like concat(concat('%',#{bean.DATA_1}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.LAST_UPDATE_IP != null and bean.LAST_UPDATE_IP != ''">
+		                		                  and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.LAST_UPDATE_IP}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.CREATED_DEPT != null and bean.CREATED_DEPT != ''">
+		                		                  and t1.CREATED_DEPT like concat(concat('%',#{bean.CREATED_DEPT}),'%')
+		                		            </if>
+		            			    			   	                <if test="bean.CREATION_DATE_START != null and bean.CREATION_DATE_START != ''">
+						and t1.CREATION_DATE &gt;= #{bean.CREATION_DATE_START}
+					</if>
+					<if test="bean.CREATION_DATE_END != null and bean.CREATION_DATE_END != ''">
+						and t1.CREATION_DATE &lt;= #{bean.CREATION_DATE_END}
+					</if>
+                   <if test="bean.CREATION_DATE != null and bean.CREATION_DATE != ''">
+                       and t1.CREATION_DATE = #{bean.CREATION_DATE}
+                   </if>
+			   			    			   		   			<if test="bean.DATA_2 != null and bean.DATA_2 != ''">
+		                		                  and t1.DATA_2 like concat(concat('%',#{bean.DATA_2}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.CREATED_BY != null and bean.CREATED_BY != ''">
+		                		                  and t1.CREATED_BY like concat(concat('%',#{bean.CREATED_BY}),'%')
+		                		            </if>
+		            			    			   	                <if test="bean.VERSION_START != null and bean.VERSION_START != ''">
+						and t1.VERSION &gt;= #{bean.VERSION_START}
+					</if>
+					<if test="bean.VERSION_END != null and bean.VERSION_END != ''">
+						and t1.VERSION &lt;= #{bean.VERSION_END}
+					</if>
+                   <if test="bean.VERSION != null and bean.VERSION != ''">
+                       and t1.VERSION = #{bean.VERSION}
+                   </if>
+			   			    			   		   			<if test="bean.ID != null and bean.ID != ''">
+		                			              and t1.ID =#{bean.ID}
+			            		            </if>
+		            			    			   	                <if test="bean.LAST_UPDATE_DATE_START != null and bean.LAST_UPDATE_DATE_START != ''">
+						and t1.LAST_UPDATE_DATE &gt;= #{bean.LAST_UPDATE_DATE_START}
+					</if>
+					<if test="bean.LAST_UPDATE_DATE_END != null and bean.LAST_UPDATE_DATE_END != ''">
+						and t1.LAST_UPDATE_DATE &lt;= #{bean.LAST_UPDATE_DATE_END}
+					</if>
+                   <if test="bean.LAST_UPDATE_DATE != null and bean.LAST_UPDATE_DATE != ''">
+                       and t1.LAST_UPDATE_DATE = #{bean.LAST_UPDATE_DATE}
+                   </if>
+			   			    			   		   			<if test="bean.LAST_UPDATED_BY != null and bean.LAST_UPDATED_BY != ''">
+		                		                  and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.LAST_UPDATED_BY}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.ORG_IDENTITY != null and bean.ORG_IDENTITY != ''">
+		                		                  and t1.ORG_IDENTITY like concat(concat('%',#{bean.ORG_IDENTITY}),'%')
+		                		            </if>
+		            			    			 </if>
+
+			<if test="sql != null and sql != ''">
+				and ${sql}
+			</if>
+		</where>
+		<choose>
+	        <when test="P_OrderBy !=null and P_OrderBy != ''">
+	            order by ${P_OrderBy}
+	        </when>
+	        <otherwise>
+	            order by t1.creation_date desc
+	        </otherwise>
+    	</choose>
+</select>
+
+<!-- 分页查询 DYN_TEST -->
+<select id="searchDynTestByPageOr" parameterType="avicit.test.test3.dto.DynTestDto" resultMap="DynTestDtoMap">
+select
+        t1.DATA_1     ,
+                t1.LAST_UPDATE_IP     ,
+                t1.CREATED_DEPT     ,
+                t1.CREATION_DATE     ,
+                t1.DATA_2     ,
+                t1.CREATED_BY     ,
+                t1.VERSION     ,
+                t1.ID     ,
+                t1.LAST_UPDATE_DATE     ,
+                t1.LAST_UPDATED_BY     ,
+                t1.ORG_IDENTITY     	from DYN_TEST 	t1
+		<where>
+			<if test="bean != null">
+						   		   			<if test="bean.DATA_1 != null and bean.DATA_1 != ''">
+		                		                  or t1.DATA_1 like concat(concat('%',#{bean.DATA_1}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.LAST_UPDATE_IP != null and bean.LAST_UPDATE_IP != ''">
+		                		                  or t1.LAST_UPDATE_IP like concat(concat('%',#{bean.LAST_UPDATE_IP}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.CREATED_DEPT != null and bean.CREATED_DEPT != ''">
+		                		                  or t1.CREATED_DEPT like concat(concat('%',#{bean.CREATED_DEPT}),'%')
+		                		            </if>
+		       						   	                <if test="bean.CREATION_DATE_START != null and bean.CREATION_DATE_START != ''">
+						or t1.CREATION_DATE &gt;= #{bean.CREATION_DATE_START}
+					</if>
+					<if test="bean.CREATION_DATE_END != null and bean.CREATION_DATE_END != ''">
+						or t1.CREATION_DATE &lt;= #{bean.CREATION_DATE_END}
+					</if>
+                   <if test="bean.CREATION_DATE != null and bean.CREATION_DATE != ''">
+                       or t1.CREATION_DATE = #{bean.CREATION_DATE}
+                   </if>
+			   						   		   			<if test="bean.DATA_2 != null and bean.DATA_2 != ''">
+		                		                  or t1.DATA_2 like concat(concat('%',#{bean.DATA_2}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.CREATED_BY != null and bean.CREATED_BY != ''">
+		                		                  or t1.CREATED_BY like concat(concat('%',#{bean.CREATED_BY}),'%')
+		                		            </if>
+		       						   	                <if test="bean.VERSION_START != null and bean.VERSION_START != ''">
+						or t1.VERSION &gt;= #{bean.VERSION_START}
+					</if>
+					<if test="bean.VERSION_END != null and bean.VERSION_END != ''">
+						or t1.VERSION &lt;= #{bean.VERSION_END}
+					</if>
+                   <if test="bean.VERSION != null and bean.VERSION != ''">
+                       or t1.VERSION = #{bean.VERSION}
+                   </if>
+			   						   		   			<if test="bean.ID != null and bean.ID != ''">
+		                			              or t1.ID =#{bean.ID}
+			            		            </if>
+		       						   	                <if test="bean.LAST_UPDATE_DATE_START != null and bean.LAST_UPDATE_DATE_START != ''">
+						or t1.LAST_UPDATE_DATE &gt;= #{bean.LAST_UPDATE_DATE_START}
+					</if>
+					<if test="bean.LAST_UPDATE_DATE_END != null and bean.LAST_UPDATE_DATE_END != ''">
+						or t1.LAST_UPDATE_DATE &lt;= #{bean.LAST_UPDATE_DATE_END}
+					</if>
+                   <if test="bean.LAST_UPDATE_DATE != null and bean.LAST_UPDATE_DATE != ''">
+                       or t1.LAST_UPDATE_DATE = #{bean.LAST_UPDATE_DATE}
+                   </if>
+			   						   		   			<if test="bean.LAST_UPDATED_BY != null and bean.LAST_UPDATED_BY != ''">
+		                		                  or t1.LAST_UPDATED_BY like concat(concat('%',#{bean.LAST_UPDATED_BY}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.ORG_IDENTITY != null and bean.ORG_IDENTITY != ''">
+		                		                  or t1.ORG_IDENTITY like concat(concat('%',#{bean.ORG_IDENTITY}),'%')
+		                		            </if>
+		       						 </if>
+
+			<if test="sql != null and sql != ''">
+				and ${sql}
+			</if>
+		</where>
+		<choose>
+	        <when test="P_OrderBy !=null and P_OrderBy != ''">
+	            order by ${P_OrderBy}
+	        </when>
+	        <otherwise>
+	            order by t1.creation_date desc
+	        </otherwise>
+    	</choose>
+</select>
+
+<!-- 分页查询：流程 DYN_TEST -->
+<select id="searchDynTestBpmByPage" parameterType="avicit.test.test3.dto.DynTestDto" resultMap="DynTestDtoMap">
+	select
+            t1.DATA_1,
+            t1.LAST_UPDATE_IP,
+            t1.CREATED_DEPT,
+            t1.CREATION_DATE,
+            t1.DATA_2,
+            t1.CREATED_BY,
+            t1.VERSION,
+            t1.ID,
+            t1.LAST_UPDATE_DATE,
+            t1.LAST_UPDATED_BY,
+            t1.ORG_IDENTITY,
+        v.ACTIVITYALIAS_, v.BUSINESSSTATE_,v.DBID_ as PROCESSINSTANCEID
+	from DYN_TEST 	t1 left join BPM_CLIENT_HIST_PROCINST_V v on t1.id = v.formid_
+		<where>
+			<if test="bean != null">
+						   		   			<if test="bean.DATA_1 != null and bean.DATA_1 != ''">
+		                		                  and t1.DATA_1  like concat(concat('%',#{bean.DATA_1}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.LAST_UPDATE_IP != null and bean.LAST_UPDATE_IP != ''">
+		                		                  and t1.LAST_UPDATE_IP  like concat(concat('%',#{bean.LAST_UPDATE_IP}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.CREATED_DEPT != null and bean.CREATED_DEPT != ''">
+		                		                  and t1.CREATED_DEPT  like concat(concat('%',#{bean.CREATED_DEPT}),'%')
+		                		            </if>
+		            			    			   	                <if test="bean.CREATION_DATE_START != null and bean.CREATION_DATE_START != ''">
+						and t1.CREATION_DATE &gt;= #{bean.CREATION_DATE_START}
+					</if>
+					<if test="bean.CREATION_DATE_END != null and bean.CREATION_DATE_END != ''">
+						and t1.CREATION_DATE &lt;= #{bean.CREATION_DATE_END}
+					</if>
+                   <if test="bean.CREATION_DATE != null and bean.CREATION_DATE != ''">
+                       and t1.CREATION_DATE = #{bean.CREATION_DATE}
+                   </if>
+			   			    			   		   			<if test="bean.DATA_2 != null and bean.DATA_2 != ''">
+		                		                  and t1.DATA_2  like concat(concat('%',#{bean.DATA_2}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.CREATED_BY != null and bean.CREATED_BY != ''">
+		                		                  and t1.CREATED_BY  like concat(concat('%',#{bean.CREATED_BY}),'%')
+		                		            </if>
+		            			    			   	                <if test="bean.VERSION_START != null and bean.VERSION_START != ''">
+						and t1.VERSION &gt;= #{bean.VERSION_START}
+					</if>
+					<if test="bean.VERSION_END != null and bean.VERSION_END != ''">
+						and t1.VERSION &lt;= #{bean.VERSION_END}
+					</if>
+                   <if test="bean.VERSION != null and bean.VERSION != ''">
+                       and t1.VERSION = #{bean.VERSION}
+                   </if>
+			   			    			   		   			<if test="bean.ID != null and bean.ID != ''">
+		                			              and t1.ID =#{bean.ID}
+			            		            </if>
+		            			    			   	                <if test="bean.LAST_UPDATE_DATE_START != null and bean.LAST_UPDATE_DATE_START != ''">
+						and t1.LAST_UPDATE_DATE &gt;= #{bean.LAST_UPDATE_DATE_START}
+					</if>
+					<if test="bean.LAST_UPDATE_DATE_END != null and bean.LAST_UPDATE_DATE_END != ''">
+						and t1.LAST_UPDATE_DATE &lt;= #{bean.LAST_UPDATE_DATE_END}
+					</if>
+                   <if test="bean.LAST_UPDATE_DATE != null and bean.LAST_UPDATE_DATE != ''">
+                       and t1.LAST_UPDATE_DATE = #{bean.LAST_UPDATE_DATE}
+                   </if>
+			   			    			   		   			<if test="bean.LAST_UPDATED_BY != null and bean.LAST_UPDATED_BY != ''">
+		                		                  and t1.LAST_UPDATED_BY  like concat(concat('%',#{bean.LAST_UPDATED_BY}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.ORG_IDENTITY != null and bean.ORG_IDENTITY != ''">
+		                		                  and t1.ORG_IDENTITY  like concat(concat('%',#{bean.ORG_IDENTITY}),'%')
+		                		            </if>
+		            			    			</if>
+
+                and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{bean.currUserId})
+
+            <if test="bean.bpmState != null and bean.bpmState != 'all'">
+                and v.businessstate_ = #{bean.bpmState}
+            </if>
+
+			<if test="sql != null and sql != ''">
+				and ${sql}
+			</if>
+		</where>
+		<choose>
+	        <when test="P_OrderBy !=null and P_OrderBy != ''">
+	            order by ${P_OrderBy}
+	        </when>
+	        <otherwise>
+	            order by t1.creation_date desc
+	        </otherwise>
+    	</choose>
+</select>
+
+<!-- 分页查询：流程 DYN_TEST -->
+<select id="searchDynTestBpmByPageOr" parameterType="avicit.test.test3.dto.DynTestDto" resultMap="DynTestDtoMap">
+    select
+            t1.DATA_1,
+            t1.LAST_UPDATE_IP,
+            t1.CREATED_DEPT,
+            t1.CREATION_DATE,
+            t1.DATA_2,
+            t1.CREATED_BY,
+            t1.VERSION,
+            t1.ID,
+            t1.LAST_UPDATE_DATE,
+            t1.LAST_UPDATED_BY,
+            t1.ORG_IDENTITY,
+        v.ACTIVITYALIAS_, v.BUSINESSSTATE_,v.DBID_ as PROCESSINSTANCEID
+	from DYN_TEST 	t1 left join BPM_CLIENT_HIST_PROCINST_V v on t1.id = v.formid_
+		<where>
+			<if test="bean != null">
+						   		   			<if test="bean.DATA_1 != null and bean.DATA_1 != ''">
+		                		                  or t1.DATA_1 like concat(concat('%',#{bean.DATA_1}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.LAST_UPDATE_IP != null and bean.LAST_UPDATE_IP != ''">
+		                		                  or t1.LAST_UPDATE_IP like concat(concat('%',#{bean.LAST_UPDATE_IP}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.CREATED_DEPT != null and bean.CREATED_DEPT != ''">
+		                		                  or t1.CREATED_DEPT like concat(concat('%',#{bean.CREATED_DEPT}),'%')
+		                		            </if>
+		       						   	                <if test="bean.CREATION_DATE_START != null and bean.CREATION_DATE_START != ''">
+						or t1.CREATION_DATE &gt;= #{bean.CREATION_DATE_START}
+					</if>
+					<if test="bean.CREATION_DATE_END != null and bean.CREATION_DATE_END != ''">
+						or t1.CREATION_DATE &lt;= #{bean.CREATION_DATE_END}
+					</if>
+                   <if test="bean.CREATION_DATE != null and bean.CREATION_DATE != ''">
+                       or t1.CREATION_DATE = #{bean.CREATION_DATE}
+                   </if>
+			   						   		   			<if test="bean.DATA_2 != null and bean.DATA_2 != ''">
+		                		                  or t1.DATA_2 like concat(concat('%',#{bean.DATA_2}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.CREATED_BY != null and bean.CREATED_BY != ''">
+		                		                  or t1.CREATED_BY like concat(concat('%',#{bean.CREATED_BY}),'%')
+		                		            </if>
+		       						   	                <if test="bean.VERSION_START != null and bean.VERSION_START != ''">
+						or t1.VERSION &gt;= #{bean.VERSION_START}
+					</if>
+					<if test="bean.VERSION_END != null and bean.VERSION_END != ''">
+						or t1.VERSION &lt;= #{bean.VERSION_END}
+					</if>
+                   <if test="bean.VERSION != null and bean.VERSION != ''">
+                       or t1.VERSION = #{bean.VERSION}
+                   </if>
+			   						   		   			<if test="bean.ID != null and bean.ID != ''">
+		                			              or t1.ID =#{bean.ID}
+			            		            </if>
+		       						   	                <if test="bean.LAST_UPDATE_DATE_START != null and bean.LAST_UPDATE_DATE_START != ''">
+						or t1.LAST_UPDATE_DATE &gt;= #{bean.LAST_UPDATE_DATE_START}
+					</if>
+					<if test="bean.LAST_UPDATE_DATE_END != null and bean.LAST_UPDATE_DATE_END != ''">
+						or t1.LAST_UPDATE_DATE &lt;= #{bean.LAST_UPDATE_DATE_END}
+					</if>
+                   <if test="bean.LAST_UPDATE_DATE != null and bean.LAST_UPDATE_DATE != ''">
+                       or t1.LAST_UPDATE_DATE = #{bean.LAST_UPDATE_DATE}
+                   </if>
+			   						   		   			<if test="bean.LAST_UPDATED_BY != null and bean.LAST_UPDATED_BY != ''">
+		                		                  or t1.LAST_UPDATED_BY like concat(concat('%',#{bean.LAST_UPDATED_BY}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.ORG_IDENTITY != null and bean.ORG_IDENTITY != ''">
+		                		                  or t1.ORG_IDENTITY like concat(concat('%',#{bean.ORG_IDENTITY}),'%')
+		                		            </if>
+		       						</if>
+
+                and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{bean.currUserId})
+
+            <if test="bean.bpmState != null and bean.bpmState != 'all'">
+                and v.businessstate_ = #{bean.bpmState}
+            </if>
+
+			<if test="sql != null and sql != ''">
+				and ${sql}
+			</if>
+		</where>
+		<choose>
+	        <when test="P_OrderBy !=null and P_OrderBy != ''">
+	            order by ${P_OrderBy}
+	        </when>
+	        <otherwise>
+	            order by t1.creation_date desc
+	        </otherwise>
+    	</choose>
+</select>
+
+<!-- 查询列表 DYN_TEST -->
+<select id="searchDynTest" parameterType="avicit.test.test3.dto.DynTestDto" resultMap="DynTestDtoMap">
+	select
+        t1.DATA_1     ,
+                t1.LAST_UPDATE_IP     ,
+                t1.CREATED_DEPT     ,
+                t1.CREATION_DATE     ,
+                t1.DATA_2     ,
+                t1.CREATED_BY     ,
+                t1.VERSION     ,
+                t1.ID     ,
+                t1.LAST_UPDATE_DATE     ,
+                t1.LAST_UPDATED_BY     ,
+                t1.ORG_IDENTITY     	from DYN_TEST 	t1
+		<where>
+						   		   			<if test="bean.DATA_1 != null and bean.DATA_1 != ''">
+		                		                  and t1.DATA_1 like concat(concat('%',#{bean.DATA_1}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.LAST_UPDATE_IP != null and bean.LAST_UPDATE_IP != ''">
+		                		                  and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.LAST_UPDATE_IP}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.CREATED_DEPT != null and bean.CREATED_DEPT != ''">
+		                		                  and t1.CREATED_DEPT like concat(concat('%',#{bean.CREATED_DEPT}),'%')
+		                		            </if>
+		            			    			   	                <if test="bean.CREATION_DATE_START != null and bean.CREATION_DATE_START != ''">
+						and t1.CREATION_DATE &gt;= #{bean.CREATION_DATE_START}
+					</if>
+					<if test="bean.CREATION_DATE_END != null and bean.CREATION_DATE_END != ''">
+						and t1.CREATION_DATE &lt;= #{bean.CREATION_DATE_END}
+					</if>
+                   <if test="bean.CREATION_DATE != null and bean.CREATION_DATE != ''">
+                       and t1.CREATION_DATE = #{bean.CREATION_DATE}
+                   </if>
+			   			    			   		   			<if test="bean.DATA_2 != null and bean.DATA_2 != ''">
+		                		                  and t1.DATA_2 like concat(concat('%',#{bean.DATA_2}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.CREATED_BY != null and bean.CREATED_BY != ''">
+		                		                  and t1.CREATED_BY like concat(concat('%',#{bean.CREATED_BY}),'%')
+		                		            </if>
+		            			    			   	                <if test="bean.VERSION_START != null and bean.VERSION_START != ''">
+						and t1.VERSION &gt;= #{bean.VERSION_START}
+					</if>
+					<if test="bean.VERSION_END != null and bean.VERSION_END != ''">
+						and t1.VERSION &lt;= #{bean.VERSION_END}
+					</if>
+                   <if test="bean.VERSION != null and bean.VERSION != ''">
+                       and t1.VERSION = #{bean.VERSION}
+                   </if>
+			   			    			   		   			<if test="bean.ID != null and bean.ID != ''">
+		                			              and t1.ID =#{bean.ID}
+			            		            </if>
+		            			    			   	                <if test="bean.LAST_UPDATE_DATE_START != null and bean.LAST_UPDATE_DATE_START != ''">
+						and t1.LAST_UPDATE_DATE &gt;= #{bean.LAST_UPDATE_DATE_START}
+					</if>
+					<if test="bean.LAST_UPDATE_DATE_END != null and bean.LAST_UPDATE_DATE_END != ''">
+						and t1.LAST_UPDATE_DATE &lt;= #{bean.LAST_UPDATE_DATE_END}
+					</if>
+                   <if test="bean.LAST_UPDATE_DATE != null and bean.LAST_UPDATE_DATE != ''">
+                       and t1.LAST_UPDATE_DATE = #{bean.LAST_UPDATE_DATE}
+                   </if>
+			   			    			   		   			<if test="bean.LAST_UPDATED_BY != null and bean.LAST_UPDATED_BY != ''">
+		                		                  and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.LAST_UPDATED_BY}),'%')
+		                		            </if>
+		            			    			   		   			<if test="bean.ORG_IDENTITY != null and bean.ORG_IDENTITY != ''">
+		                		                  and t1.ORG_IDENTITY like concat(concat('%',#{bean.ORG_IDENTITY}),'%')
+		                		            </if>
+		            			    		</where>
+</select>
+
+<!-- 查询列表 DYN_TEST -->
+<select id="searchDynTestSelfDefined" parameterType="avicit.test.test3.dto.DynTestDto" resultMap="DynTestDtoMap">
+	select
+        t1.DATA_1     ,
+                t1.LAST_UPDATE_IP     ,
+                t1.CREATED_DEPT     ,
+                t1.CREATION_DATE     ,
+                t1.DATA_2     ,
+                t1.CREATED_BY     ,
+                t1.VERSION     ,
+                t1.ID     ,
+                t1.LAST_UPDATE_DATE     ,
+                t1.LAST_UPDATED_BY     ,
+                t1.ORG_IDENTITY     	from DYN_TEST 	t1
+		<where>
+            <if test="bean != null">
+						   		   			<if test="bean.DATA_1 != null and bean.DATA_1 != ''">
+		                		                  and t1.DATA_1 like concat(concat('%',#{bean.DATA_1}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.LAST_UPDATE_IP != null and bean.LAST_UPDATE_IP != ''">
+		                		                  and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.LAST_UPDATE_IP}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.CREATED_DEPT != null and bean.CREATED_DEPT != ''">
+		                		                  and t1.CREATED_DEPT like concat(concat('%',#{bean.CREATED_DEPT}),'%')
+		                		            </if>
+		       						   	                <if test="bean.CREATION_DATE_START != null and bean.CREATION_DATE_START != ''">
+						and t1.CREATION_DATE &gt;= #{bean.CREATION_DATE_START}
+					</if>
+					<if test="bean.CREATION_DATE_END != null and bean.CREATION_DATE_END != ''">
+						and t1.CREATION_DATE &lt;= #{bean.CREATION_DATE_END}
+					</if>
+                   <if test="bean.CREATION_DATE != null and bean.CREATION_DATE != ''">
+                       and t1.CREATION_DATE = #{bean.CREATION_DATE}
+                   </if>
+			   						   		   			<if test="bean.DATA_2 != null and bean.DATA_2 != ''">
+		                		                  and t1.DATA_2 like concat(concat('%',#{bean.DATA_2}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.CREATED_BY != null and bean.CREATED_BY != ''">
+		                		                  and t1.CREATED_BY like concat(concat('%',#{bean.CREATED_BY}),'%')
+		                		            </if>
+		       						   	                <if test="bean.VERSION_START != null and bean.VERSION_START != ''">
+						and t1.VERSION &gt;= #{bean.VERSION_START}
+					</if>
+					<if test="bean.VERSION_END != null and bean.VERSION_END != ''">
+						and t1.VERSION &lt;= #{bean.VERSION_END}
+					</if>
+                   <if test="bean.VERSION != null and bean.VERSION != ''">
+                       and t1.VERSION = #{bean.VERSION}
+                   </if>
+			   						   		   			<if test="bean.ID != null and bean.ID != ''">
+		                			              and t1.ID =#{bean.ID}
+			            		            </if>
+		       						   	                <if test="bean.LAST_UPDATE_DATE_START != null and bean.LAST_UPDATE_DATE_START != ''">
+						and t1.LAST_UPDATE_DATE &gt;= #{bean.LAST_UPDATE_DATE_START}
+					</if>
+					<if test="bean.LAST_UPDATE_DATE_END != null and bean.LAST_UPDATE_DATE_END != ''">
+						and t1.LAST_UPDATE_DATE &lt;= #{bean.LAST_UPDATE_DATE_END}
+					</if>
+                   <if test="bean.LAST_UPDATE_DATE != null and bean.LAST_UPDATE_DATE != ''">
+                       and t1.LAST_UPDATE_DATE = #{bean.LAST_UPDATE_DATE}
+                   </if>
+			   						   		   			<if test="bean.LAST_UPDATED_BY != null and bean.LAST_UPDATED_BY != ''">
+		                		                  and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.LAST_UPDATED_BY}),'%')
+		                		            </if>
+		       						   		   			<if test="bean.ORG_IDENTITY != null and bean.ORG_IDENTITY != ''">
+		                		                  and t1.ORG_IDENTITY like concat(concat('%',#{bean.ORG_IDENTITY}),'%')
+		                		            </if>
+		       			            </if>
+
+            <if test="sql != null and sql != ''">
+                and ${sql}
+            </if>
+		</where>
+</select>
+
+<!-- 主键查询对象 DYN_TEST -->
+<select id="findDynTestById" parameterType="java.lang.String" resultMap="DynTestDtoMap">
+	select
+        t1.DATA_1     ,
+                t1.LAST_UPDATE_IP     ,
+                t1.CREATED_DEPT     ,
+                t1.CREATION_DATE     ,
+                t1.DATA_2     ,
+                t1.CREATED_BY     ,
+                t1.VERSION     ,
+                t1.ID     ,
+                t1.LAST_UPDATE_DATE     ,
+                t1.LAST_UPDATED_BY     ,
+                t1.ORG_IDENTITY     	from DYN_TEST 	t1
+		where t1.id = #{id}
+</select>
+
+<!-- 新增对象 DYN_TEST -->
+<insert id="insertDynTest" parameterType="avicit.test.test3.dto.DynTestDto">
+	insert into DYN_TEST
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			                            <if test="DATA_1!= null">
+                    DATA_1,
+                </if>
+            			            			<if test="lastUpdateIp!= null">
+				LAST_UPDATE_IP,
+			</if>
+            			            			<if test="createdDept!= null">
+				CREATED_DEPT,
+			</if>
+            			            			<if test="creationDate!= null">
+				CREATION_DATE,
+			</if>
+            			                            <if test="DATA_2!= null">
+                    DATA_2,
+                </if>
+            			            			<if test="createdBy!= null">
+				CREATED_BY,
+			</if>
+            			            			<if test="version!= null">
+				VERSION,
+			</if>
+            			                            <if test="ID!= null">
+                    ID,
+                </if>
+            			            			<if test="lastUpdateDate!= null">
+				LAST_UPDATE_DATE,
+			</if>
+            			            			<if test="lastUpdatedBy!= null">
+				LAST_UPDATED_BY,
+			</if>
+            			                            <if test="ORG_IDENTITY!= null">
+                    ORG_IDENTITY,
+                </if>
+            				</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    						<if test="DATA_1!= null">
+				#{DATA_1,jdbcType=VARCHAR},
+			</if>
+									            <if test="lastUpdateIp!= null">
+                #{lastUpdateIp,jdbcType=VARCHAR},
+            </if>
+									            <if test="createdDept!= null">
+                #{createdDept,jdbcType=VARCHAR},
+            </if>
+									            <if test="creationDate!= null">
+                #{creationDate,jdbcType=TIMESTAMP},
+            </if>
+												<if test="DATA_2!= null">
+				#{DATA_2,jdbcType=VARCHAR},
+			</if>
+									            <if test="createdBy!= null">
+                #{createdBy,jdbcType=VARCHAR},
+            </if>
+									            <if test="version!= null">
+                #{version,jdbcType=DECIMAL},
+            </if>
+												<if test="ID!= null">
+				#{ID,jdbcType=VARCHAR},
+			</if>
+									            <if test="lastUpdateDate!= null">
+                #{lastUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+									            <if test="lastUpdatedBy!= null">
+                #{lastUpdatedBy,jdbcType=VARCHAR},
+            </if>
+												<if test="ORG_IDENTITY!= null">
+				#{ORG_IDENTITY,jdbcType=VARCHAR},
+			</if>
+							</trim>
+</insert>
+
+<!-- 批量新增对象 DYN_TEST -->
+<insert id="insertDynTestList" parameterType="java.util.List">
+	insert into DYN_TEST
+	 <trim prefix="(" suffix=")" suffixOverrides=",">
+						<if test="DATA_1!= null">
+				DATA_1,
+			</if>
+						<if test="LAST_UPDATE_IP!= null">
+				LAST_UPDATE_IP,
+			</if>
+						<if test="CREATED_DEPT!= null">
+				CREATED_DEPT,
+			</if>
+						<if test="CREATION_DATE!= null">
+				CREATION_DATE,
+			</if>
+						<if test="DATA_2!= null">
+				DATA_2,
+			</if>
+						<if test="CREATED_BY!= null">
+				CREATED_BY,
+			</if>
+						<if test="VERSION!= null">
+				VERSION,
+			</if>
+						<if test="ID!= null">
+				ID,
+			</if>
+						<if test="LAST_UPDATE_DATE!= null">
+				LAST_UPDATE_DATE,
+			</if>
+						<if test="LAST_UPDATED_BY!= null">
+				LAST_UPDATED_BY,
+			</if>
+						<if test="ORG_IDENTITY!= null">
+				ORG_IDENTITY,
+			</if>
+				</trim>
+	<foreach collection="list" item="item" index="index" open="(" separator="union all" close=")">
+		select
+				  #{item.DATA_1,jdbcType=VARCHAR}  ,
+				  #{item.LAST_UPDATE_IP,jdbcType=VARCHAR}  ,
+				  #{item.CREATED_DEPT,jdbcType=VARCHAR}  ,
+				  #{item.CREATION_DATE,jdbcType=TIMESTAMP}  ,
+				  #{item.DATA_2,jdbcType=VARCHAR}  ,
+				  #{item.CREATED_BY,jdbcType=VARCHAR}  ,
+				  #{item.VERSION,jdbcType=DECIMAL}  ,
+				  #{item.ID,jdbcType=VARCHAR}  ,
+				  #{item.LAST_UPDATE_DATE,jdbcType=TIMESTAMP}  ,
+				  #{item.LAST_UPDATED_BY,jdbcType=VARCHAR}  ,
+				  #{item.ORG_IDENTITY,jdbcType=VARCHAR}  
+				from dual
+	</foreach>
+</insert>
+
+<!-- 更新对象 DYN_TEST -->
+<update id="updateDynTestSensitive" parameterType="avicit.test.test3.dto.DynTestDto">
+	update DYN_TEST t1
+	<set>
+	    	      			   			  <if test="DATA_1 != null">
+				  t1.DATA_1          =#{DATA_1,jdbcType=VARCHAR},
+			  </if>
+			  	      	    	      			                <if test="lastUpdateIp != null">
+                  t1.LAST_UPDATE_IP          =#{lastUpdateIp,jdbcType=VARCHAR},
+              </if>
+			  	      	    	      			                <if test="createdDept != null">
+                  t1.CREATED_DEPT          =#{createdDept,jdbcType=VARCHAR},
+              </if>
+			  	      	    	      			                <if test="creationDate != null">
+                  t1.CREATION_DATE          =#{creationDate,jdbcType=TIMESTAMP},
+              </if>
+			  	      	    	      			   			  <if test="DATA_2 != null">
+				  t1.DATA_2          =#{DATA_2,jdbcType=VARCHAR},
+			  </if>
+			  	      	    	      			                <if test="createdBy != null">
+                  t1.CREATED_BY          =#{createdBy,jdbcType=VARCHAR},
+              </if>
+			  	      	    	      			<if test="version != null">
+				t1.version                        =t1.version+1,
+			</if>
+	      	    	      			   			  <if test="ID != null">
+				  t1.ID          =#{ID,jdbcType=VARCHAR},
+			  </if>
+			  	      	    	      			                <if test="lastUpdateDate != null">
+                  t1.LAST_UPDATE_DATE          =#{lastUpdateDate,jdbcType=TIMESTAMP},
+              </if>
+			  	      	    	      			                <if test="lastUpdatedBy != null">
+                  t1.LAST_UPDATED_BY          =#{lastUpdatedBy,jdbcType=VARCHAR},
+              </if>
+			  	      	    	      			   			  <if test="ORG_IDENTITY != null">
+				  t1.ORG_IDENTITY          =#{ORG_IDENTITY,jdbcType=VARCHAR},
+			  </if>
+			  	      	    	</set>
+		where t1.id = #{ID} and t1.version =#{version}
+</update>
+<!-- 更新对象 DYN_TEST -->
+<update id="updateDynTestAll" parameterType="avicit.test.test3.dto.DynTestDto">
+	update DYN_TEST t1
+		set
+					t1.DATA_1  =#{DATA_1,jdbcType=VARCHAR} ,
+										t1.LAST_UPDATE_IP  =#{lastUpdateIp,jdbcType=VARCHAR} ,
+		        					t1.CREATED_DEPT  =#{createdDept,jdbcType=VARCHAR} ,
+		        					t1.CREATION_DATE  =#{creationDate,jdbcType=TIMESTAMP} ,
+		        					t1.DATA_2  =#{DATA_2,jdbcType=VARCHAR} ,
+										t1.CREATED_BY  =#{createdBy,jdbcType=VARCHAR} ,
+		        						t1.version =t1.version+1  ,							t1.ID  =#{ID,jdbcType=VARCHAR} ,
+										t1.LAST_UPDATE_DATE  =#{lastUpdateDate,jdbcType=TIMESTAMP} ,
+		        					t1.LAST_UPDATED_BY  =#{lastUpdatedBy,jdbcType=VARCHAR} ,
+		        					t1.ORG_IDENTITY  =#{ORG_IDENTITY,jdbcType=VARCHAR} 			
+	where t1.id = #{ID} and t1.version =#{version}
+</update>
+<!-- 批量更新对象   DYN_TEST -->
+<update id="updateDynTestList" parameterType="java.util.List">
+    <foreach collection="dtoList" item="item" index="index" open="begin" separator="" close="end;">
+	update DYN_TEST t1
+	set
+	        	   t1.DATA_1   =#{DATA_1,jdbcType=VARCHAR} ,
+	                        	   t1.LAST_UPDATE_IP   =#{LAST_UPDATE_IP,jdbcType=VARCHAR} ,
+	                        	   t1.CREATED_DEPT   =#{CREATED_DEPT,jdbcType=VARCHAR} ,
+	                        	   t1.CREATION_DATE   =#{CREATION_DATE,jdbcType=TIMESTAMP} ,
+	                        	   t1.DATA_2   =#{DATA_2,jdbcType=VARCHAR} ,
+	                        	   t1.CREATED_BY   =#{CREATED_BY,jdbcType=VARCHAR} ,
+	                        	   t1.VERSION   =#{VERSION,jdbcType=DECIMAL} ,
+	                        	   t1.ID   =#{ID,jdbcType=VARCHAR} ,
+	                        	   t1.LAST_UPDATE_DATE   =#{LAST_UPDATE_DATE,jdbcType=TIMESTAMP} ,
+	                        	   t1.LAST_UPDATED_BY   =#{LAST_UPDATED_BY,jdbcType=VARCHAR} ,
+	                        	   t1.ORG_IDENTITY   =#{ORG_IDENTITY,jdbcType=VARCHAR}            
+	where t1.id = #{item.ID} and t1.version =#{item.version};
+	</foreach>
+</update>
+<!-- 主键删除 DYN_TEST -->
+<delete id="deleteDynTestById" parameterType="java.lang.String">
+		delete from DYN_TEST  where  id = #{id}
+</delete>
+<!-- 批量主键删除 DYN_TEST -->
+<delete id="deleteDynTestList" parameterType="java.util.List">
+		delete from DYN_TEST  t1
+		<where>
+			<foreach item="idItem" collection="list" open="(" separator="or" close=")">
+				t1.id = #{idItem}
+			</foreach>
+		</where>
+</delete>
+</mapper>

@@ -1,0 +1,43 @@
+# Local agent/runtime state
+.agents/
+.superpowers/
+.externalToolBuilders/
+
+# GitHub/Git should not store database exports or runtime uploads
+*.dmp
+WebRoot/upload/
+WebRoot/attachment/
+WebRoot/temp/
+WebRoot/tmp/
+logs/
+*.log
+
+# Java build outputs and deployed runtime classes
+*.class
+*.jar
+WebRoot/WEB-INF/classes/
+build/
+target/
+out/
+
+# Proprietary/local license resources
+src/license/
+WebRoot/WEB-INF/classes/license/
+*.res
+*.lrc
+
+# Local-only test tweak: suppresses platform system-message popups
+WebRoot/static/js/platform/sysmessage/js/messageDialog.js
+
+# Local OS/editor noise
+Thumbs.db
+Desktop.ini
+.idea/
+*.iml
+
+# Package/archive outputs
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文档中心</title>
+    <link
+      href="./iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box docs">
+      <div class="box_title">
+        <h4>文档中心</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('profitAnalysis')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <img src="./img/u845.png" />
+      </div>
+    </div>
+
+    <script>
+      function handleClick() {
+        window.open("docs.html");
+      }
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .content_inner img {
+        display: block;
+        margin: 30px auto;
+      }
+    </style>
+  </body>
+</html>

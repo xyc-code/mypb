@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>利润同比分析</title>
+    <link
+      href="./iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+    <script src="./js/echarts.min.js"></script>
+  </head>
+  <body>
+    <div class="box profit">
+      <div class="box_title">
+        <h4>
+          利润同比分析<span>单位：亿元</span>
+          <img src="./img/u895.svg" id="tip" />
+        </h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('profitAnalysis')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div
+        class="content_inner"
+        style="padding-left: 300px;position: relative;"
+      >
+        <div class="content-left ">
+          <div class="number_box">
+            <p><span class="number">683 .66</span><span>亿元</span></p>
+            <p class="number_increase">
+              <span>+42</span><img src="./img/u890.svg" />
+            </p>
+          </div>
+          <div class="number_text_box "><span>3386.23</span></div>
+          <div class="number_text_box "><span>33.23</span></div>
+        </div>
+        <div id="content-right" style="height: 260px;"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var lineEchart = echarts.init(document.getElementById("content-right"));
+      var markLine = [];
+
+      var lineOption = {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            label: {
+              backgroundColor: "#6a7985"
+            }
+          }
+        },
+        legend: {
+          top: 10,
+          right: 20,
+          textStyle: {
+            color: "#666"
+          },
+          itemGap: 20,
+          itemWidth: 10
+        },
+        toolbox: {
+          feature: {}
+        },
+        grid: {
+          left: "1%",
+          right: "1%",
+          bottom: "2%",
+          top: "3%",
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: "category",
+            boundaryGap: false,
+            data: [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "10",
+              "11",
+              "12"
+            ],
+            axisLabel: {
+              // 坐标轴文本标签，详见axis.axisLabel
+              show: true,
+              rotate: 0,
+              margin: 8,
+              textStyle: {
+                color: "#666",
+                fontSize: "12"
+              }
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#dfe6ff",
+                width: 1
+              }
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: "value",
+            textStyle: {
+              color: "#666",
+              fontSize: "12"
+            }
+          }
+        ],
+        series: [
+          {
+            type: "line",
+            stack: "总量",
+            itemStyle: {
+              color: "rgba(58,150,253,1)"
+            },
+            symbolSize: 2,
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(58,150,253,0.2)"
+                },
+                {
+                  offset: 1,
+                  color: "rgba(58,77,233,0.01)"
+                }
+              ])
+            },
+            data: [
+              60,
+              132,
+              140,
+              134,
+              90,
+              230,
+              210,
+              90,
+              182,
+              191,
+              234,
+              290,
+              330,
+              310,
+              210,
+              132
+            ]
+          }
+        ]
+      };
+
+      lineEchart.setOption(lineOption);
+
+      function handleClick() {
+        window.open("profitAnalysis.html");
+      }
+
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      .profit {
+        background: #fff;
+      }
+      .profit > p > span:nth-child(1) {
+        text-align: left;
+        font-family: "微软雅黑 Semibold", "微软雅黑 Regular", "微软雅黑",
+          sans-serif;
+        font-weight: 600;
+        font-style: normal;
+        font-size: 16px;
+        color: #1e1e1e;
+      }
+      .profit > p > span:nth-child(2) {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #888888;
+        margin: 0 0 0 20px;
+      }
+      .profit > p > span:nth-child(3) {
+        float: right;
+        cursor: pointer;
+        font-weight: bold;
+        color: #7f7f7f;
+      }
+      .profit > p > span:nth-child(3) > span {
+        margin: 0 0 0 10px;
+      }
+      .content-left {
+        width: 260px;
+        position: absolute;
+        left: 16px;
+        top: 16px;
+      }
+      .number_box {
+        width: 220px;
+        padding: 8px 16px;
+        background: inherit;
+        background-color: #f7f7f7;
+        border: none;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-left: 16px;
+      }
+      .number_box p {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 18px;
+      }
+      .number_box p .number {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 32px;
+        margin-right: 8px;
+        color: #108de9;
+      }
+      .number_increase {
+        display: inline-block;
+        height: 28px;
+        line-height: 28px;
+        border-radius: 2px;
+        margin: 8px 0;
+        color: #76a55f;
+      }
+      .number_increase img {
+        margin: 0 8px;
+        vertical-align: middle;
+      }
+      .number_text_box {
+        display: inline-block;
+        padding: 4px;
+        background: rgba(16, 141, 233, 0.2);
+        color: #108de9;
+        padding: 8px;
+        width: 120px;
+        border-radius: 4px;
+        font-size: 18px;
+        margin: 16px;
+        margin-bottom: 0;
+        margin-left: 16px;
+        text-align: center;
+      }
+    </style>
+  </body>
+</html>

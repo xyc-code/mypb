@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>基层文化载体信息饼形图</title>
+  <link rel="stylesheet" type="text/css" href="../../../avicit/platform6/console/demostorage/portal/customeservice/index/css/index.css" />
+  <link href="../../../avicit/platform6/console/demostorage/portal/customeservice/index/iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+  <script src="../../../avicit/platform6/console/demostorage/portal/customeservice/index/js/jquery-1.11.1.min.js"></script>
+  <script src="../../../avicit/platform6/console/demostorage/portal/customeservice/index/js/echarts.min.js"></script>
+  <style type="text/css">
+
+  </style>
+</head>
+<body>
+<div class="page-in box">
+  <h2>
+    <span>基层文化载体信息饼形图</span>
+    <div class="toolbar">
+      <!--        <a href="##" class="iconfont icon-download"></a>-->
+      <a href="##" class="iconfont icon-more"></a>
+    </div>
+  </h2>
+  <div class="page-con" id="main">
+
+  </div>
+</div>
+</body>
+<script >
+  // import * as echarts from 'echarts';
+  var chartDom = document.getElementById('main');
+  var myChart = echarts.init(chartDom);
+  myChart.showLoading();
+
+
+
+
+  $.ajax({
+    type:'post',
+    async: false,
+    url: '../../../avicit/pb/whzt/whztController/operation/getPid3D',
+    dataType:"JSON",
+    success: function(data){
+      myChart.hideLoading();
+     // if(data.resultList.length>0){
+        var dataArr=new Array();
+        for(var i=0;i<data.resultList.length>0;i++){
+          dataArr.push({value:data.resultList[i].VALUE,name:data.resultList[i].KEY});
+
+        }
+        myChart.setOption( {
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            top: '5%',
+            left: 'center'
+          },
+          series: [
+            {
+              name: '',
+              type: 'pie',
+              radius: ['40%', '70%'],
+              avoidLabelOverlap: false,
+              label: {
+                show: false,
+                position: 'center'
+              },
+              emphasis: {
+                label: {
+                  show: true,
+                  fontSize: '40',
+                  fontWeight: 'bold'
+                }
+              },
+              labelLine: {
+                show: false
+              },
+              data: dataArr
+            }
+          ]
+        });
+     // }
+
+
+
+
+    },
+    error: function(){
+
+    }
+  });
+
+
+
+
+
+
+
+
+</script>
+</html>

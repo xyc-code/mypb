@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的日程</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+		.schedule_body_up{
+			border-bottom: 1px dashed #E9E9E9;
+			box-sizing: border-box;
+			padding-bottom: 16px;
+			position: relative;
+		}
+		.schedule_upname{
+			overflow: hidden;
+			
+		}
+		.schedule_upname>p{
+			float: left;
+			font-size: 20px;
+			color: #333333;
+		}
+		.schedule_title_month{
+			float: left;
+			overflow: hidden;
+			margin-left: 30px;
+		}
+		.schedule_title_month .iconfont{
+			float: left;
+			font-size: 5px;
+			margin-top: 6px;
+		}
+		.schedule_title_month >p{
+			float: left;
+			font-size: 14px;
+			color: #909090;
+			margin: 0 6px;
+			line-height: 26px;
+		}
+		.schedule_calendar{
+			margin-top: 20px;
+		}
+		.schedule_body_up>.icon{
+			position: absolute;
+			left: 50%;
+			margin-left: -7px;
+			bottom: 3px;
+		}
+		.schedule_body_up>.iconfont{
+			font-size: 14px;
+		}
+		.schedule_body_down ul li{
+			overflow: hidden;
+			margin-top: 12px;
+		}
+		.schedule_body_down ul li>.icon{
+			float: left;
+			
+		}
+		.schedule_body_down ul li>.iconfont{
+			font-size: 20px;
+		}
+		.schedule_content{
+			float: left;
+			margin-left: 4px;
+		}
+		.schedule_content_name{
+			font-size: 14px;
+			color: #333333;
+			line-height: 24px;
+		}
+		.schedule_content_time{
+			font-size: 14px;
+			color: #909090;
+			line-height: 24px;
+		}
+		
+		
+		
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>我的日程</h4>
+				<span class="box_title_right">
+				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('schedule')"></i>
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="schedule_body">
+					<div class="schedule_body_up">
+						<div class="schedule_upname">
+							<p>20</p>
+							<div class="schedule_title_month">
+								<i class="icon iconfont icon-an-caret-left" style="color: #7F7F7F;"></i>
+								<p>2021-05</p>
+								<i class="icon iconfont icon-an-caret-right" style="color: #7F7F7F;"></i>
+							</div>
+						</div>
+						<div class="schedule_calendar">
+							<img style="width: 100%;" src="./source/img/calendar.png" />
+						</div>
+						<div class="icon iconfont icon-an-drop-down" style="color: #AAAAAA;"></div>
+					</div>
+					<div class="schedule_body_down">
+						<ul>
+							<li>
+								<div class="icon iconfont icon-yuandian" style="color: #338FE5;"></div>
+								<div class="schedule_content">
+									<p class="schedule_content_name">腾讯会议-关于V6平台升级的注意事项</p>
+									<p class="schedule_content_time">14:00-15:30</p>
+								</div>
+							</li>
+							<li>
+								<div class="icon iconfont icon-yuandian" style="color: #338FE5;"></div>
+								<div class="schedule_content">
+									<p class="schedule_content_name">党课-党员应该如何学习党史</p>
+									<p class="schedule_content_time">16:00-17:30</p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

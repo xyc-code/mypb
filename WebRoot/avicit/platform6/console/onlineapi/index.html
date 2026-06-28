@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>平台常用API梳理</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../static/h5/skin/iconfont/iconfont.css" />
+    <script type="text/javascript"
+            src="../../../../static/h5/jquery/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/clipboard.min.js"></script>
+    <script type="text/javascript" src="js/onlineapi.js"></script>
+    <script type="text/javascript"
+            src="../../../../static/h5/layer-v2.3/layer/layer.js"></script>
+
+</head>
+<script type="text/javascript">
+    //当前正在操作的API
+    var currentAPI = 'sysUserAPI';
+    //当前操作的二级菜单
+    var currentTag = '';
+    $(document).ready(function() {
+        //选中状态
+        $(".firstMenu li").click(function() {
+            $(this).siblings().find('.secondMenu').hide()
+            $('.secondMenu li').removeClass("active")
+            $(this).addClass("active").siblings().removeClass("active")
+        })
+
+        //选中子集清除父级active
+        $(".secondMenu li").click(function(e) {
+            console.log('.secondMenu li clicked')
+            e.stopPropagation()
+            $(this).parent().parent().removeClass("active")
+        })
+
+        //二级导航展开收起
+        $(".next-layer,.nonext-layer").click(function() {
+            $(this).children(".secondMenu").toggle();
+            $(this).toggleClass("arrow").siblings().removeClass("arrow")
+            // 处理只有一级菜单的情况
+            if ($(this).children(".secondMenu").length != 0) {
+                //选中一级菜单并且为展开状态时，一级菜单取消高亮显示，第一个二级菜单高亮显示
+                $(this).removeClass('active')
+                if($(this).hasClass('arrow')){//向下
+                    $(this).children("ul.secondMenu").find('li:first').addClass('active')
+                }else {
+                    $(this).addClass('active')
+                }
+            }
+        })
+
+        $('.firstMenu li.next-layer a').on('click', function(e) {
+            //获取当前操作的一级菜单
+            currentTag = $(this).attr('id');
+            currentTag = (currentTag == undefined || currentTag == '') ? 'sysManage' : currentTag;
+            //根据前操作的一级菜单切换子页面
+            $('#contentBody').attr('src', currentTag + '.jsp');
+            //默认显示每个1级菜单下的第一个二级菜单
+            if(currentTag == 'sysManage'){
+                currentAPI = 'sysUserAPI';
+            }else if(currentTag == 'flowManage'){
+                currentAPI = 'businessService';
+            }else if(currentTag == 'interfaceManage'){
+                currentAPI = 'eventListener';
+            }
+            //常用接口不显示时间轴
+            if(currentAPI == 'todoInterceptor' || currentAPI == 'loginCallback'|| currentAPI == 'commonSelect'){
+                $('.toc-affix').hide();
+            }else {
+                $('.toc-affix').show();
+            }
+      
+            //初始化时间轴数据
+            initTimerData(currentAPI);
+        });
+
+        //左侧三级菜单绑定事件
+        $('.secondMenu li').on('click', function(e) {
+            //获取当前操作的二级菜单
+            currentAPI = $(this).attr('id');
+            $('#contentBody').attr('src', currentTag + '.jsp');
+            $("#contentBody").contents().find('.codeGenerator').hide();
+            $("#contentBody").contents().find('#' + currentAPI).parent().show();
+            if(currentAPI != 'orgUserSync'){
+                initTimerData(currentAPI);
+            }else {
+                $('.ant-anchor').empty();
+            }
+        })
+        $('.menuPic3 a').on('click', function(e) {
+            currentAPI = $(this).attr('id');
+            currentTag = currentAPI;
+            //根据前操作的一级菜单切换子页面
+            $('#contentBody').attr('src', currentTag + '.jsp');
+            $('.toc-affix').show();
+            initTimerData(currentAPI);
+        })
+
+        $(".firstMenu li:first").click();
+
+        initTimerData(currentAPI);
+
+    })
+
+
+</script>
+
+<body>
+    <div class="head-wrap clearfix">
+        <img src="images/logo.png" alt="" />
+        <h1>平台常用API梳理</h1>
+    </div>
+    <div class="pageIndex">
+        <ul class="firstMenu">
+            <li class="menuPic1 next-layer" title="系统管理API">
+                <a id="sysManage"><i class="icon iconfont icon-desktop"></i>系统管理API</a>
+                <ul class="secondMenu">
+                    <li id="sysUserAPI">用户API</li>
+                    <li id="sysRoleAPI">角色API</li>
+                    <li id="sysDeptAPI">部门API</li>
+                    <li id="sysUserRoleAPI">用户角色API</li>
+                    <li id="sysUserDeptPositionAPI">用户部门岗位关系API</li>
+                    <li id="sysLookupAPI">通用代码API</li>
+                    <li id="sysProfileAPI">系统参数API</li>
+                    <li id="sysPersonalMenuAPI">菜单管理API</li>
+                    <li id="sysAutoCodeAPI">编码管理API</li>
+                    <li id="comUtil">常用工具类</li>
+                </ul>
+            </li>
+            <li class="menuPic2 next-layer" title="流程管理API">
+                <a id="flowManage"><i class="icon iconfont icon-index"></i>流程管理API</a>
+                <ul class="secondMenu">
+                    <li id="businessService">流程操作API</li>
+                    <li id="bpmDisplayService">流程查询API</li>
+                    <li id="bpmIdeaService">流程意见API</li>
+                </ul>
+            </li>
+            <li class="menuPic3 nonext-layer" title="电子表单API">
+                <a id="formManage"><i class="icon iconfont icon-iconfontbiaoge"></i>电子表单API</a>
+            </li>
+            <li class="menuPic4 next-layer" title="常用事件及接口">
+                <a id="interfaceManage"><i class="icon iconfont icon-changyong"></i>常用事件及接口</a>
+                <ul class="secondMenu">
+                    <li id="eventListener">流程常用事件接口</li>
+                    <li id="flowWebEvent">流程前端常用接口</li>
+                    <li id="eformEvent">电子表单常用事件接口</li>
+                    <li id="commonSelect">公共选择组件</li>
+                    <li id="orgUserSync">组织机构同步代码示例</li>
+                    <li id="todoInterceptor">待办拦截器接口</li>
+                    <li id="loginCallback">系统登录前后接口</li>
+                    <li id="swfUploadEvent">附件接口</li>
+                    <!--<li id="4">流程前端接口</li>-->
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="wapper" id="title" name="title">
+        <iframe onLoad="iframeLoad()" src="sysManage.jsp" name="contentBody" id="contentBody" width="100%" height="" frameBorder="0" scrolling="no"></iframe>
+    </div>
+
+    <div class="toc-affix toc-affix-cn">
+        <div class="demo-anchor">
+            <div class="">
+                <div class="ant-anchor-wrapper" style="min-height: calc(100vh - 200px);">
+                    <div class="ant-anchor">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="backToTop" onmouseover="backToTopMouseOver()" onmouseout="backToTopMouseOut()" class="backToTop" onclick="backToTop()">
+        <img src="images/backToTop.png" alt="" id="backToTopImg" />
+        <p>回到顶部</p>
+    </div>
+</body>
+<script type="text/javascript">
+    function backToTopMouseOut() {
+        document.getElementById("backToTopImg").src = "images/backToTop.png";
+    }
+
+    function backToTopMouseOver() {
+        document.getElementById("backToTopImg").src = "images/backToTop-hover.png";
+    }
+
+    function backToTop() {
+        $("#" + currentAPI).click();
+    }
+    //设置iframe高度自适应
+    function iframeLoad() {
+        document.getElementById("contentBody").height = 0;
+        document.getElementById("contentBody").height = document.getElementById("contentBody").contentWindow.document.body.scrollHeight ;
+    }
+</script>
+
+</html>

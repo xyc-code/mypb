@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="./iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.page.js"></script>
+    <link rel="stylesheet" href="css/page.css">
+    <title>财务指标</title>
+    <style>
+      .financial-content{
+        background-color: #fff;
+        width:100%;
+        height:319px;
+      }
+      .financial-content > h3{
+        display: inline-block;margin-left:20px;margin-right:20px;
+      }
+      .financial-more{
+        color: #A8ADB4;
+        cursor: pointer;
+        float: right;
+      }
+      .financial-more > i{
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .financial-more > i:last-child{
+        margin-right: 0;
+      }
+      .financial-list{
+        padding: 0 15px;
+        width: 100%;
+      }
+      .financial-title{
+        width:15%;
+        text-align: left;
+      }
+      .financial-other{
+        font-size:12px;
+      }
+      .financial-title-other{
+        width:10%;
+      }
+      tr{
+        line-height: 30px;
+        height:30px;
+      }
+      th{
+        color: #333333;
+        font-size:14px;
+        border-bottom: 1px solid #EDEDED;
+        padding:3px 5px;
+      }
+      td{
+        text-align:center;
+        font-size:14px;
+        text-overflow: ellipsis; 
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 1px solid #EDEDED;
+        padding:3px 5px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>财务指标</h4>
+      <span class="box_title_right">
+        <i
+        class="iconfont icon-refresh"
+        title="刷新"
+        ></i>
+      </span>
+      </div>
+      <div class="financial-content content_inner">
+        <table class="financial-list" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <th class="financial-title">主要指标</th>
+            <th class="financial-title-other">2021-1</th>
+            <th class="financial-title-other">2021-2</th>
+            <th class="financial-title-other">2021-3</th>
+            <th class="financial-title-other">2021-4</th>
+            <th class="financial-title-other">2021-5</th>
+            <th class="financial-title-other">2021-6</th>
+          </tr>
+          <tr>
+            <td class="financial-title">
+              <span>总资产</span>
+            </td>
+            <td class="financial-other">1,483,400.00</td>
+            <td class="financial-other">1,420,500.00</td>
+            <td class="financial-other">1,345,700.00</td>
+            <td class="financial-other">1,097,400.00</td>
+            <td class="financial-other">1,097,400.00</td>
+            <td class="financial-other">1,097,400.00</td>
+            </td>
+          </tr>
+          <tr>
+              <td class="financial-title">
+                <span>流动资产</span>
+              </td>
+              <td class="financial-other">1,483,400.00</td>
+              <td class="financial-other">1,420,500.00</td>
+              <td class="financial-other">1,345,700.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              </td>
+            </tr>
+          <tr>
+              <td class="financial-title">
+                <span>流动负债</span>
+              </td>
+              <td class="financial-other">1,483,400.00</td>
+              <td class="financial-other">1,420,500.00</td>
+              <td class="financial-other">1,345,700.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              </td>
+            </tr>
+            <tr>
+              <td class="financial-title">
+                <span>营业收入</span>
+              </td>
+              <td class="financial-other">1,483,400.00</td>
+              <td class="financial-other">1,420,500.00</td>
+              <td class="financial-other">1,345,700.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              </td>
+            </tr>
+            <tr>
+              <td class="financial-title">
+                <span>营业成本</span>
+              </td>
+              <td class="financial-other">1,483,400.00</td>
+              <td class="financial-other">1,420,500.00</td>
+              <td class="financial-other">1,345,700.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              <td class="financial-other">1,097,400.00</td>
+              </td>
+            </tr>
+        </table>
+        <div class="tcdPageCode"></div>
+      </div>
+    </div>
+    <script>
+      function openAll(){
+        var a = document.getElementById('open');
+        if(a.style.display == 'block'){
+          a.style.display="none";
+        }else{
+          a.style.display="block";
+        }
+      }
+      $(".tcdPageCode").createPage({
+        pageCount:6,
+        current:1,
+        backFn:function(p){
+            console.log(p);
+        }
+    });
+    </script>
+  </body>
+</html>

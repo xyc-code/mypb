@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.tradeunion.dacaremedicineitem.dao.DaCareMedicineItemDAO">
+<resultMap id="DaCareMedicineItemDTOMap" type="avicit.tradeunion.dacaremedicineitem.dto.DaCareMedicineItemDTO">
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="hospital" column="HOSPITAL" jdbcType="VARCHAR" />
+	<result property="inhospDate" column="INHOSP_DATE" jdbcType="TIMESTAMP" />
+	<result property="outhospDate" column="OUTHOSP_DATE" jdbcType="TIMESTAMP" />
+	<result property="healthExpense" column="HEALTH_EXPENSE" jdbcType="DECIMAL" />
+	<result property="overallExpense" column="OVERALL_EXPENSE" jdbcType="DECIMAL" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+	<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+	<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+	<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+	<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+	<result property="attribute06" column="ATTRIBUTE_06" jdbcType="VARCHAR" />
+	<result property="attribute07" column="ATTRIBUTE_07" jdbcType="VARCHAR" />
+	<result property="attribute08" column="ATTRIBUTE_08" jdbcType="VARCHAR" />
+	<result property="attribute09" column="ATTRIBUTE_09" jdbcType="VARCHAR" />
+	<result property="attribute10" column="ATTRIBUTE_10" jdbcType="VARCHAR" />
+	<result property="attribute10" column="ATTRIBUTE_10" jdbcType="VARCHAR" />
+	<result property="fkId" column="FK_ID" jdbcType="VARCHAR" />
+
+</resultMap>
+<sql id="commonColums">
+	t1.ID,
+	t1.DISEASE,
+	t1.HOSPITAL,
+	t1.INHOSP_DATE,
+	t1.OUTHOSP_DATE,
+	t1.EMPLOYEE_CARD,
+	t1.DEPOSIT_BANK,
+	t1.DISEASE_TYPE,
+	t1.HEALTH_EXPENSE,
+	t1.OVERALL_EXPENSE,
+	t1.CREATED_BY,
+	t1.CREATION_DATE,
+	t1.LAST_UPDATED_BY,
+	t1.LAST_UPDATE_DATE,
+	t1.LAST_UPDATE_IP,
+	t1.VERSION,
+	t1.ORG_IDENTITY,
+	t1.CREATED_DEPT,
+	t1.ATTRIBUTE_01,
+	t1.ATTRIBUTE_02,
+	t1.ATTRIBUTE_03,
+	t1.ATTRIBUTE_04,
+	t1.ATTRIBUTE_05,
+	t1.ATTRIBUTE_06,
+	t1.ATTRIBUTE_07,
+	t1.ATTRIBUTE_08,
+	t1.ATTRIBUTE_09,
+	t1.ATTRIBUTE_10,
+	t1.FK_ID</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+    <if test="bean.id != null and bean.id != ''">
+        and t1.ID like concat(concat('%',#{bean.id}),'%')
+    </if>
+    <if test="bean.hospital != null and bean.hospital != ''">
+        and t1.HOSPITAL like concat(concat('%',#{bean.hospital}),'%')
+    </if>
+	<if test="bean.inhospDateBegin != null">
+		and t1.INHOSP_DATE &gt;= #{bean.inhospDateBegin}
+	</if>
+	<if test="bean.inhospDateEnd != null">
+		and t1.INHOSP_DATE &lt;= #{bean.inhospDateEnd}
+	</if>
+	<if test="bean.outhospDateBegin != null">
+		and t1.OUTHOSP_DATE &gt;= #{bean.outhospDateBegin}
+	</if>
+	<if test="bean.outhospDateEnd != null">
+		and t1.OUTHOSP_DATE &lt;= #{bean.outhospDateEnd}
+	</if>
+    <if test="bean.healthExpense != null and bean.healthExpense != ''">
+        and t1.HEALTH_EXPENSE like concat(concat('%',#{bean.healthExpense}),'%')
+    </if>
+    <if test="bean.overallExpense != null and bean.overallExpense != ''">
+        and t1.OVERALL_EXPENSE like concat(concat('%',#{bean.overallExpense}),'%')
+    </if>
+    <if test="bean.createdBy != null and bean.createdBy != ''">
+        and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%')
+    </if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+    <if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+        and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%')
+    </if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+    <if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+        and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%')
+    </if>
+    <if test="bean.version != null ">
+        and t1.VERSION = #{bean.version}
+    </if>
+    <if test="bean.createdDept != null and bean.createdDept != ''">
+        and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%')
+    </if>
+    <if test="bean.attribute01 != null and bean.attribute01 != ''">
+        and t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%')
+    </if>
+    <if test="bean.attribute02 != null and bean.attribute02 != ''">
+        and t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%')
+    </if>
+    <if test="bean.attribute03 != null and bean.attribute03 != ''">
+        and t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%')
+    </if>
+    <if test="bean.attribute04 != null and bean.attribute04 != ''">
+        and t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%')
+    </if>
+    <if test="bean.attribute05 != null and bean.attribute05 != ''">
+        and t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%')
+    </if>
+    <if test="bean.attribute06 != null and bean.attribute06 != ''">
+        and t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%')
+    </if>
+    <if test="bean.attribute07 != null and bean.attribute07 != ''">
+        and t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%')
+    </if>
+    <if test="bean.attribute08 != null and bean.attribute08 != ''">
+        and t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%')
+    </if>
+    <if test="bean.attribute09 != null and bean.attribute09 != ''">
+        and t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%')
+    </if>
+    <if test="bean.attribute10 != null and bean.attribute10 != ''">
+        and t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%')
+    </if>
+	<if test="bean.fkId != null and bean.fkId != ''">
+		and t1.FK_ID like concat(concat('%',#{bean.fkId}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+		<if test="bean.id != null and bean.id != ''">
+			or t1.ID like concat(concat('%',#{bean.id}),'%')
+		</if>
+
+		<if test="bean.hospital != null and bean.hospital != ''">
+			or t1.HOSPITAL like concat(concat('%',#{bean.hospital}),'%')
+		</if>
+		<if test="bean.inhospDateBegin != null">
+			or t1.INHOSP_DATE &gt;= #{bean.inhospDateBegin}
+		</if>
+		<if test="bean.inhospDateEnd != null">
+			or t1.INHOSP_DATE &lt;= #{bean.inhospDateEnd}
+		</if>
+		<if test="bean.outhospDateBegin != null">
+			or t1.OUTHOSP_DATE &gt;= #{bean.outhospDateBegin}
+		</if>
+		<if test="bean.outhospDateEnd != null">
+			or t1.OUTHOSP_DATE &lt;= #{bean.outhospDateEnd}
+		</if>
+
+		<if test="bean.healthExpense != null and bean.healthExpense != ''">
+			or t1.HEALTH_EXPENSE like concat(concat('%',#{bean.healthExpense}),'%')
+		</if>
+		<if test="bean.overallExpense != null and bean.overallExpenses != ''">
+			or t1.OVERALL_EXPENSE like concat(concat('%',#{bean.overallExpense}),'%')
+		</if>
+
+		<if test="bean.createdBy != null and bean.createdBy != ''">
+			or t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%')
+		</if>
+		<if test="bean.creationDateBegin != null">
+			or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+		</if>
+		<if test="bean.creationDateEnd != null">
+			or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+		</if>
+		<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+			or t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%')
+		</if>
+		<if test="bean.lastUpdateDateBegin != null">
+			or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+		</if>
+		<if test="bean.lastUpdateDateEnd != null">
+			or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+		</if>
+		<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+			or t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%')
+		</if>
+		<if test="bean.version != null and bean.version != ''">
+			or t1.VERSION = #{bean.version}
+		</if>
+		<if test="bean.createdDept != null and bean.createdDept != ''">
+			or t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%')
+		</if>
+		<if test="bean.attribute01 != null and bean.attribute01 != ''">
+			or t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%')
+		</if>
+		<if test="bean.attribute02 != null and bean.attribute02 != ''">
+			or t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%')
+		</if>
+		<if test="bean.attribute03 != null and bean.attribute03 != ''">
+			or t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%')
+		</if>
+		<if test="bean.attribute04 != null and bean.attribute04 != ''">
+			or t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%')
+		</if>
+		<if test="bean.attribute05 != null and bean.attribute05 != ''">
+			or t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%')
+		</if>
+		<if test="bean.attribute06 != null and bean.attribute06 != ''">
+			or t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%')
+		</if>
+		<if test="bean.attribute07 != null and bean.attribute07 != ''">
+			or t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%')
+		</if>
+		<if test="bean.attribute08 != null and bean.attribute08 != ''">
+			or t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%')
+		</if>
+		<if test="bean.attribute09 != null and bean.attribute09 != ''">
+			or t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%')
+		</if>
+		<if test="bean.attribute10 != null and bean.attribute10 != ''">
+			or t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%')
+		</if>
+		<if test="bean.fkId != null and bean.fkId != ''">
+			or t1.FK_ID like concat(concat('%',#{bean.fkId}),'%')
+		</if>
+	</trim>
+</sql>
+
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+<!-- 分页查询 DA_CARE_MEDICINE -->
+<select id="searchDaCareMedicineItemByPage" parameterType="java.util.Map" resultMap="DaCareMedicineItemDTOMap">
+	select
+
+	<include refid="commonColums"/>
+	from DA_CARE_MEDICINE_ITEM t1
+<where>
+	<if test="bean != null">
+		<choose>
+			<when test="keyWord != null and keyWord != '' ">
+				<include refid="commonWhereOr"/>
+
+			</when>
+			<otherwise>
+				<include refid="commonWhereAnd"/>
+
+			</otherwise>
+		</choose>
+		<include refid="defaultWhereAnd"/>
+	</if>
+</where>
+<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DA_CARE_MEDICINE -->
+<select id="searchDaCareMedicineItem" parameterType="java.util.Map" resultMap="DaCareMedicineItemDTOMap">
+	select
+	<include refid="commonColums"/>
+    from DA_CARE_MEDICINE_ITEM 	t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+</select>
+<!-- 主键查询对象 DA_CARE_MEDICINE -->
+<select id="findDaCareMedicineItemById" parameterType="java.lang.String" resultMap="DaCareMedicineItemDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DA_CARE_MEDICINE_ITEM t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DA_CARE_MEDICINE -->
+<insert id="insertDaCareMedicineItem" parameterType="avicit.tradeunion.dacaremedicineitem.dto.DaCareMedicineItemDTO">
+	insert into DA_CARE_MEDICINE_ITEM
+<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			ID,
+		</if>
+
+		<if test="hospital != null">
+			HOSPITAL,
+		</if>
+		<if test="inhospDate != null">
+			INHOSP_DATE,
+		</if>
+		<if test="outhospDate != null">
+			OUTHOSP_DATE,
+		</if>
+
+		<if test="healthExpense != null">
+			HEALTH_EXPENSE,
+		</if>
+		<if test="overallExpense != null">
+			OVERALL_EXPENSE,
+		</if>
+
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="attribute01 != null">
+			ATTRIBUTE_01,
+		</if>
+		<if test="attribute02 != null">
+			ATTRIBUTE_02,
+		</if>
+		<if test="attribute03 != null">
+			ATTRIBUTE_03,
+		</if>
+		<if test="attribute04 != null">
+			ATTRIBUTE_04,
+		</if>
+		<if test="attribute05 != null">
+			ATTRIBUTE_05,
+		</if>
+		<if test="attribute06 != null">
+			ATTRIBUTE_06,
+		</if>
+		<if test="attribute07 != null">
+			ATTRIBUTE_07,
+		</if>
+		<if test="attribute08 != null">
+			ATTRIBUTE_08,
+		</if>
+		<if test="attribute09 != null">
+			ATTRIBUTE_09,
+		</if>
+		<if test="attribute10 != null">
+			ATTRIBUTE_10,
+		</if>
+		<if test="fkId != null">
+			FK_ID,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+
+		<if test="hospital != null">
+			#{hospital,jdbcType = VARCHAR},
+		</if>
+		<if test="inhospDate != null">
+			#{inhospDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="outhospDate != null">
+			#{outhospDate,jdbcType = TIMESTAMP},
+		</if>
+
+		<if test="healthExpense != null">
+			#{healthExpense,jdbcType = VARCHAR},
+		</if>
+		<if test="overallExpense != null">
+			#{overallExpense,jdbcType = VARCHAR},
+		</if>
+
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute01 != null">
+			#{attribute01,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute02 != null">
+			#{attribute02,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute03 != null">
+			#{attribute03,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute04 != null">
+			#{attribute04,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute05 != null">
+			#{attribute05,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute06 != null">
+			#{attribute06,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute07 != null">
+			#{attribute07,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute08 != null">
+			#{attribute08,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute09 != null">
+			#{attribute09,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute10 != null">
+			#{attribute10,jdbcType = VARCHAR},
+		</if>
+		<if test="fkId != null">
+			#{fkId,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DA_CARE_MEDICINE -->
+<insert id="insertDaCareMedicineItemList" parameterType="java.util.List">
+	insert into DA_CARE_MEDICINE_ITEM(
+	ID ,
+	HOSPITAL ,
+	INHOSP_DATE ,
+	OUTHOSP_DATE ,
+	HEALTH_EXPENSE ,
+	OVERALL_EXPENSE ,
+	CREATED_BY ,
+	CREATION_DATE ,
+	LAST_UPDATED_BY ,
+	LAST_UPDATE_DATE ,
+	LAST_UPDATE_IP ,
+	VERSION ,
+	ORG_IDENTITY ,
+	CREATED_DEPT ,
+	ATTRIBUTE_01 ,
+	ATTRIBUTE_02 ,
+	ATTRIBUTE_03 ,
+	ATTRIBUTE_04 ,
+	ATTRIBUTE_05 ,
+	ATTRIBUTE_06 ,
+	ATTRIBUTE_07 ,
+	ATTRIBUTE_08 ,
+	ATTRIBUTE_09 ,
+	ATTRIBUTE_10 ,
+	FK_ID)
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.hospital,jdbcType = VARCHAR} ,
+	#{item.inhospDate,jdbcType = TIMESTAMP} ,
+	#{item.outhospDate,jdbcType = TIMESTAMP} ,
+	#{item.healthExpense,jdbcType = VARCHAR} ,
+	#{item.overallExpense,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.attribute01,jdbcType = VARCHAR} ,
+	#{item.attribute02,jdbcType = VARCHAR} ,
+	#{item.attribute03,jdbcType = VARCHAR} ,
+	#{item.attribute04,jdbcType = VARCHAR} ,
+	#{item.attribute05,jdbcType = VARCHAR} ,
+	#{item.attribute06,jdbcType = VARCHAR} ,
+	#{item.attribute07,jdbcType = VARCHAR} ,
+	#{item.attribute08,jdbcType = VARCHAR} ,
+	#{item.attribute09,jdbcType = VARCHAR} ,
+	#{item.attribute10,jdbcType = VARCHAR} ,
+	#{item.fkId,jdbcType = VARCHAR}      from dual
+</foreach>
+</insert>
+<!-- 更新对象 DA_CARE_MEDICINE -->
+<update id="updateDaCareMedicineItemSensitive" parameterType="avicit.tradeunion.dacaremedicineitem.dto.DaCareMedicineItemDTO">
+	update DA_CARE_MEDICINE_ITEM
+	<set>
+		<if test="id != null">
+			ID = #{id,jdbcType = VARCHAR} ,
+		</if>
+		<if test="hospital != null">
+			HOSPITAL = #{hospital,jdbcType = VARCHAR} ,
+		</if>
+		<if test="inhospDate != null">
+			INHOSP_DATE = #{inhospDate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="outhospDate != null">
+			OUTHOSP_DATE = #{outhospDate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="healthExpense != null">
+			HEALTH_EXPENSE = #{healthExpense,jdbcType = DECIMAL} ,
+		</if>
+		<if test="overallExpense != null">
+			OVERALL_EXPENSE = #{overallExpense,jdbcType = DECIMAL} ,
+		</if>
+
+		<if test="createdBy != null">
+			CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+		</if>
+		<if test="version != null">
+			VERSION = version+1 ,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute01 != null">
+			ATTRIBUTE_01 = #{attribute01,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute02 != null">
+			ATTRIBUTE_02 = #{attribute02,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute03 != null">
+			ATTRIBUTE_03 = #{attribute03,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute04 != null">
+			ATTRIBUTE_04 = #{attribute04,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute05 != null">
+			ATTRIBUTE_05 = #{attribute05,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute06 != null">
+			ATTRIBUTE_06 = #{attribute06,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute07 != null">
+			ATTRIBUTE_07 = #{attribute07,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute08 != null">
+			ATTRIBUTE_08 = #{attribute08,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute09 != null">
+			ATTRIBUTE_09 = #{attribute09,jdbcType = VARCHAR} ,
+		</if>
+		<if test="attribute10 != null">
+			ATTRIBUTE_10 = #{attribute10,jdbcType = VARCHAR}
+	    </if>
+		<if test="fkId != null">
+			FK_ID = #{fkId,jdbcType = VARCHAR}
+		</if>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DA_CARE_MEDICINE -->
+<update id="updateDaCareMedicineItemAll" parameterType="avicit.tradeunion.dacaremedicineitem.dto.DaCareMedicineItemDTO">
+	update DA_CARE_MEDICINE_ITEM
+	set
+	ID = #{id,jdbcType = VARCHAR} ,
+	HOSPITAL = #{hospital,jdbcType = VARCHAR} ,
+	INHOSP_DATE = #{inhospDate,jdbcType = TIMESTAMP} ,
+	OUTHOSP_DATE = #{outhospDate,jdbcType = TIMESTAMP} ,
+	HEALTH_EXPENSE = #{healthExpense,jdbcType = DECIMAL} ,
+	OVERALL_EXPENSE = #{overallExpense,jdbcType = DECIMAL} ,
+
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ATTRIBUTE_01 = #{attribute01,jdbcType = VARCHAR} ,
+	ATTRIBUTE_02 = #{attribute02,jdbcType = VARCHAR} ,
+	ATTRIBUTE_03 = #{attribute03,jdbcType = VARCHAR} ,
+	ATTRIBUTE_04 = #{attribute04,jdbcType = VARCHAR} ,
+	ATTRIBUTE_05 = #{attribute05,jdbcType = VARCHAR} ,
+	ATTRIBUTE_06 = #{attribute06,jdbcType = VARCHAR} ,
+	ATTRIBUTE_07 = #{attribute07,jdbcType = VARCHAR} ,
+	ATTRIBUTE_08 = #{attribute08,jdbcType = VARCHAR} ,
+	ATTRIBUTE_09 = #{attribute09,jdbcType = VARCHAR} ,
+	ATTRIBUTE_10 = #{attribute10,jdbcType = VARCHAR} ,
+	FK_ID = #{fkId,jdbcType = VARCHAR}   where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DA_CARE_MEDICINE -->
+<update id="updateDaCareMedicineItemList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DA_CARE_MEDICINE_ITEM
+		set
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		HOSPITAL = #{item.hospital,jdbcType = VARCHAR} ,
+		INHOSP_DATE = #{item.inhospDate,jdbcType = TIMESTAMP} ,
+		OUTHOSP_DATE = #{item.outhospDate,jdbcType = TIMESTAMP} ,
+		HEALTH_EXPENSE = #{item.healthExpense,jdbcType = DECIMAL} ,
+		OVERALL_EXPENSE = #{item.overallExpense,jdbcType = DECIMAL} ,
+
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ATTRIBUTE_01 = #{item.attribute01,jdbcType = VARCHAR} ,
+		ATTRIBUTE_02 = #{item.attribute02,jdbcType = VARCHAR} ,
+		ATTRIBUTE_03 = #{item.attribute03,jdbcType = VARCHAR} ,
+		ATTRIBUTE_04 = #{item.attribute04,jdbcType = VARCHAR} ,
+		ATTRIBUTE_05 = #{item.attribute05,jdbcType = VARCHAR} ,
+		ATTRIBUTE_06 = #{item.attribute06,jdbcType = VARCHAR} ,
+		ATTRIBUTE_07 = #{item.attribute07,jdbcType = VARCHAR} ,
+		ATTRIBUTE_08 = #{item.attribute08,jdbcType = VARCHAR} ,
+		ATTRIBUTE_09 = #{item.attribute09,jdbcType = VARCHAR} ,
+		ATTRIBUTE_10 = #{item.attribute10,jdbcType = VARCHAR} ,
+		FK_ID = #{item.fkId,jdbcType = VARCHAR} where id = #{item.id}
+		and version = #{version}
+	</foreach>
+</update>
+<!-- 主键删除 DA_CARE_MEDICINE -->
+<delete id="deleteDaCareMedicineItemById" parameterType="java.lang.String">
+	delete from DA_CARE_MEDICINE_ITEM  where id = #{id}
+</delete>
+
+
+
+<select id="searchDaCareMedicineItemListByFkId" parameterType="java.util.Map"   resultMap="DaCareMedicineItemDTOMap">
+select
+<include refid="commonColums"/>
+from DA_CARE_MEDICINE_ITEM t  where fk_id = #{fkId}
+
+	
+</select>
+</mapper>

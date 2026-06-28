@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的待办</title>
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <script src="./source/js/jquery-3.2.1.min.js"></script>
+    <script src="./source/js/jquery.page.js"></script>
+    <link rel="stylesheet" href="./source/style/page.css">
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>我的待办</h4>
+        <span class="box_title_right">
+<!--          <i class="iconfont icon-download" title="下载" onclick="downloadFile('abeyance')"></i>-->
+          <i
+            class="iconfont icon-refresh"
+            title="刷新"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="abeyance">
+          <li class="a-left">
+            <div class="al-tab active">待检验 (6)</div>
+            <div class="al-tab">送磨结果记录 (4)</div>
+            <div class="al-tab">报废待销账 (6)</div>
+            <div class="al-tab">送检结果记录 (2)</div>
+            <div class="al-tab">待判 (0)</div>
+            <div class="al-tab">送修结果记录 (5)</div>
+          </li>
+          <li class="metodo-content">
+            <table class="metodo-list" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <th class="metodo-title">类型名称</th>
+                <th class="metodo-title-other">状态</th>
+                <th class="metodo-title-other">发起人</th>
+                <th class="metodo-title-other">发起时间</th>
+                <th class="metodo-title-other">操作</th>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <span>费用报销单009-项目经理审核</span>
+                  <label
+                    style="font-size: 12px;padding: 1px 3px;color: #F5222D;background: #FBF0EA;border-radius: 3px;"
+                    >紧急</label
+                  >
+                </td>
+                <td class="metodo-other">
+                  <span
+                    style="border: 1px solid #91D5FF;border-radius: 3px;padding: 3px 5px;background: #E6F7FF;"
+                    >未开始</span
+                  >
+                </td>
+                <td class="metodo-other">平台管理员</td>
+                <td class="metodo-fee">2021-05-01</td>
+                <td class="metodo-other" style="color:#526ECC;">
+                  <i
+                    class="iconfont icon-edit-square"
+                    style="font-size: 14px;"
+                  ></i>
+                  <label>办理</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <span>差旅费报销单-项目经理审核</span>
+                </td>
+                <td class="metodo-other">
+                  <span
+                    style="border: 1px solid #52C41A;border-radius: 3px;padding: 3px 5px;background: #F6FFED;"
+                    >审批中</span
+                  >
+                </td>
+                <td class="metodo-other">平台管理员</td>
+                <td class="metodo-fee">2021-05-01</td>
+                <td class="metodo-other" style="color:#526ECC;">
+                  <i
+                    class="iconfont icon-edit-square"
+                    style="font-size: 14px;"
+                  ></i>
+                  <label>办理</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <span>招待费费报销单-项目经理审核</span>
+                  <label
+                    style="font-size: 12px;padding: 1px 3px;color: #F5222D;background: #FBF0EA;border-radius: 3px;"
+                    >紧急</label
+                  >
+                </td>
+                <td class="metodo-other">
+                  <span
+                    style="border: 1px solid #52C41A;border-radius: 3px;padding: 3px 5px;background: #F6FFED;"
+                    >进行中</span
+                  >
+                </td>
+                <td class="metodo-other">平台管理员</td>
+                <td class="metodo-fee">2021-05-01</td>
+                <td class="metodo-other" style="color:#526ECC;">
+                  <i
+                    class="iconfont icon-edit-square"
+                    style="font-size: 14px;"
+                  ></i>
+                  <label>办理</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <span>交通费报销单-项目经理审核</span>
+                </td>
+                <td class="metodo-other">
+                  <span style="border: 1px solid #FFA39E;border-radius: 3px;padding: 3px 5px;background: #FFF1F0;">已延期</span>
+                </td>
+                <td class="metodo-other">平台管理员</td>
+                <td class="metodo-fee">2021-05-01</td>
+                <td class="metodo-other" style="color:#526ECC;">
+                  <i class="iconfont icon-edit-square" style="font-size: 14px;"></i>
+                  <label>办理</label>
+                </td>
+              </tr>
+              <tr>
+                <td class="metodo-title">
+                  <span>费用报销单009-项目经理审核</span>
+                </td>
+                <td class="metodo-other">
+                  <span style="border: 1px solid #52C41A;border-radius: 3px;padding: 3px 5px;background: #F6FFED;">
+                  	进行中</span>
+                </td>
+                <td class="metodo-other">平台管理员</td>
+                <td class="metodo-fee">2021-05-01</td>
+                <td class="metodo-other" style="color:#526ECC;">
+                  <i class="iconfont icon-edit-square" style="font-size: 14px;"></i>
+                  <label>办理</label>
+                </td>
+              </tr>
+            </table>
+            <div class="tcdPageCode"></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    function downloadFile(fileName) {
+      let a = document.createElement("a");
+      a.href = "/download/template5/" + fileName + ".rar";
+      a.download = fileName + ".rar";
+      a.click();
+    }
+
+    $('.al-tab').click(function(event) {
+        $(this).addClass('active');
+        $(this).siblings().removeClass('active');
+    })
+
+    $(".tcdPageCode").createPage({
+        pageCount:6,
+        current:1,
+        backFn:function(p){
+            console.log(p);
+        }
+    });
+  </script>
+  <style>
+  	*{
+  		box-sizing: border-box;
+  	}
+    .a-left {
+      width: 18%;
+      float: left;
+      border-right: 1px solid #ebebeb;
+      padding: 10px;
+    }
+    .active {
+      border-left: 3px solid #526ecc;
+      color: #526ecc;
+    }
+    /* .a-left > div {
+      padding: 0 0 0 10px;
+      font-family: "微软雅黑";
+      font-weight: 400;
+      font-style: normal;
+      color: #7f7f7f;
+      line-height: 25px;
+      font-size: 14px;
+      margin: 0 0 10px 0;
+      cursor: pointer;
+    } */
+    
+    .abeyance > li:nth-child(2) {
+      width: 82%;
+      float: left;
+      padding: 0 0 0 10px;
+    }
+    .abeyance > li:nth-child(2) > div {
+      /* display: flex; */
+      height: 36px;
+      line-height: 36px;
+    }
+    .ac-title {
+      border-bottom: 1px solid #eee;
+      font-family: "微软雅黑 Bold", "微软雅黑 Regular", "微软雅黑";
+      font-weight: 700;
+      font-style: normal;
+      font-size: 14px;
+    }
+    .ac-title > p {
+      flex: 1;
+    }
+    .ac-title > p:nth-child(1) {
+      flex: 4;
+    }
+    .ac-title > p:nth-child(3),
+    .ac-title > p:nth-child(4) {
+      flex: 2;
+      text-align: center;
+    }
+    .ac-title > p:nth-last-child(1) {
+      text-align: center;
+    }
+    .ac-row:hover {
+      background: #f4f8ff;
+      cursor: pointer;
+    }
+    .ac-row > p {
+      flex: 1;
+      font-family: "微软雅黑";
+      font-weight: 400;
+      font-style: normal;
+      font-size: 12px;
+    }
+    .ac-row > p:nth-child(1) {
+      flex: 4;
+      font-size: 14px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ac-row > p:nth-child(3),
+    .ac-row > p:nth-child(4) {
+      flex: 2;
+      text-align: center;
+      font-family: "微软雅黑";
+      font-weight: 400;
+      font-style: normal;
+      font-size: 12px;
+      color: #7f7f7f;
+    }
+    .ac-row > p:nth-last-child(1) {
+      color: #526ecc;
+      text-align: center;
+    }
+    .acr-status {
+      display: inline-block;
+      width: 50px;
+      height: 60%;
+      margin: 10% 0;
+      line-height: 23px;
+      text-align: center;
+      border-radius: 5px;
+    }
+    .error {
+      color: #f5222d;
+      background: #fbf0ea;
+      font-size: 12px;
+      margin: 0 0 0 5px;
+      padding: 0 3px;
+      border-radius: 2px;
+    }
+    .metodo-content {
+      background-color: #fff;
+      width: 100%;
+      height: 308px;
+    }
+    .metodo-more {
+      color: #a8adb4;
+    }
+    .metodo-more > ul {
+      height: 48px;
+      line-height: 48px;
+      position: absolute;
+      right: 90px;
+    }
+    .metodo-active {
+      color: #1593f5;
+    }
+    .metodo-active > i {
+      color: #1593f5;
+    }
+    .metodo-more > ul > li {
+      list-style: none;
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-right: 10px;
+    }
+    .metodo-more > ul > li > i {
+      margin-top: -33px;
+      position: absolute;
+      margin-left: 13px;
+      font-size: 55px;
+    }
+    .metodo-list {
+      padding: 0 20px;
+      width: 100%;
+    }
+    .metodo-title {
+      width: 40%;
+      text-align: left;
+    }
+    .metodo-title-other {
+      width: 15%;
+      color: #403333;
+      font-size: 12px;
+    }
+    .metodo-other {
+      width: 15%;
+      color: #666;
+      font-size: 12px;
+    }
+    .metodo-fee {
+      width: 20%;
+      font-size: 13px;
+      color: #666666;
+    }
+    .metodo-title i {
+      font-size: 18px;
+      color: #fff;
+      display: inline-block;
+    }
+    .metodo-title p {
+      height: 30px;
+      width: 30px;
+      line-height: 30px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      margin: 5px 5px -2px 0;
+    }
+    .metodo-title span {
+      line-height: 30px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+    .metodo-title label {
+      font-size: 12px;
+      color: red;
+      background-color: #fbf0ea;
+      display: inline-block;
+      height: 18px;
+      line-height: 18px;
+      padding: 0 8px;
+      margin-left: 5px;
+    }
+    .metodo-opeartion i {
+      font-size: 14px !important;
+      margin-right: 8px;
+      color: #529de2;
+      margin-right: 0;
+    }
+    .metodo-opeartion label {
+      color: #529de2;
+      font-size: 12px;
+    }
+    .metodo-list tr:hover{
+      	background-color: #F7F7F7;
+      }
+    .metodo-list tr {
+      line-height: 30px;
+      height: 30px;
+    }
+    .metodo-list th {
+      color: #403333;
+      font-size: 14px;
+      border-bottom: 1px solid #ededed;
+      padding: 3px;
+    }
+    .metodo-list td {
+      text-align: left;
+      font-size: 12px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid #ededed;
+      padding: 3px;
+    }
+    .al-tab {
+      padding: 0 0 0 10px;
+      font-family: "微软雅黑";
+      font-weight: 400;
+      font-style: normal;
+      color: #7f7f7f;
+      line-height: 30px;
+      font-size: 14px;
+      margin: 0 0 10px 0;
+      cursor: pointer;
+    }
+    .active {
+      border-left: 3px solid #526ecc;
+      color: #526ecc;
+    }
+  </style>
+</html>

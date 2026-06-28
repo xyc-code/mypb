@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>新闻公告</title>
+    <style>
+    	*{
+    		box-sizing: border-box
+    	}
+      .notices-content{
+        background-color: #fff;width:100%;;
+      }
+      .notices-content > h3{
+        display: inline-block;margin-left:20px;margin-right:20px;
+      }
+      .notices-more{
+        color: #A8ADB4;
+        cursor: pointer;
+        float: right;
+      }
+      .notices-more > i{
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .notices-more > i:last-child{
+        margin-right: 0;
+      }
+      .clearfix-time {
+        display: block;
+        zoom: 1;
+      }
+      .clearfix-time:after {
+        content: "\20";
+        display: block;
+        clear: both; 
+        visibility: hidden;
+        line-height: 0;
+        height: 0;
+      }
+      .f12 {
+        font-size: 12px;color: #666;
+      }
+      .f14 {
+        font-size: 14px;
+      }
+      .notices-content ul {
+        background: url(img/sy51.png) repeat-y 10px top;
+      }
+      .notices-content li:before {
+        background: url(img/sy50.png) no-repeat center center;
+        left: 2px;
+        top:5px;
+        content: "";
+        display: block;
+        position: absolute;
+        width: 17px;
+        height: 17px;
+      }
+      .notices-content li a {
+        color: #333;
+        margin: 5px 0 0 0;
+        width: 100%;
+        font-size: 14px;
+        overflow: hidden;/*超出部分隐藏*/
+        white-space: nowrap;/*不换行*/
+        text-overflow:ellipsis;/*超出部分文字以...显示*/
+       	display: inline-block;
+       	cursor: pointer;
+       	text-decoration: none;
+      }
+      .notices-content li a:hover {
+        color: #526ECC;
+      }
+      .notices-content li {
+        width: 100%;
+        margin-top: 15px;
+        padding-left:30px;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>新闻公告</h4>
+      <span class="box_title_right">
+        <i class="iconfont icon-refresh"
+        title="刷新"></i>
+      </span>
+      </div>
+      <div class="notices-content content_inner">
+        <div class="notices-content">
+          <div class="clearfix-time">
+            <ul class="clearfix-time">
+              <li>
+                <a href="#">2020工业技术软件化发展论坛在天津举行</a>
+                <span class="f12">2020-10-20</span>
+              </li>
+              <li>
+                <a href="#">服贸会闭幕，金航数码云上服务伴你久久。</a>
+                <span class="f12">2020-10-20</span>
+              </li>
+              <li>
+                <a href="#">金航数码两项解决方案入选工信部2019年工业互联网APP</a>
+                <span class="f12">2020-10-20</span>
+              </li>
+              <li>
+                <a href="#">金航数码获2019北京软件和信息服务业综合实力百强企业</a>
+                <span class="f12">2020-10-20</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      </div>
+    
+      
+    <script type="text/javascript">
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1696 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.weekly.dao.WeeklyDao">
+
+	<resultMap id="WeeklyDTOMap" type="avicit.weekly.dto.WeeklyDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY"
+			jdbcType="VARCHAR" />
+		<result property="workTasks" column="WORK_TASKS" jdbcType="VARCHAR" />
+		<result property="personLiable" column="PERSON_LIABLE"
+			jdbcType="CLOB" />
+		<result property="fkSubColId" column="FK_SUB_COL_ID" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE"
+			jdbcType="TIMESTAMP" />
+		<result property="isCompletion" column="IS_COMPLETION"
+			jdbcType="VARCHAR" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE"
+			jdbcType="TIMESTAMP" />
+		<result property="topDateEvolve" column="TOP_DATE_EVOLVE"
+			jdbcType="VARCHAR" />
+		<result property="completionNode" column="COMPLETION_NODE"
+			jdbcType="TIMESTAMP" />
+		<result property="isKeyno" column="IS_KEYNO" jdbcType="VARCHAR" />
+		<result property="dateEvolve" column="DATE_EVOLVE" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="workClass" column="WORK_CLASS" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP"
+			jdbcType="VARCHAR" />
+			<result property="content" column="CONTENT" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap id="RollingPlanDTO" type="avicit.weekly.dto.RollingPlanDTO">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CREATED_BY" property="createdBy" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATED_BY" property="lastUpdatedBy"
+			jdbcType="VARCHAR" />
+		<result column="CREATION_DATE" property="creationDate"
+			jdbcType="VARCHAR" />
+		<result column="ROLLING_PLAN_CONTENT" property="rollingPlanContent"
+			jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"
+			jdbcType="VARCHAR" />
+		<result column="ROLLING_PLAN_ASSIGNMENT" property="rollingPlanAssignment"
+			jdbcType="VARCHAR" />
+		<result column="ROLLING_PLAN_DATE" property="rollingPlanDate"
+			jdbcType="VARCHAR" />
+		<result column="ROLLING_PLAN_TARGET" property="rollingPlanTarget"
+			jdbcType="VARCHAR" />
+		<result column="VERSION" property="version" jdbcType="VARCHAR" />
+		<result column="CREATED_DEPT" property="createdDept" jdbcType="VARCHAR" />
+		<result column="ORG_IDENTITY" property="orgIdentity" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_IP" property="lastUpdateIp"
+			jdbcType="VARCHAR" />
+		<result column="FK_SUB_COL_ID" property="fkSubColId" jdbcType="VARCHAR" />
+		<result column="DEPT_ID" property="deptId" jdbcType="CLOB" />
+		<result column="ROLLING_PLANDATE" property="rollingPlandate"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="DynMeeklyDTOMap" type="avicit.weekly.dto.DynMeeklyDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY"
+			jdbcType="VARCHAR" />
+		<result property="applicationDepartment" column="APPLICATION_DEPARTMENT"
+			jdbcType="VARCHAR" />
+		<result property="applicant" column="APPLICANT" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE"
+			jdbcType="TIMESTAMP" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE"
+			jdbcType="TIMESTAMP" />
+		<result property="formNo" column="FORM_NO" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP"
+			jdbcType="VARCHAR" />
+		<result property="applicationDate" column="APPLICATION_DATE"
+			jdbcType="VARCHAR" />
+		<result property="lastWeekly" column="LAST_WEEKLY" jdbcType="VARCHAR" />
+		<result property="lastYeek" column="LAST_YEEK" jdbcType="VARCHAR" />
+		<result property="businessstate" column="BUSINESSSTATE_" jdbcType="VARCHAR"/>
+		<result property="lcid" column="lcid" />
+	</resultMap>
+<resultMap id="DynDistributeDTOMap" type="avicit.weekly.dto.DynDistributeDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="deptId" column="DEPT_ID" jdbcType="VARCHAR" />
+		<result property="posenId" column="POSEN_ID" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="applicationDepartment" column="APPLICATION_DEPARTMENT" jdbcType="VARCHAR" />
+		<result property="lastWeekly" column="LAST_WEEKLY" jdbcType="VARCHAR" />
+		<result property="lastYeek" column="LAST_YEEK" jdbcType="VARCHAR" />
+		<result property="applicant" column="APPLICANT" jdbcType="VARCHAR" />
+		<result property="distributeDate" column="DISTRIBUTE_DATE" jdbcType="TIMESTAMP" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="isSon" column="IS_SON" jdbcType="VARCHAR" />
+		<result property="distributePosenId" column="DISTRIBUTE_POSEN_ID" jdbcType="VARCHAR" />
+		<result property="flowPathId" column="FLOW_PATH_ID" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="applicationDate" column="APPLICATION_DATE" jdbcType="VARCHAR" />
+</resultMap>
+<resultMap id="DynTypeDTOMap" type="avicit.weekly.dto.DynTypeDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="weeklySearch" column="WEEKLY_SEARCH" jdbcType="VARCHAR" />
+		<result property="weeklyProcess" column="WEEKLY_PROCESS" jdbcType="VARCHAR" />
+		<result property="weeklyPlanSearch" column="WEEKLY_PLAN_SEARCH" jdbcType="VARCHAR" />
+		<result property="weeklyDeleteSon" column="WEEKLY_DELETE_SON" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="weeklyDistribute" column="WEEKLY_DISTRIBUTE" jdbcType="VARCHAR" />
+		<result property="weeklySearchSon" column="WEEKLY_SEARCH_SON" jdbcType="VARCHAR" />
+		<result property="weeklyPlanSearchSon" column="WEEKLY_PLAN_SEARCH_SON" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="weeklyDelete" column="WEEKLY_DELETE" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="weeklyProcesssSon" column="WEEKLY_PROCESSS_SON" jdbcType="VARCHAR" />
+		<result property="weeklyDistributePosen" column="WEEKLY_DISTRIBUTE_POSEN" jdbcType="VARCHAR" />
+</resultMap>
+	<select id="weeklyPage" resultMap="WeeklyDTOMap">
+
+		SELECT
+		DISTINCT (id),
+		WORK_CLASS，
+		DATE_EVOLVE,
+		TOP_DATE_EVOLVE,
+		COMPLETION_NODE,
+		IS_KEYNO,
+		WORK_TASKS,
+		PERSON_LIABLE,
+		IS_COMPLETION,
+		CREATION_DATE,
+		CONTENT
+		FROM
+		weekly
+		where
+		CREATION_DATE &gt;= TO_DATE(#{sytime},
+		'yyyy-MM-dd')
+		and
+		CREATION_DATE &lt;=TO_DATE(#{outtime}, 'yyyy-MM-dd')
+		<if test='sql!=null and sql!=" "'>
+			and
+			TO_CHAR(DEPT_ID)=TO_CHAR(#{sql})
+		</if>
+		order by CREATION_DATE desc
+
+	</select>
+	<select id="weeklySPage" resultMap="WeeklyDTOMap">
+
+		SELECT
+		DISTINCT (id),
+		WORK_CLASS，
+		DATE_EVOLVE,
+		TOP_DATE_EVOLVE,
+		COMPLETION_NODE,
+		IS_KEYNO,
+		WORK_TASKS,
+		PERSON_LIABLE,
+		IS_COMPLETION,
+		CREATION_DATE,
+		CONTENT
+		FROM
+		DYN_SON_WEEKLY
+		where
+		CREATION_DATE &gt;=
+		TO_DATE(#{sytime}, 'yyyy-MM-dd')
+		and
+		CREATION_DATE
+		&lt;=TO_DATE(#{outtime}, 'yyyy-MM-dd')
+		<if test='sql!=null and sql!=" "'>
+			and
+			TO_CHAR(DEPT_ID)=TO_CHAR(#{sql})
+		</if>
+		order by WORK_CLASS 
+	</select>
+
+	<select id="getname" resultType="java.lang.String">
+		SELECT
+		NAME
+		FROM
+		SYS_USER
+		where ID =
+		#{ID}
+	</select>
+	<select id="RollingPlan" resultMap="RollingPlanDTO">
+		SELECT
+		*
+		FROM
+		ROLLING_PLAN
+		where ROLLING_PLAN_DATE &gt;=
+		TO_DATE(#{sytime}, 'yyyy-MM')
+		and
+		ROLLING_PLAN_DATE &lt;=
+		TO_DATE(#{outtime}, 'yyyy-MM')
+		<if test='sql!=null and sql!=" "'>
+			and
+			TO_CHAR(DEPT_ID)=TO_CHAR(#{sql})
+		</if>
+		order by ROLLING_PLAN_DATE 
+	</select>
+	<select id="RollingSPlan" resultMap="RollingPlanDTO">
+		SELECT
+
+		*
+		FROM
+		DYN_ROLLING_SON t1 
+	LEFT JOIN DYN_MEEKLY t2 on  t1.fk_sub_col_id = t2.id 
+	LEFT JOIN  BPM_HIST_PROCINST t3 on t3.FORMID_ = t2.id		
+		where t3.BUSINESSSTATE_ = 'ended' and ROLLING_PLAN_DATE &gt;=
+		TO_DATE(#{sytime}, 'yyyy-MM-dd')
+		and
+		ROLLING_PLAN_DATE &lt;=
+		TO_DATE(#{outtime}, 'yyyy-MM-dd')
+		<if test='sql!=null and sql!=" "'>
+			and
+			TO_CHAR(DEPT_ID)=TO_CHAR(#{sql})
+		</if>
+		order by ROLLING_PLAN_DATE desc
+	</select>
+	<!-- 新增对象 WEEKLY -->
+	<insert id="insertWeekly" parameterType="avicit.weekly.dto.WeeklyDTO">
+		insert into weekly
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="workTasks != null">
+				work_tasks,
+			</if>
+			<if test="personLiable != null">
+				person_liable,
+			</if>
+			<if test="fkSubColId != null">
+				fk_sub_col_id,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="isCompletion != null">
+				is_completion,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="topDateEvolve != null">
+				top_date_evolve,
+			</if>
+			<if test="completionNode != null">
+				completion_node,
+			</if>
+			<if test="isKeyno != null">
+				is_keyno,
+			</if>
+			<if test="dateEvolve != null">
+				date_evolve,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="workClass != null">
+				work_class,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="workTasks != null">
+				#{workTasks,jdbcType=VARCHAR},
+			</if>
+			<if test="personLiable != null">
+				#{personLiable,jdbcType=CLOB},
+			</if>
+			<if test="fkSubColId != null">
+				#{fkSubColId,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="isCompletion != null">
+				#{isCompletion,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="topDateEvolve != null">
+				#{topDateEvolve,jdbcType=VARCHAR},
+			</if>
+			<if test="completionNode != null">
+				#{completionNode,jdbcType=DATE},
+			</if>
+			<if test="isKeyno != null">
+				#{isKeyno,jdbcType=VARCHAR},
+			</if>
+			<if test="dateEvolve != null">
+				#{dateEvolve,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="workClass != null">
+				#{workClass,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<insert id="insertRollingPlan" parameterType="avicit.weekly.dto.RollingPlanDTO">
+		insert into rolling_plan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="fkSubColId != null">
+				fk_sub_col_id,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="rollingPlanContent != null">
+				rolling_plan_content,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="rollingPlanAssignment != null">
+				rolling_plan_assignment,
+			</if>
+
+			<if test="rollingPlanTarget != null">
+				rolling_plan_target,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="deptId != null">
+				dept_id,
+			</if>
+			<if test="rollingPlandate != null">
+				rolling_plandate,
+			</if>
+			<if test="rollingPlanDate != null">
+				rolling_plan_date,
+			</if> 
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="fkSubColId != null">
+				#{fkSubColId,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				<!-- TO_DATE(#{creationDate},'yyyy-mm-dd hh24:mi:ss'), -->
+				#{creationDate,jdbcType=DATE},
+			</if>
+			<if test="rollingPlanContent != null">
+				#{rollingPlanContent,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+			<!-- 	TO_DATE(#{lastUpdateDate},'yyyy-mm-dd hh24:mi:ss'), -->
+				#{lastUpdateDate,jdbcType=DATE},
+			</if>
+			<if test="rollingPlanAssignment != null">
+				#{rollingPlanAssignment,jdbcType=VARCHAR},
+			</if>
+
+			<if test="rollingPlanTarget != null">
+				#{rollingPlanTarget,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				#{deptId,jdbcType=CLOB},
+			</if>
+			<if test="rollingPlandate != null">
+				#{rollingPlandate,jdbcType=VARCHAR},
+			</if>
+		<if test="rollingPlanDate != null">
+				TO_DATE(#{rollingPlanDate},'yyyy-mm-dd') 
+				<!--  #{rollingPlanDate,jdbcType=DATE}  -->
+			</if> 
+
+		</trim>
+	</insert>
+	<select id='lastWeekly' resultMap="DynMeeklyDTOMap">
+		select * FROM DYN_MEEKLY where
+		id = #{lsid} 
+	</select>
+	<!-- 更新对象 DYN_MEEKLY -->
+	<update id="updateDynMeeklySensitive" parameterType="avicit.weekly.dto.DynMeeklyDTO">
+		update dyn_meekly
+		<set>
+			<if test="id != null">
+				id =#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				created_by =#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by =#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="applicationDepartment != null">
+				application_department
+				=#{applicationDepartment,jdbcType=VARCHAR},
+			</if>
+			<if test="applicant != null">
+				applicant =#{applicant,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				creation_date =#{creationDate},
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date =#{lastUpdateDate},
+			</if>
+			<if test="formNo != null">
+				form_no =#{formNo,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version =version+1,
+			</if>
+			<if test="createdDept != null">
+				created_dept =#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				org_identity =#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip =#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="applicationDate != null">
+				application_date =#{applicationDate,jdbcType=VARCHAR},
+			</if>
+			<if test="lastWeekly != null">
+				last_weekly =#{lastWeekly,jdbcType=VARCHAR},
+			</if>
+			<if test="lastYeek != null">
+				last_yeek =#{lastYeek,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id} and version =#{version}
+	</update>
+	<select id="searchDynMeeklyByPage" parameterType="java.util.Map"
+		resultMap="DynMeeklyDTOMap">
+		select
+		t1.id ,
+		t1.created_by ,
+		t1.last_updated_by ,
+		t1.application_department ,
+		t1.applicant ,
+		t1.creation_date ,
+		t1.last_update_date ,
+		t1.form_no ,
+		t1.version ,
+		t1.created_dept ,
+		t1.org_identity ,
+		t1.last_update_ip ,
+		t1.application_date ,
+		t1.last_weekly ,
+		t1.last_yeek ,
+		t1.is_son,
+		t2.BUSINESSSTATE_,
+		t2.ID_ as lcid 
+		from dyn_meekly t1
+		LEFT JOIN BPM_HIST_PROCINST t2 ON t1.ID = t2.FORMID_
+		<where>
+			t1.IS_SON = #{is,jdbcType=VARCHAR}
+			<if test="sysid!=null and sysid !='' ">
+			and t1.applicant=(select name from SYS_USER where id = #{sysid})
+			</if>
+			<if test="bean != null">
+				<if test="bean.id != null and bean.id != ''">
+					and t1.ID =#{bean.id}
+				</if>
+				<if test="bean.createdBy != null and bean.createdBy != ''">
+					and t1.CREATED_BY like
+					concat(concat('%',#{bean.createdBy}),'%')
+				</if>
+				<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+					and t1.LAST_UPDATED_BY like
+					concat(concat('%',#{bean.lastUpdatedBy}),'%')
+				</if>
+				<if
+					test="bean.applicationDepartment != null and bean.applicationDepartment != ''">
+					and t1.APPLICATION_DEPARTMENT like
+					concat(concat('%',#{bean.applicationDepartment}),'%')
+				</if>
+				<if test="bean.applicant != null and bean.applicant != ''">
+					and t1.APPLICANT like
+					concat(concat('%',#{bean.applicant}),'%')
+				</if>
+				<if test="bean.creationDate != null and bean.creationDate != ''">
+					and t1.CREATION_DATE like
+					concat(concat('%',#{bean.creationDate}),'%')
+				</if>
+				<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+					and t1.LAST_UPDATE_DATE like
+					concat(concat('%',#{bean.lastUpdateDate}),'%')
+				</if>
+				<if test="bean.formNo != null and bean.formNo != ''">
+					and t1.FORM_NO like
+					concat(concat('%',#{bean.formNo}),'%')
+				</if>
+				<if test="bean.version != null ">
+					and t1.VERSION like
+					concat(concat('%',#{bean.version}),'%')
+				</if>
+				<if test="bean.createdDept != null and bean.createdDept != ''">
+					and t1.CREATED_DEPT like
+					concat(concat('%',#{bean.createdDept}),'%')
+				</if>
+				<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+					and t1.ORG_IDENTITY like
+					concat(concat('%',#{bean.orgIdentity}),'%')
+				</if>
+				<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+					and t1.LAST_UPDATE_IP like
+					concat(concat('%',#{bean.lastUpdateIp}),'%')
+				</if>
+				<if test="bean.applicationDate != null and bean.applicationDate != ''">
+					and t1.APPLICATION_DATE like
+					concat(concat('%',#{bean.applicationDate}),'%')
+				</if>
+				<if test="bean.lastWeekly != null and bean.lastWeekly != ''">
+					and t1.LAST_WEEKLY like
+					concat(concat('%',#{bean.lastWeekly}),'%')
+				</if>
+				<if test="bean.lastYeek != null and bean.lastYeek != ''">
+					and t1.LAST_YEEK like
+					concat(concat('%',#{bean.lastYeek}),'%')
+				</if>
+				<if test="bean.isSon != null and bean.isSon != ''">
+					and t1.IS_SON like concat(concat('%',#{bean.isSon}),'%')
+				</if>
+			</if>
+			and t1.ORG_IDENTITY = #{org}
+		</where>
+
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}
+			</when>
+			<otherwise>
+				order by t1.creation_date desc
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<insert id="insertDynDistributeList" parameterType="avicit.weekly.dto.DynDistributeDTO">
+	insert into dyn_distribute
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="deptId != null">
+				dept_id,
+			</if>
+			<if test="posenId != null">
+				posen_id,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="applicationDepartment != null">
+				application_department,
+			</if>
+			<if test="lastWeekly != null">
+				last_weekly,
+			</if>
+			<if test="lastYeek != null">
+				last_yeek,
+			</if>
+			<if test="applicant != null">
+				applicant,
+			</if>
+			<if test="distributeDate != null">
+				distribute_date,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="distributePosenId != null">
+				distribute_posen_id,
+			</if>
+			<if test="flowPathId != null">
+				flow_path_id,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="applicationDate != null">
+				application_date,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				#{deptId,jdbcType=VARCHAR},
+			</if>
+			<if test="posenId != null">
+				#{posenId,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="applicationDepartment != null">
+				#{applicationDepartment,jdbcType=VARCHAR},
+			</if>
+			<if test="lastWeekly != null">
+				#{lastWeekly,jdbcType=VARCHAR},
+			</if>
+			<if test="lastYeek != null">
+				#{lastYeek,jdbcType=VARCHAR},
+			</if>
+			<if test="applicant != null">
+				#{applicant,jdbcType=VARCHAR},
+			</if>
+			<if test="distributeDate != null">
+				#{distributeDate,jdbcType=DATE},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="distributePosenId != null">
+				#{distributePosenId,jdbcType=VARCHAR},
+			</if>
+			<if test="flowPathId != null">
+				#{flowPathId,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="applicationDate != null">
+				#{applicationDate,jdbcType=VARCHAR},
+			</if>
+	</trim>
+</insert>
+<select id="searchDynDistributeByPage" parameterType="java.util.Map" resultMap="DynDistributeDTOMap">
+	select
+		t1.id                             ,
+		t1.created_by                     ,
+		t1.dept_id                        ,
+		t1.posen_id                       ,
+		t1.last_updated_by                ,
+		t1.application_department         ,
+		t1.last_weekly                    ,
+		t1.last_yeek                      ,
+		t1.applicant                      ,
+		t1.distribute_date                ,
+		t1.creation_date                  ,
+		t1.last_update_date               ,
+		t1.is_son                         ,
+		t1.distribute_posen_id            ,
+		t1.flow_path_id                   ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.last_update_ip                 ,
+		t1.application_date               
+	from dyn_distribute 	t1 
+		<where>
+		t1.posen_id = #{user}
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.deptId != null and bean.deptId != ''">
+				and t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%') 
+			</if>
+			<if test="bean.posenId != null and bean.posenId != ''">
+				and t1.POSEN_ID like concat(concat('%',#{bean.posenId}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.applicationDepartment != null and bean.applicationDepartment != ''">
+				and t1.APPLICATION_DEPARTMENT like concat(concat('%',#{bean.applicationDepartment}),'%') 
+			</if>
+			<if test="bean.lastWeekly != null and bean.lastWeekly != ''">
+				and t1.LAST_WEEKLY like concat(concat('%',#{bean.lastWeekly}),'%') 
+			</if>
+			<if test="bean.lastYeek != null and bean.lastYeek != ''">
+				and t1.LAST_YEEK like concat(concat('%',#{bean.lastYeek}),'%') 
+			</if>
+			<if test="bean.applicant != null and bean.applicant != ''">
+				and t1.APPLICANT like concat(concat('%',#{bean.applicant}),'%') 
+			</if>
+			<if test="bean.distributeDateBegin != null and bean.distributeDateBegin != ''">
+				and t1.DISTRIBUTE_DATE &gt;= #{bean.distributeDateBegin}
+			</if>
+			<if test="bean.distributeDateEnd != null and bean.distributeDateEnd != ''">
+				and t1.DISTRIBUTE_DATE &lt;= #{bean.distributeDateEnd}
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.isSon != null and bean.isSon != ''">
+				and t1.IS_SON like concat(concat('%',#{bean.isSon}),'%') 
+			</if>
+			<if test="bean.distributePosenId != null and bean.distributePosenId != ''">
+				and t1.DISTRIBUTE_POSEN_ID like concat(concat('%',#{bean.distributePosenId}),'%') 
+			</if>
+			<if test="bean.flowPathId != null and bean.flowPathId != ''">
+				and t1.FLOW_PATH_ID like concat(concat('%',#{bean.flowPathId}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.applicationDate != null and bean.applicationDate != ''">
+				and t1.APPLICATION_DATE like concat(concat('%',#{bean.applicationDate}),'%') 
+			</if>
+			</if>
+			and t1.ORG_IDENTITY =#{org}
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.creation_date desc
+			</otherwise>
+		</choose>
+</select>
+<select id="selectJoin" resultType="java.lang.String">
+select BUSINESSSTATE_ from BPM_HIST_PROCINST
+ where FORMID_=#{lsid}
+
+</select>
+<select id="selectChong" resultType="java.lang.String">
+select ROLLING_PLAN_ASSIGNMENT 
+from 
+ROLLING_PLAN
+where ROLLING_PLAN_ASSIGNMENT = #{ASSIGNMENT}
+and
+CREATION_DATE &gt;= TO_DATE(#{sytime},'yyyy-MM-dd')
+and
+CREATION_DATE &lt;=TO_DATE(#{outtime}, 'yyyy-MM-dd')
+</select>
+<delete id="deleteWeeklyById" parameterType="java.lang.String">
+		delete from DYN_MEEKLY  where  id = #{id}
+</delete>
+<delete id="deleteWeeklyPage" parameterType="java.lang.String">
+		delete from weekly  where  FK_SUB_COL_ID = #{id}
+</delete>
+<delete id="deleteWeeklyRoll" parameterType="java.lang.String">
+       delete from ROLLING_PLAN  where  FK_SUB_COL_ID = #{id}
+</delete>
+<delete id="deleteWeeklySPage" parameterType="java.lang.String">
+		delete from DYN_SON_WEEKLY  where  FK_SUB_COL_ID = #{id}
+</delete>
+<delete id="deleteWeeklySRoll" parameterType="java.lang.String">
+       delete from DYN_ROLLING_SON  where  FK_SUB_COL_ID = #{id}
+</delete>
+<select id="searchWeeklyByPage" parameterType="java.util.Map" resultMap="WeeklyDTOMap">
+	select
+		t1.id                             ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.work_tasks                     ,
+		t1.person_liable                  ,
+		t1.fk_sub_col_id                  ,
+		t1.creation_date                  ,
+		t1.is_completion                  ,
+		t1.last_update_date               ,
+		t1.top_date_evolve                ,
+		t1.completion_node                ,
+		t1.is_keyno                       ,
+		t1.date_evolve                    ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.work_class                     ,
+		t1.last_update_ip                 ,
+		t1.dept_id                        ,
+		t1.content                        
+	from weekly 	t1 
+	LEFT JOIN DYN_MEEKLY t2 on  t1.fk_sub_col_id = t2.id 
+	LEFT JOIN  BPM_HIST_PROCINST t3 on t3.FORMID_ = t2.id
+		<where>
+		t3.BUSINESSSTATE_ = 'ended'
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.workTasks != null and bean.workTasks != ''">
+				and t1.WORK_TASKS like concat(concat('%',#{bean.workTasks}),'%') 
+			</if>
+			<if test="bean.personLiable != null and bean.personLiable != ''">
+				and t1.PERSON_LIABLE like concat(concat('%',#{bean.personLiable}),'%') 
+			</if>
+			<if test="bean.fkSubColId != null and bean.fkSubColId != ''">
+				and t1.FK_SUB_COL_ID like concat(concat('%',#{bean.fkSubColId}),'%') 
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.isCompletion != null and bean.isCompletion != ''">
+				and t1.IS_COMPLETION like concat(concat('%',#{bean.isCompletion}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.topDateEvolve != null and bean.topDateEvolve != ''">
+				and t1.TOP_DATE_EVOLVE like concat(concat('%',#{bean.topDateEvolve}),'%') 
+			</if>
+			<if test="bean.completionNodeBegin != null and bean.completionNodeBegin != ''">
+				and t1.COMPLETION_NODE &gt;= #{bean.completionNodeBegin}
+			</if>
+			<if test="bean.completionNodeEnd != null and bean.completionNodeEnd != ''">
+				and t1.COMPLETION_NODE &lt;= #{bean.completionNodeEnd}
+			</if>
+			<if test="bean.isKeyno != null and bean.isKeyno != ''">
+				and t1.IS_KEYNO like concat(concat('%',#{bean.isKeyno}),'%') 
+			</if>
+			<if test="bean.dateEvolve != null and bean.dateEvolve != ''">
+				and t1.DATE_EVOLVE like concat(concat('%',#{bean.dateEvolve}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.workClass != null and bean.workClass != ''">
+				and t1.WORK_CLASS like concat(concat('%',#{bean.workClass}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.content != null and bean.content != ''">
+				and t1.CONTENT like concat(concat('%',#{bean.content}),'%') 
+			</if>
+			</if>
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.WORK_CLASS 
+			</otherwise>
+		</choose>
+</select>
+<!-- 分页查询 OrWEEKLY -->
+<select id="searchWeeklyByPageOr" parameterType="java.util.Map" resultMap="WeeklyDTOMap">
+	select
+		t1.id                             ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.work_tasks                     ,
+		t1.person_liable                  ,
+		t1.fk_sub_col_id                  ,
+		t1.creation_date                  ,
+		t1.is_completion                  ,
+		t1.last_update_date               ,
+		t1.top_date_evolve                ,
+		t1.completion_node                ,
+		t1.is_keyno                       ,
+		t1.date_evolve                    ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.work_class                     ,
+		t1.last_update_ip                 ,
+		t1.dept_id                        ,
+		t1.content                        
+	from weekly 	t1 
+	LEFT JOIN DYN_MEEKLY t2 on  t1.fk_sub_col_id = t2.id 
+	LEFT JOIN  BPM_HIST_PROCINST t3 on t3.FORMID_ = t2.id
+		<where>
+		t3.BUSINESSSTATE_ = 'ended'
+			<if test="bean != null">
+			<trim  >
+			<if test="bean.id != null and bean.id != ''">
+				or t1.ID =#{bean.id}
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				or t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%')  
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				or t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%')  
+			</if>
+			<if test="bean.workTasks != null and bean.workTasks != ''">
+				and t1.WORK_TASKS like concat(concat('%',#{bean.workTasks}),'%')  
+			</if>
+			<if test="bean.personLiable != null and bean.personLiable != ''">
+				or t1.PERSON_LIABLE like concat(concat('%',#{bean.personLiable}),'%')  
+			</if>
+			<if test="bean.fkSubColId != null and bean.fkSubColId != ''">
+				or t1.FK_SUB_COL_ID like concat(concat('%',#{bean.fkSubColId}),'%')  
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				or t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%')  
+			</if>
+			<if test="bean.isCompletion != null and bean.isCompletion != ''">
+				or t1.IS_COMPLETION like concat(concat('%',#{bean.isCompletion}),'%')  
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				or t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%')  
+			</if>
+			<if test="bean.topDateEvolve != null and bean.topDateEvolve != ''">
+				or t1.TOP_DATE_EVOLVE like concat(concat('%',#{bean.topDateEvolve}),'%')  
+			</if>
+			<if test="bean.completionNodeBegin != null and bean.completionNodeBegin != ''">
+				or t1.COMPLETION_NODE &gt;= #{bean.completionNodeBegin}
+			</if>
+			<if test="bean.completionNodeEnd != null and bean.completionNodeEnd != ''">
+				or t1.COMPLETION_NODE &lt;= #{bean.completionNodeEnd}
+			</if>
+			<if test="bean.isKeyno != null and bean.isKeyno != ''">
+				or t1.IS_KEYNO like concat(concat('%',#{bean.isKeyno}),'%')  
+			</if>
+			<if test="bean.dateEvolve != null and bean.dateEvolve != ''">
+				or t1.DATE_EVOLVE like concat(concat('%',#{bean.dateEvolve}),'%')  
+			</if>
+			<if test="bean.version != null">
+				or t1.VERSION like concat(concat('%',#{bean.version}),'%')  
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				or t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%')  
+			</if>
+			<if test="bean.workClass != null and bean.workClass != ''">
+				or t1.WORK_CLASS like concat(concat('%',#{bean.workClass}),'%')  
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				or t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%')  
+			</if>
+			<if test="bean.content != null and bean.content != ''">
+				or t1.CONTENT like concat(concat('%',#{bean.content}),'%')  
+			</if>
+			</trim>
+			</if>
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.WORK_CLASS 
+			</otherwise>
+		</choose>
+</select>
+<select id="searchWeekly" parameterType="java.util.Map" resultMap="WeeklyDTOMap">
+	select
+		t1.id                             ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.work_tasks                     ,
+		t1.person_liable                  ,
+		t1.fk_sub_col_id                  ,
+		t1.creation_date                  ,
+		t1.is_completion                  ,
+		t1.last_update_date               ,
+		t1.top_date_evolve                ,
+		t1.completion_node                ,
+		t1.is_keyno                       ,
+		t1.date_evolve                    ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.work_class                     ,
+		t1.last_update_ip                 ,
+		t1.dept_id                        ,
+		t1.content                        
+	from weekly 	t1
+		<where>
+			<if test="id != null and id != ''">
+				and t1.ID =#{id}
+			</if>
+			<if test="createdBy != null and createdBy != ''">
+				and t1.CREATED_BY =#{createdBy}
+			</if>
+			<if test="lastUpdatedBy != null and lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY =#{lastUpdatedBy}
+			</if>
+			<if test="workTasks != null and workTasks != ''">
+				and t1.WORK_TASKS =#{workTasks}
+			</if>
+			<if test="personLiable != null and personLiable != ''">
+				and t1.PERSON_LIABLE =#{personLiable}
+			</if>
+			<if test="fkSubColId != null and fkSubColId != ''">
+				and t1.FK_SUB_COL_ID =#{fkSubColId}
+			</if>
+			<if test="creationDate != null and creationDate != ''">
+				and t1.CREATION_DATE =#{creationDate}
+			</if>
+			<if test="isCompletion != null and isCompletion != ''">
+				and t1.IS_COMPLETION =#{isCompletion}
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE =#{lastUpdateDate}
+			</if>
+			<if test="topDateEvolve != null and topDateEvolve != ''">
+				and t1.TOP_DATE_EVOLVE =#{topDateEvolve}
+			</if>
+			<if test="completionNodeBegin != null and completionNodeBegin != ''">
+				and t1.COMPLETION_NODE &gt;= #{completionNodeBegin}
+			</if>
+			<if test="completionNodeEnd != null and completionNodeEnd != ''">
+				and t1.COMPLETION_NODE &lt;= #{completionNodeEnd}
+			</if>
+			<if test="isKeyno != null and isKeyno != ''">
+				and t1.IS_KEYNO =#{isKeyno}
+			</if>
+			<if test="dateEvolve != null and dateEvolve != ''">
+				and t1.DATE_EVOLVE =#{dateEvolve}
+			</if>
+			<if test="version != null">
+				and t1.VERSION =#{version}
+			</if>
+			<if test="createdDept != null and createdDept != ''">
+				and t1.CREATED_DEPT =#{createdDept}
+			</if>
+			<if test="orgIdentity != null and orgIdentity != ''">
+				and t1.ORG_IDENTITY =#{orgIdentity}
+			</if>
+			<if test="workClass != null and workClass != ''">
+				and t1.WORK_CLASS =#{workClass}
+			</if>
+			<if test="lastUpdateIp != null and lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP =#{lastUpdateIp}
+			</if>
+			<if test="content != null and content != ''">
+				and t1.CONTENT =#{content}
+			</if>
+		</where>
+</select>
+
+<!-- 分页查询 ROLLING_PLAN -->
+<select id="searchRollingPlanByPage" parameterType="java.util.Map" resultMap="RollingPlanDTO">
+	SELECT 
+distinct
+	t1.rolling_plandate ,
+	t1.rolling_plan_date, t1.rolling_plan_content,t1.rolling_plan_assignment,t1.rolling_plan_target
+FROM
+	rolling_plan t1 
+	LEFT JOIN DYN_MEEKLY t2 on  t1.fk_sub_col_id = t2.id 
+	LEFT JOIN  BPM_HIST_PROCINST t3 on t3.FORMID_ = t2.id
+		<where>
+		t3.BUSINESSSTATE_ = 'ended'
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.fkSubColId != null and bean.fkSubColId != ''">
+				and t1.FK_SUB_COL_ID like concat(concat('%',#{bean.fkSubColId}),'%') 
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.rollingPlanContent != null and bean.rollingPlanContent != ''">
+				and t1.ROLLING_PLAN_CONTENT like concat(concat('%',#{bean.rollingPlanContent}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.rollingPlanAssignment != null and bean.rollingPlanAssignment != ''">
+				and t1.ROLLING_PLAN_ASSIGNMENT like concat(concat('%',#{bean.rollingPlanAssignment}),'%') 
+			</if>
+			<if test="bean.rollingPlanDateBegin != null and bean.rollingPlanDateBegin != ''">
+			
+				and t1.ROLLING_PLAN_DATE &gt;= TO_DATE(#{bean.rollingPlanDateBegin}, 'yyyy-MM')
+			</if>
+			<if test="bean.rollingPlanDateEnd != null and bean.rollingPlanDateEnd != ''">		
+				and t1.ROLLING_PLAN_DATE &lt;= ADD_MONTHS(TO_DATE(#{bean.rollingPlanDateEnd}, 'yyyy-MM'),1)
+			</if>
+			<if test="bean.rollingPlanTarget != null and bean.rollingPlanTarget != ''">
+				and t1.ROLLING_PLAN_TARGET like concat(concat('%',#{bean.rollingPlanTarget}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.deptId != null and bean.deptId != ''">
+				and t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%') 
+			</if>
+			<if test="bean.rollingPlandate != null and bean.rollingPlandate != ''">
+				and t1.ROLLING_PLANDATE like concat(concat('%',#{bean.rollingPlandate}),'%') 
+			</if>
+			</if>
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.rolling_plan_date 
+			</otherwise>
+		</choose>
+</select>
+<!-- 分页查询 OrROLLING_PLAN -->
+<select id="searchRollingPlanByPageOr" parameterType="java.util.Map" resultMap="RollingPlanDTO">
+	SELECT 
+distinct
+	t1.rolling_plandate ,
+	t1.rolling_plan_date, t1.rolling_plan_content,t1.rolling_plan_assignment,t1.rolling_plan_target
+FROM
+	rolling_plan t1 
+	LEFT JOIN DYN_MEEKLY t2 on  t1.fk_sub_col_id = t2.id 
+	LEFT JOIN  BPM_HIST_PROCINST t3 on t3.FORMID_ = t2.id
+		<where>
+		t3.BUSINESSSTATE_ = 'ended'
+			<if test="bean != null">
+			<trim  >
+			<if test="bean.id != null and bean.id != ''">
+				or t1.ID =#{bean.id}
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				or t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%')  
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				or t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%')  
+			</if>
+			<if test="bean.fkSubColId != null and bean.fkSubColId != ''">
+				or t1.FK_SUB_COL_ID like concat(concat('%',#{bean.fkSubColId}),'%')  
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				or t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%')  
+			</if>
+			<if test="bean.rollingPlanContent != null and bean.rollingPlanContent != ''">
+				or t1.ROLLING_PLAN_CONTENT like concat(concat('%',#{bean.rollingPlanContent}),'%')  
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				or t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%')  
+			</if>
+			<if test="bean.rollingPlanAssignment != null and bean.rollingPlanAssignment != ''">
+				and t1.ROLLING_PLAN_ASSIGNMENT like concat(concat('%',#{bean.rollingPlanAssignment}),'%')  
+			</if>
+			<if test="bean.rollingPlanDateBegin != null and bean.rollingPlanDateBegin != ''">
+			
+				or t1.ROLLING_PLAN_DATE &gt;= TO_DATE(#{substr(bean.rollingPlanDateBegin}, 'yyyy-MM-dd')
+			</if>
+			<if test="bean.rollingPlanDateEnd != null and bean.rollingPlanDateEnd != ''">
+			
+				or t1.ROLLING_PLAN_DATE &lt;= ADD_MONTHS(TO_DATE(#{bean.rollingPlanDateEnd}, 'yyyy-MM-dd'),1)
+			</if>
+			<if test="bean.rollingPlanTarget != null and bean.rollingPlanTarget != ''">
+				or t1.ROLLING_PLAN_TARGET like concat(concat('%',#{bean.rollingPlanTarget}),'%')  
+			</if>
+			<if test="bean.version != null">
+				or t1.VERSION like concat(concat('%',#{bean.version}),'%')  
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				or t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%')  
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				or t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%')  
+			</if>
+			<if test="bean.deptId != null and bean.deptId != ''">
+				or t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%')  
+			</if>
+			<if test="bean.rollingPlandate != null and bean.rollingPlandate != ''">
+				or t1.ROLLING_PLANDATE like concat(concat('%',#{bean.rollingPlandate}),'%')  
+			</if>
+			</trim>
+			</if>
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.rolling_plan_date desc
+			</otherwise>
+		</choose>
+</select>
+<!-- 查询列表 ROLLING_PLAN -->
+<select id="searchRollingPlan" parameterType="java.util.Map" resultMap="RollingPlanDTO">
+	SELECT 
+distinct
+	t1.rolling_plandate ,
+	t1.rolling_plan_date, t1.rolling_plan_content,t1.rolling_plan_assignment,t1.rolling_plan_target
+FROM
+	rolling_plan t1
+		<where>
+			<if test="id != null and id != ''">
+				and t1.ID =#{id}
+			</if>
+			<if test="createdBy != null and createdBy != ''">
+				and t1.CREATED_BY =#{createdBy}
+			</if>
+			<if test="lastUpdatedBy != null and lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY =#{lastUpdatedBy}
+			</if>
+			<if test="fkSubColId != null and fkSubColId != ''">
+				and t1.FK_SUB_COL_ID =#{fkSubColId}
+			</if>
+			<if test="creationDate != null and creationDate != ''">
+				and t1.CREATION_DATE =#{creationDate}
+			</if>
+			<if test="rollingPlanContent != null and rollingPlanContent != ''">
+				and t1.ROLLING_PLAN_CONTENT =#{rollingPlanContent}
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE =#{lastUpdateDate}
+			</if>
+			<if test="rollingPlanAssignment != null and rollingPlanAssignment != ''">
+				and t1.ROLLING_PLAN_ASSIGNMENT =#{rollingPlanAssignment}
+			</if>
+			<if test="rollingPlanDateBegin != null and rollingPlanDateBegin != ''">
+				and t1.ROLLING_PLAN_DATE &gt;= #{rollingPlanDateBegin}
+			</if>
+			<if test="rollingPlanDateEnd != null and rollingPlanDateEnd != ''">
+				and t1.ROLLING_PLAN_DATE &lt;= #{rollingPlanDateEnd}
+			</if>
+			<if test="rollingPlanTarget != null and rollingPlanTarget != ''">
+				and t1.ROLLING_PLAN_TARGET =#{rollingPlanTarget}
+			</if>
+			<if test="version != null">
+				and t1.VERSION =#{version}
+			</if>
+			<if test="createdDept != null and createdDept != ''">
+				and t1.CREATED_DEPT =#{createdDept}
+			</if>
+			<if test="orgIdentity != null and orgIdentity != ''">
+				and t1.ORG_IDENTITY =#{orgIdentity}
+			</if>
+			<if test="lastUpdateIp != null and lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP =#{lastUpdateIp}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				and t1.DEPT_ID =#{deptId}
+			</if>
+			<if test="rollingPlandate != null and rollingPlandate != ''">
+				and t1.ROLLING_PLANDATE =#{rollingPlandate}
+			</if>
+		</where>
+</select>
+<delete id="deleteDynDistributeById" parameterType="java.lang.String">
+		delete from dyn_distribute  where  FLOW_PATH_ID = #{id} and POSEN_ID = #{user}
+</delete>
+<select id="getuserid" resultType="java.lang.String">
+SELECT
+ID
+		
+		FROM
+		SYS_USER
+		where NAME =
+		#{username}
+</select>
+<!-- 新增对象 DYN_SON_WEEKLY -->
+<insert id="insertDynSonWeekly" parameterType="avicit.weekly.dto.WeeklyDTO">
+	insert into dyn_son_weekly
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="deptId != null">
+				dept_id,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="workTasks != null">
+				work_tasks,
+			</if>
+			<if test="personLiable != null">
+				person_liable,
+			</if>
+			<if test="fkSubColId != null">
+				fk_sub_col_id,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="isCompletion != null">
+				is_completion,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="topDateEvolve != null">
+				top_date_evolve,
+			</if>
+			<if test="completionNode != null">
+				completion_node,
+			</if>
+			<if test="isKeyno != null">
+				is_keyno,
+			</if>
+			<if test="dateEvolve != null">
+				date_evolve,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="workClass != null">
+				work_class,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				#{deptId,jdbcType=CLOB},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="workTasks != null">
+				#{workTasks,jdbcType=VARCHAR},
+			</if>
+			<if test="personLiable != null">
+				#{personLiable,jdbcType=CLOB},
+			</if>
+			<if test="fkSubColId != null">
+				#{fkSubColId,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="isCompletion != null">
+				#{isCompletion,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="topDateEvolve != null">
+				#{topDateEvolve,jdbcType=VARCHAR},
+			</if>
+			<if test="completionNode != null">
+				#{completionNode,jdbcType=DATE},
+			</if>
+			<if test="isKeyno != null">
+				#{isKeyno,jdbcType=VARCHAR},
+			</if>
+			<if test="dateEvolve != null">
+				#{dateEvolve,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="workClass != null">
+				#{workClass,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+	</trim>
+</insert>
+<select id="syslookuptl" resultType="java.lang.String">
+   SELECT t1.LOOKUP_CODE FROM SYS_LOOKUP_TL t 
+   LEFT JOIN SYS_LOOKUP t1 
+   on t.SYS_LOOKUP_ID=t1.ID 
+   where 
+   t.LOOKUP_NAME = #{lookup_name}
+</select>
+<select id="getType" resultMap="DynTypeDTOMap">
+SELECT
+	WEEKLY_SEARCH,
+	WEEKLY_PROCESS,
+	WEEKLY_PLAN_SEARCH,
+	WEEKLY_DELETE_SON,
+	WEEKLY_DISTRIBUTE,
+	WEEKLY_SEARCH_SON,
+	WEEKLY_PLAN_SEARCH_SON,
+	WEEKLY_DELETE,
+	WEEKLY_PROCESSS_SON ,
+	WEEKLY_DISTRIBUTE_POSEN
+FROM
+	DYN_TYPE 
+WHERE
+	ROWNUM =1 
+</select> 
+<insert id="insertDynType" parameterType="avicit.weekly.dto.DynTypeDTO">
+	insert into dyn_type
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="weeklySearch != null">
+				weekly_search,
+			</if>
+			<if test="weeklyProcess != null">
+				weekly_process,
+			</if>
+			<if test="weeklyPlanSearch != null">
+				weekly_plan_search,
+			</if>
+			<if test="weeklyDeleteSon != null">
+				weekly_delete_son,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="weeklyDistribute != null">
+				weekly_distribute,
+			</if>
+			<if test="weeklySearchSon != null">
+				weekly_search_son,
+			</if>
+			<if test="weeklyPlanSearchSon != null">
+				weekly_plan_search_son,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="weeklyDelete != null">
+				weekly_delete,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="weeklyProcesssSon != null">
+				weekly_processs_son,
+			</if>
+			<if test="weeklyDistributePosen != null">
+				WEEKLY_DISTRIBUTE_POSEN,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklySearch != null">
+				#{weeklySearch,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyProcess != null">
+				#{weeklyProcess,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyPlanSearch != null">
+				#{weeklyPlanSearch,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyDeleteSon != null">
+				#{weeklyDeleteSon,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="weeklyDistribute != null">
+				#{weeklyDistribute,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklySearchSon != null">
+				#{weeklySearchSon,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyPlanSearchSon != null">
+				#{weeklyPlanSearchSon,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyDelete != null">
+				#{weeklyDelete,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyProcesssSon != null">
+				#{weeklyProcesssSon,jdbcType=VARCHAR},
+			</if>
+			<if test="weeklyDistributePosen != null">
+				#{weeklyDistributePosen,jdbcType=VARCHAR},
+			</if>
+	</trim>
+</insert>
+<update id="updateDynTypeAll" parameterType="avicit.weekly.dto.DynTypeDTO">
+	update dyn_type 
+		set		
+			weekly_search                  =#{weeklySearch,jdbcType=VARCHAR},
+			weekly_process                 =#{weeklyProcess,jdbcType=VARCHAR},
+			weekly_plan_search             =#{weeklyPlanSearch,jdbcType=VARCHAR},
+			weekly_delete_son              =#{weeklyDeleteSon,jdbcType=VARCHAR},
+			weekly_distribute              =#{weeklyDistribute,jdbcType=VARCHAR},
+			weekly_search_son              =#{weeklySearchSon,jdbcType=VARCHAR},
+			weekly_plan_search_son         =#{weeklyPlanSearchSon,jdbcType=VARCHAR},		
+			weekly_delete                  =#{weeklyDelete,jdbcType=VARCHAR},
+			weekly_processs_son            =#{weeklyProcesssSon,jdbcType=VARCHAR},
+			WEEKLY_DISTRIBUTE_POSEN        =#{weeklyDistributePosen,jdbcType=VARCHAR}	
+</update>
+<select id="selectCount" resultType = "java.lang.String">
+select LAST_WEEKLY from DYN_MEEKLY    where  LAST_WEEKLY like concat(concat('%',#{yeer}),'%')
+</select>
+<select id="getsonFid" resultType = "java.lang.String">
+
+     select id from  (select id from dyn_meekly  where applicant =
+     ( select name from sys_user where id = #{sysid} ) and is_son = 2  order by creation_date desc ) where  rownum = 1
+     
+     
+     
+</select>
+<select id="lastweeklyu"  resultMap="WeeklyDTOMap">
+select * from  DYN_SON_WEEKLY where fk_SUB_COL_ID = #{id}
+</select>
+<select id="getRollWek" resultMap = "RollingPlanDTO">
+     
+select * from  rolling_plan	 where fk_SUB_COL_ID = (
+  select id from( select id from dyn_meekly  where is_son='1'   order by creation_date desc) where rownum = 1
+     
+     )
+</select>
+
+</mapper>

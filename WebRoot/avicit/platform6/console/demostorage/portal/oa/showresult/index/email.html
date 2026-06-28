@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的邮件</title>
+    <link
+      href="./iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+    <script src="./js/echarts.min.js"></script>
+  </head>
+  <body>
+    <div class="box email">
+      <div class="box_title">
+        <h4>我的邮件</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('email')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div id="thirdPie" style="height: 280px;"></div>
+    </div>
+
+    <script type="text/javascript">
+      var thirdEchart = echarts.init(document.getElementById("thirdPie"));
+
+      var thirdOption = {
+        title: {
+          text: "问题总数",
+          top: "38%",
+          left: "33%",
+          textStyle: {
+            color: "#333",
+            fontSize: "18px",
+            fontWeight: "normal"
+          },
+          subtext: "122",
+          subtextStyle: {
+            color: "#52A0E9",
+            fontSize: "32px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+
+        tooltip: {
+          trigger: "item"
+        },
+        color: ["#52A0E9", "#46BF92", "#9D81DB", "#FCC233"],
+        legend: {
+          orient: "vertical",
+          right: "10%",
+          top: "30%",
+          itemWidth: 16,
+          itemHeight: 16,
+          textStyle: {
+            color: "#999",
+            fontSize: "14px"
+          }
+        },
+
+        series: [
+          {
+            name: "访问来源",
+            type: "pie",
+            center: ["34%", "50%"],
+            radius: ["66%", "80%"],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 4,
+              borderColor: "#fff",
+              borderWidth: 4
+            },
+            label: {
+              show: false,
+              position: "center"
+            },
+            emphasis: {
+              label: {
+                show: false,
+                fontSize: "40",
+                fontWeight: "bold"
+              }
+            },
+            grid: {
+              left: "1%",
+              top: "3%"
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 1048, name: "搜索引擎" },
+              { value: 580, name: "邮件营销" },
+              { value: 484, name: "联盟广告" },
+              { value: 300, name: "视频广告" }
+            ]
+          }
+        ]
+      };
+
+      thirdEchart.setOption(thirdOption);
+
+      function handleClick() {
+        window.open("email.html");
+      }
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+
+    <style></style>
+  </body>
+</html>

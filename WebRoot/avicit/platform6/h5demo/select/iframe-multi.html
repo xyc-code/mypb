@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style type="text/css">
+        .on {
+            color:#66ccff;
+        }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <li class="av-child" data-val="测试1">测试1</li>
+        <li class="av-child" data-val="测试2">测试2</li>
+        <li class="av-child" data-val="测试3">测试3</li>
+        <li class="av-child" data-val="测试4">测试4</li>
+    </ul>
+    <div class="btn" style="float:right;"><button id="btn">确定</button></div>
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+
+    <script>
+    	// iframe内的单选多选自己实现
+    	$(function(){
+    		$('li').on('click',function(){
+                $(this).toggleClass('on');
+    		});
+
+            $("#btn").on("click",function(){
+                var str = "";
+                $("li.on").each(function(){
+                    str += $(this).data('val') + ",";
+                });
+                str = str.substr(0, str.length - 1);
+                // 调取父页面的avicIframeSelect方法回填参数
+                parent.avicIframeSelect(str);
+            });
+    	});
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+interface:
+  display_name: "PB Module Memory"
+  short_description: "Track PB module business context and handoff notes."
+  default_prompt: "Use $pb-module-memory before starting, resuming, changing, or packaging a PB module."
+
+policy:
+  allow_implicit_invocation: true

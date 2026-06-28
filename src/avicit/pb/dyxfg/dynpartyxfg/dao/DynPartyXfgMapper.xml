@@ -1,0 +1,967 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.dyxfg.dynpartyxfg.dao.DynPartyXfgDAO">
+<resultMap id="DynPartyXfgDTOMap" type="avicit.pb.dyxfg.dynpartyxfg.dto.DynPartyXfgDTO">
+	<result property="xfgGssjBegin" column="XFG_GSSJ_BEGIN" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="xfgPartyType" column="XFG_PARTY_TYPE" jdbcType="VARCHAR" />
+	<result property="xfgFromNo" column="XFG_FROM_NO" jdbcType="VARCHAR" />
+	<result property="attr9" column="ATTR9" jdbcType="VARCHAR" />
+	<result property="xfgCreaDate" column="XFG_CREA_DATE" jdbcType="TIMESTAMP" />
+	<result property="xfgUser" column="XFG_USER" jdbcType="VARCHAR" />
+	<result property="attr4" column="ATTR4" jdbcType="VARCHAR" />
+	<result property="attr3" column="ATTR3" jdbcType="VARCHAR" />
+	<result property="attr2" column="ATTR2" jdbcType="VARCHAR" />
+	<result property="attr1" column="ATTR1" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="attr8" column="ATTR8" jdbcType="VARCHAR" />
+	<result property="attr7" column="ATTR7" jdbcType="VARCHAR" />
+	<result property="attr20" column="ATTR20" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="attr6" column="ATTR6" jdbcType="VARCHAR" />
+	<result property="attr5" column="ATTR5" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="attr12" column="ATTR12" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="attr13" column="ATTR13" jdbcType="VARCHAR" />
+	<result property="attr10" column="ATTR10" jdbcType="VARCHAR" />
+	<result property="attr11" column="ATTR11" jdbcType="VARCHAR" />
+	<result property="attr16" column="ATTR16" jdbcType="VARCHAR" />
+	<result property="attr17" column="ATTR17" jdbcType="VARCHAR" />
+	<result property="attr14" column="ATTR14" jdbcType="VARCHAR" />
+	<result property="attr15" column="ATTR15" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr18" column="ATTR18" jdbcType="TIMESTAMP" />
+	<result property="xfgZwhjl" column="XFG_ZWHJL" jdbcType="VARCHAR" />
+	<result property="attr19" column="ATTR19" jdbcType="TIMESTAMP" />
+	<result property="xfgGssjEnd" column="XFG_GSSJ_END" jdbcType="TIMESTAMP" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="xfgPartyName" column="XFG_PARTY_NAME" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.XFG_GSSJ_BEGIN,
+	t1.LAST_UPDATE_DATE,
+	t1.XFG_PARTY_TYPE,
+	t1.XFG_FROM_NO,
+	t1.ATTR9,
+	t1.XFG_CREA_DATE,
+	t1.XFG_USER,
+	t1.ATTR4,
+	t1.ATTR3,
+	t1.ATTR2,
+	t1.ATTR1,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ATTR8,
+	t1.ATTR7,
+	t1.ATTR20,
+	t1.LAST_UPDATE_IP,
+	t1.ATTR6,
+	t1.ATTR5,
+	t1.CREATED_BY,
+	t1.ATTR12,
+	t1.LAST_UPDATED_BY,
+	t1.ATTR13,
+	t1.ATTR10,
+	t1.ATTR11,
+	t1.ATTR16,
+	t1.ATTR17,
+	t1.ATTR14,
+	t1.ATTR15,
+	t1.CREATION_DATE,
+	t1.ATTR18,
+	t1.XFG_ZWHJL,
+	t1.ATTR19,
+	t1.XFG_GSSJ_END,
+	t1.VERSION,
+	t1.XFG_PARTY_NAME,
+	t1.ORG_IDENTITY,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.xfgGssjBeginBegin != null">
+		and t1.XFG_GSSJ_BEGIN &gt;= #{bean.xfgGssjBeginBegin}
+	</if>
+	<if test="bean.xfgGssjBeginEnd != null">
+		and t1.XFG_GSSJ_BEGIN &lt;= #{bean.xfgGssjBeginEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.xfgPartyType != null and bean.xfgPartyType != ''">
+		and t1.XFG_PARTY_TYPE like concat(concat('%',#{bean.xfgPartyType}),'%')
+	</if>
+	<if test="bean.xfgFromNo != null and bean.xfgFromNo != ''">
+		and t1.XFG_FROM_NO like concat(concat('%',#{bean.xfgFromNo}),'%')
+	</if>
+	<if test="bean.attr9 != null and bean.attr9 != ''">
+		and t1.ATTR9 like concat(concat('%',#{bean.attr9}),'%')
+	</if>
+	<if test="bean.xfgCreaDateBegin != null">
+		and t1.XFG_CREA_DATE &gt;= #{bean.xfgCreaDateBegin}
+	</if>
+	<if test="bean.xfgCreaDateEnd != null">
+		and t1.XFG_CREA_DATE &lt;= #{bean.xfgCreaDateEnd}
+	</if>
+	<if test="bean.xfgUser != null and bean.xfgUser != ''">
+		and t1.XFG_USER like concat(concat('%',#{bean.xfgUser}),'%')
+	</if>
+	<if test="bean.attr4 != null and bean.attr4 != ''">
+		and t1.ATTR4 like concat(concat('%',#{bean.attr4}),'%')
+	</if>
+	<if test="bean.attr3 != null and bean.attr3 != ''">
+		and t1.ATTR3 like concat(concat('%',#{bean.attr3}),'%')
+	</if>
+	<if test="bean.attr2 != null and bean.attr2 != ''">
+		and t1.ATTR2 like concat(concat('%',#{bean.attr2}),'%')
+	</if>
+	<if test="bean.attr1 != null and bean.attr1 != ''">
+		and t1.ATTR1 like concat(concat('%',#{bean.attr1}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.attr8 != null and bean.attr8 != ''">
+		and t1.ATTR8 like concat(concat('%',#{bean.attr8}),'%')
+	</if>
+	<if test="bean.attr7 != null and bean.attr7 != ''">
+		and t1.ATTR7 like concat(concat('%',#{bean.attr7}),'%')
+	</if>
+	<if test="bean.attr20Begin != null">
+		and t1.ATTR20 &gt;= #{bean.attr20Begin}
+	</if>
+	<if test="bean.attr20End != null">
+		and t1.ATTR20 &lt;= #{bean.attr20End}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.attr6 != null and bean.attr6 != ''">
+		and t1.ATTR6 like concat(concat('%',#{bean.attr6}),'%')
+	</if>
+	<if test="bean.attr5 != null and bean.attr5 != ''">
+		and t1.ATTR5 like concat(concat('%',#{bean.attr5}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.attr12 != null and bean.attr12 != ''">
+		and t1.ATTR12 like concat(concat('%',#{bean.attr12}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.attr13 != null and bean.attr13 != ''">
+		and t1.ATTR13 like concat(concat('%',#{bean.attr13}),'%')
+	</if>
+	<if test="bean.attr10 != null and bean.attr10 != ''">
+		and t1.ATTR10 like concat(concat('%',#{bean.attr10}),'%')
+	</if>
+	<if test="bean.attr11 != null and bean.attr11 != ''">
+		and t1.ATTR11 like concat(concat('%',#{bean.attr11}),'%')
+	</if>
+	<if test="bean.attr16 != null and bean.attr16 != ''">
+		and t1.ATTR16 like concat(concat('%',#{bean.attr16}),'%')
+	</if>
+	<if test="bean.attr17 != null and bean.attr17 != ''">
+		and t1.ATTR17 like concat(concat('%',#{bean.attr17}),'%')
+	</if>
+	<if test="bean.attr14 != null and bean.attr14 != ''">
+		and t1.ATTR14 like concat(concat('%',#{bean.attr14}),'%')
+	</if>
+	<if test="bean.attr15 != null and bean.attr15 != ''">
+		and t1.ATTR15 like concat(concat('%',#{bean.attr15}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.attr18Begin != null">
+		and t1.ATTR18 &gt;= #{bean.attr18Begin}
+	</if>
+	<if test="bean.attr18End != null">
+		and t1.ATTR18 &lt;= #{bean.attr18End}
+	</if>
+	<if test="bean.xfgZwhjl != null and bean.xfgZwhjl != ''">
+		and t1.XFG_ZWHJL like concat(concat('%',#{bean.xfgZwhjl}),'%')
+	</if>
+	<if test="bean.attr19Begin != null">
+		and t1.ATTR19 &gt;= #{bean.attr19Begin}
+	</if>
+	<if test="bean.attr19End != null">
+		and t1.ATTR19 &lt;= #{bean.attr19End}
+	</if>
+	<if test="bean.xfgGssjEndBegin != null">
+		and t1.XFG_GSSJ_END &gt;= #{bean.xfgGssjEndBegin}
+	</if>
+	<if test="bean.xfgGssjEndEnd != null">
+		and t1.XFG_GSSJ_END &lt;= #{bean.xfgGssjEndEnd}
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.xfgPartyName != null and bean.xfgPartyName != ''">
+		and t1.XFG_PARTY_NAME like concat(concat('%',#{bean.xfgPartyName}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.xfgGssjBeginBegin != null">
+		or t1.XFG_GSSJ_BEGIN &gt;= #{bean.xfgGssjBeginBegin}
+	</if>
+	<if test="bean.xfgGssjBeginEnd != null">
+		or t1.XFG_GSSJ_BEGIN &lt;= #{bean.xfgGssjBeginEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.xfgPartyType != null and bean.xfgPartyType != ''">
+		or t1.XFG_PARTY_TYPE like concat(concat('%',#{bean.xfgPartyType}),'%')
+	</if>
+	<if test="bean.xfgFromNo != null and bean.xfgFromNo != ''">
+		or t1.XFG_FROM_NO like concat(concat('%',#{bean.xfgFromNo}),'%')
+	</if>
+	<if test="bean.attr9 != null and bean.attr9 != ''">
+		or t1.ATTR9 like concat(concat('%',#{bean.attr9}),'%')
+	</if>
+	<if test="bean.xfgCreaDateBegin != null">
+		or t1.XFG_CREA_DATE &gt;= #{bean.xfgCreaDateBegin}
+	</if>
+	<if test="bean.xfgCreaDateEnd != null">
+		or t1.XFG_CREA_DATE &lt;= #{bean.xfgCreaDateEnd}
+	</if>
+	<if test="bean.xfgUser != null and bean.xfgUser != ''">
+		or t1.XFG_USER like concat(concat('%',#{bean.xfgUser}),'%')
+	</if>
+	<if test="bean.attr4 != null and bean.attr4 != ''">
+		or t1.ATTR4 like concat(concat('%',#{bean.attr4}),'%')
+	</if>
+	<if test="bean.attr3 != null and bean.attr3 != ''">
+		or t1.ATTR3 like concat(concat('%',#{bean.attr3}),'%')
+	</if>
+	<if test="bean.attr2 != null and bean.attr2 != ''">
+		or t1.ATTR2 like concat(concat('%',#{bean.attr2}),'%')
+	</if>
+	<if test="bean.attr1 != null and bean.attr1 != ''">
+		or t1.ATTR1 like concat(concat('%',#{bean.attr1}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.attr8 != null and bean.attr8 != ''">
+		or t1.ATTR8 like concat(concat('%',#{bean.attr8}),'%')
+	</if>
+	<if test="bean.attr7 != null and bean.attr7 != ''">
+		or t1.ATTR7 like concat(concat('%',#{bean.attr7}),'%')
+	</if>
+	<if test="bean.attr20Begin != null">
+		or t1.ATTR20 &gt;= #{bean.attr20Begin}
+	</if>
+	<if test="bean.attr20End != null">
+		or t1.ATTR20 &lt;= #{bean.attr20End}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.attr6 != null and bean.attr6 != ''">
+		or t1.ATTR6 like concat(concat('%',#{bean.attr6}),'%')
+	</if>
+	<if test="bean.attr5 != null and bean.attr5 != ''">
+		or t1.ATTR5 like concat(concat('%',#{bean.attr5}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.attr12 != null and bean.attr12 != ''">
+		or t1.ATTR12 like concat(concat('%',#{bean.attr12}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.attr13 != null and bean.attr13 != ''">
+		or t1.ATTR13 like concat(concat('%',#{bean.attr13}),'%')
+	</if>
+	<if test="bean.attr10 != null and bean.attr10 != ''">
+		or t1.ATTR10 like concat(concat('%',#{bean.attr10}),'%')
+	</if>
+	<if test="bean.attr11 != null and bean.attr11 != ''">
+		or t1.ATTR11 like concat(concat('%',#{bean.attr11}),'%')
+	</if>
+	<if test="bean.attr16 != null and bean.attr16 != ''">
+		or t1.ATTR16 like concat(concat('%',#{bean.attr16}),'%')
+	</if>
+	<if test="bean.attr17 != null and bean.attr17 != ''">
+		or t1.ATTR17 like concat(concat('%',#{bean.attr17}),'%')
+	</if>
+	<if test="bean.attr14 != null and bean.attr14 != ''">
+		or t1.ATTR14 like concat(concat('%',#{bean.attr14}),'%')
+	</if>
+	<if test="bean.attr15 != null and bean.attr15 != ''">
+		or t1.ATTR15 like concat(concat('%',#{bean.attr15}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.attr18Begin != null">
+		or t1.ATTR18 &gt;= #{bean.attr18Begin}
+	</if>
+	<if test="bean.attr18End != null">
+		or t1.ATTR18 &lt;= #{bean.attr18End}
+	</if>
+	<if test="bean.xfgZwhjl != null and bean.xfgZwhjl != ''">
+		or t1.XFG_ZWHJL like concat(concat('%',#{bean.xfgZwhjl}),'%')
+	</if>
+	<if test="bean.attr19Begin != null">
+		or t1.ATTR19 &gt;= #{bean.attr19Begin}
+	</if>
+	<if test="bean.attr19End != null">
+		or t1.ATTR19 &lt;= #{bean.attr19End}
+	</if>
+	<if test="bean.xfgGssjEndBegin != null">
+		or t1.XFG_GSSJ_END &gt;= #{bean.xfgGssjEndBegin}
+	</if>
+	<if test="bean.xfgGssjEndEnd != null">
+		or t1.XFG_GSSJ_END &lt;= #{bean.xfgGssjEndEnd}
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.xfgPartyName != null and bean.xfgPartyName != ''">
+		or t1.XFG_PARTY_NAME like concat(concat('%',#{bean.xfgPartyName}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_PARTY_XFG -->
+<select id="searchDynPartyXfgByPage" parameterType="java.util.Map" resultMap="DynPartyXfgDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_XFG t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_PARTY_XFG -->
+<select id="searchDynPartyXfg" parameterType="java.util.Map" resultMap="DynPartyXfgDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_XFG t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_PARTY_XFG（导出） -->
+<select id="searchDynPartyXfgForExport" parameterType="java.util.Map" resultMap="DynPartyXfgDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_XFG t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_PARTY_XFG -->
+<select id="findDynPartyXfgById" parameterType="java.lang.String" resultMap="DynPartyXfgDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_XFG t1
+	where t1.id = #{id}
+</select>
+	<select id="searchByFkSubQfId" resultType="java.lang.String">
+		select
+			t1.ID
+		from DYN_PARTY_XFG t1
+		where t1.FK_SUB_QF_ID = #{id}
+	</select>
+	<!-- 新增对象 DYN_PARTY_XFG -->
+<insert id="insertDynPartyXfg" parameterType="avicit.pb.dyxfg.dynpartyxfg.dto.DynPartyXfgDTO">
+	insert into DYN_PARTY_XFG
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="xfgGssjBegin != null">
+			XFG_GSSJ_BEGIN,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="xfgPartyType != null">
+			XFG_PARTY_TYPE,
+		</if>
+		<if test="xfgFromNo != null">
+			XFG_FROM_NO,
+		</if>
+		<if test="attr9 != null">
+			ATTR9,
+		</if>
+		<if test="xfgCreaDate != null">
+			XFG_CREA_DATE,
+		</if>
+		<if test="xfgUser != null">
+			XFG_USER,
+		</if>
+		<if test="attr4 != null">
+			ATTR4,
+		</if>
+		<if test="attr3 != null">
+			ATTR3,
+		</if>
+		<if test="attr2 != null">
+			ATTR2,
+		</if>
+		<if test="attr1 != null">
+			ATTR1,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="attr8 != null">
+			ATTR8,
+		</if>
+		<if test="attr7 != null">
+			ATTR7,
+		</if>
+		<if test="attr20 != null">
+			ATTR20,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="attr6 != null">
+			ATTR6,
+		</if>
+		<if test="attr5 != null">
+			ATTR5,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="attr12 != null">
+			ATTR12,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="attr13 != null">
+			ATTR13,
+		</if>
+		<if test="attr10 != null">
+			ATTR10,
+		</if>
+		<if test="attr11 != null">
+			ATTR11,
+		</if>
+		<if test="attr16 != null">
+			ATTR16,
+		</if>
+		<if test="attr17 != null">
+			ATTR17,
+		</if>
+		<if test="attr14 != null">
+			ATTR14,
+		</if>
+		<if test="attr15 != null">
+			ATTR15,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="attr18 != null">
+			ATTR18,
+		</if>
+		<if test="xfgZwhjl != null">
+			XFG_ZWHJL,
+		</if>
+		<if test="attr19 != null">
+			ATTR19,
+		</if>
+		<if test="xfgGssjEnd != null">
+			XFG_GSSJ_END,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="xfgPartyName != null">
+			XFG_PARTY_NAME,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="xfgGssjBegin != null">
+			#{xfgGssjBegin,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="xfgPartyType != null">
+			#{xfgPartyType,jdbcType = VARCHAR},
+		</if>
+		<if test="xfgFromNo != null">
+			#{xfgFromNo,jdbcType = VARCHAR},
+		</if>
+		<if test="attr9 != null">
+			#{attr9,jdbcType = VARCHAR},
+		</if>
+		<if test="xfgCreaDate != null">
+			#{xfgCreaDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="xfgUser != null">
+			#{xfgUser,jdbcType = VARCHAR},
+		</if>
+		<if test="attr4 != null">
+			#{attr4,jdbcType = VARCHAR},
+		</if>
+		<if test="attr3 != null">
+			#{attr3,jdbcType = VARCHAR},
+		</if>
+		<if test="attr2 != null">
+			#{attr2,jdbcType = VARCHAR},
+		</if>
+		<if test="attr1 != null">
+			#{attr1,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="attr8 != null">
+			#{attr8,jdbcType = VARCHAR},
+		</if>
+		<if test="attr7 != null">
+			#{attr7,jdbcType = VARCHAR},
+		</if>
+		<if test="attr20 != null">
+			#{attr20,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="attr6 != null">
+			#{attr6,jdbcType = VARCHAR},
+		</if>
+		<if test="attr5 != null">
+			#{attr5,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attr12 != null">
+			#{attr12,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attr13 != null">
+			#{attr13,jdbcType = VARCHAR},
+		</if>
+		<if test="attr10 != null">
+			#{attr10,jdbcType = VARCHAR},
+		</if>
+		<if test="attr11 != null">
+			#{attr11,jdbcType = VARCHAR},
+		</if>
+		<if test="attr16 != null">
+			#{attr16,jdbcType = VARCHAR},
+		</if>
+		<if test="attr17 != null">
+			#{attr17,jdbcType = VARCHAR},
+		</if>
+		<if test="attr14 != null">
+			#{attr14,jdbcType = VARCHAR},
+		</if>
+		<if test="attr15 != null">
+			#{attr15,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr18 != null">
+			#{attr18,jdbcType = TIMESTAMP},
+		</if>
+		<if test="xfgZwhjl != null">
+			#{xfgZwhjl,jdbcType = VARCHAR},
+		</if>
+		<if test="attr19 != null">
+			#{attr19,jdbcType = TIMESTAMP},
+		</if>
+		<if test="xfgGssjEnd != null">
+			#{xfgGssjEnd,jdbcType = TIMESTAMP},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="xfgPartyName != null">
+			#{xfgPartyName,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_PARTY_XFG -->
+<insert id="insertDynPartyXfgList" parameterType="java.util.List">
+	insert into DYN_PARTY_XFG(
+	XFG_GSSJ_BEGIN ,
+	LAST_UPDATE_DATE ,
+	XFG_PARTY_TYPE ,
+	XFG_FROM_NO ,
+	ATTR9 ,
+	XFG_CREA_DATE ,
+	XFG_USER ,
+	ATTR4 ,
+	ATTR3 ,
+	ATTR2 ,
+	ATTR1 ,
+	ID ,
+	CREATED_DEPT ,
+	ATTR8 ,
+	ATTR7 ,
+	ATTR20 ,
+	LAST_UPDATE_IP ,
+	ATTR6 ,
+	ATTR5 ,
+	CREATED_BY ,
+	ATTR12 ,
+	LAST_UPDATED_BY ,
+	ATTR13 ,
+	ATTR10 ,
+	ATTR11 ,
+	ATTR16 ,
+	ATTR17 ,
+	ATTR14 ,
+	ATTR15 ,
+	CREATION_DATE ,
+	ATTR18 ,
+	XFG_ZWHJL ,
+	ATTR19 ,
+	XFG_GSSJ_END ,
+	VERSION ,
+	XFG_PARTY_NAME ,
+	ORG_IDENTITY )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.xfgGssjBegin,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.xfgPartyType,jdbcType = VARCHAR} ,
+	#{item.xfgFromNo,jdbcType = VARCHAR} ,
+	#{item.attr9,jdbcType = VARCHAR} ,
+	#{item.xfgCreaDate,jdbcType = TIMESTAMP} ,
+	#{item.xfgUser,jdbcType = VARCHAR} ,
+	#{item.attr4,jdbcType = VARCHAR} ,
+	#{item.attr3,jdbcType = VARCHAR} ,
+	#{item.attr2,jdbcType = VARCHAR} ,
+	#{item.attr1,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.attr8,jdbcType = VARCHAR} ,
+	#{item.attr7,jdbcType = VARCHAR} ,
+	#{item.attr20,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.attr6,jdbcType = VARCHAR} ,
+	#{item.attr5,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.attr12,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.attr13,jdbcType = VARCHAR} ,
+	#{item.attr10,jdbcType = VARCHAR} ,
+	#{item.attr11,jdbcType = VARCHAR} ,
+	#{item.attr16,jdbcType = VARCHAR} ,
+	#{item.attr17,jdbcType = VARCHAR} ,
+	#{item.attr14,jdbcType = VARCHAR} ,
+	#{item.attr15,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.attr18,jdbcType = TIMESTAMP} ,
+	#{item.xfgZwhjl,jdbcType = VARCHAR} ,
+	#{item.attr19,jdbcType = TIMESTAMP} ,
+	#{item.xfgGssjEnd,jdbcType = TIMESTAMP} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.xfgPartyName,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_PARTY_XFG -->
+<update id="updateDynPartyXfgSensitive" parameterType="avicit.pb.dyxfg.dynpartyxfg.dto.DynPartyXfgDTO">
+	update DYN_PARTY_XFG
+	<set>
+		<trim suffixOverrides=",">
+			<if test="xfgGssjBegin != null">
+				XFG_GSSJ_BEGIN = #{xfgGssjBegin,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="xfgPartyType != null">
+				XFG_PARTY_TYPE = #{xfgPartyType,jdbcType = VARCHAR},
+			</if>
+			<if test="xfgFromNo != null">
+				XFG_FROM_NO = #{xfgFromNo,jdbcType = VARCHAR},
+			</if>
+			<if test="attr9 != null">
+				ATTR9 = #{attr9,jdbcType = VARCHAR},
+			</if>
+			<if test="xfgCreaDate != null">
+				XFG_CREA_DATE = #{xfgCreaDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="xfgUser != null">
+				XFG_USER = #{xfgUser,jdbcType = VARCHAR},
+			</if>
+			<if test="attr4 != null">
+				ATTR4 = #{attr4,jdbcType = VARCHAR},
+			</if>
+			<if test="attr3 != null">
+				ATTR3 = #{attr3,jdbcType = VARCHAR},
+			</if>
+			<if test="attr2 != null">
+				ATTR2 = #{attr2,jdbcType = VARCHAR},
+			</if>
+			<if test="attr1 != null">
+				ATTR1 = #{attr1,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="attr8 != null">
+				ATTR8 = #{attr8,jdbcType = VARCHAR},
+			</if>
+			<if test="attr7 != null">
+				ATTR7 = #{attr7,jdbcType = VARCHAR},
+			</if>
+			<if test="attr20 != null">
+				ATTR20 = #{attr20,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="attr6 != null">
+				ATTR6 = #{attr6,jdbcType = VARCHAR},
+			</if>
+			<if test="attr5 != null">
+				ATTR5 = #{attr5,jdbcType = VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="attr12 != null">
+				ATTR12 = #{attr12,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="attr13 != null">
+				ATTR13 = #{attr13,jdbcType = VARCHAR},
+			</if>
+			<if test="attr10 != null">
+				ATTR10 = #{attr10,jdbcType = VARCHAR},
+			</if>
+			<if test="attr11 != null">
+				ATTR11 = #{attr11,jdbcType = VARCHAR},
+			</if>
+			<if test="attr16 != null">
+				ATTR16 = #{attr16,jdbcType = VARCHAR},
+			</if>
+			<if test="attr17 != null">
+				ATTR17 = #{attr17,jdbcType = VARCHAR},
+			</if>
+			<if test="attr14 != null">
+				ATTR14 = #{attr14,jdbcType = VARCHAR},
+			</if>
+			<if test="attr15 != null">
+				ATTR15 = #{attr15,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr18 != null">
+				ATTR18 = #{attr18,jdbcType = TIMESTAMP},
+			</if>
+			<if test="xfgZwhjl != null">
+				XFG_ZWHJL = #{xfgZwhjl,jdbcType = VARCHAR},
+			</if>
+			<if test="attr19 != null">
+				ATTR19 = #{attr19,jdbcType = TIMESTAMP},
+			</if>
+			<if test="xfgGssjEnd != null">
+				XFG_GSSJ_END = #{xfgGssjEnd,jdbcType = TIMESTAMP},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="xfgPartyName != null">
+				XFG_PARTY_NAME = #{xfgPartyName,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_PARTY_XFG -->
+<update id="updateDynPartyXfgAll" parameterType="avicit.pb.dyxfg.dynpartyxfg.dto.DynPartyXfgDTO">
+	update DYN_PARTY_XFG
+	set
+	XFG_GSSJ_BEGIN = #{xfgGssjBegin,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	XFG_PARTY_TYPE = #{xfgPartyType,jdbcType = VARCHAR} ,
+	XFG_FROM_NO = #{xfgFromNo,jdbcType = VARCHAR} ,
+	ATTR9 = #{attr9,jdbcType = VARCHAR} ,
+	XFG_CREA_DATE = #{xfgCreaDate,jdbcType = TIMESTAMP} ,
+	XFG_USER = #{xfgUser,jdbcType = VARCHAR} ,
+	ATTR4 = #{attr4,jdbcType = VARCHAR} ,
+	ATTR3 = #{attr3,jdbcType = VARCHAR} ,
+	ATTR2 = #{attr2,jdbcType = VARCHAR} ,
+	ATTR1 = #{attr1,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ATTR8 = #{attr8,jdbcType = VARCHAR} ,
+	ATTR7 = #{attr7,jdbcType = VARCHAR} ,
+	ATTR20 = #{attr20,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	ATTR6 = #{attr6,jdbcType = VARCHAR} ,
+	ATTR5 = #{attr5,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	ATTR12 = #{attr12,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	ATTR13 = #{attr13,jdbcType = VARCHAR} ,
+	ATTR10 = #{attr10,jdbcType = VARCHAR} ,
+	ATTR11 = #{attr11,jdbcType = VARCHAR} ,
+	ATTR16 = #{attr16,jdbcType = VARCHAR} ,
+	ATTR17 = #{attr17,jdbcType = VARCHAR} ,
+	ATTR14 = #{attr14,jdbcType = VARCHAR} ,
+	ATTR15 = #{attr15,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	ATTR18 = #{attr18,jdbcType = TIMESTAMP} ,
+	XFG_ZWHJL = #{xfgZwhjl,jdbcType = VARCHAR} ,
+	ATTR19 = #{attr19,jdbcType = TIMESTAMP} ,
+	XFG_GSSJ_END = #{xfgGssjEnd,jdbcType = TIMESTAMP} ,
+	VERSION = version+1 ,
+	XFG_PARTY_NAME = #{xfgPartyName,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_PARTY_XFG -->
+<update id="updateDynPartyXfgList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_PARTY_XFG
+		set
+		XFG_GSSJ_BEGIN = #{item.xfgGssjBegin,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		XFG_PARTY_TYPE = #{item.xfgPartyType,jdbcType = VARCHAR} ,
+		XFG_FROM_NO = #{item.xfgFromNo,jdbcType = VARCHAR} ,
+		ATTR9 = #{item.attr9,jdbcType = VARCHAR} ,
+		XFG_CREA_DATE = #{item.xfgCreaDate,jdbcType = TIMESTAMP} ,
+		XFG_USER = #{item.xfgUser,jdbcType = VARCHAR} ,
+		ATTR4 = #{item.attr4,jdbcType = VARCHAR} ,
+		ATTR3 = #{item.attr3,jdbcType = VARCHAR} ,
+		ATTR2 = #{item.attr2,jdbcType = VARCHAR} ,
+		ATTR1 = #{item.attr1,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ATTR8 = #{item.attr8,jdbcType = VARCHAR} ,
+		ATTR7 = #{item.attr7,jdbcType = VARCHAR} ,
+		ATTR20 = #{item.attr20,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		ATTR6 = #{item.attr6,jdbcType = VARCHAR} ,
+		ATTR5 = #{item.attr5,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		ATTR12 = #{item.attr12,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		ATTR13 = #{item.attr13,jdbcType = VARCHAR} ,
+		ATTR10 = #{item.attr10,jdbcType = VARCHAR} ,
+		ATTR11 = #{item.attr11,jdbcType = VARCHAR} ,
+		ATTR16 = #{item.attr16,jdbcType = VARCHAR} ,
+		ATTR17 = #{item.attr17,jdbcType = VARCHAR} ,
+		ATTR14 = #{item.attr14,jdbcType = VARCHAR} ,
+		ATTR15 = #{item.attr15,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		ATTR18 = #{item.attr18,jdbcType = TIMESTAMP} ,
+		XFG_ZWHJL = #{item.xfgZwhjl,jdbcType = VARCHAR} ,
+		ATTR19 = #{item.attr19,jdbcType = TIMESTAMP} ,
+		XFG_GSSJ_END = #{item.xfgGssjEnd,jdbcType = TIMESTAMP} ,
+		VERSION = version+1  ,
+		XFG_PARTY_NAME = #{item.xfgPartyName,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_PARTY_XFG -->
+<delete id="deleteDynPartyXfgById" parameterType="java.lang.String">
+	delete from DYN_PARTY_XFG  where id = #{id}
+</delete>
+</mapper>

@@ -1,0 +1,120 @@
+@charset "utf-8";
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: none;
+    box-sizing: border-box;
+}
+
+html{
+    font-size:10px;
+    height: 100%;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei UI", "Microsoft YaHei", SimHei, "宋体", simsun, sans-serif;
+    overflow: hidden;
+    height: 100%;
+}
+
+ul, ol {
+    list-style: outside none none;
+}
+
+a {
+    text-decoration: none;
+    /*text-decoration 取消下划线*/
+}
+
+img {
+    border: 0;
+    margin: 0;
+}
+
+table {
+    border-collapse: collapse;
+}
+.clear {
+    clear: both;
+    font-size: 0;
+}
+
+.meun-panel{
+    display: none;
+    width: 160px;
+    background-color: #38bfd2;
+    border: 1px solid #38bfd2;
+    border-radius: 5px;
+    right: 0px;
+    position: absolute;
+    z-index: 999999;
+    top: 62px;
+    cursor: pointer;
+}
+.icondefault{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-right: 15px;
+}
+.iconhome{
+    background: url("../img/icon_home.png") no-repeat;
+}
+.iconhelp{
+    background: url("../img/icon_help.png") no-repeat;
+}
+.iconabout{
+    background: url("../img/icon_about.png") no-repeat;
+}
+.iconexit{
+    background: url("../img/icon_exit.png") no-repeat;
+}
+.icon_descend{
+    background: url("../img/icon_descend.png") no-repeat;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    background-position-y: 2px;
+}
+.icon_ascend{
+    background: url("../img/icon_ascend.png") no-repeat;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    background-position-y: 2px;
+}
+.meun-panel div{
+    padding: 8px 30px;
+    font-size: 16px;
+    color: #fff;
+    line-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+.meun-panel div:hover{
+    border-radius: 5px;
+    border: 1px solid #38bfd2;
+    background-color: #00a0ea;
+}
+.meun-panel div span{
+    display: inline-block;
+}
+
+/*机密文字*/
+.text-confidential{
+    font-size: 16px;
+    color:#1c70a1;
+    display: inline-block;
+    margin: 0px 5px;
+}
+.confidential-info{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    vertical-align: center;
+    display: flex;
+    font-family: 'Microsoft Yahei';
+    font-weight: bold;
+}

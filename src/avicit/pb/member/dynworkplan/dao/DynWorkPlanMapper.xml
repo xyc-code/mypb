@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.member.dynworkplan.dao.DynWorkPlanDAO">
+<resultMap id="DynWorkPlanDTOMap" type="avicit.pb.member.dynworkplan.dto.DynWorkPlanDTO">
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="workName" column="WORK_NAME" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="responsibleDepa" column="RESPONSIBLE_DEPA" jdbcType="VARCHAR" />
+	<result property="status" column="STATUS" jdbcType="VARCHAR" />
+	<result property="quarter" column="QUARTER" jdbcType="VARCHAR" />
+	<result property="responsibleDepaId" column="RESPONSIBLE_DEPA_ID" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="partyCommitteeWorkPlan" column="PARTY_COMMITTEE_WORK_PLAN" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="companyId" column="COMPANY_ID" jdbcType="VARCHAR" />
+	<result property="fileType" column="FILE_TYPE" jdbcType="VARCHAR" />
+	<result property="planDate" column="PLAN_DATE" jdbcType="TIMESTAMP" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.CREATED_BY,
+	t1.LAST_UPDATED_BY,
+	t1.WORK_NAME,
+	t1.CREATION_DATE,
+	t1.LAST_UPDATE_DATE,
+	t1.RESPONSIBLE_DEPA,
+	t1.STATUS,
+	t1.QUARTER,
+	t1.RESPONSIBLE_DEPA_ID,
+	t1.VERSION,
+	t1.PARTY_COMMITTEE_WORK_PLAN,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ORG_IDENTITY,
+	t1.LAST_UPDATE_IP,
+	t1.COMPANY_ID,
+	t1.FILE_TYPE,
+	t1.PLAN_DATE,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.workName != null and bean.workName != ''">
+		and t1.WORK_NAME like concat(concat('%',#{bean.workName}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.responsibleDepa != null and bean.responsibleDepa != ''">
+		and t1.RESPONSIBLE_DEPA like concat(concat('%',#{bean.responsibleDepa}),'%')
+	</if>
+	<if test="bean.status != null and bean.status != ''">
+		and t1.STATUS like concat(concat('%',#{bean.status}),'%')
+	</if>
+	<if test="bean.quarter != null and bean.quarter != ''">
+		and t1.QUARTER like concat(concat('%',#{bean.quarter}),'%')
+	</if>
+	<if test="bean.responsibleDepaId != null and bean.responsibleDepaId != ''">
+		and t1.RESPONSIBLE_DEPA_ID like concat(concat('%',#{bean.responsibleDepaId}),'%')
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.partyCommitteeWorkPlan != null and bean.partyCommitteeWorkPlan != ''">
+		and t1.PARTY_COMMITTEE_WORK_PLAN like concat(concat('%',#{bean.partyCommitteeWorkPlan}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.companyId != null and bean.companyId != ''">
+		and t1.COMPANY_ID like concat(concat('%',#{bean.companyId}),'%')
+	</if>
+	<if test="bean.fileType != null and bean.fileType != ''">
+		and t1.FILE_TYPE like concat(concat('%',#{bean.fileType}),'%')
+	</if>
+	<if test="bean.planDateBegin != null">
+		and t1.PLAN_DATE &gt;= #{bean.planDateBegin}
+	</if>
+	<if test="bean.planDateEnd != null">
+		and t1.PLAN_DATE &lt;= #{bean.planDateEnd}
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.workName != null and bean.workName != ''">
+		or t1.WORK_NAME like concat(concat('%',#{bean.workName}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.responsibleDepa != null and bean.responsibleDepa != ''">
+		or t1.RESPONSIBLE_DEPA like concat(concat('%',#{bean.responsibleDepa}),'%')
+	</if>
+	<if test="bean.status != null and bean.status != ''">
+		or t1.STATUS like concat(concat('%',#{bean.status}),'%')
+	</if>
+	<if test="bean.quarter != null and bean.quarter != ''">
+		or t1.QUARTER like concat(concat('%',#{bean.quarter}),'%')
+	</if>
+	<if test="bean.responsibleDepaId != null and bean.responsibleDepaId != ''">
+		or t1.RESPONSIBLE_DEPA_ID like concat(concat('%',#{bean.responsibleDepaId}),'%')
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.partyCommitteeWorkPlan != null and bean.partyCommitteeWorkPlan != ''">
+		or t1.PARTY_COMMITTEE_WORK_PLAN like concat(concat('%',#{bean.partyCommitteeWorkPlan}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.companyId != null and bean.companyId != ''">
+		or t1.COMPANY_ID like concat(concat('%',#{bean.companyId}),'%')
+	</if>
+	<if test="bean.fileType != null and bean.fileType != ''">
+		or t1.FILE_TYPE like concat(concat('%',#{bean.fileType}),'%')
+	</if>
+	<if test="bean.planDateBegin != null">
+		or t1.PLAN_DATE &gt;= #{bean.planDateBegin}
+	</if>
+	<if test="bean.planDateEnd != null">
+		or t1.PLAN_DATE &lt;= #{bean.planDateEnd}
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_WORK_PLAN -->
+<select id="searchDynWorkPlanByPage" parameterType="java.util.Map" resultMap="DynWorkPlanDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_WORK_PLAN t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_WORK_PLAN -->
+<select id="searchDynWorkPlan" parameterType="java.util.Map" resultMap="DynWorkPlanDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_WORK_PLAN t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_WORK_PLAN（导出） -->
+<select id="searchDynWorkPlanForExport" parameterType="java.util.Map" resultMap="DynWorkPlanDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_WORK_PLAN t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_WORK_PLAN -->
+<select id="findDynWorkPlanById" parameterType="java.lang.String" resultMap="DynWorkPlanDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_WORK_PLAN t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_WORK_PLAN -->
+<insert id="insertDynWorkPlan" parameterType="avicit.pb.member.dynworkplan.dto.DynWorkPlanDTO">
+	insert into DYN_WORK_PLAN
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="workName != null">
+			WORK_NAME,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="responsibleDepa != null">
+			RESPONSIBLE_DEPA,
+		</if>
+		<if test="status != null">
+			STATUS,
+		</if>
+		<if test="quarter != null">
+			QUARTER,
+		</if>
+		<if test="responsibleDepaId != null">
+			RESPONSIBLE_DEPA_ID,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="partyCommitteeWorkPlan != null">
+			PARTY_COMMITTEE_WORK_PLAN,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="companyId != null">
+			COMPANY_ID,
+		</if>
+		<if test="fileType != null">
+			FILE_TYPE,
+		</if>
+		<if test="planDate != null">
+			PLAN_DATE,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="workName != null">
+			#{workName,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="responsibleDepa != null">
+			#{responsibleDepa,jdbcType = VARCHAR},
+		</if>
+		<if test="status != null">
+			#{status,jdbcType = VARCHAR},
+		</if>
+		<if test="quarter != null">
+			#{quarter,jdbcType = VARCHAR},
+		</if>
+		<if test="responsibleDepaId != null">
+			#{responsibleDepaId,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="partyCommitteeWorkPlan != null">
+			#{partyCommitteeWorkPlan,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="companyId != null">
+			#{companyId,jdbcType = VARCHAR},
+		</if>
+		<if test="fileType != null">
+			#{fileType,jdbcType = VARCHAR},
+		</if>
+		<if test="planDate != null">
+			#{planDate,jdbcType = TIMESTAMP},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_WORK_PLAN -->
+<insert id="insertDynWorkPlanList" parameterType="java.util.List">
+	insert into DYN_WORK_PLAN(
+	CREATED_BY ,
+	LAST_UPDATED_BY ,
+	WORK_NAME ,
+	CREATION_DATE ,
+	LAST_UPDATE_DATE ,
+	RESPONSIBLE_DEPA ,
+	STATUS ,
+	QUARTER ,
+	RESPONSIBLE_DEPA_ID ,
+	VERSION ,
+	PARTY_COMMITTEE_WORK_PLAN ,
+	ID ,
+	CREATED_DEPT ,
+	ORG_IDENTITY ,
+	LAST_UPDATE_IP ,
+	COMPANY_ID ,
+	FILE_TYPE ,
+	PLAN_DATE )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.workName,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.responsibleDepa,jdbcType = VARCHAR} ,
+	#{item.status,jdbcType = VARCHAR} ,
+	#{item.quarter,jdbcType = VARCHAR} ,
+	#{item.responsibleDepaId,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.partyCommitteeWorkPlan,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.companyId,jdbcType = VARCHAR} ,
+	#{item.fileType,jdbcType = VARCHAR} ,
+	#{item.planDate,jdbcType = TIMESTAMP} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_WORK_PLAN -->
+<update id="updateDynWorkPlanSensitive" parameterType="avicit.pb.member.dynworkplan.dto.DynWorkPlanDTO">
+	update DYN_WORK_PLAN
+	<set>
+		<trim suffixOverrides=",">
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="workName != null">
+				WORK_NAME = #{workName,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="responsibleDepa != null">
+				RESPONSIBLE_DEPA = #{responsibleDepa,jdbcType = VARCHAR},
+			</if>
+			<if test="status != null">
+				STATUS = #{status,jdbcType = VARCHAR},
+			</if>
+			<if test="quarter != null">
+				QUARTER = #{quarter,jdbcType = VARCHAR},
+			</if>
+			<if test="responsibleDepaId != null">
+				RESPONSIBLE_DEPA_ID = #{responsibleDepaId,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="partyCommitteeWorkPlan != null">
+				PARTY_COMMITTEE_WORK_PLAN = #{partyCommitteeWorkPlan,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="companyId != null">
+				COMPANY_ID = #{companyId,jdbcType = VARCHAR},
+			</if>
+			<if test="fileType != null">
+				FILE_TYPE = #{fileType,jdbcType = VARCHAR},
+			</if>
+			<if test="planDate != null">
+				PLAN_DATE = #{planDate,jdbcType = TIMESTAMP},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_WORK_PLAN -->
+<update id="updateDynWorkPlanAll" parameterType="avicit.pb.member.dynworkplan.dto.DynWorkPlanDTO">
+	update DYN_WORK_PLAN
+	set
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	WORK_NAME = #{workName,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	RESPONSIBLE_DEPA = #{responsibleDepa,jdbcType = VARCHAR} ,
+	STATUS = #{status,jdbcType = VARCHAR} ,
+	QUARTER = #{quarter,jdbcType = VARCHAR} ,
+	RESPONSIBLE_DEPA_ID = #{responsibleDepaId,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	PARTY_COMMITTEE_WORK_PLAN = #{partyCommitteeWorkPlan,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	COMPANY_ID = #{companyId,jdbcType = VARCHAR} ,
+	FILE_TYPE = #{fileType,jdbcType = VARCHAR} ,
+	PLAN_DATE = #{planDate,jdbcType = TIMESTAMP} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_WORK_PLAN -->
+<update id="updateDynWorkPlanList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_WORK_PLAN
+		set
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		WORK_NAME = #{item.workName,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		RESPONSIBLE_DEPA = #{item.responsibleDepa,jdbcType = VARCHAR} ,
+		STATUS = #{item.status,jdbcType = VARCHAR} ,
+		QUARTER = #{item.quarter,jdbcType = VARCHAR} ,
+		RESPONSIBLE_DEPA_ID = #{item.responsibleDepaId,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		PARTY_COMMITTEE_WORK_PLAN = #{item.partyCommitteeWorkPlan,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		COMPANY_ID = #{item.companyId,jdbcType = VARCHAR} ,
+		FILE_TYPE = #{item.fileType,jdbcType = VARCHAR} ,
+		PLAN_DATE = #{item.planDate,jdbcType = TIMESTAMP} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_WORK_PLAN -->
+<delete id="deleteDynWorkPlanById" parameterType="java.lang.String">
+	delete from DYN_WORK_PLAN  where id = #{id}
+</delete>
+</mapper>

@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.member.dynannounce.dao.DynAnnounceDAO">
+<resultMap id="DynAnnounceDTOMap" type="avicit.pb.member.dynannounce.dto.DynAnnounceDTO">
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="contacts" column="CONTACTS" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="collaborativePartyBranch" column="COLLABORATIVE_PARTY_BRANCH" jdbcType="VARCHAR" />
+	<result property="entryLevel" column="ENTRY_LEVEL" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="effect" column="EFFECT" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="member" column="MEMBER" jdbcType="VARCHAR" />
+	<result property="performanceSituation" column="PERFORMANCE_SITUATION" jdbcType="VARCHAR" />
+	<result property="undertakePartyBranchId" column="UNDERTAKE_PARTY_BRANCH_ID" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="memberId" column="MEMBER_ID" jdbcType="VARCHAR" />
+	<result property="collaborativePartyBranchId" column="COLLABORATIVE_PARTY_BRANCH_ID" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="contactInformation" column="CONTACT_INFORMATION" jdbcType="VARCHAR" />
+	<result property="entryName" column="ENTRY_NAME" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="undertakePartyBranch" column="UNDERTAKE_PARTY_BRANCH" jdbcType="VARCHAR" />
+	<result property="endDate" column="END_DATE" jdbcType="TIMESTAMP" />
+	<result property="data4" column="DATA_4" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.CREATED_BY,
+	t1.CONTACTS,
+	t1.LAST_UPDATED_BY,
+	t1.COLLABORATIVE_PARTY_BRANCH,
+	t1.ENTRY_LEVEL,
+	t1.CREATION_DATE,
+	t1.EFFECT,
+	t1.LAST_UPDATE_DATE,
+	t1.MEMBER,
+	t1.PERFORMANCE_SITUATION,
+	t1.UNDERTAKE_PARTY_BRANCH_ID,
+	t1.VERSION,
+	t1.MEMBER_ID,
+	t1.COLLABORATIVE_PARTY_BRANCH_ID,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ORG_IDENTITY,
+	t1.CONTACT_INFORMATION,
+	t1.ENTRY_NAME,
+	t1.LAST_UPDATE_IP,
+	t1.UNDERTAKE_PARTY_BRANCH,
+	t1.END_DATE,
+	t1.DATA_4,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.contacts != null and bean.contacts != ''">
+		and t1.CONTACTS like concat(concat('%',#{bean.contacts}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.collaborativePartyBranch != null and bean.collaborativePartyBranch != ''">
+		and t1.COLLABORATIVE_PARTY_BRANCH like concat(concat('%',#{bean.collaborativePartyBranch}),'%')
+	</if>
+	<if test="bean.entryLevel != null and bean.entryLevel != ''">
+		and t1.ENTRY_LEVEL like concat(concat('%',#{bean.entryLevel}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.effect != null and bean.effect != ''">
+		and t1.EFFECT like concat(concat('%',#{bean.effect}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.member != null and bean.member != ''">
+		and t1.MEMBER like concat(concat('%',#{bean.member}),'%')
+	</if>
+	<if test="bean.performanceSituation != null and bean.performanceSituation != ''">
+		and t1.PERFORMANCE_SITUATION like concat(concat('%',#{bean.performanceSituation}),'%')
+	</if>
+	<if test="bean.undertakePartyBranchId != null and bean.undertakePartyBranchId != ''">
+		and t1.UNDERTAKE_PARTY_BRANCH_ID like concat(concat('%',#{bean.undertakePartyBranchId}),'%')
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.memberId != null and bean.memberId != ''">
+		and t1.MEMBER_ID like concat(concat('%',#{bean.memberId}),'%')
+	</if>
+	<if test="bean.collaborativePartyBranchId != null and bean.collaborativePartyBranchId != ''">
+		and t1.COLLABORATIVE_PARTY_BRANCH_ID like concat(concat('%',#{bean.collaborativePartyBranchId}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.contactInformation != null and bean.contactInformation != ''">
+		and t1.CONTACT_INFORMATION like concat(concat('%',#{bean.contactInformation}),'%')
+	</if>
+	<if test="bean.entryName != null and bean.entryName != ''">
+		and t1.ENTRY_NAME like concat(concat('%',#{bean.entryName}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.undertakePartyBranch != null and bean.undertakePartyBranch != ''">
+		and t1.UNDERTAKE_PARTY_BRANCH like concat(concat('%',#{bean.undertakePartyBranch}),'%')
+	</if>
+	<if test="bean.endDateBegin != null">
+		and t1.END_DATE &gt;= #{bean.endDateBegin}
+	</if>
+	<if test="bean.endDateEnd != null">
+		and t1.END_DATE &lt;= #{bean.endDateEnd}
+	</if>
+	<if test="bean.data4 != null and bean.data4 != ''">
+		and t1.DATA_4 like concat(concat('%',#{bean.data4}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.contacts != null and bean.contacts != ''">
+		or t1.CONTACTS like concat(concat('%',#{bean.contacts}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.collaborativePartyBranch != null and bean.collaborativePartyBranch != ''">
+		or t1.COLLABORATIVE_PARTY_BRANCH like concat(concat('%',#{bean.collaborativePartyBranch}),'%')
+	</if>
+	<if test="bean.entryLevel != null and bean.entryLevel != ''">
+		or t1.ENTRY_LEVEL like concat(concat('%',#{bean.entryLevel}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.effect != null and bean.effect != ''">
+		or t1.EFFECT like concat(concat('%',#{bean.effect}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.member != null and bean.member != ''">
+		or t1.MEMBER like concat(concat('%',#{bean.member}),'%')
+	</if>
+	<if test="bean.performanceSituation != null and bean.performanceSituation != ''">
+		or t1.PERFORMANCE_SITUATION like concat(concat('%',#{bean.performanceSituation}),'%')
+	</if>
+	<if test="bean.undertakePartyBranchId != null and bean.undertakePartyBranchId != ''">
+		or t1.UNDERTAKE_PARTY_BRANCH_ID like concat(concat('%',#{bean.undertakePartyBranchId}),'%')
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.memberId != null and bean.memberId != ''">
+		or t1.MEMBER_ID like concat(concat('%',#{bean.memberId}),'%')
+	</if>
+	<if test="bean.collaborativePartyBranchId != null and bean.collaborativePartyBranchId != ''">
+		or t1.COLLABORATIVE_PARTY_BRANCH_ID like concat(concat('%',#{bean.collaborativePartyBranchId}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.contactInformation != null and bean.contactInformation != ''">
+		or t1.CONTACT_INFORMATION like concat(concat('%',#{bean.contactInformation}),'%')
+	</if>
+	<if test="bean.entryName != null and bean.entryName != ''">
+		or t1.ENTRY_NAME like concat(concat('%',#{bean.entryName}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.undertakePartyBranch != null and bean.undertakePartyBranch != ''">
+		or t1.UNDERTAKE_PARTY_BRANCH like concat(concat('%',#{bean.undertakePartyBranch}),'%')
+	</if>
+	<if test="bean.endDateBegin != null">
+		or t1.END_DATE &gt;= #{bean.endDateBegin}
+	</if>
+	<if test="bean.endDateEnd != null">
+		or t1.END_DATE &lt;= #{bean.endDateEnd}
+	</if>
+	<if test="bean.data4 != null and bean.data4 != ''">
+		or t1.DATA_4 like concat(concat('%',#{bean.data4}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_ANNOUNCE -->
+<select id="searchDynAnnounceByPage" parameterType="java.util.Map" resultMap="DynAnnounceDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_ANNOUNCE t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_ANNOUNCE -->
+<select id="searchDynAnnounce" parameterType="java.util.Map" resultMap="DynAnnounceDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_ANNOUNCE t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_ANNOUNCE（导出） -->
+<select id="searchDynAnnounceForExport" parameterType="java.util.Map" resultMap="DynAnnounceDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_ANNOUNCE t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_ANNOUNCE -->
+<select id="findDynAnnounceById" parameterType="java.lang.String" resultMap="DynAnnounceDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_ANNOUNCE t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_ANNOUNCE -->
+<insert id="insertDynAnnounce" parameterType="avicit.pb.member.dynannounce.dto.DynAnnounceDTO">
+	insert into DYN_ANNOUNCE
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="contacts != null">
+			CONTACTS,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="collaborativePartyBranch != null">
+			COLLABORATIVE_PARTY_BRANCH,
+		</if>
+		<if test="entryLevel != null">
+			ENTRY_LEVEL,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="effect != null">
+			EFFECT,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="member != null">
+			MEMBER,
+		</if>
+		<if test="performanceSituation != null">
+			PERFORMANCE_SITUATION,
+		</if>
+		<if test="undertakePartyBranchId != null">
+			UNDERTAKE_PARTY_BRANCH_ID,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="memberId != null">
+			MEMBER_ID,
+		</if>
+		<if test="collaborativePartyBranchId != null">
+			COLLABORATIVE_PARTY_BRANCH_ID,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="contactInformation != null">
+			CONTACT_INFORMATION,
+		</if>
+		<if test="entryName != null">
+			ENTRY_NAME,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="undertakePartyBranch != null">
+			UNDERTAKE_PARTY_BRANCH,
+		</if>
+		<if test="endDate != null">
+			END_DATE,
+		</if>
+		<if test="data4 != null">
+			DATA_4,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="contacts != null">
+			#{contacts,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="collaborativePartyBranch != null">
+			#{collaborativePartyBranch,jdbcType = VARCHAR},
+		</if>
+		<if test="entryLevel != null">
+			#{entryLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="effect != null">
+			#{effect,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="member != null">
+			#{member,jdbcType = VARCHAR},
+		</if>
+		<if test="performanceSituation != null">
+			#{performanceSituation,jdbcType = VARCHAR},
+		</if>
+		<if test="undertakePartyBranchId != null">
+			#{undertakePartyBranchId,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="memberId != null">
+			#{memberId,jdbcType = VARCHAR},
+		</if>
+		<if test="collaborativePartyBranchId != null">
+			#{collaborativePartyBranchId,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="contactInformation != null">
+			#{contactInformation,jdbcType = VARCHAR},
+		</if>
+		<if test="entryName != null">
+			#{entryName,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="undertakePartyBranch != null">
+			#{undertakePartyBranch,jdbcType = VARCHAR},
+		</if>
+		<if test="endDate != null">
+			#{endDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="data4 != null">
+			#{data4,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_ANNOUNCE -->
+<insert id="insertDynAnnounceList" parameterType="java.util.List">
+	insert into DYN_ANNOUNCE(
+	CREATED_BY ,
+	CONTACTS ,
+	LAST_UPDATED_BY ,
+	COLLABORATIVE_PARTY_BRANCH ,
+	ENTRY_LEVEL ,
+	CREATION_DATE ,
+	EFFECT ,
+	LAST_UPDATE_DATE ,
+	MEMBER ,
+	PERFORMANCE_SITUATION ,
+	UNDERTAKE_PARTY_BRANCH_ID ,
+	VERSION ,
+	MEMBER_ID ,
+	COLLABORATIVE_PARTY_BRANCH_ID ,
+	ID ,
+	CREATED_DEPT ,
+	ORG_IDENTITY ,
+	CONTACT_INFORMATION ,
+	ENTRY_NAME ,
+	LAST_UPDATE_IP ,
+	UNDERTAKE_PARTY_BRANCH ,
+	END_DATE ,
+	DATA_4 )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.contacts,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.collaborativePartyBranch,jdbcType = VARCHAR} ,
+	#{item.entryLevel,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.effect,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.member,jdbcType = VARCHAR} ,
+	#{item.performanceSituation,jdbcType = VARCHAR} ,
+	#{item.undertakePartyBranchId,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.memberId,jdbcType = VARCHAR} ,
+	#{item.collaborativePartyBranchId,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.contactInformation,jdbcType = VARCHAR} ,
+	#{item.entryName,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.undertakePartyBranch,jdbcType = VARCHAR} ,
+	#{item.endDate,jdbcType = TIMESTAMP} ,
+	#{item.data4,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_ANNOUNCE -->
+<update id="updateDynAnnounceSensitive" parameterType="avicit.pb.member.dynannounce.dto.DynAnnounceDTO">
+	update DYN_ANNOUNCE
+	<set>
+		<trim suffixOverrides=",">
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="contacts != null">
+				CONTACTS = #{contacts,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="collaborativePartyBranch != null">
+				COLLABORATIVE_PARTY_BRANCH = #{collaborativePartyBranch,jdbcType = VARCHAR},
+			</if>
+			<if test="entryLevel != null">
+				ENTRY_LEVEL = #{entryLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="effect != null">
+				EFFECT = #{effect,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="member != null">
+				MEMBER = #{member,jdbcType = VARCHAR},
+			</if>
+			<if test="performanceSituation != null">
+				PERFORMANCE_SITUATION = #{performanceSituation,jdbcType = VARCHAR},
+			</if>
+			<if test="undertakePartyBranchId != null">
+				UNDERTAKE_PARTY_BRANCH_ID = #{undertakePartyBranchId,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="memberId != null">
+				MEMBER_ID = #{memberId,jdbcType = VARCHAR},
+			</if>
+			<if test="collaborativePartyBranchId != null">
+				COLLABORATIVE_PARTY_BRANCH_ID = #{collaborativePartyBranchId,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="contactInformation != null">
+				CONTACT_INFORMATION = #{contactInformation,jdbcType = VARCHAR},
+			</if>
+			<if test="entryName != null">
+				ENTRY_NAME = #{entryName,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="undertakePartyBranch != null">
+				UNDERTAKE_PARTY_BRANCH = #{undertakePartyBranch,jdbcType = VARCHAR},
+			</if>
+			<if test="endDate != null">
+				END_DATE = #{endDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="data4 != null">
+				DATA_4 = #{data4,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_ANNOUNCE -->
+<update id="updateDynAnnounceAll" parameterType="avicit.pb.member.dynannounce.dto.DynAnnounceDTO">
+	update DYN_ANNOUNCE
+	set
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	CONTACTS = #{contacts,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	COLLABORATIVE_PARTY_BRANCH = #{collaborativePartyBranch,jdbcType = VARCHAR} ,
+	ENTRY_LEVEL = #{entryLevel,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	EFFECT = #{effect,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	MEMBER = #{member,jdbcType = VARCHAR} ,
+	PERFORMANCE_SITUATION = #{performanceSituation,jdbcType = VARCHAR} ,
+	UNDERTAKE_PARTY_BRANCH_ID = #{undertakePartyBranchId,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	MEMBER_ID = #{memberId,jdbcType = VARCHAR} ,
+	COLLABORATIVE_PARTY_BRANCH_ID = #{collaborativePartyBranchId,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	CONTACT_INFORMATION = #{contactInformation,jdbcType = VARCHAR} ,
+	ENTRY_NAME = #{entryName,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	UNDERTAKE_PARTY_BRANCH = #{undertakePartyBranch,jdbcType = VARCHAR} ,
+	END_DATE = #{endDate,jdbcType = TIMESTAMP} ,
+	DATA_4 = #{data4,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_ANNOUNCE -->
+<update id="updateDynAnnounceList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_ANNOUNCE
+		set
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		CONTACTS = #{item.contacts,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		COLLABORATIVE_PARTY_BRANCH = #{item.collaborativePartyBranch,jdbcType = VARCHAR} ,
+		ENTRY_LEVEL = #{item.entryLevel,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		EFFECT = #{item.effect,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		MEMBER = #{item.member,jdbcType = VARCHAR} ,
+		PERFORMANCE_SITUATION = #{item.performanceSituation,jdbcType = VARCHAR} ,
+		UNDERTAKE_PARTY_BRANCH_ID = #{item.undertakePartyBranchId,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		MEMBER_ID = #{item.memberId,jdbcType = VARCHAR} ,
+		COLLABORATIVE_PARTY_BRANCH_ID = #{item.collaborativePartyBranchId,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		CONTACT_INFORMATION = #{item.contactInformation,jdbcType = VARCHAR} ,
+		ENTRY_NAME = #{item.entryName,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		UNDERTAKE_PARTY_BRANCH = #{item.undertakePartyBranch,jdbcType = VARCHAR} ,
+		END_DATE = #{item.endDate,jdbcType = TIMESTAMP} ,
+		DATA_4 = #{item.data4,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_ANNOUNCE -->
+<delete id="deleteDynAnnounceById" parameterType="java.lang.String">
+	delete from DYN_ANNOUNCE  where id = #{id}
+</delete>
+</mapper>

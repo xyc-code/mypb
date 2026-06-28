@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 100 120">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fd7541"/>
+      <stop offset="1" stop-color="#eb5f29"/>
+    </linearGradient>
+    <filter id="Path" x="57" y="0" width="46" height="46" filterUnits="userSpaceOnUse">
+      <feOffset dy="-2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feFlood flood-opacity="0.09"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="files_icon-PPT" data-name="files icon-PPT" transform="translate(0 0)">
+    <g id="PDF">
+      <path id="Combined_Shape" data-name="Combined Shape" d="M60,0l40,40v66a14,14,0,0,1-14,14H14A14,14,0,0,1,0,106V14A14,14,0,0,1,14,0Z" fill="url(#linear-gradient)"/>
+      <g transform="matrix(1, 0, 0, 1, 0, -5)" filter="url(#Path)">
+        <path id="Path-2" data-name="Path" d="M0,0H25.293C33.025,0,40,6.975,40,14.707V40Z" transform="translate(100 45) rotate(180)" fill="rgba(255,255,255,0.4)"/>
+      </g>
+    </g>
+    <g id="图表黑" transform="translate(20 50)">
+      <path id="Path-3" data-name="Path" d="M18.541,0A18.541,18.541,0,1,0,37.086,18.536H18.541Z" transform="translate(0.013 2.901)" fill="#fff" opacity="0.4"/>
+      <path id="Path-4" data-name="Path" d="M0,0V18.545H18.541A18.538,18.538,0,0,0,0,0Z" transform="translate(21.442 0.009)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

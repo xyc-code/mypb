@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" />
+		<link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+		<script src="js/jquery1.42.min.js"></script>
+	</head>
+		<body style="overflow: hidden;">
+			<div class="content_box">
+				<div class="title_switch box_title fengx-tab">
+					<ul class="clearfix">
+						<li >
+							<p>我的风险</p>
+							<div class="title_switch_on"></div>
+							<i class="item_number">5</i>
+						</li>
+						<li class="act">
+							<p>风险追踪</p>
+							<div class="title_switch_on"></div>
+							<i class="item_number">5</i>
+						</li>
+					</ul>
+					<div class="box_title_right">
+						<div class="icon_more">
+							<i
+							class="iconfont icon-refresh"
+							title="刷新"
+							></i>
+						</div>
+						<div class="icon_refresh"></div>
+					</div>
+				</div>
+				<div class="content_inner risk_box">
+					<ul>
+						<li>
+							<i class="lis "></i>
+							<p class="text_org">2019年度预算已超期</p>
+							<span class="Fill">陈伟光</span>
+							<span class="Fill">2019-12-12</span>
+						</li>
+						<li>
+							<i class="lis "></i>
+							<p class="text_org">2019年度预算已超期</p>
+							<span class="Fill">陈伟光</span>
+							<span class="Fill">2019-12-12</span>
+						</li>
+						<li>
+							<i class="lis "></i>
+							<p class="text">2019年度预算已超期</p>
+							<span class="Fill">陈伟光</span>
+							<span class="Fill">2019-12-12</span>
+						</li>
+						<li>
+							<i class="lis "></i>
+							<p class="text">2019年度预算已超期</p>
+							<span class="Fill">陈伟光</span>
+							<span class="Fill">2019-12-12</span>
+						</li>
+						<li>
+							<i class="lis "></i>
+							<p class="text">2019年度预算已超期</p>
+							<span class="Fill">陈伟光</span>
+							<span class="Fill">2019-12-12</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<script type="text/javascript">
+				$(".fengx-tab ul li").click(function(){
+					$(".fengx-tab ul li").eq($(this).index()).addClass('act')
+					$(".fengx-tab ul li").not($(".fengx-tab ul li").eq($(this).index())).removeClass('act')
+				})
+			</script>
+	</body>
+</html>

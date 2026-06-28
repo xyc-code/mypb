@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>销售达成</title>
+    <script src="js/echarts.min.js"></script>
+    <link
+      href="iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>销售达成</h4>
+        <span class="box_title_right">
+          <i class="iconfont icon-refresh" title="刷新"></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="salesAchievement-content">
+          <li class="sc-list">
+            <p class="scl-tip"><span>目标金额</span></p>
+            <p class="scl-num"><span>¥4,320</span></p>
+            <p class="scl-tip"><span>达成金额</span></p>
+            <p class="scl-num"><span>¥1,342</span></p>
+            <p class="scl-change">
+              <span><i class="iconfont icon-down cor-green"></i></span>
+              <span class="cor-green" style="margin: 0 8% 0 0;">12％</span>
+              <span class="flo-right">
+                <span><i class="iconfont icon-up cor-red text-right"></i></span>
+                <span class="cor-red text-right">10％</span>
+              </span>
+            </p>
+            <p class="scl-per">
+              <span class="flo-left" style="margin: 0 0 0 10px;">同比</span>
+              <span class="flo-right" style="margin: 0 10px 0 0;">环比</span>
+            </p>
+          </li>
+          <li class="sc-list">
+            <div id="pieChart" style="width: 50%;height: 230px;"></div>
+          </li>
+        </ul>
+      </div>
+    
+  </body>
+  <script type="text/javascript">
+    var nextEchart = echarts.init(document.getElementById("pieChart"));
+
+    var nextOption = {
+      tooltip: {
+        trigger: "item"
+      },
+      legend: {
+        show: false
+      },
+      title: {
+        text: "销售完成率",
+        top: "38%",
+        left: "45%",
+        textStyle: {
+          color: "#676767",
+          fontSize: "14px",
+          fontWeight: 400
+        },
+        subtext: "45%",
+        subtextStyle: {
+          color: "#000",
+          fontSize: "24px",
+          align: "center"
+        },
+        textAlign: "center"
+      },
+      color: ["#3BA1FF", "#EBEDF1"],
+      series: [
+        {
+          type: "pie",
+          hoverAnimation: false,
+          radius: ["80%", "90%"],
+          center: ["45%", "50%"],
+          avoidLabelOverlap: false,
+          tooltip: {
+            show: false
+          },
+          labelLine: {
+            show: false
+          },
+          data: [{ value: 45, name: "" }, { value: 55, name: "" }]
+        }
+      ]
+    };
+
+    nextEchart.setOption(nextOption);
+  </script>
+  <style>
+  	*{
+  		box-sizing: border-box;
+  	}
+  	.content_inner{
+  		margin: 0 10px;
+  	}
+    .sc-list {
+      float: left;
+      width: 50%;
+      text-align: center;
+      padding: 15px;
+    }
+    .scl-tip {
+        font-family: 'Microsoft YaHei UI';
+        font-weight: 400;
+        color: #676767;
+        font-size: 14px;
+        line-height: 30px;
+        text-align: left;
+    }
+    .scl-num {
+        font-family: 'DIN Medium', 'DIN';
+        font-weight: 500;
+        font-size: 24px;
+        color: #343434;
+        line-height: 50px;
+        text-align: left;
+    }
+    .scl-change {
+        width: 100%;
+        text-align: left;
+    }
+    .scl-per {
+        width: 100%;
+        height: 30px;
+        font-family: 'Microsoft YaHei UI';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 12px;
+        color: #999999;
+        line-height: 30px;
+    }
+    .flo-left {
+      float: left;
+    }
+    .flo-right {
+      float: right;
+    }
+    .text-left {
+      text-align: left;
+    }
+    .text-right {
+      text-align: right;
+    }
+    .cor-green {
+      color: #00A854;
+    }
+    .cor-red {
+      color: #F04134;
+    }
+  </style>
+</html>

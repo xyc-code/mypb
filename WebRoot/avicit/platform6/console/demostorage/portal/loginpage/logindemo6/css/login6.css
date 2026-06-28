@@ -1,0 +1,147 @@
+@charset "utf-8";
+
+body {
+  width: 100%;
+  height: 100%;
+  background: url(../img/login6_bg.jpg) no-repeat;
+  background-size: 100% 100%;
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+            src='../img/login6_bg.jpg',
+            sizingMethod='scale');
+  -ms-filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+            src='../img/login6_bg.jpg',
+            sizingMethod='scale');
+  background-position: center;
+}
+.lg-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lg-content .lg-mid {
+  width: 890px;
+  height: 400px;
+  margin: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.lg-content .lg-mid .lg-mid-left {
+  float: left;
+  width: 364px;
+  height: 400px;
+  box-sizing: border-box;
+  background: linear-gradient(#0b67a7, #29b8cc);
+  background: linear-gradient(right, #0b67a7, #29b8cc);
+  background: linear-gradient(to right, #0b67a7, #29b8cc);
+  text-align: center;
+  padding: 30px;
+}
+.lg-content .lg-mid .lg-mid-right {
+  float: left;
+  width: 526px;
+  height: 400px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+.lg-mid-right img {
+  margin: 40px 30px 0px 30px;
+}
+.lg-mid-right .lg-inp-box {
+  width: 100%;
+  padding-top: 40px;
+  text-align: left;
+}
+.lg-mid-right .lg-form-group {
+  width: 466px;
+  margin: auto;
+  /*margin-bottom: 30px;*/
+  position: relative;
+}
+.lg-form-group span.msg-tip {
+  color: red;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+}
+.lg-form-group a.register {
+  margin: 15px 0px;
+  display: inline-block;
+  color: #1c70a1;
+}
+
+.lg-mid-right label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.lg-mid-right input {
+  /*margin: 0px 10px 0px 10px;*/
+  width: 100%;
+  height: 38px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+.lg-form-group img {
+  position: absolute;
+  margin: 0;
+  top: 8px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+}
+.lg-mid-right .lg-input-u-user {
+  /*background: url("../img/icon_user.png") no-repeat 10px center;*/
+  vertical-align: center;
+  margin-bottom: -2px;
+  margin-bottom: 1px;
+  padding: 10px 0 10px 40px;
+  box-sizing: border-box;
+}
+.lg-mid-right .lg-input-u-passw {
+  /*background: url("../img/icon_password.png") no-repeat 10px center;*/
+  vertical-align: center;
+  margin-bottom: -2px;
+  margin-bottom: 1px;
+  padding: 10px 0 10px 40px;
+  box-sizing: border-box;
+}
+
+.lg-mid-right .lg-btn {
+  width: 100%;
+  text-align: center;
+}
+.lg-mid-right button {
+  color: #fff;
+  background-color: #1c70a1;
+  width: 100%;
+  height: 40px;
+  border: 1px solid #ddd;
+  /*height: 62px;*/
+  border-radius: 3px;
+  /*margin-left: 11px;*/
+  /*font-size: 22px;*/
+  /*float:right;*/
+}
+.lg-mid-right .lg-meg {
+  width: 100%;
+  padding: 10px 0px;
+  position: relative;
+}
+.lg-mid-right .forgetPwdLine {
+  display: inline-block;
+  width: 100%;
+  background: #fbd7d7;
+  padding: 10px;
+  border-radius: 3px;
+  color: #e01515;
+  border: 1px solid #f7b3b3;
+  margin: auto;
+}
+.loadimg {
+  background: url(../img/img_bg.jpg) no-repeat;
+}

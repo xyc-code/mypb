@@ -1,0 +1,109 @@
+* {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border: none;
+  text-decoration: none;
+  font-family: "微软雅黑";
+  outline: none;
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+}
+body {
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+  background: url(../img/login-darkblue.png) no-repeat bottom;
+}
+.login {
+  width: 420px;
+  float: right;
+  height: 100%;
+  padding: 0 32px;
+  background: #fff;
+}
+
+.inputstyle {
+  line-height: 42px;
+  color: #666;
+  font-size: 14px;
+  text-indent: 40px;
+  margin: 24px 0;
+  border-radius: 5px;
+  width: 100%;
+  text-align: left;
+  height: 42px;
+  border: 1px solid #d9d9d9;
+}
+.uinArea input {
+  background: #ffffff url(../img/user.png) no-repeat 10px 10px;
+}
+.pwdArea input {
+  background: #ffffff url(../img/password.png) no-repeat 10px 10px;
+}
+.text-tip {
+  color: #ff4400;
+  font-size: 12px;
+  line-height: 30px;
+  display: inline-block;
+}
+.btn {
+  background: #008dff;
+  width: 100%;
+  height: 42px;
+  color: #ffffff;
+  font-size: 18px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.left_text {
+  position: absolute;
+  top: 30%;
+  left: 25%;
+}
+.left_text h4 {
+  font-size: 40px;
+  color: #fff;
+  line-height: 64px;
+}
+.top-logo {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+}
+.top-logo img {
+  width: 56px;
+  height: auto;
+  display: inline-block;
+  margin: 0 8px;
+}
+.top-logo h1 {
+  display: inline-block;
+  font-size: 32px;
+  color: #fff;
+  vertical-align: top;
+  font-weight: 600;
+  padding-top: 8px;
+}
+.top-logo h1 span {
+  font-size: 24px;
+  font-weight: 400;
+  display: inline-block;
+  vertical-align: top;
+  padding-top: 8px;
+}
+.top-title {
+  margin-top: 32px;
+  font-size: 24px;
+  color: #1890ff;
+}
+.login-title {
+  margin: 48px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+}

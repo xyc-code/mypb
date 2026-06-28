@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>个人中心</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+		.person_title_padding{
+			overflow: hidden;
+			padding: 0 10px 10px;
+			border-bottom: 1px solid #E9E9E9;
+  	  		box-sizing: border-box;
+		}
+		.title_left{
+			float: left;
+			overflow: hidden;
+		}
+		.title_left>img{
+			float: left;
+			width: 56px;
+			height: 56px;
+		}
+		.person_title_intro{
+			float: left;
+			margin-left: 20px;
+			margin-top: 10px;
+		}
+		.title_name{
+			font-size: 16px;
+			color: #333333;
+		}
+		.title_position{
+			font-size: 12px;
+			color: #909090;
+		}
+		.person_title_padding .icon{
+			float: right;
+		    /*margin-right: 24px;*/
+		    margin-top: 15px;
+		    font-size: 20px;
+		}
+		.person_body_padding{
+			padding: 24px 0;
+		}
+		.person_body_up ul{
+			overflow: hidden;
+			width: 100%;
+		}
+		.person_body_up ul li{
+			float: left;
+			width: 33%;
+			overflow: hidden;
+		}
+		.up_icon{
+			float: left;
+			width: 46px;
+			height: 46px;
+			border-radius: 23px;
+			background: #338FE5;
+			position: relative;
+		}
+		.up_icon .icon{
+			position: absolute;
+			left: 11px;
+			top: 11px;
+		}
+		.up_icon .iconfont{
+			font-size: 23px;
+		}
+		.up_icon .icon-an-Field-time{
+			font-size: 25px !important;
+		}
+		.up_icon .icon-an-Field-time{
+		    position: absolute;
+		    left: 12px;
+		    top: 10px;
+		}
+		.up_content{
+			float: left;
+			margin-left: 10px;
+			margin-top: 4px;
+		}
+		.up_content_num{
+			font-size: 16px;
+			color: #333333;
+		}
+		.up_content_text{
+			font-size: 12px;
+			color: #909090;
+		}
+		.person_body_down{
+			margin-top: 28px;
+			overflow: hidden;
+		}
+		.down_icon{
+			float: left;
+			width: 46px;
+			height: 46px;
+			border-radius: 23px;
+			background: #E8E8E8;
+			position: relative;
+		}
+		.down_icon .icon{
+			position: absolute;
+			left: 11px;
+			top: 11px;
+		}
+		.down_icon .iconfont{
+			font-size: 23px;
+		}
+		.down_chart{
+			float: left;
+			margin-left: 10px;
+			width: 80%;
+		}
+		.down_chart>p{
+			font-size: 12px;
+			color: #909090;
+			line-height: 23px;
+		}
+		.down_chart_bg{
+			width: 100%;
+		    background: #DEDEDE;
+		    height: 8px;
+		    border-radius: 4px;
+		    margin-top: 6px;
+		}
+		.down_chart_ratio{
+			background: #24B47E;
+		    height: 8px;
+		    border-radius: 4px;
+		    position: relative;
+		}
+		.chart_annotation{
+			position: absolute;
+		    right: 0;
+		    bottom: 14px;
+		    background: url(./source/img/dialog.png) no-repeat 0 0;
+		    background-size: 40px 23px;
+		    width: 40px;
+			height: 23px;
+			text-align: center;	
+		}
+		.chart_annotation p{
+			font-size: 10px;
+			color: #ffffff;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>个人中心</h4>
+				<span class="box_title_right">
+				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('personal')"></i>
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="person_title_padding">
+					<div class="title_left">
+						<img src="./source/img/head-boy.png" />
+						<div class="person_title_intro">
+							<p class="title_name">安某某</p>
+							<p class="title_position">研发中心 UI设计师</p>
+						</div>
+					</div>
+					<!-- <div class="icon iconfont icon-an-ellipsis" style="color: #7F7F7F;"></div> -->
+				</div>
+				<div class="person_body">
+					<div class="person_body_padding">
+						<div class="person_body_up">
+							<ul>
+								<li>
+									<div class="up_icon">
+										<i class="icon iconfont icon-an-send" style="color: #ffffff;"></i>
+									</div>
+									<div class="up_content">
+										<p class="up_content_num">8</p>
+										<p class="up_content_text">出差天数</p>
+									</div>
+								</li>
+								<li>
+									<div class="up_icon">
+										<i class="icon iconfont icon-an-Field-time" style="color: #ffffff;"></i>
+									</div>
+									<div class="up_content">
+										<p class="up_content_num">3</p>
+										<p class="up_content_text">迟到天数</p>
+									</div>
+								</li>
+								<li>
+									<div class="up_icon">
+										<i class="icon iconfont icon-an-printer" style="color: #ffffff;"></i>
+									</div>
+									<div class="up_content">
+										<p class="up_content_num">6</p>
+										<p class="up_content_text">缺卡天数</p>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="person_body_down">
+							<div class="down_icon">
+								<i class="icon iconfont icon-an-printer" style="color: #848484;"></i>
+							</div>
+							<div class="down_chart">
+								<p>本月出勤</p>
+								<div class="down_chart_bg">
+									<div class="down_chart_ratio" style="width: 60%;">
+										<div class="chart_annotation">
+											<p>12/31</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

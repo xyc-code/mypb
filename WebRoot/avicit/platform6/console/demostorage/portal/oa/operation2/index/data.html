@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>常用资料</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+		.data_body ul li{
+			height: 36px;
+			overflow: hidden;
+			cursor: pointer;
+		}
+		.data_body ul li:hover{
+			background: #F8F8F8;
+		}
+		.data_name{
+			float: left;
+			color: #333333;
+			line-height: 36px;
+			font-size: 14px;
+			margin-left: 10px;
+			width:260px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.data_size{
+			float: right;
+			color: #909090;
+			line-height: 36px;
+			font-size: 14px;
+		}
+		.data_body ul li>.icon{
+			float: left;
+			margin-top: 8px;
+		}
+		.data_body ul li>.iconfont{
+			font-size:18px ;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>常用资料</h4>
+				<span class="box_title_right">
+<!--				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('data')"></i>-->
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="data_body">
+					<ul>
+						<li>
+							<i class="icon iconfont icon-an-PPT" style="color: #E2734A;"></i>
+							<p class="data_name">关于V6平台升级的注意事项.pdf</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-EXCEL" style="color: #1AA86C;"></i>
+							<p class="data_name">行政中心关于005号开展2021质量月.xls</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-WORD" style="color: #338FE5;"></i>
+							<p class="data_name">党员应该如何学习党史.doc</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-PPT" style="color: #E2734A;"></i>
+							<p class="data_name">关于V6平台升级的注意事项.pdf</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-EXCEL" style="color: #1AA86C;"></i>
+							<p class="data_name">行政中心关于005号开展2021质量月.xls</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-WORD" style="color: #338FE5;"></i>
+							<p class="data_name">党员应该如何学习党史.doc</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-PPT" style="color: #E2734A;"></i>
+							<p class="data_name">关于V6平台升级的注意事项.pdf</p>
+							<p class="data_size">53.8K</p>
+						</li>
+						<li>
+							<i class="icon iconfont icon-an-EXCEL" style="color: #1AA86C;"></i>
+							<p class="data_name">行政中心关于005号开展2021质量月.xls</p>
+							<p class="data_size">53.8K</p>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

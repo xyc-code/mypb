@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 100 120">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Mask" d="M60,0l40,40v66a14,14,0,0,1-14,14H14A14,14,0,0,1,0,106V14A14,14,0,0,1,14,0Z" fill="#424242"/>
+    </clipPath>
+    <filter id="Corner" x="57" y="0" width="46" height="46" filterUnits="userSpaceOnUse">
+      <feOffset dy="-2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feFlood flood-opacity="0.09"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="files_icon-other" data-name="files icon-other" transform="translate(0 0)">
+    <g id="Main">
+      <path id="Mask-2" data-name="Mask" d="M60,0l40,40v66a14,14,0,0,1-14,14H14A14,14,0,0,1,0,106V14A14,14,0,0,1,14,0Z" fill="#424242"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 0, -5)" filter="url(#Corner)">
+      <path id="Corner-2" data-name="Corner" d="M0,0H25.293C33.025,0,40,6.975,40,14.707V40Z" transform="translate(100 45) rotate(180)" fill="rgba(255,255,255,0.4)" opacity="0.4"/>
+    </g>
+    <g id="无限" transform="translate(20 68)">
+      <path id="Combined_Shape" data-name="Combined Shape" d="M23.011,19.655a1.607,1.607,0,1,1,1.838-2.636,7.577,7.577,0,0,0,11.905-6.233,7.591,7.591,0,1,0-15.181,0A10.844,10.844,0,0,1,10.786,21.573,10.844,10.844,0,0,1,0,10.786,10.83,10.83,0,0,1,16.619,1.678,1.64,1.64,0,0,1,17.1,3.915a1.64,1.64,0,0,1-2.236.48,7.366,7.366,0,0,0-4.075-1.2,7.591,7.591,0,1,0,7.591,7.591,10.786,10.786,0,1,1,21.573,0A10.844,10.844,0,0,1,29.164,21.573,10.406,10.406,0,0,1,23.011,19.655Z" transform="translate(0.035 0.037)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

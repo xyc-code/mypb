@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="iconfont/iconfont.css" />
+		<script src="js/echarts.min.js"></script>
+		<script src="js/jquery1.42.min.js"></script>		
+	</head>
+	<body>
+		<div class="content_box">
+			<div class="title_switch box_title ">
+				<div class="title">工时燃尽图</div>
+				<div class="box_title_right">
+					<div class="icon_more">
+					<i
+		class="iconfont icon-refresh"
+		title="刷新"
+		></i>
+		<i
+		class="iconfont icon-refresh"
+		title="刷新"
+		></i>
+					</div>
+					<div class="time_select">
+						<select>
+							<option>2019-12</option>
+							<option>2019-11</option>
+							<option>2019-10</option>
+							<option>2019-09</option>
+							<option>2019-08</option>
+							<option>2019-07</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="content_inner">
+				<div id="gongshiLine" style="height: 270px;"></div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var gongshiEchart = echarts.init(document.getElementById("gongshiLine"));
+
+			var gongshiOption = {
+				tooltip: {
+					trigger: "axis",
+					axisPointer: {
+						type: "cross"
+					}
+				},
+				// legend: {
+				// 	data: ["2021", "2020"],
+				// 	right: 0,
+				// 	itemWidth: 10,
+				// 	itemHeight: 10
+				// },
+				color: ["#0082D5", "#FF9948"],
+				grid: {
+					top: 20,
+					left: "3%",
+					right: "1%",
+					bottom: "1%",
+					containLabel: true
+				},
+				xAxis: {
+					type: "category",
+					boundaryGap: false,
+					data: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+					splitLine: {
+						lineStyle: {
+							dashOffset: 10
+						}
+					}
+				},
+				yAxis: {
+					type: "value",
+					splitLine: {
+						lineStyle: {
+							type: "dashed"
+						}
+					}
+				},
+				series: [
+				{
+					name: "2021",
+					type: "line",
+					data: [12, 23, 31, 34, 36, 30, 63, 12, 32, 10, 34, 70]
+				},
+				{
+					name: "2020",
+					type: "line",
+					data: [78, 56, 62, 44, 43, 87, 56, 44, 35, 57, 70, 38]
+				}
+				]
+			};
+
+			gongshiEchart.setOption(gongshiOption);
+			$(window).resize(function() { //重置容器高宽 
+				gongshiEchart.resize(); 
+			});
+			function downloadFile(fileName){
+				let a = document.createElement("a");
+				a.href = '/download/template7/'+fileName+".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

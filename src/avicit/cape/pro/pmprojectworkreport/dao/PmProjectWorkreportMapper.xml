@@ -1,0 +1,1197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.cape.pro.pmprojectworkreport.dao.PmProjectWorkreportDao">
+
+<resultMap id="PmProjectWorkreportDTOMap" type="avicit.cape.pro.pmprojectworkreport.dto.PmProjectWorkreportDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="secretLevel" column="SECRET_LEVEL" jdbcType="VARCHAR" />
+		<result property="projectId" column="PROJECT_ID" jdbcType="VARCHAR" />
+		<result property="projectName" column="PROJECT_NAME" jdbcType="VARCHAR" />
+		<result property="projectOrder" column="PROJECT_ORDER" jdbcType="VARCHAR" />
+		<result property="orgModel" column="ORG_MODEL" jdbcType="VARCHAR" />
+		<result property="userId" column="USER_ID" jdbcType="VARCHAR" />
+		<result property="deptId" column="DEPT_ID" jdbcType="VARCHAR" />
+		<result property="leaderDept" column="LEADER_DEPT" jdbcType="VARCHAR" />
+		<result property="projectLeader" column="PROJECT_LEADER" jdbcType="VARCHAR" />
+		<result property="companyManagerId" column="COMPANY_MANAGER_ID" jdbcType="VARCHAR" />
+		<result property="scienceUserId" column="SCIENCE_USER_ID" jdbcType="VARCHAR" />
+		<result property="planStartDate" column="PLAN_START_DATE" jdbcType="TIMESTAMP" />
+		<result property="planEndDate" column="PLAN_END_DATE" jdbcType="TIMESTAMP" />
+		<result property="fundBudget" column="FUND_BUDGET" jdbcType="DECIMAL" />
+		<result property="fundExpenditure" column="FUND_EXPENDITURE" jdbcType="DECIMAL" />
+		<result property="projectNode" column="PROJECT_NODE" jdbcType="VARCHAR" />
+		<result property="thisMonthPlan" column="THIS_MONTH_PLAN" jdbcType="VARCHAR" />
+		<result property="nextMonthPlan" column="NEXT_MONTH_PLAN" jdbcType="VARCHAR" />
+		<result property="thisMonthXtwt" column="THIS_MONTH_XTWT" jdbcType="VARCHAR" />
+		<result property="thisMonthCyuser" column="THIS_MONTH_CYUSER" jdbcType="VARCHAR" />
+		<result property="expenseExecutionRate" column="EXPENSE_EXECUTION_RATE" jdbcType="VARCHAR" />
+		<result property="fundExecutionRate" column="FUND_EXECUTION_RATE" jdbcType="VARCHAR" />
+		<result property="planStatus" column="PLAN_STATUS" jdbcType="VARCHAR" />
+		<result property="wrYear" column="WR_YEAR" jdbcType="VARCHAR" />
+		<result property="wrMonth" column="WR_MONTH" jdbcType="VARCHAR" />
+		<result property="status" column="STATUS" jdbcType="VARCHAR" />
+		<result property="bpmTaskId" column="BPM_TASK_ID" jdbcType="VARCHAR" />
+		<result property="remark" column="REMARK" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+		<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+		<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+		<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+		<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+		<result property="attribute06" column="ATTRIBUTE_06" jdbcType="VARCHAR" />
+		<result property="attribute07" column="ATTRIBUTE_07" jdbcType="DECIMAL" />
+		<result property="attribute08" column="ATTRIBUTE_08" jdbcType="DECIMAL" />
+		<result property="attribute09" column="ATTRIBUTE_09" jdbcType="TIMESTAMP" />
+		<result property="attribute10" column="ATTRIBUTE_10" jdbcType="TIMESTAMP" />
+		<result property="activityalias_" column="activityalias_" jdbcType="VARCHAR" />
+		<result property="businessstate_" column="businessstate_" jdbcType="VARCHAR" />
+</resultMap>
+<!-- 分页查询 PM_PROJECT_WORKREPORT -->
+<select id="searchPmProjectWorkreportByPage" parameterType="java.util.Map" resultMap="PmProjectWorkreportDTOMap">
+	select
+		v.activityalias_                 ,
+		v.businessstate_                 ,
+		t1.id                             ,
+		t1.secret_level                   ,
+		t1.project_id                     ,
+		t1.project_name                   ,
+		t1.project_order                  ,
+		t1.org_model                      ,
+		t1.user_id                        ,
+		t1.dept_id                        ,
+		t1.leader_dept                    ,
+		t1.project_leader                 ,
+		t1.company_manager_id             ,
+		t1.science_user_id                ,
+		t1.plan_start_date                ,
+		t1.plan_end_date                  ,
+		t1.fund_budget                    ,
+		t1.fund_expenditure               ,
+		t1.project_node                   ,
+		t1.this_month_plan                ,
+		t1.next_month_plan                ,
+		t1.this_month_xtwt                ,
+		t1.this_month_cyuser              ,
+		t1.expense_execution_rate         ,
+		t1.fund_execution_rate            ,
+		t1.plan_status                    ,
+		t1.wr_year                        ,
+		t1.wr_month                       ,
+		t1.status                         ,
+		t1.bpm_task_id                    ,
+		t1.remark                         ,
+		t1.created_by                     ,
+		t1.creation_date                  ,
+		t1.last_updated_by                ,
+		t1.last_update_date               ,
+		t1.last_update_ip                 ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.attribute_01                   ,
+		t1.attribute_02                   ,
+		t1.attribute_03                   ,
+		t1.attribute_04                   ,
+		t1.attribute_05                   ,
+		t1.attribute_06                   ,
+		t1.attribute_07                   ,
+		t1.attribute_08                   ,
+		t1.attribute_09                   ,
+		t1.attribute_10                   
+	from pm_project_workreport 	t1 left join bpm_client_hist_procinst_v v on t1.id = v.formid_ 
+		<where>
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.secretLevel != null and bean.secretLevel != ''">
+				and t1.SECRET_LEVEL like concat(concat('%',#{bean.secretLevel}),'%') 
+			</if>
+			<if test="bean.projectId != null and bean.projectId != ''">
+				and t1.PROJECT_ID like concat(concat('%',#{bean.projectId}),'%') 
+			</if>
+			<if test="bean.projectName != null and bean.projectName != ''">
+				and t1.PROJECT_NAME like concat(concat('%',#{bean.projectName}),'%') 
+			</if>
+			<if test="bean.projectOrder != null and bean.projectOrder != ''">
+				and t1.PROJECT_ORDER like concat(concat('%',#{bean.projectOrder}),'%') 
+			</if>
+			<if test="bean.orgModel != null and bean.orgModel != ''">
+				and t1.ORG_MODEL like concat(concat('%',#{bean.orgModel}),'%') 
+			</if>
+			<if test="bean.userId != null and bean.userId != ''">
+				and t1.USER_ID like concat(concat('%',#{bean.userId}),'%') 
+			</if>
+			<if test="bean.deptId != null and bean.deptId != ''">
+				and t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%') 
+			</if>
+			<if test="bean.leaderDept != null and bean.leaderDept != ''">
+				and t1.LEADER_DEPT like concat(concat('%',#{bean.leaderDept}),'%') 
+			</if>
+			<if test="bean.projectLeader != null and bean.projectLeader != ''">
+				and t1.PROJECT_LEADER like concat(concat('%',#{bean.projectLeader}),'%') 
+			</if>
+			<if test="bean.companyManagerId != null and bean.companyManagerId != ''">
+				and t1.COMPANY_MANAGER_ID like concat(concat('%',#{bean.companyManagerId}),'%') 
+			</if>
+			<if test="bean.scienceUserId != null and bean.scienceUserId != ''">
+				and t1.SCIENCE_USER_ID like concat(concat('%',#{bean.scienceUserId}),'%') 
+			</if>
+			<if test="bean.planStartDateBegin != null and bean.planStartDateBegin != ''">
+				and t1.PLAN_START_DATE &gt;= #{bean.planStartDateBegin}
+			</if>
+			<if test="bean.planStartDateEnd != null and bean.planStartDateEnd != ''">
+				and t1.PLAN_START_DATE &lt;= #{bean.planStartDateEnd}
+			</if>
+			<if test="bean.planEndDateBegin != null and bean.planEndDateBegin != ''">
+				and t1.PLAN_END_DATE &gt;= #{bean.planEndDateBegin}
+			</if>
+			<if test="bean.planEndDateEnd != null and bean.planEndDateEnd != ''">
+				and t1.PLAN_END_DATE &lt;= #{bean.planEndDateEnd}
+			</if>
+			<if test="bean.fundBudget != null ">
+				and t1.FUND_BUDGET like concat(concat('%',#{bean.fundBudget}),'%') 
+			</if>
+			<if test="bean.fundExpenditure != null ">
+				and t1.FUND_EXPENDITURE like concat(concat('%',#{bean.fundExpenditure}),'%') 
+			</if>
+			<if test="bean.projectNode != null and bean.projectNode != ''">
+				and t1.PROJECT_NODE like concat(concat('%',#{bean.projectNode}),'%') 
+			</if>
+			<if test="bean.thisMonthPlan != null and bean.thisMonthPlan != ''">
+				and t1.THIS_MONTH_PLAN like concat(concat('%',#{bean.thisMonthPlan}),'%') 
+			</if>
+			<if test="bean.nextMonthPlan != null and bean.nextMonthPlan != ''">
+				and t1.NEXT_MONTH_PLAN like concat(concat('%',#{bean.nextMonthPlan}),'%') 
+			</if>
+			<if test="bean.thisMonthXtwt != null and bean.thisMonthXtwt != ''">
+				and t1.THIS_MONTH_XTWT like concat(concat('%',#{bean.thisMonthXtwt}),'%') 
+			</if>
+			<if test="bean.thisMonthCyuser != null and bean.thisMonthCyuser != ''">
+				and t1.THIS_MONTH_CYUSER like concat(concat('%',#{bean.thisMonthCyuser}),'%') 
+			</if>
+			<if test="bean.expenseExecutionRate != null and bean.expenseExecutionRate != ''">
+				and t1.EXPENSE_EXECUTION_RATE like concat(concat('%',#{bean.expenseExecutionRate}),'%') 
+			</if>
+			<if test="bean.fundExecutionRate != null and bean.fundExecutionRate != ''">
+				and t1.FUND_EXECUTION_RATE like concat(concat('%',#{bean.fundExecutionRate}),'%') 
+			</if>
+			<if test="bean.planStatus != null and bean.planStatus != ''">
+				and t1.PLAN_STATUS like concat(concat('%',#{bean.planStatus}),'%') 
+			</if>
+			<if test="bean.wrYear != null and bean.wrYear != ''">
+				and t1.WR_YEAR like concat(concat('%',#{bean.wrYear}),'%') 
+			</if>
+			<if test="bean.wrMonth != null and bean.wrMonth != ''">
+				and t1.WR_MONTH like concat(concat('%',#{bean.wrMonth}),'%') 
+			</if>
+			<if test="bean.status != null and bean.status != ''">
+				and t1.STATUS like concat(concat('%',#{bean.status}),'%') 
+			</if>
+			<if test="bean.bpmTaskId != null and bean.bpmTaskId != ''">
+				and t1.BPM_TASK_ID like concat(concat('%',#{bean.bpmTaskId}),'%') 
+			</if>
+			<if test="bean.remark != null and bean.remark != ''">
+				and t1.REMARK like concat(concat('%',#{bean.remark}),'%') 
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.attribute01 != null and bean.attribute01 != ''">
+				and t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%') 
+			</if>
+			<if test="bean.attribute02 != null and bean.attribute02 != ''">
+				and t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%') 
+			</if>
+			<if test="bean.attribute03 != null and bean.attribute03 != ''">
+				and t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%') 
+			</if>
+			<if test="bean.attribute04 != null and bean.attribute04 != ''">
+				and t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%') 
+			</if>
+			<if test="bean.attribute05 != null and bean.attribute05 != ''">
+				and t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%') 
+			</if>
+			<if test="bean.attribute06 != null and bean.attribute06 != ''">
+				and t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%') 
+			</if>
+			<if test="bean.attribute07 != null ">
+				and t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%') 
+			</if>
+			<if test="bean.attribute08 != null ">
+				and t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%') 
+			</if>
+			<if test="bean.attribute09 != null and bean.attribute09 != ''">
+				and t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%') 
+			</if>
+			<if test="bean.attribute10 != null and bean.attribute10 != ''">
+				and t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%') 
+			</if>
+						<if test="bean.bpmType !=null and bean.bpmType !='' and bean.bpmType == 'my'">
+				 and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{bean.currUserId}) 
+			</if>
+			<if test="bean.bpmState != null and bean.bpmState !='' and bean.bpmState != 'all'">
+				and v.businessstate_ = #{bean.bpmState}
+			</if>
+</if>
+			<if test="sfnConditions != null and sfnConditions.sql != ''">
+				and ${sfnConditions.sql}			
+			</if>
+			<if test="org != null and org != ''">
+				and t1.ORG_IDENTITY =#{org}
+			</if>
+		</where>
+			order by t1.creation_date desc
+</select>
+<!-- 查询列表 PM_PROJECT_WORKREPORT -->
+<select id="searchPmProjectWorkreport" parameterType="java.util.Map" resultMap="PmProjectWorkreportDTOMap">
+	select
+		v.activityalias_                 ,
+		v.businessstate_                 ,
+		t1.id                             ,
+		t1.secret_level                   ,
+		t1.project_id                     ,
+		t1.project_name                   ,
+		t1.project_order                  ,
+		t1.org_model                      ,
+		t1.user_id                        ,
+		t1.dept_id                        ,
+		t1.leader_dept                    ,
+		t1.project_leader                 ,
+		t1.company_manager_id             ,
+		t1.science_user_id                ,
+		t1.plan_start_date                ,
+		t1.plan_end_date                  ,
+		t1.fund_budget                    ,
+		t1.fund_expenditure               ,
+		t1.project_node                   ,
+		t1.this_month_plan                ,
+		t1.next_month_plan                ,
+		t1.this_month_xtwt                ,
+		t1.this_month_cyuser              ,
+		t1.expense_execution_rate         ,
+		t1.fund_execution_rate            ,
+		t1.plan_status                    ,
+		t1.wr_year                        ,
+		t1.wr_month                       ,
+		t1.status                         ,
+		t1.bpm_task_id                    ,
+		t1.remark                         ,
+		t1.created_by                     ,
+		t1.creation_date                  ,
+		t1.last_updated_by                ,
+		t1.last_update_date               ,
+		t1.last_update_ip                 ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.attribute_01                   ,
+		t1.attribute_02                   ,
+		t1.attribute_03                   ,
+		t1.attribute_04                   ,
+		t1.attribute_05                   ,
+		t1.attribute_06                   ,
+		t1.attribute_07                   ,
+		t1.attribute_08                   ,
+		t1.attribute_09                   ,
+		t1.attribute_10                   
+	from pm_project_workreport 	t1 left join bpm_client_hist_procinst_v v on t1.id = v.formid_ 
+		<where>
+			<if test="id != null and id != ''">
+				and t1.ID =#{id}
+			</if>
+			<if test="secretLevel != null and secretLevel != ''">
+				and t1.SECRET_LEVEL =#{secretLevel}
+			</if>
+			<if test="projectId != null and projectId != ''">
+				and t1.PROJECT_ID =#{projectId}
+			</if>
+			<if test="projectName != null and projectName != ''">
+				and t1.PROJECT_NAME =#{projectName}
+			</if>
+			<if test="projectOrder != null and projectOrder != ''">
+				and t1.PROJECT_ORDER =#{projectOrder}
+			</if>
+			<if test="orgModel != null and orgModel != ''">
+				and t1.ORG_MODEL =#{orgModel}
+			</if>
+			<if test="userId != null and userId != ''">
+				and t1.USER_ID =#{userId}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				and t1.DEPT_ID =#{deptId}
+			</if>
+			<if test="leaderDept != null and leaderDept != ''">
+				and t1.LEADER_DEPT =#{leaderDept}
+			</if>
+			<if test="projectLeader != null and projectLeader != ''">
+				and t1.PROJECT_LEADER =#{projectLeader}
+			</if>
+			<if test="companyManagerId != null and companyManagerId != ''">
+				and t1.COMPANY_MANAGER_ID =#{companyManagerId}
+			</if>
+			<if test="scienceUserId != null and scienceUserId != ''">
+				and t1.SCIENCE_USER_ID =#{scienceUserId}
+			</if>
+			<if test="planStartDateBegin != null and planStartDateBegin != ''">
+				and t1.PLAN_START_DATE &gt;= #{planStartDateBegin}
+			</if>
+			<if test="planStartDateEnd != null and planStartDateEnd != ''">
+				and t1.PLAN_START_DATE &lt;= #{planStartDateEnd}
+			</if>
+			<if test="planEndDateBegin != null and planEndDateBegin != ''">
+				and t1.PLAN_END_DATE &gt;= #{planEndDateBegin}
+			</if>
+			<if test="planEndDateEnd != null and planEndDateEnd != ''">
+				and t1.PLAN_END_DATE &lt;= #{planEndDateEnd}
+			</if>
+			<if test="fundBudget != null">
+				and t1.FUND_BUDGET =#{fundBudget}
+			</if>
+			<if test="fundExpenditure != null">
+				and t1.FUND_EXPENDITURE =#{fundExpenditure}
+			</if>
+			<if test="projectNode != null and projectNode != ''">
+				and t1.PROJECT_NODE =#{projectNode}
+			</if>
+			<if test="thisMonthPlan != null and thisMonthPlan != ''">
+				and t1.THIS_MONTH_PLAN =#{thisMonthPlan}
+			</if>
+			<if test="nextMonthPlan != null and nextMonthPlan != ''">
+				and t1.NEXT_MONTH_PLAN =#{nextMonthPlan}
+			</if>
+			<if test="thisMonthXtwt != null and thisMonthXtwt != ''">
+				and t1.THIS_MONTH_XTWT =#{thisMonthXtwt}
+			</if>
+			<if test="thisMonthCyuser != null and thisMonthCyuser != ''">
+				and t1.THIS_MONTH_CYUSER =#{thisMonthCyuser}
+			</if>
+			<if test="expenseExecutionRate != null and expenseExecutionRate != ''">
+				and t1.EXPENSE_EXECUTION_RATE =#{expenseExecutionRate}
+			</if>
+			<if test="fundExecutionRate != null and fundExecutionRate != ''">
+				and t1.FUND_EXECUTION_RATE =#{fundExecutionRate}
+			</if>
+			<if test="planStatus != null and planStatus != ''">
+				and t1.PLAN_STATUS =#{planStatus}
+			</if>
+			<if test="wrYear != null and wrYear != ''">
+				and t1.WR_YEAR =#{wrYear}
+			</if>
+			<if test="wrMonth != null and wrMonth != ''">
+				and t1.WR_MONTH =#{wrMonth}
+			</if>
+			<if test="status != null and status != ''">
+				and t1.STATUS =#{status}
+			</if>
+			<if test="bpmTaskId != null and bpmTaskId != ''">
+				and t1.BPM_TASK_ID =#{bpmTaskId}
+			</if>
+			<if test="remark != null and remark != ''">
+				and t1.REMARK =#{remark}
+			</if>
+			<if test="createdBy != null and createdBy != ''">
+				and t1.CREATED_BY =#{createdBy}
+			</if>
+			<if test="creationDate != null and creationDate != ''">
+				and t1.CREATION_DATE =#{creationDate}
+			</if>
+			<if test="lastUpdatedBy != null and lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY =#{lastUpdatedBy}
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE =#{lastUpdateDate}
+			</if>
+			<if test="lastUpdateIp != null and lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP =#{lastUpdateIp}
+			</if>
+			<if test="version != null">
+				and t1.VERSION =#{version}
+			</if>
+			<if test="createdDept != null and createdDept != ''">
+				and t1.CREATED_DEPT =#{createdDept}
+			</if>
+			<if test="orgIdentity != null and orgIdentity != ''">
+				and t1.ORG_IDENTITY =#{orgIdentity}
+			</if>
+			<if test="attribute01 != null and attribute01 != ''">
+				and t1.ATTRIBUTE_01 =#{attribute01}
+			</if>
+			<if test="attribute02 != null and attribute02 != ''">
+				and t1.ATTRIBUTE_02 =#{attribute02}
+			</if>
+			<if test="attribute03 != null and attribute03 != ''">
+				and t1.ATTRIBUTE_03 =#{attribute03}
+			</if>
+			<if test="attribute04 != null and attribute04 != ''">
+				and t1.ATTRIBUTE_04 =#{attribute04}
+			</if>
+			<if test="attribute05 != null and attribute05 != ''">
+				and t1.ATTRIBUTE_05 =#{attribute05}
+			</if>
+			<if test="attribute06 != null and attribute06 != ''">
+				and t1.ATTRIBUTE_06 =#{attribute06}
+			</if>
+			<if test="attribute07 != null">
+				and t1.ATTRIBUTE_07 =#{attribute07}
+			</if>
+			<if test="attribute08 != null">
+				and t1.ATTRIBUTE_08 =#{attribute08}
+			</if>
+			<if test="attribute09 != null and attribute09 != ''">
+				and t1.ATTRIBUTE_09 =#{attribute09}
+			</if>
+			<if test="attribute10 != null and attribute10 != ''">
+				and t1.ATTRIBUTE_10 =#{attribute10}
+			</if>
+			<if test="bpmType !=null and bpmType !='' and bpmType == 'my'">
+				 and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{currUserId}) 
+			</if>
+			<if test="bpmState != null and bpmState !='' and bpmState != 'all'">
+				and v.businessstate_ = #{bpmState}
+			</if>
+		</where>
+</select>
+<!-- 主键查询对象 PM_PROJECT_WORKREPORT -->
+<select id="findPmProjectWorkreportById" parameterType="java.util.Map" resultMap="PmProjectWorkreportDTOMap">
+	select
+		t1.id                             ,
+		t1.secret_level                   ,
+		t1.project_id                     ,
+		t1.project_name                   ,
+		t1.project_order                  ,
+		t1.org_model                      ,
+		t1.user_id                        ,
+		t1.dept_id                        ,
+		t1.leader_dept                    ,
+		t1.project_leader                 ,
+		t1.company_manager_id             ,
+		t1.science_user_id                ,
+		t1.plan_start_date                ,
+		t1.plan_end_date                  ,
+		t1.fund_budget                    ,
+		t1.fund_expenditure               ,
+		t1.project_node                   ,
+		t1.this_month_plan                ,
+		t1.next_month_plan                ,
+		t1.this_month_xtwt                ,
+		t1.this_month_cyuser              ,
+		t1.expense_execution_rate         ,
+		t1.fund_execution_rate            ,
+		t1.plan_status                    ,
+		t1.wr_year                        ,
+		t1.wr_month                       ,
+		t1.status                         ,
+		t1.bpm_task_id                    ,
+		t1.remark                         ,
+		t1.created_by                     ,
+		t1.creation_date                  ,
+		t1.last_updated_by                ,
+		t1.last_update_date               ,
+		t1.last_update_ip                 ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.attribute_01                   ,
+		t1.attribute_02                   ,
+		t1.attribute_03                   ,
+		t1.attribute_04                   ,
+		t1.attribute_05                   ,
+		t1.attribute_06                   ,
+		t1.attribute_07                   ,
+		t1.attribute_08                   ,
+		t1.attribute_09                   ,
+		t1.attribute_10                   
+	from pm_project_workreport 	t1
+		where t1.id = #{id}
+</select>
+<!-- 新增对象 PM_PROJECT_WORKREPORT -->
+<insert id="insertPmProjectWorkreport" parameterType="avicit.cape.pro.pmprojectworkreport.dto.PmProjectWorkreportDTO">
+	insert into pm_project_workreport
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="secretLevel != null">
+				secret_level,
+			</if>
+			<if test="projectId != null">
+				project_id,
+			</if>
+			<if test="projectName != null">
+				project_name,
+			</if>
+			<if test="projectOrder != null">
+				project_order,
+			</if>
+			<if test="orgModel != null">
+				org_model,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="deptId != null">
+				dept_id,
+			</if>
+			<if test="leaderDept != null">
+				leader_dept,
+			</if>
+			<if test="projectLeader != null">
+				project_leader,
+			</if>
+			<if test="companyManagerId != null">
+				company_manager_id,
+			</if>
+			<if test="scienceUserId != null">
+				science_user_id,
+			</if>
+			<if test="planStartDate != null">
+				plan_start_date,
+			</if>
+			<if test="planEndDate != null">
+				plan_end_date,
+			</if>
+			<if test="fundBudget != null">
+				fund_budget,
+			</if>
+			<if test="fundExpenditure != null">
+				fund_expenditure,
+			</if>
+			<if test="projectNode != null">
+				project_node,
+			</if>
+			<if test="thisMonthPlan != null">
+				this_month_plan,
+			</if>
+			<if test="nextMonthPlan != null">
+				next_month_plan,
+			</if>
+			<if test="thisMonthXtwt != null">
+				this_month_xtwt,
+			</if>
+			<if test="thisMonthCyuser != null">
+				this_month_cyuser,
+			</if>
+			<if test="expenseExecutionRate != null">
+				expense_execution_rate,
+			</if>
+			<if test="fundExecutionRate != null">
+				fund_execution_rate,
+			</if>
+			<if test="planStatus != null">
+				plan_status,
+			</if>
+			<if test="wrYear != null">
+				wr_year,
+			</if>
+			<if test="wrMonth != null">
+				wr_month,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="bpmTaskId != null">
+				bpm_task_id,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="attribute01 != null">
+				attribute_01,
+			</if>
+			<if test="attribute02 != null">
+				attribute_02,
+			</if>
+			<if test="attribute03 != null">
+				attribute_03,
+			</if>
+			<if test="attribute04 != null">
+				attribute_04,
+			</if>
+			<if test="attribute05 != null">
+				attribute_05,
+			</if>
+			<if test="attribute06 != null">
+				attribute_06,
+			</if>
+			<if test="attribute07 != null">
+				attribute_07,
+			</if>
+			<if test="attribute08 != null">
+				attribute_08,
+			</if>
+			<if test="attribute09 != null">
+				attribute_09,
+			</if>
+			<if test="attribute10 != null">
+				attribute_10,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="secretLevel != null">
+				#{secretLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="projectId != null">
+				#{projectId,jdbcType=VARCHAR},
+			</if>
+			<if test="projectName != null">
+				#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="projectOrder != null">
+				#{projectOrder,jdbcType=VARCHAR},
+			</if>
+			<if test="orgModel != null">
+				#{orgModel,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				#{deptId,jdbcType=VARCHAR},
+			</if>
+			<if test="leaderDept != null">
+				#{leaderDept,jdbcType=VARCHAR},
+			</if>
+			<if test="projectLeader != null">
+				#{projectLeader,jdbcType=VARCHAR},
+			</if>
+			<if test="companyManagerId != null">
+				#{companyManagerId,jdbcType=VARCHAR},
+			</if>
+			<if test="scienceUserId != null">
+				#{scienceUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="planStartDate != null">
+				#{planStartDate,jdbcType=DATE},
+			</if>
+			<if test="planEndDate != null">
+				#{planEndDate,jdbcType=DATE},
+			</if>
+			<if test="fundBudget != null">
+				#{fundBudget,jdbcType=DECIMAL},
+			</if>
+			<if test="fundExpenditure != null">
+				#{fundExpenditure,jdbcType=DECIMAL},
+			</if>
+			<if test="projectNode != null">
+				#{projectNode,jdbcType=VARCHAR},
+			</if>
+			<if test="thisMonthPlan != null">
+				#{thisMonthPlan,jdbcType=VARCHAR},
+			</if>
+			<if test="nextMonthPlan != null">
+				#{nextMonthPlan,jdbcType=VARCHAR},
+			</if>
+			<if test="thisMonthXtwt != null">
+				#{thisMonthXtwt,jdbcType=VARCHAR},
+			</if>
+			<if test="thisMonthCyuser != null">
+				#{thisMonthCyuser,jdbcType=VARCHAR},
+			</if>
+			<if test="expenseExecutionRate != null">
+				#{expenseExecutionRate,jdbcType=VARCHAR},
+			</if>
+			<if test="fundExecutionRate != null">
+				#{fundExecutionRate,jdbcType=VARCHAR},
+			</if>
+			<if test="planStatus != null">
+				#{planStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="wrYear != null">
+				#{wrYear,jdbcType=VARCHAR},
+			</if>
+			<if test="wrMonth != null">
+				#{wrMonth,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="bpmTaskId != null">
+				#{bpmTaskId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				#{attribute07,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute08 != null">
+				#{attribute08,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute09 != null">
+				#{attribute09,jdbcType=DATE},
+			</if>
+			<if test="attribute10 != null">
+				#{attribute10,jdbcType=DATE},
+			</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 PM_PROJECT_WORKREPORT -->
+<insert id="insertPmProjectWorkreportList" parameterType="java.util.List">
+	insert into pm_project_workreport(
+			id,
+			secret_level,
+			project_id,
+			project_name,
+			project_order,
+			org_model,
+			user_id,
+			dept_id,
+			leader_dept,
+			project_leader,
+			company_manager_id,
+			science_user_id,
+			plan_start_date,
+			plan_end_date,
+			fund_budget,
+			fund_expenditure,
+			project_node,
+			this_month_plan,
+			next_month_plan,
+			this_month_xtwt,
+			this_month_cyuser,
+			expense_execution_rate,
+			fund_execution_rate,
+			plan_status,
+			wr_year,
+			wr_month,
+			status,
+			bpm_task_id,
+			remark,
+			created_by,
+			creation_date,
+			last_updated_by,
+			last_update_date,
+			last_update_ip,
+			version,
+			created_dept,
+			org_identity,
+			attribute_01,
+			attribute_02,
+			attribute_03,
+			attribute_04,
+			attribute_05,
+			attribute_06,
+			attribute_07,
+			attribute_08,
+			attribute_09,
+			attribute_10)
+	<foreach collection="list" item="item" index="index" open="(" separator="union all" close=")">
+		select 
+					#{item.id,jdbcType=VARCHAR},
+					#{item.secretLevel,jdbcType=VARCHAR},
+					#{item.projectId,jdbcType=VARCHAR},
+					#{item.projectName,jdbcType=VARCHAR},
+					#{item.projectOrder,jdbcType=VARCHAR},
+					#{item.orgModel,jdbcType=VARCHAR},
+					#{item.userId,jdbcType=VARCHAR},
+					#{item.deptId,jdbcType=VARCHAR},
+					#{item.leaderDept,jdbcType=VARCHAR},
+					#{item.projectLeader,jdbcType=VARCHAR},
+					#{item.companyManagerId,jdbcType=VARCHAR},
+					#{item.scienceUserId,jdbcType=VARCHAR},
+					#{item.planStartDate,jdbcType=DATE},
+					#{item.planEndDate,jdbcType=DATE},
+					#{item.fundBudget,jdbcType=DECIMAL},
+					#{item.fundExpenditure,jdbcType=DECIMAL},
+					#{item.projectNode,jdbcType=VARCHAR},
+					#{item.thisMonthPlan,jdbcType=VARCHAR},
+					#{item.nextMonthPlan,jdbcType=VARCHAR},
+					#{item.thisMonthXtwt,jdbcType=VARCHAR},
+					#{item.thisMonthCyuser,jdbcType=VARCHAR},
+					#{item.expenseExecutionRate,jdbcType=VARCHAR},
+					#{item.fundExecutionRate,jdbcType=VARCHAR},
+					#{item.planStatus,jdbcType=VARCHAR},
+					#{item.wrYear,jdbcType=VARCHAR},
+					#{item.wrMonth,jdbcType=VARCHAR},
+					#{item.status,jdbcType=VARCHAR},
+					#{item.bpmTaskId,jdbcType=VARCHAR},
+					#{item.remark,jdbcType=VARCHAR},
+					#{item.createdBy,jdbcType=VARCHAR},
+					#{item.creationDate},
+					#{item.lastUpdatedBy,jdbcType=VARCHAR},
+					#{item.lastUpdateDate},
+					#{item.lastUpdateIp,jdbcType=VARCHAR},
+					#{item.version,jdbcType=DECIMAL},
+					#{item.createdDept,jdbcType=VARCHAR},
+					#{item.orgIdentity,jdbcType=VARCHAR},
+					#{item.attribute01,jdbcType=VARCHAR},
+					#{item.attribute02,jdbcType=VARCHAR},
+					#{item.attribute03,jdbcType=VARCHAR},
+					#{item.attribute04,jdbcType=VARCHAR},
+					#{item.attribute05,jdbcType=VARCHAR},
+					#{item.attribute06,jdbcType=VARCHAR},
+					#{item.attribute07,jdbcType=DECIMAL},
+					#{item.attribute08,jdbcType=DECIMAL},
+					#{item.attribute09,jdbcType=DATE},
+					#{item.attribute10,jdbcType=DATE}
+		from dual 
+	</foreach>
+</insert>
+<!-- 更新对象 PM_PROJECT_WORKREPORT -->
+<update id="updatePmProjectWorkreportSensitive" parameterType="avicit.cape.pro.pmprojectworkreport.dto.PmProjectWorkreportDTO">
+	update pm_project_workreport 
+	<set>
+			<if test="id != null">
+				id                             =#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="secretLevel != null">
+				secret_level                   =#{secretLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="projectId != null">
+				project_id                     =#{projectId,jdbcType=VARCHAR},
+			</if>
+			<if test="projectName != null">
+				project_name                   =#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="projectOrder != null">
+				project_order                  =#{projectOrder,jdbcType=VARCHAR},
+			</if>
+			<if test="orgModel != null">
+				org_model                      =#{orgModel,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				user_id                        =#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				dept_id                        =#{deptId,jdbcType=VARCHAR},
+			</if>
+			<if test="leaderDept != null">
+				leader_dept                    =#{leaderDept,jdbcType=VARCHAR},
+			</if>
+			<if test="projectLeader != null">
+				project_leader                 =#{projectLeader,jdbcType=VARCHAR},
+			</if>
+			<if test="companyManagerId != null">
+				company_manager_id             =#{companyManagerId,jdbcType=VARCHAR},
+			</if>
+			<if test="scienceUserId != null">
+				science_user_id                =#{scienceUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="planStartDate != null">
+				plan_start_date                =#{planStartDate,jdbcType=DATE},
+			</if>
+			<if test="planEndDate != null">
+				plan_end_date                  =#{planEndDate,jdbcType=DATE},
+			</if>
+			<if test="fundBudget != null">
+				fund_budget                    =#{fundBudget,jdbcType=DECIMAL},
+			</if>
+			<if test="fundExpenditure != null">
+				fund_expenditure               =#{fundExpenditure,jdbcType=DECIMAL},
+			</if>
+			<if test="projectNode != null">
+				project_node                   =#{projectNode,jdbcType=VARCHAR},
+			</if>
+			<if test="thisMonthPlan != null">
+				this_month_plan                =#{thisMonthPlan,jdbcType=VARCHAR},
+			</if>
+			<if test="nextMonthPlan != null">
+				next_month_plan                =#{nextMonthPlan,jdbcType=VARCHAR},
+			</if>
+			<if test="thisMonthXtwt != null">
+				this_month_xtwt                =#{thisMonthXtwt,jdbcType=VARCHAR},
+			</if>
+			<if test="thisMonthCyuser != null">
+				this_month_cyuser              =#{thisMonthCyuser,jdbcType=VARCHAR},
+			</if>
+			<if test="expenseExecutionRate != null">
+				expense_execution_rate         =#{expenseExecutionRate,jdbcType=VARCHAR},
+			</if>
+			<if test="fundExecutionRate != null">
+				fund_execution_rate            =#{fundExecutionRate,jdbcType=VARCHAR},
+			</if>
+			<if test="planStatus != null">
+				plan_status                    =#{planStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="wrYear != null">
+				wr_year                        =#{wrYear,jdbcType=VARCHAR},
+			</if>
+			<if test="wrMonth != null">
+				wr_month                       =#{wrMonth,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status                         =#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="bpmTaskId != null">
+				bpm_task_id                    =#{bpmTaskId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark                         =#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				created_by                     =#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				creation_date                  =#{creationDate},
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date               =#{lastUpdateDate},
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version                        =version+1,
+			</if>
+			<if test="createdDept != null">
+				created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				attribute_07                   =#{attribute07,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute08 != null">
+				attribute_08                   =#{attribute08,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute09 != null">
+				attribute_09                   =#{attribute09,jdbcType=DATE},
+			</if>
+			<if test="attribute10 != null">
+				attribute_10                   =#{attribute10,jdbcType=DATE},
+			</if>
+	</set>
+		where id = #{id} and version =#{version}
+</update>
+<!-- 更新对象 PM_PROJECT_WORKREPORT -->
+<update id="updatePmProjectWorkreportAll" parameterType="avicit.cape.pro.pmprojectworkreport.dto.PmProjectWorkreportDTO">
+	update pm_project_workreport 
+		set
+			id                             =#{id,jdbcType=VARCHAR},
+			secret_level                   =#{secretLevel,jdbcType=VARCHAR},
+			project_id                     =#{projectId,jdbcType=VARCHAR},
+			project_name                   =#{projectName,jdbcType=VARCHAR},
+			project_order                  =#{projectOrder,jdbcType=VARCHAR},
+			org_model                      =#{orgModel,jdbcType=VARCHAR},
+			user_id                        =#{userId,jdbcType=VARCHAR},
+			dept_id                        =#{deptId,jdbcType=VARCHAR},
+			leader_dept                    =#{leaderDept,jdbcType=VARCHAR},
+			project_leader                 =#{projectLeader,jdbcType=VARCHAR},
+			company_manager_id             =#{companyManagerId,jdbcType=VARCHAR},
+			science_user_id                =#{scienceUserId,jdbcType=VARCHAR},
+			plan_start_date                =#{planStartDate,jdbcType=DATE},
+			plan_end_date                  =#{planEndDate,jdbcType=DATE},
+			fund_budget                    =#{fundBudget,jdbcType=DECIMAL},
+			fund_expenditure               =#{fundExpenditure,jdbcType=DECIMAL},
+			project_node                   =#{projectNode,jdbcType=VARCHAR},
+			this_month_plan                =#{thisMonthPlan,jdbcType=VARCHAR},
+			next_month_plan                =#{nextMonthPlan,jdbcType=VARCHAR},
+			this_month_xtwt                =#{thisMonthXtwt,jdbcType=VARCHAR},
+			this_month_cyuser              =#{thisMonthCyuser,jdbcType=VARCHAR},
+			expense_execution_rate         =#{expenseExecutionRate,jdbcType=VARCHAR},
+			fund_execution_rate            =#{fundExecutionRate,jdbcType=VARCHAR},
+			plan_status                    =#{planStatus,jdbcType=VARCHAR},
+			wr_year                        =#{wrYear,jdbcType=VARCHAR},
+			wr_month                       =#{wrMonth,jdbcType=VARCHAR},
+			status                         =#{status,jdbcType=VARCHAR},
+			bpm_task_id                    =#{bpmTaskId,jdbcType=VARCHAR},
+			remark                         =#{remark,jdbcType=VARCHAR},
+			created_by                     =#{createdBy,jdbcType=VARCHAR},
+			creation_date                  =#{creationDate},
+			last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			last_update_date               =#{lastUpdateDate},
+			last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			version                        =version+1,
+			created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			attribute_07                   =#{attribute07,jdbcType=DECIMAL},
+			attribute_08                   =#{attribute08,jdbcType=DECIMAL},
+			attribute_09                   =#{attribute09,jdbcType=DATE},
+			attribute_10                   =#{attribute10,jdbcType=DATE}
+	where id = #{id} and version =#{version}
+</update>
+<!-- 批量更新对象   PM_PROJECT_WORKREPORT -->
+<update id="updatePmProjectWorkreportList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator="" close="end;">
+	update pm_project_workreport 
+		set
+			id                             =#{item.id,jdbcType=VARCHAR},
+			secret_level                   =#{item.secretLevel,jdbcType=VARCHAR},
+			project_id                     =#{item.projectId,jdbcType=VARCHAR},
+			project_name                   =#{item.projectName,jdbcType=VARCHAR},
+			project_order                  =#{item.projectOrder,jdbcType=VARCHAR},
+			org_model                      =#{item.orgModel,jdbcType=VARCHAR},
+			user_id                        =#{item.userId,jdbcType=VARCHAR},
+			dept_id                        =#{item.deptId,jdbcType=VARCHAR},
+			leader_dept                    =#{item.leaderDept,jdbcType=VARCHAR},
+			project_leader                 =#{item.projectLeader,jdbcType=VARCHAR},
+			company_manager_id             =#{item.companyManagerId,jdbcType=VARCHAR},
+			science_user_id                =#{item.scienceUserId,jdbcType=VARCHAR},
+			plan_start_date                =#{item.planStartDate,jdbcType=DATE},
+			plan_end_date                  =#{item.planEndDate,jdbcType=DATE},
+			fund_budget                    =#{item.fundBudget,jdbcType=DECIMAL},
+			fund_expenditure               =#{item.fundExpenditure,jdbcType=DECIMAL},
+			project_node                   =#{item.projectNode,jdbcType=VARCHAR},
+			this_month_plan                =#{item.thisMonthPlan,jdbcType=VARCHAR},
+			next_month_plan                =#{item.nextMonthPlan,jdbcType=VARCHAR},
+			this_month_xtwt                =#{item.thisMonthXtwt,jdbcType=VARCHAR},
+			this_month_cyuser              =#{item.thisMonthCyuser,jdbcType=VARCHAR},
+			expense_execution_rate         =#{item.expenseExecutionRate,jdbcType=VARCHAR},
+			fund_execution_rate            =#{item.fundExecutionRate,jdbcType=VARCHAR},
+			plan_status                    =#{item.planStatus,jdbcType=VARCHAR},
+			wr_year                        =#{item.wrYear,jdbcType=VARCHAR},
+			wr_month                       =#{item.wrMonth,jdbcType=VARCHAR},
+			status                         =#{item.status,jdbcType=VARCHAR},
+			bpm_task_id                    =#{item.bpmTaskId,jdbcType=VARCHAR},
+			remark                         =#{item.remark,jdbcType=VARCHAR},
+			created_by                     =#{item.createdBy,jdbcType=VARCHAR},
+			creation_date                  =#{item.creationDate},
+			last_updated_by                =#{item.lastUpdatedBy,jdbcType=VARCHAR},
+			last_update_date               =#{item.lastUpdateDate},
+			last_update_ip                 =#{item.lastUpdateIp,jdbcType=VARCHAR},
+			version                        =version+1,
+			created_dept                   =#{item.createdDept,jdbcType=VARCHAR},
+			org_identity                   =#{item.orgIdentity,jdbcType=VARCHAR},
+			attribute_01                   =#{item.attribute01,jdbcType=VARCHAR},
+			attribute_02                   =#{item.attribute02,jdbcType=VARCHAR},
+			attribute_03                   =#{item.attribute03,jdbcType=VARCHAR},
+			attribute_04                   =#{item.attribute04,jdbcType=VARCHAR},
+			attribute_05                   =#{item.attribute05,jdbcType=VARCHAR},
+			attribute_06                   =#{item.attribute06,jdbcType=VARCHAR},
+			attribute_07                   =#{item.attribute07,jdbcType=DECIMAL},
+			attribute_08                   =#{item.attribute08,jdbcType=DECIMAL},
+			attribute_09                   =#{item.attribute09,jdbcType=DATE},
+			attribute_10                   =#{item.attribute10,jdbcType=DATE}
+		where id = #{item.id} and version =#{item.version};
+	</foreach>
+</update>
+<!-- 主键删除 PM_PROJECT_WORKREPORT -->
+<delete id="deletePmProjectWorkreportById" parameterType="java.lang.String">
+		delete from pm_project_workreport  where  id = #{id}
+</delete>
+<!-- 批量主键删除 PM_PROJECT_WORKREPORT -->
+<delete id="deletePmProjectWorkreportList" parameterType="java.util.List">
+		delete from pm_project_workreport  t1
+		<where>
+			<foreach item="idItem" collection="list" open="(" separator="or" close=")">
+				t1.id = #{idItem}
+			</foreach>
+		</where>
+</delete>
+</mapper>

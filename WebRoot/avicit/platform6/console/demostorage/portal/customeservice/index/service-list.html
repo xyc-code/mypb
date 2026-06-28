@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>服务组工作检查单</title>
+  <link rel="stylesheet" type="text/css" href="css/index.css" />
+  <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+  <script src="js/jquery-1.11.1.min.js"></script>
+  <style type="text/css">
+    .lists{
+      padding: 0 20px;
+      text-align: left;
+    }
+    .lists h3{
+      height: 36px;
+      line-height: 36px;
+      font-size: 14px;
+      padding-left: 21px;
+      color: #333;
+      cursor: pointer;
+      /*font-weight: normal;*/
+      position: relative;
+      font-weight: normal;
+    }
+    .lists h3 em{
+      position: absolute;
+      top: 0;
+      left:-6px;
+      display: block;
+      width: 30px;
+      height: 30px;
+      background: url(images/icoAdd.png) center center no-repeat;
+      cursor: pointer;
+    }
+    .details{
+      overflow: hidden;
+    }
+    .details a{
+      float:left;
+      padding:0 1% 0 0;
+      overflow: hidden; 
+      white-space: nowrap; 
+      text-overflow: ellipsis;
+      display: block;
+    }
+    .details .a01{
+      width: 62%;
+    }
+    .details .a02{
+      width: 12%;
+    }
+    .details .a03{
+      width: 12%;
+    }
+    .details .state{
+      width:10%;
+      color:#F2637B;
+      float:left;
+    }
+    .lists .list-ul li span em{
+      position: absolute;
+      top: 0;
+      left:-8px;
+      display: block;
+      width: 30px;
+      height: 30px;
+      background: url(images/icoAdd.png) center center no-repeat;
+      cursor: pointer;
+    }
+    .lists .list-ul li{
+      position: relative;
+      /*width: 323px;*/
+      line-height: 30px;
+      font-size: 14px;
+      padding-left: 22px;
+      color:#814811;
+      border-bottom: 1px dashed #e9e9e9;
+    }
+    .list-ul .details .a01{
+      text-indent: 1em;
+    }
+    .lists .list-ul li:last-child{
+      border:none;
+    }
+    .lists .list-ul li ul{
+      display: none;
+    }
+    .lists .list-ul li ul li{
+      width:auto;
+      padding-left: 40px;
+      padding-right: 0;
+    }
+    .lists .list-ul li span{
+      display: block;
+      /*padding-right: 30px;*/
+      padding-left: 22px;
+      position: relative;
+      overflow: hidden; 
+      white-space: nowrap; 
+      text-overflow: ellipsis;
+    }
+    .lists .sideMen{
+      border-bottom: 1px solid #e9e9e9;
+    }
+    .lists h3:hover,
+    .lists .list-ul li:hover{
+      background:#fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-in box">
+    <h2>
+      <span>服务组工作检查单</span>
+      <div class="toolbar">
+<!--        <a href="##" class="iconfont icon-download"></a>-->
+        <a href="##" class="iconfont icon-more"></a>
+      </div>
+    </h2>
+    <div class="page-con">
+      <div class="lists">
+        <div class="sideMen">
+          <h3 class="on">
+            <em></em>
+            <div class="details">
+              <a href="##" class="link a01">1、填报每日飞行数据</a>
+              <div class="state">未完成</div>
+              <a href="##" class="link a02">在线说明</a>
+              <a href="##" class="link a03">在线视频</a>
+            </div>
+          </h3>
+          <ul class="list-ul" style="display:block;">
+            <li>
+              <div class="details">
+                <a href="##" class="link a01">1、记录非故障使用维护工作</a>
+                <div class="state">未完成</div>
+                <a href="##" class="link a02">在线说明</a>
+                <a href="##" class="link a03">在线视频</a>
+              </div>
+            </li>
+            <li>
+              <div class="details">
+                <a href="##" class="link a01">2、记录飞机故障及处理</a>
+                <div class="state">未完成</div>
+                <a href="##" class="link a02">在线说明</a>
+                <a href="##" class="link a03">在线视频</a>
+              </div>
+            </li>
+            <li>
+              <div class="details">
+                <a href="##" class="link a01">3、记录用户技术咨询</a>
+                <div class="state">未完成</div>
+                <a href="##" class="link a02">在线说明</a>
+                <a href="##" class="link a03">在线视频</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="sideMen">
+            <h3 class="on">
+              <em></em>
+              2、填报事故及事故征候信息
+            </h3>
+            <ul class="list-ul" style="display:block;">
+              <li>
+                <div class="details">
+                  <a href="##" class="link a01">1、填报事故及处理进展</a>
+                  <div class="state">未完成</div>
+                  <a href="##" class="link a02">在线说明</a>
+                  <a href="##" class="link a03">在线视频</a>
+                </div>
+              </li>
+              <li>
+                <div class="details">
+                  <a href="##" class="link a01">2、填报事故证候信息</a>
+                  <div class="state">未完成</div>
+                  <a href="##" class="link a02">在线说明</a>
+                  <a href="##" class="link a03">在线视频</a>
+                </div>
+              </li>
+            </ul>
+        </div>
+        <div class="sideMen">
+            <h3 class="on">
+              <em></em>
+              3、填报每日飞行数据
+            </h3>
+        </div>
+        <div class="sideMen">
+          <h3 class="on">
+            <em></em>
+            <div class="details">
+              <a href="##" class="link a01">4、填报每日飞行数据</a>
+              <div class="state">未完成</div>
+              <a href="##" class="link a02">在线说明</a>
+              <a href="##" class="link a03">在线视频</a>
+            </div>
+          </h3>
+          <ul class="list-ul" style="display:block;">
+            <li>
+              <div class="details">
+                <a href="##" class="link a01">1、记录非故障使用维护工作</a>
+                <div class="state">未完成</div>
+                <a href="##" class="link a02">在线说明</a>
+                <a href="##" class="link a03">在线视频</a>
+              </div>
+            </li>
+            <li>
+              <div class="details">
+                <a href="##" class="link a01">2、记录飞机故障及处理</a>
+                <div class="state">未完成</div>
+                <a href="##" class="link a02">在线说明</a>
+                <a href="##" class="link a03">在线视频</a>
+              </div>
+            </li>
+            <li>
+              <div class="details">
+                <a href="##" class="link a01">3、记录用户技术咨询</a>
+                <div class="state">未完成</div>
+                <a href="##" class="link a02">在线说明</a>
+                <a href="##" class="link a03">在线视频</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+    </div>
+    </div>
+  </div>
+</body>
+<script>
+  $(function() {
+    $('.sideMen h3').click(function(event) {
+        $(this).parent().find(".list-ul").toggle(100);
+        $(this).toggleClass('on');
+    });
+    $('.lists .list-ul li span').click(function(event) {
+        $(this).parent().find("ul").toggle(100);
+        $(this).toggleClass('on');
+    });
+
+    $(".list-menu .submenu:nth-child(4n+4) .lists").css("right","0");
+  });
+</script>
+</html>

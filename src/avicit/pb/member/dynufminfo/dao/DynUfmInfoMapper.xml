@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.member.dynufminfo.dao.DynUfmInfoDAO">
+<resultMap id="DynUfmInfoDTOMap" type="avicit.pb.member.dynufminfo.dto.DynUfmInfoDTO">
+	<result property="deptName" column="DEPT_NAME" jdbcType="VARCHAR" />
+	<result property="residenceReason" column="RESIDENCE_REASON" jdbcType="VARCHAR" />
+	<result property="taiwanCompatriots" column="TAIWAN_COMPATRIOTS" jdbcType="VARCHAR" />
+	<result property="fulSpeciality" column="FUL_SPECIALITY" jdbcType="VARCHAR" />
+	<result property="residenceCountry" column="RESIDENCE_COUNTRY" jdbcType="VARCHAR" />
+	<result property="birthdate" column="BIRTHDATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="partSpeciality" column="PART_SPECIALITY" jdbcType="VARCHAR" />
+	<result property="nation" column="NATION" jdbcType="VARCHAR" />
+	<result property="taiwanRelatives" column="TAIWAN_RELATIVES" jdbcType="VARCHAR" />
+	<result property="data1" column="DATA_1" jdbcType="TIMESTAMP" />
+	<result property="data2" column="DATA_2" jdbcType="DECIMAL" />
+	<result property="gender" column="GENDER" jdbcType="VARCHAR" />
+	<result property="data3" column="DATA_3" jdbcType="VARCHAR" />
+	<result property="ufIdentity" column="UF_IDENTITY" jdbcType="VARCHAR" />
+	<result property="hoCompatriots" column="HO_COMPATRIOTS" jdbcType="VARCHAR" />
+	<result property="data4" column="DATA_4" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="partGraduation" column="PART_GRADUATION" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="fulEducation" column="FUL_EDUCATION" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="religiousBelier" column="RELIGIOUS_BELIER" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="ufmname" column="UFMNAME" jdbcType="VARCHAR" />
+	<result property="data5" column="DATA_5" jdbcType="VARCHAR" />
+	<result property="employeeid" column="EMPLOYEEID" jdbcType="VARCHAR" />
+	<result property="userTitle" column="USER_TITLE" jdbcType="VARCHAR" />
+	<result property="data6" column="DATA_6" jdbcType="VARCHAR" />
+	<result property="data7" column="DATA_7" jdbcType="VARCHAR" />
+	<result property="data8" column="DATA_8" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="residenceYear" column="RESIDENCE_YEAR" jdbcType="VARCHAR" />
+	<result property="duties" column="DUTIES" jdbcType="VARCHAR" />
+	<result property="poName" column="PO_NAME" jdbcType="VARCHAR" />
+	<result property="hoDependents" column="HO_DEPENDENTS" jdbcType="VARCHAR" />
+	<result property="roChinese" column="RO_CHINESE" jdbcType="VARCHAR" />
+	<result property="nember" column="NEMBER" jdbcType="VARCHAR" />
+	<result property="partEducation" column="PART_EDUCATION" jdbcType="VARCHAR" />
+	<result property="fulGraduation" column="FUL_GRADUATION" jdbcType="VARCHAR" />
+	<result property="politicalOutlook" column="POLITICAL_OUTLOOK" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="hostCountry" column="HOST_COUNTRY" jdbcType="VARCHAR" />
+	<result property="partyReprePositions" column="PARTY_REPRE_POSITIONS" jdbcType="VARCHAR" />
+	<result property="phoneNumber" column="PHONE_NUMBER" jdbcType="DECIMAL" />
+</resultMap>
+<sql id="commonColums">
+	t1.DEPT_NAME,
+	t1.RESIDENCE_REASON,
+	t1.TAIWAN_COMPATRIOTS,
+	t1.FUL_SPECIALITY,
+	t1.RESIDENCE_COUNTRY,
+	t1.BIRTHDATE,
+	t1.LAST_UPDATE_DATE,
+	t1.PART_SPECIALITY,
+	t1.NATION,
+	t1.TAIWAN_RELATIVES,
+	t1.DATA_1,
+	t1.DATA_2,
+	t1.GENDER,
+	t1.DATA_3,
+	t1.UF_IDENTITY,
+	t1.HO_COMPATRIOTS,
+	t1.DATA_4,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.PART_GRADUATION,
+	t1.LAST_UPDATE_IP,
+	t1.FUL_EDUCATION,
+	t1.CREATED_BY,
+	t1.RELIGIOUS_BELIER,
+	t1.LAST_UPDATED_BY,
+	t1.UFMNAME,
+	t1.DATA_5,
+	t1.EMPLOYEEID,
+	t1.USER_TITLE,
+	t1.DATA_6,
+	t1.DATA_7,
+	t1.DATA_8,
+	t1.CREATION_DATE,
+	t1.RESIDENCE_YEAR,
+	t1.DUTIES,
+	t1.PO_NAME,
+	t1.HO_DEPENDENTS,
+	t1.RO_CHINESE,
+	t1.NEMBER,
+	t1.PART_EDUCATION,
+	t1.FUL_GRADUATION,
+	t1.POLITICAL_OUTLOOK,
+	t1.VERSION,
+	t1.ORG_IDENTITY,
+	t1.HOST_COUNTRY,
+	t1.PARTY_REPRE_POSITIONS,
+	t1.PHONE_NUMBER</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.deptName != null and bean.deptName != ''">
+		and t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.residenceReason != null and bean.residenceReason != ''">
+		and t1.RESIDENCE_REASON like concat(concat('%',#{bean.residenceReason}),'%')
+	</if>
+	<if test="bean.taiwanCompatriots != null and bean.taiwanCompatriots != ''">
+		and t1.TAIWAN_COMPATRIOTS like concat(concat('%',#{bean.taiwanCompatriots}),'%')
+	</if>
+	<if test="bean.fulSpeciality != null and bean.fulSpeciality != ''">
+		and t1.FUL_SPECIALITY like concat(concat('%',#{bean.fulSpeciality}),'%')
+	</if>
+	<if test="bean.residenceCountry != null and bean.residenceCountry != ''">
+		and t1.RESIDENCE_COUNTRY like concat(concat('%',#{bean.residenceCountry}),'%')
+	</if>
+	<if test="bean.birthdateBegin != null">
+		and t1.BIRTHDATE &gt;= #{bean.birthdateBegin}
+	</if>
+	<if test="bean.birthdateEnd != null">
+		and t1.BIRTHDATE &lt;= #{bean.birthdateEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.partSpeciality != null and bean.partSpeciality != ''">
+		and t1.PART_SPECIALITY like concat(concat('%',#{bean.partSpeciality}),'%')
+	</if>
+	<if test="bean.nation != null and bean.nation != ''">
+		and t1.NATION like concat(concat('%',#{bean.nation}),'%')
+	</if>
+	<if test="bean.taiwanRelatives != null and bean.taiwanRelatives != ''">
+		and t1.TAIWAN_RELATIVES like concat(concat('%',#{bean.taiwanRelatives}),'%')
+	</if>
+	<if test="bean.data1Begin != null">
+		and t1.DATA_1 &gt;= #{bean.data1Begin}
+	</if>
+	<if test="bean.data1End != null">
+		and t1.DATA_1 &lt;= #{bean.data1End}
+	</if>
+	<if test="bean.data2 != null and bean.data2 != ''">
+		and t1.DATA_2 = #{bean.data2}
+	</if>
+	<if test="bean.gender != null and bean.gender != ''">
+		and t1.GENDER = #{bean.gender}
+	</if>
+	<if test="bean.data3 != null and bean.data3 != ''">
+		and t1.DATA_3 like concat(concat('%',#{bean.data3}),'%')
+	</if>
+	<if test="bean.ufIdentity != null and bean.ufIdentity != ''">
+		and t1.UF_IDENTITY like concat(concat('%',#{bean.ufIdentity}),'%')
+	</if>
+	<if test="bean.hoCompatriots != null and bean.hoCompatriots != ''">
+		and t1.HO_COMPATRIOTS like concat(concat('%',#{bean.hoCompatriots}),'%')
+	</if>
+	<if test="bean.data4 != null and bean.data4 != ''">
+		and t1.DATA_4 like concat(concat('%',#{bean.data4}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.partGraduation != null and bean.partGraduation != ''">
+		and t1.PART_GRADUATION like concat(concat('%',#{bean.partGraduation}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.fulEducation != null and bean.fulEducation != ''">
+		and t1.FUL_EDUCATION like concat(concat('%',#{bean.fulEducation}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.religiousBelier != null and bean.religiousBelier != ''">
+		and t1.RELIGIOUS_BELIER like concat(concat('%',#{bean.religiousBelier}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.ufmname != null and bean.ufmname != ''">
+		and t1.UFMNAME like concat(concat('%',#{bean.ufmname}),'%')
+	</if>
+	<if test="bean.data5 != null and bean.data5 != ''">
+		and t1.DATA_5 like concat(concat('%',#{bean.data5}),'%')
+	</if>
+	<if test="bean.employeeid != null and bean.employeeid != ''">
+		and t1.EMPLOYEEID like concat(concat('%',#{bean.employeeid}),'%')
+	</if>
+	<if test="bean.userTitle != null and bean.userTitle != ''">
+		and t1.USER_TITLE like concat(concat('%',#{bean.userTitle}),'%')
+	</if>
+	<if test="bean.data6 != null and bean.data6 != ''">
+		and t1.DATA_6 like concat(concat('%',#{bean.data6}),'%')
+	</if>
+	<if test="bean.data7 != null and bean.data7 != ''">
+		and t1.DATA_7 like concat(concat('%',#{bean.data7}),'%')
+	</if>
+	<if test="bean.data8 != null and bean.data8 != ''">
+		and t1.DATA_8 like concat(concat('%',#{bean.data8}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.residenceYear != null and bean.residenceYear != ''">
+		and t1.RESIDENCE_YEAR like concat(concat('%',#{bean.residenceYear}),'%')
+	</if>
+	<if test="bean.duties != null and bean.duties != ''">
+		and t1.DUTIES like concat(concat('%',#{bean.duties}),'%')
+	</if>
+	<if test="bean.poName != null and bean.poName != ''">
+		and t1.PO_NAME like concat(concat('%',#{bean.poName}),'%')
+	</if>
+	<if test="bean.hoDependents != null and bean.hoDependents != ''">
+		and t1.HO_DEPENDENTS like concat(concat('%',#{bean.hoDependents}),'%')
+	</if>
+	<if test="bean.roChinese != null and bean.roChinese != ''">
+		and t1.RO_CHINESE like concat(concat('%',#{bean.roChinese}),'%')
+	</if>
+	<if test="bean.nember != null and bean.nember != ''">
+		and t1.NEMBER like concat(concat('%',#{bean.nember}),'%')
+	</if>
+	<if test="bean.partEducation != null and bean.partEducation != ''">
+		and t1.PART_EDUCATION like concat(concat('%',#{bean.partEducation}),'%')
+	</if>
+	<if test="bean.fulGraduation != null and bean.fulGraduation != ''">
+		and t1.FUL_GRADUATION like concat(concat('%',#{bean.fulGraduation}),'%')
+	</if>
+	<if test="bean.politicalOutlook != null and bean.politicalOutlook != ''">
+		and t1.POLITICAL_OUTLOOK like concat(concat('%',#{bean.politicalOutlook}),'%')
+	</if>
+	<if test="bean.version != null and bean.version != ''">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.hostCountry != null and bean.hostCountry != ''">
+		and t1.HOST_COUNTRY like concat(concat('%',#{bean.hostCountry}),'%')
+	</if>
+	<if test="bean.partyReprePositions != null and bean.partyReprePositions != ''">
+		and t1.PARTY_REPRE_POSITIONS like concat(concat('%',#{bean.partyReprePositions}),'%')
+	</if>
+	<if test="bean.phoneNumber != null and bean.phoneNumber != ''">
+		and t1.PHONE_NUMBER = #{bean.phoneNumber}
+	</if>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_UFM_INFO -->
+<select id="searchDynUfmInfoByPage" parameterType="java.util.Map" resultMap="DynUfmInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_UFM_INFO t1   
+<where>
+	<if test="bean != null">
+		<include refid="commonWhereAnd"/>
+		<include refid="defaultWhereAnd"/>
+	</if>
+</where>
+<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_UFM_INFO -->
+<select id="searchDynUfmInfo" parameterType="java.util.Map" resultMap="DynUfmInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_UFM_INFO t1   
+<where>
+	<if test="bean != null">
+		<include refid="commonWhereAnd"/>
+		<include refid="defaultWhereAnd"/>
+	</if>
+</where>
+<include refid="commonOrderBy"></include>
+</select>
+<!-- 主键查询对象 DYN_UFM_INFO -->
+<select id="findDynUfmInfoById" parameterType="java.lang.String" resultMap="DynUfmInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_UFM_INFO t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_UFM_INFO -->
+<insert id="insertDynUfmInfo" parameterType="avicit.pb.member.dynufminfo.dto.DynUfmInfoDTO">
+	insert into DYN_UFM_INFO
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="deptName != null">
+			DEPT_NAME,
+		</if>
+		<if test="residenceReason != null">
+			RESIDENCE_REASON,
+		</if>
+		<if test="taiwanCompatriots != null">
+			TAIWAN_COMPATRIOTS,
+		</if>
+		<if test="fulSpeciality != null">
+			FUL_SPECIALITY,
+		</if>
+		<if test="residenceCountry != null">
+			RESIDENCE_COUNTRY,
+		</if>
+		<if test="birthdate != null">
+			BIRTHDATE,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="partSpeciality != null">
+			PART_SPECIALITY,
+		</if>
+		<if test="nation != null">
+			NATION,
+		</if>
+		<if test="taiwanRelatives != null">
+			TAIWAN_RELATIVES,
+		</if>
+		<if test="data1 != null">
+			DATA_1,
+		</if>
+		<if test="data2 != null">
+			DATA_2,
+		</if>
+		<if test="gender != null">
+			GENDER,
+		</if>
+		<if test="data3 != null">
+			DATA_3,
+		</if>
+		<if test="ufIdentity != null">
+			UF_IDENTITY,
+		</if>
+		<if test="hoCompatriots != null">
+			HO_COMPATRIOTS,
+		</if>
+		<if test="data4 != null">
+			DATA_4,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="partGraduation != null">
+			PART_GRADUATION,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="fulEducation != null">
+			FUL_EDUCATION,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="religiousBelier != null">
+			RELIGIOUS_BELIER,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="ufmname != null">
+			UFMNAME,
+		</if>
+		<if test="data5 != null">
+			DATA_5,
+		</if>
+		<if test="employeeid != null">
+			EMPLOYEEID,
+		</if>
+		<if test="userTitle != null">
+			USER_TITLE,
+		</if>
+		<if test="data6 != null">
+			DATA_6,
+		</if>
+		<if test="data7 != null">
+			DATA_7,
+		</if>
+		<if test="data8 != null">
+			DATA_8,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="residenceYear != null">
+			RESIDENCE_YEAR,
+		</if>
+		<if test="duties != null">
+			DUTIES,
+		</if>
+		<if test="poName != null">
+			PO_NAME,
+		</if>
+		<if test="hoDependents != null">
+			HO_DEPENDENTS,
+		</if>
+		<if test="roChinese != null">
+			RO_CHINESE,
+		</if>
+		<if test="nember != null">
+			NEMBER,
+		</if>
+		<if test="partEducation != null">
+			PART_EDUCATION,
+		</if>
+		<if test="fulGraduation != null">
+			FUL_GRADUATION,
+		</if>
+		<if test="politicalOutlook != null">
+			POLITICAL_OUTLOOK,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="hostCountry != null">
+			HOST_COUNTRY,
+		</if>
+		<if test="partyReprePositions != null">
+			PARTY_REPRE_POSITIONS,
+		</if>
+		<if test="phoneNumber != null">
+			PHONE_NUMBER,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="deptName != null">
+			#{deptName,jdbcType = VARCHAR},
+		</if>
+		<if test="residenceReason != null">
+			#{residenceReason,jdbcType = VARCHAR},
+		</if>
+		<if test="taiwanCompatriots != null">
+			#{taiwanCompatriots,jdbcType = VARCHAR},
+		</if>
+		<if test="fulSpeciality != null">
+			#{fulSpeciality,jdbcType = VARCHAR},
+		</if>
+		<if test="residenceCountry != null">
+			#{residenceCountry,jdbcType = VARCHAR},
+		</if>
+		<if test="birthdate != null">
+			#{birthdate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="partSpeciality != null">
+			#{partSpeciality,jdbcType = VARCHAR},
+		</if>
+		<if test="nation != null">
+			#{nation,jdbcType = VARCHAR},
+		</if>
+		<if test="taiwanRelatives != null">
+			#{taiwanRelatives,jdbcType = VARCHAR},
+		</if>
+		<if test="data1 != null">
+			#{data1,jdbcType = TIMESTAMP},
+		</if>
+		<if test="data2 != null">
+			#{data2,jdbcType = DECIMAL},
+		</if>
+		<if test="gender != null">
+			#{gender,jdbcType = VARCHAR},
+		</if>
+		<if test="data3 != null">
+			#{data3,jdbcType = VARCHAR},
+		</if>
+		<if test="ufIdentity != null">
+			#{ufIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="hoCompatriots != null">
+			#{hoCompatriots,jdbcType = VARCHAR},
+		</if>
+		<if test="data4 != null">
+			#{data4,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="partGraduation != null">
+			#{partGraduation,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="fulEducation != null">
+			#{fulEducation,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="religiousBelier != null">
+			#{religiousBelier,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="ufmname != null">
+			#{ufmname,jdbcType = VARCHAR},
+		</if>
+		<if test="data5 != null">
+			#{data5,jdbcType = VARCHAR},
+		</if>
+		<if test="employeeid != null">
+			#{employeeid,jdbcType = VARCHAR},
+		</if>
+		<if test="userTitle != null">
+			#{userTitle,jdbcType = VARCHAR},
+		</if>
+		<if test="data6 != null">
+			#{data6,jdbcType = VARCHAR},
+		</if>
+		<if test="data7 != null">
+			#{data7,jdbcType = VARCHAR},
+		</if>
+		<if test="data8 != null">
+			#{data8,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="residenceYear != null">
+			#{residenceYear,jdbcType = VARCHAR},
+		</if>
+		<if test="duties != null">
+			#{duties,jdbcType = VARCHAR},
+		</if>
+		<if test="poName != null">
+			#{poName,jdbcType = VARCHAR},
+		</if>
+		<if test="hoDependents != null">
+			#{hoDependents,jdbcType = VARCHAR},
+		</if>
+		<if test="roChinese != null">
+			#{roChinese,jdbcType = VARCHAR},
+		</if>
+		<if test="nember != null">
+			#{nember,jdbcType = VARCHAR},
+		</if>
+		<if test="partEducation != null">
+			#{partEducation,jdbcType = VARCHAR},
+		</if>
+		<if test="fulGraduation != null">
+			#{fulGraduation,jdbcType = VARCHAR},
+		</if>
+		<if test="politicalOutlook != null">
+			#{politicalOutlook,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="hostCountry != null">
+			#{hostCountry,jdbcType = VARCHAR},
+		</if>
+		<if test="partyReprePositions != null">
+			#{partyReprePositions,jdbcType = VARCHAR},
+		</if>
+		<if test="phoneNumber != null">
+			#{phoneNumber,jdbcType = DECIMAL},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_UFM_INFO -->
+<insert id="insertDynUfmInfoList" parameterType="java.util.List">
+	insert into DYN_UFM_INFO(
+	DEPT_NAME ,
+	RESIDENCE_REASON ,
+	TAIWAN_COMPATRIOTS ,
+	FUL_SPECIALITY ,
+	RESIDENCE_COUNTRY ,
+	BIRTHDATE ,
+	LAST_UPDATE_DATE ,
+	PART_SPECIALITY ,
+	NATION ,
+	TAIWAN_RELATIVES ,
+	DATA_1 ,
+	DATA_2 ,
+	GENDER ,
+	DATA_3 ,
+	UF_IDENTITY ,
+	HO_COMPATRIOTS ,
+	DATA_4 ,
+	ID ,
+	CREATED_DEPT ,
+	PART_GRADUATION ,
+	LAST_UPDATE_IP ,
+	FUL_EDUCATION ,
+	CREATED_BY ,
+	RELIGIOUS_BELIER ,
+	LAST_UPDATED_BY ,
+	UFMNAME ,
+	DATA_5 ,
+	EMPLOYEEID ,
+	USER_TITLE ,
+	DATA_6 ,
+	DATA_7 ,
+	DATA_8 ,
+	CREATION_DATE ,
+	RESIDENCE_YEAR ,
+	DUTIES ,
+	PO_NAME ,
+	HO_DEPENDENTS ,
+	RO_CHINESE ,
+	NEMBER ,
+	PART_EDUCATION ,
+	FUL_GRADUATION ,
+	POLITICAL_OUTLOOK ,
+	VERSION ,
+	ORG_IDENTITY ,
+	HOST_COUNTRY ,
+	PARTY_REPRE_POSITIONS ,
+	PHONE_NUMBER )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.deptName,jdbcType = VARCHAR} ,
+	#{item.residenceReason,jdbcType = VARCHAR} ,
+	#{item.taiwanCompatriots,jdbcType = VARCHAR} ,
+	#{item.fulSpeciality,jdbcType = VARCHAR} ,
+	#{item.residenceCountry,jdbcType = VARCHAR} ,
+	#{item.birthdate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.partSpeciality,jdbcType = VARCHAR} ,
+	#{item.nation,jdbcType = VARCHAR} ,
+	#{item.taiwanRelatives,jdbcType = VARCHAR} ,
+	#{item.data1,jdbcType = TIMESTAMP} ,
+	#{item.data2,jdbcType = DECIMAL} ,
+	#{item.gender,jdbcType = VARCHAR} ,
+	#{item.data3,jdbcType = VARCHAR} ,
+	#{item.ufIdentity,jdbcType = VARCHAR} ,
+	#{item.hoCompatriots,jdbcType = VARCHAR} ,
+	#{item.data4,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.partGraduation,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.fulEducation,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.religiousBelier,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.ufmname,jdbcType = VARCHAR} ,
+	#{item.data5,jdbcType = VARCHAR} ,
+	#{item.employeeid,jdbcType = VARCHAR} ,
+	#{item.userTitle,jdbcType = VARCHAR} ,
+	#{item.data6,jdbcType = VARCHAR} ,
+	#{item.data7,jdbcType = VARCHAR} ,
+	#{item.data8,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.residenceYear,jdbcType = VARCHAR} ,
+	#{item.duties,jdbcType = VARCHAR} ,
+	#{item.poName,jdbcType = VARCHAR} ,
+	#{item.hoDependents,jdbcType = VARCHAR} ,
+	#{item.roChinese,jdbcType = VARCHAR} ,
+	#{item.nember,jdbcType = VARCHAR} ,
+	#{item.partEducation,jdbcType = VARCHAR} ,
+	#{item.fulGraduation,jdbcType = VARCHAR} ,
+	#{item.politicalOutlook,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.hostCountry,jdbcType = VARCHAR} ,
+	#{item.partyReprePositions,jdbcType = VARCHAR} ,
+	#{item.phoneNumber,jdbcType = DECIMAL} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_UFM_INFO -->
+<update id="updateDynUfmInfoSensitive" parameterType="avicit.pb.member.dynufminfo.dto.DynUfmInfoDTO">
+	update DYN_UFM_INFO
+	<set>
+		<if test="deptName != null">
+			DEPT_NAME = #{deptName,jdbcType = VARCHAR} ,
+		</if>
+		<if test="residenceReason != null">
+			RESIDENCE_REASON = #{residenceReason,jdbcType = VARCHAR} ,
+		</if>
+		<if test="taiwanCompatriots != null">
+			TAIWAN_COMPATRIOTS = #{taiwanCompatriots,jdbcType = VARCHAR} ,
+		</if>
+		<if test="fulSpeciality != null">
+			FUL_SPECIALITY = #{fulSpeciality,jdbcType = VARCHAR} ,
+		</if>
+		<if test="residenceCountry != null">
+			RESIDENCE_COUNTRY = #{residenceCountry,jdbcType = VARCHAR} ,
+		</if>
+		<if test="birthdate != null">
+			BIRTHDATE = #{birthdate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="partSpeciality != null">
+			PART_SPECIALITY = #{partSpeciality,jdbcType = VARCHAR} ,
+		</if>
+		<if test="nation != null">
+			NATION = #{nation,jdbcType = VARCHAR} ,
+		</if>
+		<if test="taiwanRelatives != null">
+			TAIWAN_RELATIVES = #{taiwanRelatives,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data1 != null">
+			DATA_1 = #{data1,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="data2 != null">
+			DATA_2 = #{data2,jdbcType = DECIMAL} ,
+		</if>
+		<if test="gender != null">
+			GENDER = #{gender,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data3 != null">
+			DATA_3 = #{data3,jdbcType = VARCHAR} ,
+		</if>
+		<if test="ufIdentity != null">
+			UF_IDENTITY = #{ufIdentity,jdbcType = VARCHAR} ,
+		</if>
+		<if test="hoCompatriots != null">
+			HO_COMPATRIOTS = #{hoCompatriots,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data4 != null">
+			DATA_4 = #{data4,jdbcType = VARCHAR} ,
+		</if>
+		<if test="id != null">
+			ID = #{id,jdbcType = VARCHAR} ,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+		</if>
+		<if test="partGraduation != null">
+			PART_GRADUATION = #{partGraduation,jdbcType = VARCHAR} ,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+		</if>
+		<if test="fulEducation != null">
+			FUL_EDUCATION = #{fulEducation,jdbcType = VARCHAR} ,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+		</if>
+		<if test="religiousBelier != null">
+			RELIGIOUS_BELIER = #{religiousBelier,jdbcType = VARCHAR} ,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+		</if>
+		<if test="ufmname != null">
+			UFMNAME = #{ufmname,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data5 != null">
+			DATA_5 = #{data5,jdbcType = VARCHAR} ,
+		</if>
+		<if test="employeeid != null">
+			EMPLOYEEID = #{employeeid,jdbcType = VARCHAR} ,
+		</if>
+		<if test="userTitle != null">
+			USER_TITLE = #{userTitle,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data6 != null">
+			DATA_6 = #{data6,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data7 != null">
+			DATA_7 = #{data7,jdbcType = VARCHAR} ,
+		</if>
+		<if test="data8 != null">
+			DATA_8 = #{data8,jdbcType = VARCHAR} ,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+		</if>
+		<if test="residenceYear != null">
+			RESIDENCE_YEAR = #{residenceYear,jdbcType = VARCHAR} ,
+		</if>
+		<if test="duties != null">
+			DUTIES = #{duties,jdbcType = VARCHAR} ,
+		</if>
+		<if test="poName != null">
+			PO_NAME = #{poName,jdbcType = VARCHAR} ,
+		</if>
+		<if test="hoDependents != null">
+			HO_DEPENDENTS = #{hoDependents,jdbcType = VARCHAR} ,
+		</if>
+		<if test="roChinese != null">
+			RO_CHINESE = #{roChinese,jdbcType = VARCHAR} ,
+		</if>
+		<if test="nember != null">
+			NEMBER = #{nember,jdbcType = VARCHAR} ,
+		</if>
+		<if test="partEducation != null">
+			PART_EDUCATION = #{partEducation,jdbcType = VARCHAR} ,
+		</if>
+		<if test="fulGraduation != null">
+			FUL_GRADUATION = #{fulGraduation,jdbcType = VARCHAR} ,
+		</if>
+		<if test="politicalOutlook != null">
+			POLITICAL_OUTLOOK = #{politicalOutlook,jdbcType = VARCHAR} ,
+		</if>
+		<if test="version != null">
+			VERSION = version+1 ,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+		</if>
+		<if test="hostCountry != null">
+			HOST_COUNTRY = #{hostCountry,jdbcType = VARCHAR} ,
+		</if>
+		<if test="partyReprePositions != null">
+			PARTY_REPRE_POSITIONS = #{partyReprePositions,jdbcType = VARCHAR} ,
+		</if>
+		<if test="phoneNumber != null">
+			PHONE_NUMBER = #{phoneNumber,jdbcType = DECIMAL} 		</if>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_UFM_INFO -->
+<update id="updateDynUfmInfoAll" parameterType="avicit.pb.member.dynufminfo.dto.DynUfmInfoDTO">
+	update DYN_UFM_INFO
+	set
+	DEPT_NAME = #{deptName,jdbcType = VARCHAR} ,
+	RESIDENCE_REASON = #{residenceReason,jdbcType = VARCHAR} ,
+	TAIWAN_COMPATRIOTS = #{taiwanCompatriots,jdbcType = VARCHAR} ,
+	FUL_SPECIALITY = #{fulSpeciality,jdbcType = VARCHAR} ,
+	RESIDENCE_COUNTRY = #{residenceCountry,jdbcType = VARCHAR} ,
+	BIRTHDATE = #{birthdate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	PART_SPECIALITY = #{partSpeciality,jdbcType = VARCHAR} ,
+	NATION = #{nation,jdbcType = VARCHAR} ,
+	TAIWAN_RELATIVES = #{taiwanRelatives,jdbcType = VARCHAR} ,
+	DATA_1 = #{data1,jdbcType = TIMESTAMP} ,
+	DATA_2 = #{data2,jdbcType = DECIMAL} ,
+	GENDER = #{gender,jdbcType = VARCHAR} ,
+	DATA_3 = #{data3,jdbcType = VARCHAR} ,
+	UF_IDENTITY = #{ufIdentity,jdbcType = VARCHAR} ,
+	HO_COMPATRIOTS = #{hoCompatriots,jdbcType = VARCHAR} ,
+	DATA_4 = #{data4,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	PART_GRADUATION = #{partGraduation,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	FUL_EDUCATION = #{fulEducation,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	RELIGIOUS_BELIER = #{religiousBelier,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	UFMNAME = #{ufmname,jdbcType = VARCHAR} ,
+	DATA_5 = #{data5,jdbcType = VARCHAR} ,
+	EMPLOYEEID = #{employeeid,jdbcType = VARCHAR} ,
+	USER_TITLE = #{userTitle,jdbcType = VARCHAR} ,
+	DATA_6 = #{data6,jdbcType = VARCHAR} ,
+	DATA_7 = #{data7,jdbcType = VARCHAR} ,
+	DATA_8 = #{data8,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	RESIDENCE_YEAR = #{residenceYear,jdbcType = VARCHAR} ,
+	DUTIES = #{duties,jdbcType = VARCHAR} ,
+	PO_NAME = #{poName,jdbcType = VARCHAR} ,
+	HO_DEPENDENTS = #{hoDependents,jdbcType = VARCHAR} ,
+	RO_CHINESE = #{roChinese,jdbcType = VARCHAR} ,
+	NEMBER = #{nember,jdbcType = VARCHAR} ,
+	PART_EDUCATION = #{partEducation,jdbcType = VARCHAR} ,
+	FUL_GRADUATION = #{fulGraduation,jdbcType = VARCHAR} ,
+	POLITICAL_OUTLOOK = #{politicalOutlook,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	HOST_COUNTRY = #{hostCountry,jdbcType = VARCHAR} ,
+	PARTY_REPRE_POSITIONS = #{partyReprePositions,jdbcType = VARCHAR} ,
+	PHONE_NUMBER = #{phoneNumber,jdbcType = DECIMAL} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_UFM_INFO -->
+<update id="updateDynUfmInfoList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_UFM_INFO
+		set
+		DEPT_NAME = #{item.deptName,jdbcType = VARCHAR} ,
+		RESIDENCE_REASON = #{item.residenceReason,jdbcType = VARCHAR} ,
+		TAIWAN_COMPATRIOTS = #{item.taiwanCompatriots,jdbcType = VARCHAR} ,
+		FUL_SPECIALITY = #{item.fulSpeciality,jdbcType = VARCHAR} ,
+		RESIDENCE_COUNTRY = #{item.residenceCountry,jdbcType = VARCHAR} ,
+		BIRTHDATE = #{item.birthdate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		PART_SPECIALITY = #{item.partSpeciality,jdbcType = VARCHAR} ,
+		NATION = #{item.nation,jdbcType = VARCHAR} ,
+		TAIWAN_RELATIVES = #{item.taiwanRelatives,jdbcType = VARCHAR} ,
+		DATA_1 = #{item.data1,jdbcType = TIMESTAMP} ,
+		DATA_2 = #{item.data2,jdbcType = DECIMAL} ,
+		GENDER = #{item.gender,jdbcType = VARCHAR} ,
+		DATA_3 = #{item.data3,jdbcType = VARCHAR} ,
+		UF_IDENTITY = #{item.ufIdentity,jdbcType = VARCHAR} ,
+		HO_COMPATRIOTS = #{item.hoCompatriots,jdbcType = VARCHAR} ,
+		DATA_4 = #{item.data4,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		PART_GRADUATION = #{item.partGraduation,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		FUL_EDUCATION = #{item.fulEducation,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		RELIGIOUS_BELIER = #{item.religiousBelier,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		UFMNAME = #{item.ufmname,jdbcType = VARCHAR} ,
+		DATA_5 = #{item.data5,jdbcType = VARCHAR} ,
+		EMPLOYEEID = #{item.employeeid,jdbcType = VARCHAR} ,
+		USER_TITLE = #{item.userTitle,jdbcType = VARCHAR} ,
+		DATA_6 = #{item.data6,jdbcType = VARCHAR} ,
+		DATA_7 = #{item.data7,jdbcType = VARCHAR} ,
+		DATA_8 = #{item.data8,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		RESIDENCE_YEAR = #{item.residenceYear,jdbcType = VARCHAR} ,
+		DUTIES = #{item.duties,jdbcType = VARCHAR} ,
+		PO_NAME = #{item.poName,jdbcType = VARCHAR} ,
+		HO_DEPENDENTS = #{item.hoDependents,jdbcType = VARCHAR} ,
+		RO_CHINESE = #{item.roChinese,jdbcType = VARCHAR} ,
+		NEMBER = #{item.nember,jdbcType = VARCHAR} ,
+		PART_EDUCATION = #{item.partEducation,jdbcType = VARCHAR} ,
+		FUL_GRADUATION = #{item.fulGraduation,jdbcType = VARCHAR} ,
+		POLITICAL_OUTLOOK = #{item.politicalOutlook,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		HOST_COUNTRY = #{item.hostCountry,jdbcType = VARCHAR} ,
+		PARTY_REPRE_POSITIONS = #{item.partyReprePositions,jdbcType = VARCHAR} ,
+		PHONE_NUMBER = #{item.phoneNumber,jdbcType = DECIMAL} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_UFM_INFO -->
+<delete id="deleteDynUfmInfoById" parameterType="java.lang.String">
+	delete from DYN_UFM_INFO  where id = #{id}
+</delete>
+
+<!-- psu+ 查询对象 DYN_UFM_INFO -->
+<select id="findEmployeeid" parameterType="java.lang.String" resultMap="DynUfmInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_UFM_INFO t1
+	where t1.EMPLOYEEID = #{employeeid}
+</select>
+
+<select id="poOrgNameDao" resultType="hashmap">
+select t.ID , t.PARTY_NAME ,t.PARTY_CODE from PARTY_ORGANIZATION t
+where t.PARTY_NAME = #{poName}
+</select>
+
+
+</mapper>

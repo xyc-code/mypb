@@ -1,0 +1,21 @@
+[
+  {
+    "isParent": "true",
+    "_parentId": "-1",
+    "children": [
+      {
+        "isParent": "false",
+        "_parentId": "0",
+        "children": null,
+        "id": "1",
+        "text": "一级节点",
+        "isShow": "0",
+        "nodeType": "297e758c751bd3a401751c34999e0297",
+        "urlValue": "一级节点"
+      }
+    ],
+    "id": "0",
+    "text": "根节点",
+    "isShow": "0"
+  }
+]

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速发起</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+    <div class="box">
+        <div class="box_title">
+          <h4>快速发起</h4>
+          <span class="box_title_right">
+<!--            <i class="iconfont icon-download-fill" title="下载" onclick="downloadFile('quickLaunch')"></i>-->
+            <i class="iconfont icon-refresh" title="刷新"></i>
+          </span>
+        </div>
+        <div class="content_inner">
+            <ul class="launch-content">
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-blue-f list-icon"><i class="iconfont icon-sale-detail ico"></i></p>
+                        <p><span>销售汇总表</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                   <div class="list-content">
+                        <p class="bg-green list-icon"><i class="iconfont icon-report ico"></i></p>
+                        <p><span>销售排行表</span></p>
+                   </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-orange list-icon"><i class="iconfont icon-dingdan ico"></i></p>
+                        <p><span>销售订单汇总表</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-pink list-icon"><i class="iconfont icon-dingdan ico"></i></p>
+                        <p><span>以销定购</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-blue-s list-icon"><i class="iconfont icon-detail-list ico"></i></p>
+                        <p><span>采购明细表</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-green list-icon"><i class="iconfont icon-chart ico"></i></p>
+                        <p><span>采购汇总表</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-orange list-icon"><i class="iconfont icon-chart ico"></i></p>
+                        <p><span>采购订单汇总表</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-pink list-icon"><i class="iconfont icon-chart ico"></i></p>
+                        <p><span>核算项目明细账</span></p>
+                    </div>
+                </li>
+                <li class="lc-list">
+                    <div class="list-content">
+                        <p class="bg-grey list-icon"><i class="iconfont icon-plus ico"></i></p>
+                        <p><span>添加</span></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+      </div>
+    
+</body>
+<script type="text/javascript">
+    function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template5/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+    }
+</script>
+<style>
+	*{
+		box-sizing: border-box;
+	}
+    .bg-blue-f {
+		background: #388FF3;
+	}
+	.bg-blue-s {
+		background: #577CEF;
+	}
+	.bg-green {
+		background: #34C8CA;
+	}
+	.bg-orange {
+		background: #F59140;
+	}
+	.bg-pink {
+		background: #FB6594;
+	}
+	.bg-grey {
+		background: #D7D7D7;
+	}
+	.launch-content {
+        margin: 0 auto;
+	}
+    .lc-list {
+        width: 33.3%;
+        padding: 5px;
+        float: left;
+    }
+    .list-content {
+        width: 100%;
+        height: 80px;
+        background: #F7F7F7;
+        text-align: center;
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        text-align: center;
+        font-size: 14px;
+        padding: 8px 0 0 0;
+    }
+    .list-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        margin: 0 auto;
+        line-height: 36px;
+        color: #fff;
+        margin-bottom: 7px;
+    }
+    .ico {
+        font-size: 24px;  
+    }
+</style>
+</html>

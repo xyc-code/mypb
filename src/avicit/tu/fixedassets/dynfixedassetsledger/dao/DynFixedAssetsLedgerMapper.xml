@@ -1,0 +1,1645 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.tu.fixedassets.dynfixedassetsledger.dao.DynFixedAssetsLedgerDAO">
+<resultMap id="DynFixedAssetsLedgerDTOMap" type="avicit.tu.fixedassets.dynfixedassetsledger.dto.DynFixedAssetsLedgerDTO">
+	<result property="assetDw" column="ASSET_DW" jdbcType="VARCHAR" />
+	<result property="tySbRoom" column="TY_SB_ROOM" jdbcType="VARCHAR" />
+	<result property="assetBrand" column="ASSET_BRAND" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="officeRegisNumber" column="OFFICE_REGIS_NUMBER" jdbcType="VARCHAR" />
+	<result property="tySbYongt" column="TY_SB_YONGT" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="insertDate" column="INSERT_DATE" jdbcType="TIMESTAMP" />
+	<result property="applyUser" column="APPLY_USER" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="originalValue" column="ORIGINAL_VALUE" jdbcType="DECIMAL" />
+	<result property="tySbCcDate" column="TY_SB_CC_DATE" jdbcType="TIMESTAMP" />
+	<result property="tySbClass" column="TY_SB_CLASS" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="pcMacAddress" column="PC_MAC_ADDRESS" jdbcType="VARCHAR" />
+	<result property="usedDept" column="USED_DEPT" jdbcType="VARCHAR" />
+	<result property="officeComputerNumber" column="OFFICE_COMPUTER_NUMBER" jdbcType="VARCHAR" />
+	<result property="assetNaem" column="ASSET_NAEM" jdbcType="VARCHAR" />
+	<result property="tySbCode" column="TY_SB_CODE" jdbcType="VARCHAR" />
+	<result property="pcWindowsVersion" column="PC_WINDOWS_VERSION" jdbcType="VARCHAR" />
+	<result property="zrUser" column="ZR_USER" jdbcType="VARCHAR" />
+	<result property="tySbStatus" column="TY_SB_STATUS" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="officeMacAddress" column="OFFICE_MAC_ADDRESS" jdbcType="VARCHAR" />
+	<result property="guildId" column="GUILD_ID" jdbcType="VARCHAR" />
+	<result property="depreDate" column="DEPRE_DATE" jdbcType="TIMESTAMP" />
+	<result property="tySbXingh" column="TY_SB_XINGH" jdbcType="VARCHAR" />
+	<result property="tySbSecretLevel" column="TY_SB_SECRET_LEVEL" jdbcType="VARCHAR" />
+	<result property="assetDetails" column="ASSET_DETAILS" jdbcType="VARCHAR" />
+	<result property="tySbBrand" column="TY_SB_BRAND" jdbcType="VARCHAR" />
+	<result property="usedDeptId" column="USED_DEPT_ID" jdbcType="VARCHAR" />
+	<result property="tySbName" column="TY_SB_NAME" jdbcType="VARCHAR" />
+	<result property="pcInstallDate" column="PC_INSTALL_DATE" jdbcType="TIMESTAMP" />
+	<result property="assetType" column="ASSET_TYPE" jdbcType="VARCHAR" />
+	<result property="tySbAddress" column="TY_SB_ADDRESS" jdbcType="VARCHAR" />
+	<result property="tySbQyDate" column="TY_SB_QY_DATE" jdbcType="TIMESTAMP" />
+	<result property="tySbZeUser" column="TY_SB_ZE_USER" jdbcType="VARCHAR" />
+	<result property="storagePlace" column="STORAGE_PLACE" jdbcType="VARCHAR" />
+	<result property="tySbCcCode" column="TY_SB_CC_CODE" jdbcType="VARCHAR" />
+	<result property="pcDiskNumber" column="PC_DISK_NUMBER" jdbcType="VARCHAR" />
+	<result property="assetNum" column="ASSET_NUM" jdbcType="DECIMAL" />
+	<result property="officeUserCode" column="OFFICE_USER_CODE" jdbcType="VARCHAR" />
+	<result property="tySbIp" column="TY_SB_IP" jdbcType="VARCHAR" />
+	<result property="tySbDept" column="TY_SB_DEPT" jdbcType="VARCHAR" />
+	<result property="assetCode" column="ASSET_CODE" jdbcType="VARCHAR" />
+	<result property="tySbType" column="TY_SB_TYPE" jdbcType="VARCHAR" />
+	<result property="tySbNetType" column="TY_SB_NET_TYPE" jdbcType="VARCHAR" />
+	<result property="xh" column="XH" jdbcType="DECIMAL" />
+	<result property="applyUserId" column="APPLY_USER_ID" jdbcType="VARCHAR" />
+	<result property="applyLyUserId" column="APPLY_LY_USER_ID" jdbcType="VARCHAR" />
+	<result property="currentValue" column="CURRENT_VALUE" jdbcType="DECIMAL" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="guildName" column="GUILD_NAME" jdbcType="VARCHAR" />
+	<result property="assetXhgg" column="ASSET_XHGG" jdbcType="VARCHAR" />
+	<result property="dataStatus" column="DATA_STATUS" jdbcType="VARCHAR" />
+	<result property="remark" column="REMARK" jdbcType="VARCHAR" />
+	<result property="insertType" column="INSERT_TYPE" jdbcType="VARCHAR" />
+	<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+	<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+	<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+	<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+	<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+	<result property="attribute06" column="ATTRIBUTE_06" jdbcType="TIMESTAMP" />
+	<result property="yearToBelong" column="YEAR_TO_BELONG" jdbcType="VARCHAR" />
+	<result property="intoDate" column="INTO_DATE" jdbcType="TIMESTAMP" />
+	<result property="outDate" column="OUT_DATE" jdbcType="TIMESTAMP" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.ASSET_DW,
+	t1.TY_SB_ROOM,
+	t1.ASSET_BRAND,
+	t1.LAST_UPDATE_DATE,
+	t1.OFFICE_REGIS_NUMBER,
+	t1.TY_SB_YONGT,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.INSERT_DATE,
+	t1.APPLY_USER,
+	t1.LAST_UPDATE_IP,
+	t1.CREATED_BY,
+	t1.LAST_UPDATED_BY,
+	t1.ORIGINAL_VALUE,
+	t1.TY_SB_CC_DATE,
+	t1.TY_SB_CLASS,
+	t1.CREATION_DATE,
+	t1.PC_MAC_ADDRESS,
+	t1.USED_DEPT,
+	t1.OFFICE_COMPUTER_NUMBER,
+	t1.ASSET_NAEM,
+	t1.TY_SB_CODE,
+	t1.PC_WINDOWS_VERSION,
+	t1.ZR_USER,
+	t1.TY_SB_STATUS,
+	t1.ORG_IDENTITY,
+	t1.OFFICE_MAC_ADDRESS,
+	t1.GUILD_ID,
+	t1.DEPRE_DATE,
+	t1.TY_SB_XINGH,
+	t1.TY_SB_SECRET_LEVEL,
+	t1.ASSET_DETAILS,
+	t1.TY_SB_BRAND,
+	t1.USED_DEPT_ID,
+	t1.TY_SB_NAME,
+	t1.PC_INSTALL_DATE,
+	t1.ASSET_TYPE,
+	t1.TY_SB_ADDRESS,
+	t1.TY_SB_QY_DATE,
+	t1.TY_SB_ZE_USER,
+	t1.STORAGE_PLACE,
+	t1.TY_SB_CC_CODE,
+	t1.PC_DISK_NUMBER,
+	t1.ASSET_NUM,
+	t1.OFFICE_USER_CODE,
+	t1.TY_SB_IP,
+	t1.TY_SB_DEPT,
+	t1.ASSET_CODE,
+	t1.TY_SB_TYPE,
+	t1.TY_SB_NET_TYPE,
+	t1.XH,
+	t1.APPLY_USER_ID,
+	t1.APPLY_LY_USER_ID,
+	t1.CURRENT_VALUE,
+	t1.VERSION,
+	t1.GUILD_NAME,
+	t1.ASSET_XHGG,
+	t1.DATA_STATUS,
+	t1.REMARK,
+	t1.INSERT_TYPE,
+	t1.ATTRIBUTE_01,
+	t1.ATTRIBUTE_02,
+	t1.ATTRIBUTE_03,
+	t1.ATTRIBUTE_04,
+	t1.ATTRIBUTE_05,
+	t1.ATTRIBUTE_06,
+	t1.YEAR_TO_BELONG,
+	t1.INTO_DATE,
+	t1.OUT_DATE,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.assetDw != null and bean.assetDw != ''">
+		and t1.ASSET_DW = #{bean.assetDw}
+	</if>
+	<if test="bean.tySbRoom != null and bean.tySbRoom != ''">
+		and t1.TY_SB_ROOM like concat(concat('%',#{bean.tySbRoom}),'%')
+	</if>
+	<if test="bean.assetBrand != null and bean.assetBrand != ''">
+		and t1.ASSET_BRAND like concat(concat('%',#{bean.assetBrand}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.officeRegisNumber != null and bean.officeRegisNumber != ''">
+		and t1.OFFICE_REGIS_NUMBER like concat(concat('%',#{bean.officeRegisNumber}),'%')
+	</if>
+	<if test="bean.tySbYongt != null and bean.tySbYongt != ''">
+		and t1.TY_SB_YONGT like concat(concat('%',#{bean.tySbYongt}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.insertDateBegin != null">
+		and t1.INSERT_DATE &gt;= #{bean.insertDateBegin}
+	</if>
+	<if test="bean.insertDateEnd != null">
+		and t1.INSERT_DATE &lt;= #{bean.insertDateEnd}
+	</if>
+	<if test="bean.applyUser != null and bean.applyUser != ''">
+		and t1.APPLY_USER like concat(concat('%',#{bean.applyUser}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.originalValue != null">
+		and t1.ORIGINAL_VALUE = #{bean.originalValue}
+	</if>
+	<if test="bean.tySbCcDateBegin != null">
+		and t1.TY_SB_CC_DATE &gt;= #{bean.tySbCcDateBegin}
+	</if>
+	<if test="bean.tySbCcDateEnd != null">
+		and t1.TY_SB_CC_DATE &lt;= #{bean.tySbCcDateEnd}
+	</if>
+	<if test="bean.tySbClass != null and bean.tySbClass != ''">
+		and t1.TY_SB_CLASS like concat(concat('%',#{bean.tySbClass}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.pcMacAddress != null and bean.pcMacAddress != ''">
+		and t1.PC_MAC_ADDRESS like concat(concat('%',#{bean.pcMacAddress}),'%')
+	</if>
+	<if test="bean.usedDept != null and bean.usedDept != ''">
+		and t1.USED_DEPT like concat(concat('%',#{bean.usedDept}),'%')
+	</if>
+	<if test="bean.officeComputerNumber != null and bean.officeComputerNumber != ''">
+		and t1.OFFICE_COMPUTER_NUMBER like concat(concat('%',#{bean.officeComputerNumber}),'%')
+	</if>
+	<if test="bean.assetNaem != null and bean.assetNaem != ''">
+		and t1.ASSET_NAEM like concat(concat('%',#{bean.assetNaem}),'%')
+	</if>
+	<if test="bean.tySbCode != null and bean.tySbCode != ''">
+		and t1.TY_SB_CODE like concat(concat('%',#{bean.tySbCode}),'%')
+	</if>
+	<if test="bean.pcWindowsVersion != null and bean.pcWindowsVersion != ''">
+		and t1.PC_WINDOWS_VERSION like concat(concat('%',#{bean.pcWindowsVersion}),'%')
+	</if>
+	<if test="bean.zrUser != null and bean.zrUser != ''">
+		and t1.ZR_USER = #{bean.zrUser}
+	</if>
+	<if test="bean.tySbStatus != null and bean.tySbStatus != ''">
+		and t1.TY_SB_STATUS like concat(concat('%',#{bean.tySbStatus}),'%')
+	</if>
+	<if test="bean.officeMacAddress != null and bean.officeMacAddress != ''">
+		and t1.OFFICE_MAC_ADDRESS like concat(concat('%',#{bean.officeMacAddress}),'%')
+	</if>
+	<if test="bean.guildId != null and bean.guildId != ''">
+		and t1.GUILD_ID like concat(concat('%',#{bean.guildId}),'%')
+	</if>
+	<if test="bean.depreDateBegin != null">
+		and t1.DEPRE_DATE &gt;= #{bean.depreDateBegin}
+	</if>
+	<if test="bean.depreDateEnd != null">
+		and t1.DEPRE_DATE &lt;= #{bean.depreDateEnd}
+	</if>
+	<if test="bean.tySbXingh != null and bean.tySbXingh != ''">
+		and t1.TY_SB_XINGH like concat(concat('%',#{bean.tySbXingh}),'%')
+	</if>
+	<if test="bean.tySbSecretLevel != null and bean.tySbSecretLevel != ''">
+		and t1.TY_SB_SECRET_LEVEL = #{bean.tySbSecretLevel}
+	</if>
+	<if test="bean.assetDetails != null and bean.assetDetails != ''">
+		and t1.ASSET_DETAILS like concat(concat('%',#{bean.assetDetails}),'%')
+	</if>
+	<if test="bean.tySbBrand != null and bean.tySbBrand != ''">
+		and t1.TY_SB_BRAND like concat(concat('%',#{bean.tySbBrand}),'%')
+	</if>
+	<if test="bean.usedDeptId != null and bean.usedDeptId != ''">
+		and t1.USED_DEPT_ID like concat(concat('%',#{bean.usedDeptId}),'%')
+	</if>
+	<if test="bean.tySbName != null and bean.tySbName != ''">
+		and t1.TY_SB_NAME like concat(concat('%',#{bean.tySbName}),'%')
+	</if>
+	<if test="bean.pcInstallDateBegin != null">
+		and t1.PC_INSTALL_DATE &gt;= #{bean.pcInstallDateBegin}
+	</if>
+	<if test="bean.pcInstallDateEnd != null">
+		and t1.PC_INSTALL_DATE &lt;= #{bean.pcInstallDateEnd}
+	</if>
+	<if test="bean.assetType != null and bean.assetType != ''">
+		and t1.ASSET_TYPE = #{bean.assetType}
+	</if>
+	<if test="bean.tySbAddress != null and bean.tySbAddress != ''">
+		and t1.TY_SB_ADDRESS like concat(concat('%',#{bean.tySbAddress}),'%')
+	</if>
+	<if test="bean.tySbQyDateBegin != null">
+		and t1.TY_SB_QY_DATE &gt;= #{bean.tySbQyDateBegin}
+	</if>
+	<if test="bean.tySbQyDateEnd != null">
+		and t1.TY_SB_QY_DATE &lt;= #{bean.tySbQyDateEnd}
+	</if>
+	<if test="bean.tySbZeUser != null and bean.tySbZeUser != ''">
+		and t1.TY_SB_ZE_USER like concat(concat('%',#{bean.tySbZeUser}),'%')
+	</if>
+	<if test="bean.storagePlace != null and bean.storagePlace != ''">
+		and t1.STORAGE_PLACE = #{bean.storagePlace}
+	</if>
+	<if test="bean.tySbCcCode != null and bean.tySbCcCode != ''">
+		and t1.TY_SB_CC_CODE like concat(concat('%',#{bean.tySbCcCode}),'%')
+	</if>
+	<if test="bean.pcDiskNumber != null and bean.pcDiskNumber != ''">
+		and t1.PC_DISK_NUMBER like concat(concat('%',#{bean.pcDiskNumber}),'%')
+	</if>
+	<if test="bean.assetNum != null">
+		and t1.ASSET_NUM = #{bean.assetNum}
+	</if>
+	<if test="bean.officeUserCode != null and bean.officeUserCode != ''">
+		and t1.OFFICE_USER_CODE like concat(concat('%',#{bean.officeUserCode}),'%')
+	</if>
+	<if test="bean.tySbIp != null and bean.tySbIp != ''">
+		and t1.TY_SB_IP like concat(concat('%',#{bean.tySbIp}),'%')
+	</if>
+	<if test="bean.tySbDept != null and bean.tySbDept != ''">
+		and t1.TY_SB_DEPT like concat(concat('%',#{bean.tySbDept}),'%')
+	</if>
+	<if test="bean.assetCode != null and bean.assetCode != ''">
+		and t1.ASSET_CODE like concat(concat('%',#{bean.assetCode}),'%')
+	</if>
+	<if test="bean.tySbType != null and bean.tySbType != ''">
+		and t1.TY_SB_TYPE like concat(concat('%',#{bean.tySbType}),'%')
+	</if>
+	<if test="bean.tySbNetType != null and bean.tySbNetType != ''">
+		and t1.TY_SB_NET_TYPE like concat(concat('%',#{bean.tySbNetType}),'%')
+	</if>
+	<if test="bean.xh != null">
+		and t1.XH = #{bean.xh}
+	</if>
+	<if test="bean.applyUserId != null and bean.applyUserId != ''">
+		and t1.APPLY_USER_ID = #{bean.applyUserId}
+	</if>
+	<if test="bean.applyLyUserId != null and bean.applyLyUserId != ''">
+		and t1.APPLY_LY_USER_ID like concat(concat('%',#{bean.applyLyUserId}),'%')
+	</if>
+	<if test="bean.currentValue != null">
+		and t1.CURRENT_VALUE = #{bean.currentValue}
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.guildName != null and bean.guildName != ''">
+		and t1.GUILD_NAME like concat(concat('%',#{bean.guildName}),'%')
+	</if>
+	<if test="bean.assetXhgg != null and bean.assetXhgg != ''">
+		and t1.ASSET_XHGG like concat(concat('%',#{bean.assetXhgg}),'%')
+	</if>
+	<if test="bean.dataStatus != null and bean.dataStatus != ''">
+		and t1.DATA_STATUS like concat(concat('%',#{bean.dataStatus}),'%')
+	</if>
+	<if test="bean.remark != null and bean.remark != ''">
+		and t1.REMARK like concat(concat('%',#{bean.remark}),'%')
+	</if>
+	<if test="bean.insertType != null and bean.insertType != ''">
+		and t1.INSERT_TYPE like concat(concat('%',#{bean.insertType}),'%')
+	</if>
+	<if test="bean.attribute01 != null and bean.attribute01 != ''">
+		and t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%')
+	</if>
+	<if test="bean.attribute02 != null and bean.attribute02 != ''">
+		and t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%')
+	</if>
+	<if test="bean.attribute03 != null and bean.attribute03 != ''">
+		and t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%')
+	</if>
+	<if test="bean.attribute04 != null and bean.attribute04 != ''">
+		and t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%')
+	</if>
+	<if test="bean.attribute05 != null and bean.attribute05 != ''">
+		and t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%')
+	</if>
+	<if test="bean.attribute06Begin != null">
+		and t1.ATTRIBUTE_06 &gt;= #{bean.attribute06Begin}
+	</if>
+	<if test="bean.attribute06End != null">
+		and t1.ATTRIBUTE_06 &lt;= #{bean.attribute06End}
+	</if>
+	<if test="bean.yearToBelong != null and bean.yearToBelong != ''">
+		and t1.YEAR_TO_BELONG like concat(concat('%',#{bean.yearToBelong}),'%')
+	</if>
+	<if test="bean.intoDateBegin != null">
+		and t1.INTO_DATE &gt;= #{bean.intoDateBegin}
+	</if>
+	<if test="bean.intoDateEnd != null">
+		and t1.INTO_DATE &lt;= #{bean.intoDateEnd}
+	</if>
+	<if test="bean.outDateBegin != null">
+		and t1.OUT_DATE &gt;= #{bean.outDateBegin}
+	</if>
+	<if test="bean.outDateEnd != null">
+		and t1.OUT_DATE &lt;= #{bean.outDateEnd}
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.assetDw != null and bean.assetDw != ''">
+		or t1.ASSET_DW = #{bean.assetDw}
+	</if>
+	<if test="bean.tySbRoom != null and bean.tySbRoom != ''">
+		or t1.TY_SB_ROOM like concat(concat('%',#{bean.tySbRoom}),'%')
+	</if>
+	<if test="bean.assetBrand != null and bean.assetBrand != ''">
+		or t1.ASSET_BRAND like concat(concat('%',#{bean.assetBrand}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.officeRegisNumber != null and bean.officeRegisNumber != ''">
+		or t1.OFFICE_REGIS_NUMBER like concat(concat('%',#{bean.officeRegisNumber}),'%')
+	</if>
+	<if test="bean.tySbYongt != null and bean.tySbYongt != ''">
+		or t1.TY_SB_YONGT like concat(concat('%',#{bean.tySbYongt}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.insertDateBegin != null">
+		or t1.INSERT_DATE &gt;= #{bean.insertDateBegin}
+	</if>
+	<if test="bean.insertDateEnd != null">
+		or t1.INSERT_DATE &lt;= #{bean.insertDateEnd}
+	</if>
+	<if test="bean.applyUser != null and bean.applyUser != ''">
+		or t1.APPLY_USER like concat(concat('%',#{bean.applyUser}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.originalValue != null">
+		or t1.ORIGINAL_VALUE = #{bean.originalValue}
+	</if>
+	<if test="bean.tySbCcDateBegin != null">
+		or t1.TY_SB_CC_DATE &gt;= #{bean.tySbCcDateBegin}
+	</if>
+	<if test="bean.tySbCcDateEnd != null">
+		or t1.TY_SB_CC_DATE &lt;= #{bean.tySbCcDateEnd}
+	</if>
+	<if test="bean.tySbClass != null and bean.tySbClass != ''">
+		or t1.TY_SB_CLASS like concat(concat('%',#{bean.tySbClass}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.pcMacAddress != null and bean.pcMacAddress != ''">
+		or t1.PC_MAC_ADDRESS like concat(concat('%',#{bean.pcMacAddress}),'%')
+	</if>
+	<if test="bean.usedDept != null and bean.usedDept != ''">
+		or t1.USED_DEPT like concat(concat('%',#{bean.usedDept}),'%')
+	</if>
+	<if test="bean.officeComputerNumber != null and bean.officeComputerNumber != ''">
+		or t1.OFFICE_COMPUTER_NUMBER like concat(concat('%',#{bean.officeComputerNumber}),'%')
+	</if>
+	<if test="bean.assetNaem != null and bean.assetNaem != ''">
+		or t1.ASSET_NAEM like concat(concat('%',#{bean.assetNaem}),'%')
+	</if>
+	<if test="bean.tySbCode != null and bean.tySbCode != ''">
+		or t1.TY_SB_CODE like concat(concat('%',#{bean.tySbCode}),'%')
+	</if>
+	<if test="bean.pcWindowsVersion != null and bean.pcWindowsVersion != ''">
+		or t1.PC_WINDOWS_VERSION like concat(concat('%',#{bean.pcWindowsVersion}),'%')
+	</if>
+	<if test="bean.zrUser != null and bean.zrUser != ''">
+		or t1.ZR_USER = #{bean.zrUser}
+	</if>
+	<if test="bean.tySbStatus != null and bean.tySbStatus != ''">
+		or t1.TY_SB_STATUS like concat(concat('%',#{bean.tySbStatus}),'%')
+	</if>
+	<if test="bean.officeMacAddress != null and bean.officeMacAddress != ''">
+		or t1.OFFICE_MAC_ADDRESS like concat(concat('%',#{bean.officeMacAddress}),'%')
+	</if>
+	<if test="bean.guildId != null and bean.guildId != ''">
+		or t1.GUILD_ID like concat(concat('%',#{bean.guildId}),'%')
+	</if>
+	<if test="bean.depreDateBegin != null">
+		or t1.DEPRE_DATE &gt;= #{bean.depreDateBegin}
+	</if>
+	<if test="bean.depreDateEnd != null">
+		or t1.DEPRE_DATE &lt;= #{bean.depreDateEnd}
+	</if>
+	<if test="bean.tySbXingh != null and bean.tySbXingh != ''">
+		or t1.TY_SB_XINGH like concat(concat('%',#{bean.tySbXingh}),'%')
+	</if>
+	<if test="bean.tySbSecretLevel != null and bean.tySbSecretLevel != ''">
+		or t1.TY_SB_SECRET_LEVEL = #{bean.tySbSecretLevel}
+	</if>
+	<if test="bean.assetDetails != null and bean.assetDetails != ''">
+		or t1.ASSET_DETAILS like concat(concat('%',#{bean.assetDetails}),'%')
+	</if>
+	<if test="bean.tySbBrand != null and bean.tySbBrand != ''">
+		or t1.TY_SB_BRAND like concat(concat('%',#{bean.tySbBrand}),'%')
+	</if>
+	<if test="bean.usedDeptId != null and bean.usedDeptId != ''">
+		or t1.USED_DEPT_ID like concat(concat('%',#{bean.usedDeptId}),'%')
+	</if>
+	<if test="bean.tySbName != null and bean.tySbName != ''">
+		or t1.TY_SB_NAME like concat(concat('%',#{bean.tySbName}),'%')
+	</if>
+	<if test="bean.pcInstallDateBegin != null">
+		or t1.PC_INSTALL_DATE &gt;= #{bean.pcInstallDateBegin}
+	</if>
+	<if test="bean.pcInstallDateEnd != null">
+		or t1.PC_INSTALL_DATE &lt;= #{bean.pcInstallDateEnd}
+	</if>
+	<if test="bean.assetType != null and bean.assetType != ''">
+		or t1.ASSET_TYPE = #{bean.assetType}
+	</if>
+	<if test="bean.tySbAddress != null and bean.tySbAddress != ''">
+		or t1.TY_SB_ADDRESS like concat(concat('%',#{bean.tySbAddress}),'%')
+	</if>
+	<if test="bean.tySbQyDateBegin != null">
+		or t1.TY_SB_QY_DATE &gt;= #{bean.tySbQyDateBegin}
+	</if>
+	<if test="bean.tySbQyDateEnd != null">
+		or t1.TY_SB_QY_DATE &lt;= #{bean.tySbQyDateEnd}
+	</if>
+	<if test="bean.tySbZeUser != null and bean.tySbZeUser != ''">
+		or t1.TY_SB_ZE_USER like concat(concat('%',#{bean.tySbZeUser}),'%')
+	</if>
+	<if test="bean.storagePlace != null and bean.storagePlace != ''">
+		or t1.STORAGE_PLACE = #{bean.storagePlace}
+	</if>
+	<if test="bean.tySbCcCode != null and bean.tySbCcCode != ''">
+		or t1.TY_SB_CC_CODE like concat(concat('%',#{bean.tySbCcCode}),'%')
+	</if>
+	<if test="bean.pcDiskNumber != null and bean.pcDiskNumber != ''">
+		or t1.PC_DISK_NUMBER like concat(concat('%',#{bean.pcDiskNumber}),'%')
+	</if>
+	<if test="bean.assetNum != null">
+		or t1.ASSET_NUM = #{bean.assetNum}
+	</if>
+	<if test="bean.officeUserCode != null and bean.officeUserCode != ''">
+		or t1.OFFICE_USER_CODE like concat(concat('%',#{bean.officeUserCode}),'%')
+	</if>
+	<if test="bean.tySbIp != null and bean.tySbIp != ''">
+		or t1.TY_SB_IP like concat(concat('%',#{bean.tySbIp}),'%')
+	</if>
+	<if test="bean.tySbDept != null and bean.tySbDept != ''">
+		or t1.TY_SB_DEPT like concat(concat('%',#{bean.tySbDept}),'%')
+	</if>
+	<if test="bean.assetCode != null and bean.assetCode != ''">
+		or t1.ASSET_CODE like concat(concat('%',#{bean.assetCode}),'%')
+	</if>
+	<if test="bean.tySbType != null and bean.tySbType != ''">
+		or t1.TY_SB_TYPE like concat(concat('%',#{bean.tySbType}),'%')
+	</if>
+	<if test="bean.tySbNetType != null and bean.tySbNetType != ''">
+		or t1.TY_SB_NET_TYPE like concat(concat('%',#{bean.tySbNetType}),'%')
+	</if>
+	<if test="bean.xh != null">
+		or t1.XH = #{bean.xh}
+	</if>
+	<if test="bean.applyUserId != null and bean.applyUserId != ''">
+		or t1.APPLY_USER_ID = #{bean.applyUserId}
+	</if>
+	<if test="bean.applyLyUserId != null and bean.applyLyUserId != ''">
+		or t1.APPLY_LY_USER_ID like concat(concat('%',#{bean.applyLyUserId}),'%')
+	</if>
+	<if test="bean.currentValue != null">
+		or t1.CURRENT_VALUE = #{bean.currentValue}
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.guildName != null and bean.guildName != ''">
+		or t1.GUILD_NAME like concat(concat('%',#{bean.guildName}),'%')
+	</if>
+	<if test="bean.assetXhgg != null and bean.assetXhgg != ''">
+		or t1.ASSET_XHGG like concat(concat('%',#{bean.assetXhgg}),'%')
+	</if>
+	<if test="bean.dataStatus != null and bean.dataStatus != ''">
+		or t1.DATA_STATUS like concat(concat('%',#{bean.dataStatus}),'%')
+	</if>
+	<if test="bean.remark != null and bean.remark != ''">
+		or t1.REMARK like concat(concat('%',#{bean.remark}),'%')
+	</if>
+	<if test="bean.insertType != null and bean.insertType != ''">
+		or t1.INSERT_TYPE like concat(concat('%',#{bean.insertType}),'%')
+	</if>
+	<if test="bean.attribute01 != null and bean.attribute01 != ''">
+		or t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%')
+	</if>
+	<if test="bean.attribute02 != null and bean.attribute02 != ''">
+		or t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%')
+	</if>
+	<if test="bean.attribute03 != null and bean.attribute03 != ''">
+		or t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%')
+	</if>
+	<if test="bean.attribute04 != null and bean.attribute04 != ''">
+		or t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%')
+	</if>
+	<if test="bean.attribute05 != null and bean.attribute05 != ''">
+		or t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%')
+	</if>
+	<if test="bean.attribute06Begin != null">
+		or t1.ATTRIBUTE_06 &gt;= #{bean.attribute06Begin}
+	</if>
+	<if test="bean.attribute06End != null">
+		or t1.ATTRIBUTE_06 &lt;= #{bean.attribute06End}
+	</if>
+	<if test="bean.yearToBelong != null and bean.yearToBelong != ''">
+		or t1.YEAR_TO_BELONG like concat(concat('%',#{bean.yearToBelong}),'%')
+	</if>
+	<if test="bean.intoDateBegin != null">
+		or t1.INTO_DATE &gt;= #{bean.intoDateBegin}
+	</if>
+	<if test="bean.intoDateEnd != null">
+		or t1.INTO_DATE &lt;= #{bean.intoDateEnd}
+	</if>
+	<if test="bean.outDateBegin != null">
+		or t1.OUT_DATE &gt;= #{bean.outDateBegin}
+	</if>
+	<if test="bean.outDateEnd != null">
+		or t1.OUT_DATE &lt;= #{bean.outDateEnd}
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_FIXED_ASSETS_LEDGER -->
+<select id="searchDynFixedAssetsLedgerByPage" parameterType="java.util.Map" resultMap="DynFixedAssetsLedgerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_FIXED_ASSETS_LEDGER t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_FIXED_ASSETS_LEDGER -->
+<select id="searchDynFixedAssetsLedger" parameterType="java.util.Map" resultMap="DynFixedAssetsLedgerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_FIXED_ASSETS_LEDGER t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_FIXED_ASSETS_LEDGER（导出） -->
+<select id="searchDynFixedAssetsLedgerForExport" parameterType="java.util.Map" resultMap="DynFixedAssetsLedgerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_FIXED_ASSETS_LEDGER t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_FIXED_ASSETS_LEDGER -->
+<select id="findDynFixedAssetsLedgerById" parameterType="java.lang.String" resultMap="DynFixedAssetsLedgerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_FIXED_ASSETS_LEDGER t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_FIXED_ASSETS_LEDGER -->
+<insert id="insertDynFixedAssetsLedger" parameterType="avicit.tu.fixedassets.dynfixedassetsledger.dto.DynFixedAssetsLedgerDTO">
+	insert into DYN_FIXED_ASSETS_LEDGER
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="assetDw != null">
+			ASSET_DW,
+		</if>
+		<if test="tySbRoom != null">
+			TY_SB_ROOM,
+		</if>
+		<if test="assetBrand != null">
+			ASSET_BRAND,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="officeRegisNumber != null">
+			OFFICE_REGIS_NUMBER,
+		</if>
+		<if test="tySbYongt != null">
+			TY_SB_YONGT,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="insertDate != null">
+			INSERT_DATE,
+		</if>
+		<if test="intoDate != null">
+			INTO_DATE,
+		</if>
+		<if test="outDate != null">
+			OUT_DATE,
+		</if>
+		<if test="applyUser != null">
+			APPLY_USER,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="originalValue != null">
+			ORIGINAL_VALUE,
+		</if>
+		<if test="tySbCcDate != null">
+			TY_SB_CC_DATE,
+		</if>
+		<if test="tySbClass != null">
+			TY_SB_CLASS,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="pcMacAddress != null">
+			PC_MAC_ADDRESS,
+		</if>
+		<if test="usedDept != null">
+			USED_DEPT,
+		</if>
+		<if test="officeComputerNumber != null">
+			OFFICE_COMPUTER_NUMBER,
+		</if>
+		<if test="assetNaem != null">
+			ASSET_NAEM,
+		</if>
+		<if test="tySbCode != null">
+			TY_SB_CODE,
+		</if>
+		<if test="pcWindowsVersion != null">
+			PC_WINDOWS_VERSION,
+		</if>
+		<if test="zrUser != null">
+			ZR_USER,
+		</if>
+		<if test="tySbStatus != null">
+			TY_SB_STATUS,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="officeMacAddress != null">
+			OFFICE_MAC_ADDRESS,
+		</if>
+		<if test="guildId != null">
+			GUILD_ID,
+		</if>
+		<if test="depreDate != null">
+			DEPRE_DATE,
+		</if>
+		<if test="tySbXingh != null">
+			TY_SB_XINGH,
+		</if>
+		<if test="tySbSecretLevel != null">
+			TY_SB_SECRET_LEVEL,
+		</if>
+		<if test="assetDetails != null">
+			ASSET_DETAILS,
+		</if>
+		<if test="tySbBrand != null">
+			TY_SB_BRAND,
+		</if>
+		<if test="usedDeptId != null">
+			USED_DEPT_ID,
+		</if>
+		<if test="tySbName != null">
+			TY_SB_NAME,
+		</if>
+		<if test="pcInstallDate != null">
+			PC_INSTALL_DATE,
+		</if>
+		<if test="assetType != null">
+			ASSET_TYPE,
+		</if>
+		<if test="tySbAddress != null">
+			TY_SB_ADDRESS,
+		</if>
+		<if test="tySbQyDate != null">
+			TY_SB_QY_DATE,
+		</if>
+		<if test="tySbZeUser != null">
+			TY_SB_ZE_USER,
+		</if>
+		<if test="storagePlace != null">
+			STORAGE_PLACE,
+		</if>
+		<if test="tySbCcCode != null">
+			TY_SB_CC_CODE,
+		</if>
+		<if test="pcDiskNumber != null">
+			PC_DISK_NUMBER,
+		</if>
+		<if test="assetNum != null">
+			ASSET_NUM,
+		</if>
+		<if test="officeUserCode != null">
+			OFFICE_USER_CODE,
+		</if>
+		<if test="tySbIp != null">
+			TY_SB_IP,
+		</if>
+		<if test="tySbDept != null">
+			TY_SB_DEPT,
+		</if>
+		<if test="assetCode != null">
+			ASSET_CODE,
+		</if>
+		<if test="tySbType != null">
+			TY_SB_TYPE,
+		</if>
+		<if test="tySbNetType != null">
+			TY_SB_NET_TYPE,
+		</if>
+		<if test="xh != null">
+			XH,
+		</if>
+		<if test="applyUserId != null">
+			APPLY_USER_ID,
+		</if>
+		<if test="applyLyUserId != null">
+			APPLY_LY_USER_ID,
+		</if>
+		<if test="currentValue != null">
+			CURRENT_VALUE,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="guildName != null">
+			GUILD_NAME,
+		</if>
+		<if test="assetXhgg != null">
+			ASSET_XHGG,
+		</if>
+		<if test="dataStatus != null">
+			DATA_STATUS,
+		</if>
+		<if test="remark != null">
+			REMARK,
+		</if>
+		<if test="insertType != null">
+			INSERT_TYPE,
+		</if>
+		<if test="attribute01 != null">
+			ATTRIBUTE_01,
+		</if>
+		<if test="attribute02 != null">
+			ATTRIBUTE_02,
+		</if>
+		<if test="attribute03 != null">
+			ATTRIBUTE_03,
+		</if>
+		<if test="attribute04 != null">
+			ATTRIBUTE_04,
+		</if>
+		<if test="attribute05 != null">
+			ATTRIBUTE_05,
+		</if>
+		<if test="attribute06 != null">
+			ATTRIBUTE_06,
+		</if>
+		<if test="yearToBelong != null">
+			YEAR_TO_BELONG,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="assetDw != null">
+			#{assetDw,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbRoom != null">
+			#{tySbRoom,jdbcType = VARCHAR},
+		</if>
+		<if test="assetBrand != null">
+			#{assetBrand,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="officeRegisNumber != null">
+			#{officeRegisNumber,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbYongt != null">
+			#{tySbYongt,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="insertDate != null">
+			#{insertDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="intoDate != null">
+			#{intoDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="outDate != null">
+			#{outDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="applyUser != null">
+			#{applyUser,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="originalValue != null">
+			#{originalValue,jdbcType = DECIMAL},
+		</if>
+		<if test="tySbCcDate != null">
+			#{tySbCcDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="tySbClass != null">
+			#{tySbClass,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="pcMacAddress != null">
+			#{pcMacAddress,jdbcType = VARCHAR},
+		</if>
+		<if test="usedDept != null">
+			#{usedDept,jdbcType = VARCHAR},
+		</if>
+		<if test="officeComputerNumber != null">
+			#{officeComputerNumber,jdbcType = VARCHAR},
+		</if>
+		<if test="assetNaem != null">
+			#{assetNaem,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbCode != null">
+			#{tySbCode,jdbcType = VARCHAR},
+		</if>
+		<if test="pcWindowsVersion != null">
+			#{pcWindowsVersion,jdbcType = VARCHAR},
+		</if>
+		<if test="zrUser != null">
+			#{zrUser,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbStatus != null">
+			#{tySbStatus,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="officeMacAddress != null">
+			#{officeMacAddress,jdbcType = VARCHAR},
+		</if>
+		<if test="guildId != null">
+			#{guildId,jdbcType = VARCHAR},
+		</if>
+		<if test="depreDate != null">
+			#{depreDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="tySbXingh != null">
+			#{tySbXingh,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbSecretLevel != null">
+			#{tySbSecretLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="assetDetails != null">
+			#{assetDetails,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbBrand != null">
+			#{tySbBrand,jdbcType = VARCHAR},
+		</if>
+		<if test="usedDeptId != null">
+			#{usedDeptId,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbName != null">
+			#{tySbName,jdbcType = VARCHAR},
+		</if>
+		<if test="pcInstallDate != null">
+			#{pcInstallDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="assetType != null">
+			#{assetType,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbAddress != null">
+			#{tySbAddress,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbQyDate != null">
+			#{tySbQyDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="tySbZeUser != null">
+			#{tySbZeUser,jdbcType = VARCHAR},
+		</if>
+		<if test="storagePlace != null">
+			#{storagePlace,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbCcCode != null">
+			#{tySbCcCode,jdbcType = VARCHAR},
+		</if>
+		<if test="pcDiskNumber != null">
+			#{pcDiskNumber,jdbcType = VARCHAR},
+		</if>
+		<if test="assetNum != null">
+			#{assetNum,jdbcType = DECIMAL},
+		</if>
+		<if test="officeUserCode != null">
+			#{officeUserCode,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbIp != null">
+			#{tySbIp,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbDept != null">
+			#{tySbDept,jdbcType = VARCHAR},
+		</if>
+		<if test="assetCode != null">
+			#{assetCode,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbType != null">
+			#{tySbType,jdbcType = VARCHAR},
+		</if>
+		<if test="tySbNetType != null">
+			#{tySbNetType,jdbcType = VARCHAR},
+		</if>
+		<if test="xh != null">
+			#{xh,jdbcType = DECIMAL},
+		</if>
+		<if test="applyUserId != null">
+			#{applyUserId,jdbcType = VARCHAR},
+		</if>
+		<if test="applyLyUserId != null">
+			#{applyLyUserId,jdbcType = VARCHAR},
+		</if>
+		<if test="currentValue != null">
+			#{currentValue,jdbcType = DECIMAL},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="guildName != null">
+			#{guildName,jdbcType = VARCHAR},
+		</if>
+		<if test="assetXhgg != null">
+			#{assetXhgg,jdbcType = VARCHAR},
+		</if>
+		<if test="dataStatus != null">
+			#{dataStatus,jdbcType = VARCHAR},
+		</if>
+		<if test="remark != null">
+			#{remark,jdbcType = VARCHAR},
+		</if>
+		<if test="insertType != null">
+			#{insertType,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute01 != null">
+			#{attribute01,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute02 != null">
+			#{attribute02,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute03 != null">
+			#{attribute03,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute04 != null">
+			#{attribute04,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute05 != null">
+			#{attribute05,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute06 != null">
+			#{attribute06,jdbcType = TIMESTAMP},
+		</if>
+		<if test="yearToBelong != null">
+			#{yearToBelong,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_FIXED_ASSETS_LEDGER -->
+<insert id="insertDynFixedAssetsLedgerList" parameterType="java.util.List">
+	insert into DYN_FIXED_ASSETS_LEDGER(
+	ASSET_DW ,
+	TY_SB_ROOM ,
+	ASSET_BRAND ,
+	LAST_UPDATE_DATE ,
+	OFFICE_REGIS_NUMBER ,
+	TY_SB_YONGT ,
+	ID ,
+	CREATED_DEPT ,
+	INSERT_DATE ,
+	INTO_DATE ,
+	OUT_DATE ,
+	APPLY_USER ,
+	LAST_UPDATE_IP ,
+	CREATED_BY ,
+	LAST_UPDATED_BY ,
+	ORIGINAL_VALUE ,
+	TY_SB_CC_DATE ,
+	TY_SB_CLASS ,
+	CREATION_DATE ,
+	PC_MAC_ADDRESS ,
+	USED_DEPT ,
+	OFFICE_COMPUTER_NUMBER ,
+	ASSET_NAEM ,
+	TY_SB_CODE ,
+	PC_WINDOWS_VERSION ,
+	ZR_USER ,
+	TY_SB_STATUS ,
+	ORG_IDENTITY ,
+	OFFICE_MAC_ADDRESS ,
+	GUILD_ID ,
+	DEPRE_DATE ,
+	TY_SB_XINGH ,
+	TY_SB_SECRET_LEVEL ,
+	ASSET_DETAILS ,
+	TY_SB_BRAND ,
+	USED_DEPT_ID ,
+	TY_SB_NAME ,
+	PC_INSTALL_DATE ,
+	ASSET_TYPE ,
+	TY_SB_ADDRESS ,
+	TY_SB_QY_DATE ,
+	TY_SB_ZE_USER ,
+	STORAGE_PLACE ,
+	TY_SB_CC_CODE ,
+	PC_DISK_NUMBER ,
+	ASSET_NUM ,
+	OFFICE_USER_CODE ,
+	TY_SB_IP ,
+	TY_SB_DEPT ,
+	ASSET_CODE ,
+	TY_SB_TYPE ,
+	TY_SB_NET_TYPE ,
+	XH ,
+	APPLY_USER_ID ,
+	APPLY_LY_USER_ID ,
+	CURRENT_VALUE ,
+	VERSION ,
+	GUILD_NAME ,
+	ASSET_XHGG ,
+	DATA_STATUS ,
+	REMARK ,
+	INSERT_TYPE ,
+	ATTRIBUTE_01 ,
+	ATTRIBUTE_02 ,
+	ATTRIBUTE_03 ,
+	ATTRIBUTE_04 ,
+	ATTRIBUTE_05 ,
+	ATTRIBUTE_06 ,
+	YEAR_TO_BELONG )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.assetDw,jdbcType = VARCHAR} ,
+	#{item.tySbRoom,jdbcType = VARCHAR} ,
+	#{item.assetBrand,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.officeRegisNumber,jdbcType = VARCHAR} ,
+	#{item.tySbYongt,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.insertDate,jdbcType = TIMESTAMP} ,
+	#{item.intoDate,jdbcType = TIMESTAMP} ,
+	#{item.outDate,jdbcType = TIMESTAMP} ,
+	#{item.applyUser,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.originalValue,jdbcType = DECIMAL} ,
+	#{item.tySbCcDate,jdbcType = TIMESTAMP} ,
+	#{item.tySbClass,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.pcMacAddress,jdbcType = VARCHAR} ,
+	#{item.usedDept,jdbcType = VARCHAR} ,
+	#{item.officeComputerNumber,jdbcType = VARCHAR} ,
+	#{item.assetNaem,jdbcType = VARCHAR} ,
+	#{item.tySbCode,jdbcType = VARCHAR} ,
+	#{item.pcWindowsVersion,jdbcType = VARCHAR} ,
+	#{item.zrUser,jdbcType = VARCHAR} ,
+	#{item.tySbStatus,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.officeMacAddress,jdbcType = VARCHAR} ,
+	#{item.guildId,jdbcType = VARCHAR} ,
+	#{item.depreDate,jdbcType = TIMESTAMP} ,
+	#{item.tySbXingh,jdbcType = VARCHAR} ,
+	#{item.tySbSecretLevel,jdbcType = VARCHAR} ,
+	#{item.assetDetails,jdbcType = VARCHAR} ,
+	#{item.tySbBrand,jdbcType = VARCHAR} ,
+	#{item.usedDeptId,jdbcType = VARCHAR} ,
+	#{item.tySbName,jdbcType = VARCHAR} ,
+	#{item.pcInstallDate,jdbcType = TIMESTAMP} ,
+	#{item.assetType,jdbcType = VARCHAR} ,
+	#{item.tySbAddress,jdbcType = VARCHAR} ,
+	#{item.tySbQyDate,jdbcType = TIMESTAMP} ,
+	#{item.tySbZeUser,jdbcType = VARCHAR} ,
+	#{item.storagePlace,jdbcType = VARCHAR} ,
+	#{item.tySbCcCode,jdbcType = VARCHAR} ,
+	#{item.pcDiskNumber,jdbcType = VARCHAR} ,
+	#{item.assetNum,jdbcType = DECIMAL} ,
+	#{item.officeUserCode,jdbcType = VARCHAR} ,
+	#{item.tySbIp,jdbcType = VARCHAR} ,
+	#{item.tySbDept,jdbcType = VARCHAR} ,
+	#{item.assetCode,jdbcType = VARCHAR} ,
+	#{item.tySbType,jdbcType = VARCHAR} ,
+	#{item.tySbNetType,jdbcType = VARCHAR} ,
+	#{item.xh,jdbcType = DECIMAL} ,
+	#{item.applyUserId,jdbcType = VARCHAR} ,
+	#{item.applyLyUserId,jdbcType = VARCHAR} ,
+	#{item.currentValue,jdbcType = DECIMAL} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.guildName,jdbcType = VARCHAR} ,
+	#{item.assetXhgg,jdbcType = VARCHAR} ,
+	#{item.dataStatus,jdbcType = VARCHAR} ,
+	#{item.remark,jdbcType = VARCHAR} ,
+	#{item.insertType,jdbcType = VARCHAR} ,
+	#{item.attribute01,jdbcType = VARCHAR} ,
+	#{item.attribute02,jdbcType = VARCHAR} ,
+	#{item.attribute03,jdbcType = VARCHAR} ,
+	#{item.attribute04,jdbcType = VARCHAR} ,
+	#{item.attribute05,jdbcType = VARCHAR} ,
+	#{item.attribute06,jdbcType = TIMESTAMP} ,
+	#{item.yearToBelong,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_FIXED_ASSETS_LEDGER -->
+<update id="updateDynFixedAssetsLedgerSensitive" parameterType="avicit.tu.fixedassets.dynfixedassetsledger.dto.DynFixedAssetsLedgerDTO">
+	update DYN_FIXED_ASSETS_LEDGER
+	<set>
+		<trim suffixOverrides=",">
+			<if test="assetDw != null">
+				ASSET_DW = #{assetDw,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbRoom != null">
+				TY_SB_ROOM = #{tySbRoom,jdbcType = VARCHAR},
+			</if>
+			<if test="assetBrand != null">
+				ASSET_BRAND = #{assetBrand,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="officeRegisNumber != null">
+				OFFICE_REGIS_NUMBER = #{officeRegisNumber,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbYongt != null">
+				TY_SB_YONGT = #{tySbYongt,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="insertDate != null">
+				INSERT_DATE = #{insertDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="intoDate != null">
+				INTO_DATE = #{intoDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="outDate != null">
+				OUT_DATE = #{outDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="applyUser != null">
+				APPLY_USER = #{applyUser,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="originalValue != null">
+				ORIGINAL_VALUE = #{originalValue,jdbcType = DECIMAL},
+			</if>
+			<if test="tySbCcDate != null">
+				TY_SB_CC_DATE = #{tySbCcDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="tySbClass != null">
+				TY_SB_CLASS = #{tySbClass,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="pcMacAddress != null">
+				PC_MAC_ADDRESS = #{pcMacAddress,jdbcType = VARCHAR},
+			</if>
+			<if test="usedDept != null">
+				USED_DEPT = #{usedDept,jdbcType = VARCHAR},
+			</if>
+			<if test="officeComputerNumber != null">
+				OFFICE_COMPUTER_NUMBER = #{officeComputerNumber,jdbcType = VARCHAR},
+			</if>
+			<if test="assetNaem != null">
+				ASSET_NAEM = #{assetNaem,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbCode != null">
+				TY_SB_CODE = #{tySbCode,jdbcType = VARCHAR},
+			</if>
+			<if test="pcWindowsVersion != null">
+				PC_WINDOWS_VERSION = #{pcWindowsVersion,jdbcType = VARCHAR},
+			</if>
+			<if test="zrUser != null">
+				ZR_USER = #{zrUser,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbStatus != null">
+				TY_SB_STATUS = #{tySbStatus,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="officeMacAddress != null">
+				OFFICE_MAC_ADDRESS = #{officeMacAddress,jdbcType = VARCHAR},
+			</if>
+			<if test="guildId != null">
+				GUILD_ID = #{guildId,jdbcType = VARCHAR},
+			</if>
+			<if test="depreDate != null">
+				DEPRE_DATE = #{depreDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="tySbXingh != null">
+				TY_SB_XINGH = #{tySbXingh,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbSecretLevel != null">
+				TY_SB_SECRET_LEVEL = #{tySbSecretLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="assetDetails != null">
+				ASSET_DETAILS = #{assetDetails,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbBrand != null">
+				TY_SB_BRAND = #{tySbBrand,jdbcType = VARCHAR},
+			</if>
+			<if test="usedDeptId != null">
+				USED_DEPT_ID = #{usedDeptId,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbName != null">
+				TY_SB_NAME = #{tySbName,jdbcType = VARCHAR},
+			</if>
+			<if test="pcInstallDate != null">
+				PC_INSTALL_DATE = #{pcInstallDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="assetType != null">
+				ASSET_TYPE = #{assetType,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbAddress != null">
+				TY_SB_ADDRESS = #{tySbAddress,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbQyDate != null">
+				TY_SB_QY_DATE = #{tySbQyDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="tySbZeUser != null">
+				TY_SB_ZE_USER = #{tySbZeUser,jdbcType = VARCHAR},
+			</if>
+			<if test="storagePlace != null">
+				STORAGE_PLACE = #{storagePlace,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbCcCode != null">
+				TY_SB_CC_CODE = #{tySbCcCode,jdbcType = VARCHAR},
+			</if>
+			<if test="pcDiskNumber != null">
+				PC_DISK_NUMBER = #{pcDiskNumber,jdbcType = VARCHAR},
+			</if>
+			<if test="assetNum != null">
+				ASSET_NUM = #{assetNum,jdbcType = DECIMAL},
+			</if>
+			<if test="officeUserCode != null">
+				OFFICE_USER_CODE = #{officeUserCode,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbIp != null">
+				TY_SB_IP = #{tySbIp,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbDept != null">
+				TY_SB_DEPT = #{tySbDept,jdbcType = VARCHAR},
+			</if>
+			<if test="assetCode != null">
+				ASSET_CODE = #{assetCode,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbType != null">
+				TY_SB_TYPE = #{tySbType,jdbcType = VARCHAR},
+			</if>
+			<if test="tySbNetType != null">
+				TY_SB_NET_TYPE = #{tySbNetType,jdbcType = VARCHAR},
+			</if>
+			<if test="xh != null">
+				XH = #{xh,jdbcType = DECIMAL},
+			</if>
+			<if test="applyUserId != null">
+				APPLY_USER_ID = #{applyUserId,jdbcType = VARCHAR},
+			</if>
+			<if test="applyLyUserId != null">
+				APPLY_LY_USER_ID = #{applyLyUserId,jdbcType = VARCHAR},
+			</if>
+			<if test="currentValue != null">
+				CURRENT_VALUE = #{currentValue,jdbcType = DECIMAL},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="guildName != null">
+				GUILD_NAME = #{guildName,jdbcType = VARCHAR},
+			</if>
+			<if test="assetXhgg != null">
+				ASSET_XHGG = #{assetXhgg,jdbcType = VARCHAR},
+			</if>
+			<if test="dataStatus != null">
+				DATA_STATUS = #{dataStatus,jdbcType = VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType = VARCHAR},
+			</if>
+			<if test="insertType != null">
+				INSERT_TYPE = #{insertType,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				ATTRIBUTE_01 = #{attribute01,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				ATTRIBUTE_02 = #{attribute02,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				ATTRIBUTE_03 = #{attribute03,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				ATTRIBUTE_04 = #{attribute04,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				ATTRIBUTE_05 = #{attribute05,jdbcType = VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				ATTRIBUTE_06 = #{attribute06,jdbcType = TIMESTAMP},
+			</if>
+			<if test="yearToBelong != null">
+				YEAR_TO_BELONG = #{yearToBelong,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_FIXED_ASSETS_LEDGER -->
+<update id="updateDynFixedAssetsLedgerAll" parameterType="avicit.tu.fixedassets.dynfixedassetsledger.dto.DynFixedAssetsLedgerDTO">
+	update DYN_FIXED_ASSETS_LEDGER
+	set
+	ASSET_DW = #{assetDw,jdbcType = VARCHAR} ,
+	TY_SB_ROOM = #{tySbRoom,jdbcType = VARCHAR} ,
+	ASSET_BRAND = #{assetBrand,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	OFFICE_REGIS_NUMBER = #{officeRegisNumber,jdbcType = VARCHAR} ,
+	TY_SB_YONGT = #{tySbYongt,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	INSERT_DATE = #{insertDate,jdbcType = TIMESTAMP} ,
+	INTO_DATE = #{intoDate,jdbcType = TIMESTAMP} ,
+	OUT_DATE = #{outDate,jdbcType = TIMESTAMP} ,
+	APPLY_USER = #{applyUser,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	ORIGINAL_VALUE = #{originalValue,jdbcType = DECIMAL} ,
+	TY_SB_CC_DATE = #{tySbCcDate,jdbcType = TIMESTAMP} ,
+	TY_SB_CLASS = #{tySbClass,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	PC_MAC_ADDRESS = #{pcMacAddress,jdbcType = VARCHAR} ,
+	USED_DEPT = #{usedDept,jdbcType = VARCHAR} ,
+	OFFICE_COMPUTER_NUMBER = #{officeComputerNumber,jdbcType = VARCHAR} ,
+	ASSET_NAEM = #{assetNaem,jdbcType = VARCHAR} ,
+	TY_SB_CODE = #{tySbCode,jdbcType = VARCHAR} ,
+	PC_WINDOWS_VERSION = #{pcWindowsVersion,jdbcType = VARCHAR} ,
+	ZR_USER = #{zrUser,jdbcType = VARCHAR} ,
+	TY_SB_STATUS = #{tySbStatus,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	OFFICE_MAC_ADDRESS = #{officeMacAddress,jdbcType = VARCHAR} ,
+	GUILD_ID = #{guildId,jdbcType = VARCHAR} ,
+	DEPRE_DATE = #{depreDate,jdbcType = TIMESTAMP} ,
+	TY_SB_XINGH = #{tySbXingh,jdbcType = VARCHAR} ,
+	TY_SB_SECRET_LEVEL = #{tySbSecretLevel,jdbcType = VARCHAR} ,
+	ASSET_DETAILS = #{assetDetails,jdbcType = VARCHAR} ,
+	TY_SB_BRAND = #{tySbBrand,jdbcType = VARCHAR} ,
+	USED_DEPT_ID = #{usedDeptId,jdbcType = VARCHAR} ,
+	TY_SB_NAME = #{tySbName,jdbcType = VARCHAR} ,
+	PC_INSTALL_DATE = #{pcInstallDate,jdbcType = TIMESTAMP} ,
+	ASSET_TYPE = #{assetType,jdbcType = VARCHAR} ,
+	TY_SB_ADDRESS = #{tySbAddress,jdbcType = VARCHAR} ,
+	TY_SB_QY_DATE = #{tySbQyDate,jdbcType = TIMESTAMP} ,
+	TY_SB_ZE_USER = #{tySbZeUser,jdbcType = VARCHAR} ,
+	STORAGE_PLACE = #{storagePlace,jdbcType = VARCHAR} ,
+	TY_SB_CC_CODE = #{tySbCcCode,jdbcType = VARCHAR} ,
+	PC_DISK_NUMBER = #{pcDiskNumber,jdbcType = VARCHAR} ,
+	ASSET_NUM = #{assetNum,jdbcType = DECIMAL} ,
+	OFFICE_USER_CODE = #{officeUserCode,jdbcType = VARCHAR} ,
+	TY_SB_IP = #{tySbIp,jdbcType = VARCHAR} ,
+	TY_SB_DEPT = #{tySbDept,jdbcType = VARCHAR} ,
+	ASSET_CODE = #{assetCode,jdbcType = VARCHAR} ,
+	TY_SB_TYPE = #{tySbType,jdbcType = VARCHAR} ,
+	TY_SB_NET_TYPE = #{tySbNetType,jdbcType = VARCHAR} ,
+	XH = #{xh,jdbcType = DECIMAL} ,
+	APPLY_USER_ID = #{applyUserId,jdbcType = VARCHAR} ,
+	APPLY_LY_USER_ID = #{applyLyUserId,jdbcType = VARCHAR} ,
+	CURRENT_VALUE = #{currentValue,jdbcType = DECIMAL} ,
+	VERSION = version+1 ,
+	GUILD_NAME = #{guildName,jdbcType = VARCHAR} ,
+	ASSET_XHGG = #{assetXhgg,jdbcType = VARCHAR} ,
+	DATA_STATUS = #{dataStatus,jdbcType = VARCHAR} ,
+	REMARK = #{remark,jdbcType = VARCHAR} ,
+	INSERT_TYPE = #{insertType,jdbcType = VARCHAR} ,
+	ATTRIBUTE_01 = #{attribute01,jdbcType = VARCHAR} ,
+	ATTRIBUTE_02 = #{attribute02,jdbcType = VARCHAR} ,
+	ATTRIBUTE_03 = #{attribute03,jdbcType = VARCHAR} ,
+	ATTRIBUTE_04 = #{attribute04,jdbcType = VARCHAR} ,
+	ATTRIBUTE_05 = #{attribute05,jdbcType = VARCHAR} ,
+	ATTRIBUTE_06 = #{attribute06,jdbcType = TIMESTAMP} ,
+	YEAR_TO_BELONG = #{yearToBelong,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_FIXED_ASSETS_LEDGER -->
+<update id="updateDynFixedAssetsLedgerList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_FIXED_ASSETS_LEDGER
+		set
+		ASSET_DW = #{item.assetDw,jdbcType = VARCHAR} ,
+		TY_SB_ROOM = #{item.tySbRoom,jdbcType = VARCHAR} ,
+		ASSET_BRAND = #{item.assetBrand,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		OFFICE_REGIS_NUMBER = #{item.officeRegisNumber,jdbcType = VARCHAR} ,
+		TY_SB_YONGT = #{item.tySbYongt,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		INSERT_DATE = #{item.insertDate,jdbcType = TIMESTAMP} ,
+		INTO_DATE = #{item.intoDate,jdbcType = TIMESTAMP} ,
+		OUT_DATE = #{item.outDate,jdbcType = TIMESTAMP} ,
+		APPLY_USER = #{item.applyUser,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		ORIGINAL_VALUE = #{item.originalValue,jdbcType = DECIMAL} ,
+		TY_SB_CC_DATE = #{item.tySbCcDate,jdbcType = TIMESTAMP} ,
+		TY_SB_CLASS = #{item.tySbClass,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		PC_MAC_ADDRESS = #{item.pcMacAddress,jdbcType = VARCHAR} ,
+		USED_DEPT = #{item.usedDept,jdbcType = VARCHAR} ,
+		OFFICE_COMPUTER_NUMBER = #{item.officeComputerNumber,jdbcType = VARCHAR} ,
+		ASSET_NAEM = #{item.assetNaem,jdbcType = VARCHAR} ,
+		TY_SB_CODE = #{item.tySbCode,jdbcType = VARCHAR} ,
+		PC_WINDOWS_VERSION = #{item.pcWindowsVersion,jdbcType = VARCHAR} ,
+		ZR_USER = #{item.zrUser,jdbcType = VARCHAR} ,
+		TY_SB_STATUS = #{item.tySbStatus,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		OFFICE_MAC_ADDRESS = #{item.officeMacAddress,jdbcType = VARCHAR} ,
+		GUILD_ID = #{item.guildId,jdbcType = VARCHAR} ,
+		DEPRE_DATE = #{item.depreDate,jdbcType = TIMESTAMP} ,
+		TY_SB_XINGH = #{item.tySbXingh,jdbcType = VARCHAR} ,
+		TY_SB_SECRET_LEVEL = #{item.tySbSecretLevel,jdbcType = VARCHAR} ,
+		ASSET_DETAILS = #{item.assetDetails,jdbcType = VARCHAR} ,
+		TY_SB_BRAND = #{item.tySbBrand,jdbcType = VARCHAR} ,
+		USED_DEPT_ID = #{item.usedDeptId,jdbcType = VARCHAR} ,
+		TY_SB_NAME = #{item.tySbName,jdbcType = VARCHAR} ,
+		PC_INSTALL_DATE = #{item.pcInstallDate,jdbcType = TIMESTAMP} ,
+		ASSET_TYPE = #{item.assetType,jdbcType = VARCHAR} ,
+		TY_SB_ADDRESS = #{item.tySbAddress,jdbcType = VARCHAR} ,
+		TY_SB_QY_DATE = #{item.tySbQyDate,jdbcType = TIMESTAMP} ,
+		TY_SB_ZE_USER = #{item.tySbZeUser,jdbcType = VARCHAR} ,
+		STORAGE_PLACE = #{item.storagePlace,jdbcType = VARCHAR} ,
+		TY_SB_CC_CODE = #{item.tySbCcCode,jdbcType = VARCHAR} ,
+		PC_DISK_NUMBER = #{item.pcDiskNumber,jdbcType = VARCHAR} ,
+		ASSET_NUM = #{item.assetNum,jdbcType = DECIMAL} ,
+		OFFICE_USER_CODE = #{item.officeUserCode,jdbcType = VARCHAR} ,
+		TY_SB_IP = #{item.tySbIp,jdbcType = VARCHAR} ,
+		TY_SB_DEPT = #{item.tySbDept,jdbcType = VARCHAR} ,
+		ASSET_CODE = #{item.assetCode,jdbcType = VARCHAR} ,
+		TY_SB_TYPE = #{item.tySbType,jdbcType = VARCHAR} ,
+		TY_SB_NET_TYPE = #{item.tySbNetType,jdbcType = VARCHAR} ,
+		XH = #{item.xh,jdbcType = DECIMAL} ,
+		APPLY_USER_ID = #{item.applyUserId,jdbcType = VARCHAR} ,
+		APPLY_LY_USER_ID = #{item.applyLyUserId,jdbcType = VARCHAR} ,
+		CURRENT_VALUE = #{item.currentValue,jdbcType = DECIMAL} ,
+		VERSION = version+1  ,
+		GUILD_NAME = #{item.guildName,jdbcType = VARCHAR} ,
+		ASSET_XHGG = #{item.assetXhgg,jdbcType = VARCHAR} ,
+		DATA_STATUS = #{item.dataStatus,jdbcType = VARCHAR} ,
+		REMARK = #{item.remark,jdbcType = VARCHAR} ,
+		INSERT_TYPE = #{item.insertType,jdbcType = VARCHAR} ,
+		ATTRIBUTE_01 = #{item.attribute01,jdbcType = VARCHAR} ,
+		ATTRIBUTE_02 = #{item.attribute02,jdbcType = VARCHAR} ,
+		ATTRIBUTE_03 = #{item.attribute03,jdbcType = VARCHAR} ,
+		ATTRIBUTE_04 = #{item.attribute04,jdbcType = VARCHAR} ,
+		ATTRIBUTE_05 = #{item.attribute05,jdbcType = VARCHAR} ,
+		ATTRIBUTE_06 = #{item.attribute06,jdbcType = TIMESTAMP} ,
+		YEAR_TO_BELONG = #{item.yearToBelong,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_FIXED_ASSETS_LEDGER -->
+<delete id="deleteDynFixedAssetsLedgerById" parameterType="java.lang.String">
+	delete from DYN_FIXED_ASSETS_LEDGER  where id = #{id}
+</delete>
+</mapper>

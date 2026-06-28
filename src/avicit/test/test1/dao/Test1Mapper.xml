@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.test.test1.dao.Test1DAO">
+<resultMap id="Test1DTOMap" type="avicit.test.test1.dto.Test1DTO">
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="test2" column="TEST2" jdbcType="VARCHAR" />
+	<result property="test3" column="TEST3" jdbcType="TIMESTAMP" />
+	<result property="testId" column="TEST_ID" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	t1.ID,
+	t1.TEST2,
+	t1.TEST3,
+	t1.TEST_ID,
+	t1.CREATED_BY,
+	t1.CREATION_DATE,
+	t1.LAST_UPDATED_BY,
+	t1.LAST_UPDATE_DATE,
+	t1.LAST_UPDATE_IP,
+	t1.VERSION,
+	t1.ORG_IDENTITY,
+	t1.CREATED_DEPT</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.test2 != null and bean.test2 != ''">
+		and t1.TEST2 = #{bean.test2}
+	</if>
+	<if test="bean.test3Begin != null">
+		and t1.TEST3 &gt;= #{bean.test3Begin}
+	</if>
+	<if test="bean.test3End != null">
+		and t1.TEST3 &lt;= #{bean.test3End}
+	</if>
+	<if test="bean.testId != null and bean.testId != ''">
+		and t1.TEST_ID = #{bean.testId}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.test2 != null and bean.test2 != ''">
+		or t1.TEST2 = #{bean.test2}
+	</if>
+	<if test="bean.test3Begin != null">
+		or t1.TEST3 &gt;= #{bean.test3Begin}
+	</if>
+	<if test="bean.test3End != null">
+		or t1.TEST3 &lt;= #{bean.test3End}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 TEST1 -->
+<select id="searchTest1ByPage" parameterType="java.util.Map" resultMap="Test1DTOMap">
+	select
+	<include refid="commonColums"/>
+	<choose>
+		<when test="keyWord != null and keyWord != '' ">
+			from (select * from TEST1 t where t.TEST_ID=#{bean.testId}) t1
+		</when>
+		<otherwise>
+			from TEST1 t1
+		</otherwise>
+	</choose>
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 TEST1 -->
+<select id="searchTest1" parameterType="java.util.Map" resultMap="Test1DTOMap">
+	select
+	<include refid="commonColums"/>
+	<choose>
+		<when test="keyWord != null and keyWord != '' ">
+			from (select * from TEST1 t where t.TEST_ID=#{bean.testId}) t1
+		</when>
+		<otherwise>
+			from TEST1 t1
+		</otherwise>
+	</choose>
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 TEST1（导出） -->
+<select id="searchTest1ForExport" parameterType="java.util.Map" resultMap="Test1DTOMap">
+	select
+	<include refid="commonColums"/>
+	from TEST1 t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 TEST1 -->
+<select id="findTest1ById" parameterType="java.lang.String" resultMap="Test1DTOMap">
+	select
+	<include refid="commonColums"/>
+	from TEST1 t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 TEST1 -->
+<insert id="insertTest1" parameterType="avicit.test.test1.dto.Test1DTO">
+	insert into TEST1
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="test2 != null">
+			TEST2,
+		</if>
+		<if test="test3 != null">
+			TEST3,
+		</if>
+		<if test="testId != null">
+			TEST_ID,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="test2 != null">
+			#{test2,jdbcType = VARCHAR},
+		</if>
+		<if test="test3 != null">
+			#{test3,jdbcType = TIMESTAMP},
+		</if>
+		<if test="testId != null">
+			#{testId,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 TEST1 -->
+<insert id="insertTest1List" parameterType="java.util.List">
+	insert into TEST1(
+	ID ,
+	TEST2 ,
+	TEST3 ,
+	TEST_ID ,
+	CREATED_BY ,
+	CREATION_DATE ,
+	LAST_UPDATED_BY ,
+	LAST_UPDATE_DATE ,
+	LAST_UPDATE_IP ,
+	VERSION ,
+	ORG_IDENTITY ,
+	CREATED_DEPT )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.test2,jdbcType = VARCHAR} ,
+	#{item.test3,jdbcType = TIMESTAMP} ,
+	#{item.testId,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 TEST1 -->
+<update id="updateTest1Sensitive" parameterType="avicit.test.test1.dto.Test1DTO">
+	update TEST1
+	<set>
+		<trim suffixOverrides=",">
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="test2 != null">
+				TEST2 = #{test2,jdbcType = VARCHAR},
+			</if>
+			<if test="test3 != null">
+				TEST3 = #{test3,jdbcType = TIMESTAMP},
+			</if>
+			<if test="testId != null">
+				TEST_ID = #{testId,jdbcType = VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 TEST1 -->
+<update id="updateTest1All" parameterType="avicit.test.test1.dto.Test1DTO">
+	update TEST1
+	set
+	ID = #{id,jdbcType = VARCHAR} ,
+	TEST2 = #{test2,jdbcType = VARCHAR} ,
+	TEST3 = #{test3,jdbcType = TIMESTAMP} ,
+	TEST_ID = #{testId,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   TEST1 -->
+<update id="updateTest1List" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update TEST1
+		set
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		TEST2 = #{item.test2,jdbcType = VARCHAR} ,
+		TEST3 = #{item.test3,jdbcType = TIMESTAMP} ,
+		TEST_ID = #{item.testId,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 TEST1 -->
+<delete id="deleteTest1ById" parameterType="java.lang.String">
+	delete from TEST1  where id = #{id}
+</delete>
+</mapper>

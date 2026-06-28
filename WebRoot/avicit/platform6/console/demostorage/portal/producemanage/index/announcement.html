@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统公告</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+  <div class="box">
+    <div class="box_title">
+      <h4>系统公告</h4>
+      <span class="box_title_right">
+<!--        <i class="iconfont icon-download-fill" title="下载" onclick="downloadFile('announcement')"></i>-->
+        <i class="iconfont icon-refresh" title="刷新"></i>
+      </span>
+    </div>
+    <div class="content_inner">
+      <ul class="announcement-content">
+        <li class="ac-list">
+            <div class="acl-left"><i class="iconfont icon-yuandian" style="color: #1593F5;font-size: 25px;"></i></div>
+            <div class="acl-mid" title="服贸会闭幕，金航数码云上服务伴你久久。">服贸会闭幕，金航数码云上服务伴你久久。</div>
+            <div class="acl-right">2020-10-20</div>
+        </li>
+        <li class="ac-list">
+            <div class="acl-left"><i class="iconfont icon-yuandian" style="color: #1593F5;font-size: 25px;"></i></div>
+            <div class="acl-mid" title="2020工业技术软件化发展论坛在天津举行">2020工业技术软件化发展论坛在天津举行</div>
+            <div class="acl-right">2020-10-16</div>
+        </li>
+        <li class="ac-list">
+            <div class="acl-left"><i class="iconfont icon-yuandian" style="color: #1593F5;font-size: 25px;"></i></div>
+            <div class="acl-mid" title="金航数码与上飞院联合团队荣获第二届中">金航数码与上飞院联合团队荣获第二届中</div>
+            <div class="acl-right">2020-10-20</div>
+        </li>
+        <li class="ac-list">
+            <div class="acl-left"><i class="iconfont icon-yuandian" style="color: #1593F5;font-size: 25px;"></i></div>
+            <div class="acl-mid" title="金航数码两项解决方案入选工信部2019年工业">金航数码两项解决方案入选工信部2019年工业</div>
+            <div class="acl-right">2020-06-12</div>
+        </li>
+        <li class="ac-list">
+            <div class="acl-left"><i class="iconfont icon-yuandian" style="color: #1593F5;font-size: 25px;"></i></div>
+            <div class="acl-mid" title="金航数码获2019北京软件和信息服务业综合实力。">金航数码获2019北京软件和信息服务业综合实力。</div>
+            <div class="acl-right">2019-11-22</div>
+        </li>
+        <li class="ac-list">
+            <div class="acl-left"><i class="iconfont icon-yuandian" style="color: #1593F5;font-size: 25px;"></i></div>
+            <div class="acl-mid" title="金航数码获2019北京软件和信息服务业综合实力。">金航数码获2019北京软件和信息服务业综合实力。</div>
+            <div class="acl-right">2019-11-22</div>
+        </li>
+    </ul>
+    </div>
+  </div>
+    
+</body>
+<script type="text/javascript">
+  function downloadFile(fileName) {
+    let a = document.createElement("a");
+    a.href = "/download/template5/" + fileName + ".rar";
+    a.download = fileName + ".rar";
+    a.click();
+  }
+</script>
+<style>
+    .ac-list {
+        width: 100%;
+        height: 40px;
+        background: #FBFCFC;
+        margin: 0 0 5px 0;
+        line-height: 40px;
+    }
+    .acl-left {
+        width: 10%;
+        float: left;
+        text-align: center;
+    }
+    .acl-mid{
+        width: 65.5%;
+        float: left;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+    }
+    .acl-right {
+        width: 20%;
+        float: left;
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 12px;
+        color: #999999;
+        text-align: right;
+        padding: 0 15px 0 0;
+    }
+</style>
+</html>

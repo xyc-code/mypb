@@ -1,0 +1,22 @@
+<form>
+	<div class="form-group property-control">
+		<label>分组标识符</label><input type="text" id="id" name="id"
+			isnull="false" class="form-control input-sm" readonly="readonly">
+	</div>
+	<div class="form-group property-control">
+		<label>分组标识符</label><input type="text" id="name" name="name"
+								   isnull="false" readonly class="form-control input-sm" value="分组">
+	</div>
+
+</form>
+<script type="text/javascript">
+	$(function() {
+		$(".form-control").bind('change', function() {
+			engine.changSave();
+		});
+	})
+	self.validateForm = function(form,treeNode){
+		engine.changSave();
+		return true;
+	}
+</script>

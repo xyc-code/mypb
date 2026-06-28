@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车间数据采集统计看板</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+  <div class="box">
+    <div class="box_title">
+      <h4>车间数据采集统计看板</h4>
+      <span class="box_title_right">
+<!--        <i class="iconfont icon-download-fill" title="下载" onclick="downloadFile('static')"></i>-->
+        <i class="iconfont icon-refresh" title="刷新"></i>
+      </span>
+    </div>
+    <div class="metodo-content content_inner">
+      <table class="metodo-list" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th class="metodo-title">任务名称</th>
+          <th class="metodo-title-other">状态</th>
+          <th class="metodo-title-other">任务级别</th>
+          <th class="metodo-title-other">执行状态 </th>
+          <th class="metodo-title-other">进度</th>
+          <th class="metodo-title-other">截止时间</th>
+        </tr>
+        <tr>
+          <td class="metodo-title">
+            <span>综合管理业务部大屏效果图设计</span>
+          </td>
+          <td class="metodo-other"><span style="border: 1px solid #91D5FF;border-radius: 3px;padding: 3px 5px;background: #E6F7FF;">未开始</span></td>
+          <td class="metodo-other">一级</td>
+          <td class="metodo-fee"><i class="iconfont icon-roundcheckfill" style="color:#52C41A;"></i>正常</td>
+          <td class="metodo-opeartion">
+            <label>0%</label>
+            <span style="border-radius: 10px;background: #E6F7FF;color: #E6F7FF;display: inline-block;width: 80px;height: 10px;line-height: 10px;text-align: left;"><span style="display: inline-block;border-radius: 10px;width: 0%;background: #52C41A;height: 100%;"></span></span>
+          </td>
+          <td  class="metodo-other">2021-08-23</td>
+        </tr>
+        <tr>
+          <td class="metodo-title">
+            <span>APP移动平台原型图制作</span>
+          </td>
+          <td class="metodo-other"><span style="border: 1px solid #52C41A;border-radius: 3px;padding: 3px 5px;background: #F6FFED;">进行中</span></td>
+          <td class="metodo-other">二级</td>
+          <td class="metodo-fee"><i class="iconfont icon-roundcheckfill" style="color:#52C41A;"></i>正常</td>
+          <td class="metodo-opeartion">
+            <label>30%</label>
+            <span style="border-radius: 10px;background: #E6F7FF;color: #E6F7FF;display: inline-block;width: 80px;height: 10px;line-height: 10px;text-align: left;"><span style="display: inline-block;border-radius: 10px;width: 30%;background: #52C41A;height: 100%;"></span></span>
+          </td>
+          <td  class="metodo-other">2021-10-05</td>
+        </tr>
+        <tr>
+          <td class="metodo-title">
+            <span>生产管理业务首页效果图设计</span>
+          </td>
+          <td class="metodo-other"><span style="border: 1px solid #52C41A;border-radius: 3px;padding: 3px 5px;background: #F6FFED;">进行中</span></td>
+          <td class="metodo-other">三级</td>
+          <td class="metodo-fee"><i class="iconfont icon-warn" style="color:#FAAD14;font-size: 14px;"></i>预警</td>
+          <td class="metodo-opeartion">
+            <label>60%</label>
+            <span style="border-radius: 10px;background: #E6F7FF;color: #E6F7FF;display: inline-block;width: 80px;height: 10px;line-height: 10px;text-align: left;"><span style="display: inline-block;border-radius: 10px;width: 60%;background: #52C41A;height: 100%;"></span></span>
+          </td>
+          <td  class="metodo-other">2021-05-22</td>
+        </tr>
+        <tr>
+          <td class="metodo-title">
+            <span>开展人工智能技术在客服保障领域的应用技术研究</span>
+          </td>
+          <td class="metodo-other"><span style="border: 1px solid #FFA39E;border-radius: 3px;padding: 3px 5px;background: #FFF1F0;">已延期</span></td>
+          <td class="metodo-other">二级</td>
+          <td class="metodo-fee"><i class="iconfont icon-wait-circle-fill" style="color:#F5222D;"></i>超期</td>
+          <td class="metodo-opeartion">
+            <label>70%</label>
+            <span style="border-radius: 10px;background: #E6F7FF;color: #E6F7FF;display: inline-block;width: 80px;height: 10px;line-height: 10px;text-align: left;"><span style="display: inline-block;border-radius: 10px;width: 70%;background: #52C41A;height: 100%;"></span></span>
+          </td>
+          <td  class="metodo-other">2021-02-05 </td>
+        </tr>
+        <tr>
+          <td class="metodo-title">
+            <span>大数据项目-二级页面样式优化</span>
+          </td>
+          <td class="metodo-other"><span style="border: 1px solid #52C41A;border-radius: 3px;padding: 3px 5px;background: #F6FFED;">进行中</span></td>
+          <td class="metodo-other">一级</td>
+          <td class="metodo-fee"><i class="iconfont icon-wait-circle-fill" style="color:#F5222D;"></i>超期</td>
+          <td class="metodo-opeartion">
+            <label>50%</label>
+            <span style="border-radius: 10px;background: #E6F7FF;color: #E6F7FF;display: inline-block;width: 80px;height: 10px;line-height: 10px;text-align: left;"><span style="display: inline-block;border-radius: 10px;width: 50%;background: #52C41A;height: 100%;"></span></span>
+          </td>
+          <td  class="metodo-other">2020-05-26</td>
+        </tr>
+      </table>
+  </div>
+  </div>
+    
+</body>
+<script type="text/javascript">
+  function downloadFile(fileName) {
+    let a = document.createElement("a");
+    a.href = "/download/template5/" + fileName + ".rar";
+    a.download = fileName + ".rar";
+    a.click();
+  }
+</script>
+<style>
+	*{
+		box-sizing: border-box;
+	}
+    .metodo-content{
+        background-color: #fff;
+        width:100%;
+        height:308px;
+      }
+      .metodo-more{
+        color: #A8ADB4;
+      }
+      .metodo-more > ul{
+        height: 48px;
+        line-height: 48px;
+        position: absolute;
+        right: 90px;
+      }
+      .metodo-active{
+        color:#1593F5;
+      }
+      .metodo-active > i{
+        color:#1593F5;
+      }
+      .metodo-more > ul > li{
+        list-style: none;
+        display: inline-block;
+        font-size:14px;
+        font-weight: 500;
+        margin-right:10px;
+      }
+      .metodo-more > ul > li > i{
+        margin-top: -33px;
+        position: absolute;
+        margin-left: 13px;
+        font-size: 55px;
+      }
+      .metodo-list{
+        padding: 0 20px;width:100%
+      }
+      .metodo-title{
+        width:40%;text-align: left;
+      }
+      .metodo-title-other{
+        width:15%;
+        color: #403333;
+        font-size:14px;
+      }
+      .metodo-other{
+        width:15%;
+        color:#666;
+        font-size:12px;
+      }
+      .metodo-fee{
+        width:20%;
+        font-size: 13px;
+        color:#666666;
+      }
+      .metodo-title i{
+        font-size: 18px;
+        color: #fff;
+        display: inline-block;
+      }
+      .metodo-title p{
+        height: 30px;
+        width: 30px;
+        line-height: 30px;
+        text-align: center;
+        display: inline-block;
+        border-radius: 50%;
+        margin: 5px 5px -2px 0;
+      }
+      .metodo-title span{
+        line-height: 30px;
+        display: inline-block;
+        margin-top: 5px;
+      }
+      .metodo-title label{
+        font-size: 12px;
+        color: red;
+        background-color: #FBF0EA;
+        display: inline-block;
+        height: 18px;
+        line-height: 18px;
+        padding: 0 8px;
+        margin-left: 5px;
+      }
+      .metodo-opeartion i{
+        font-size: 14px !important;margin-right: 8px;color:#529DE2;margin-right: 0;
+      }
+      .metodo-opeartion label{
+        color:#529DE2;
+        font-size:12px;
+      }
+      .metodo-list tr:hover{
+      	background-color: #F7F7F7;
+      }
+      tr{
+        line-height: 30px;
+        height:30px;
+      }
+      th{
+        color: #403333;
+        font-size:14px;
+        border-bottom: 1px solid #EDEDED;
+        padding: 3px;
+      }
+      td{
+        text-align:center;
+        font-size:14px;
+        text-overflow: ellipsis; 
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 1px solid #EDEDED;
+        padding: 3px;
+      }
+      .iconfont{
+      	margin-right: 5px;
+      }
+</style>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>工作完成情况统计</title>
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/echarts.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>工作完成情况统计</h4>
+      <span class="box_title_right ">
+        <i
+        class="iconfont icon-refresh"
+        title="刷新"
+        ></i>
+      </span>
+      </div>
+      <div class="content_inner completed">
+        <div class="completed-more">
+          <ul >
+            <li>
+             <label>共128项工作</label>
+            </li>
+            <li>
+             <span class="completed-active">本周</span>
+            </li>
+            <li>
+             <span>本月</span>
+            </li>
+            <li>
+             <span>年度</span>
+            </li>
+            <li>
+             <span style="border: 1px solid #D8D8D8;padding: 3px 5px;">
+               2021-05-02 ～ 2021-05-21
+               <img src="source/img/u341.svg" />
+             </span>
+            </li>
+           </ul>
+          </div>
+        <div id="twoLine" style="width: 100%;height: 300px;"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var twoLineEchart = echarts.init(document.getElementById("twoLine"));
+
+      var twoLineOption = {
+        tooltip: {
+          trigger: "axis"
+        },
+        legend: {
+          data: ["未完成","进行中", "已完成"],
+          itemWidth: 40,
+          itemHeight: 15
+        },
+        color: ["#FBB70E","#338FE5", "#24B47E"],
+        // grid: {
+        //   top: 50,
+        //   right: "3%",
+        //   bottom: "3%",
+        //   containLabel: true
+        // },
+        xAxis: {
+          type: "category",
+          data: ["任务", "需求", "缺陷", "问题"],
+          splitLine: {
+            lineStyle: {
+              dashOffset: 10
+            }
+          }
+        },
+        yAxis: {
+          type: "value",
+          splitLine: {
+            lineStyle: {
+              type: "dashed"
+            }
+          }
+        },
+        series: [
+        {
+            name: "未完成",
+            type: "bar",
+            stack: "总量",
+            data: [340, 100, 300, 705]
+          },
+          {
+            name: "进行中",
+            type: "bar",
+            stack: "总量",
+            data: [120, 720, 100, 340]
+          },
+          {
+            name: "已完成",
+            type: "bar",
+            stack: "总量",
+            data: [190, 780, 900, 120]
+          }
+        ]
+      };
+
+      twoLineEchart.setOption(twoLineOption); 
+    </script>
+    <style>
+      .completed-more{
+        color: #A8ADB4;
+      }
+      .completed-more > ul{
+        height: 48px;
+        line-height: 48px;
+        position: absolute;
+        right: 78px;
+        top:0;
+      }
+      .completed-active{
+        background-color: #1593F5;
+        color:#fff !important;
+      }
+      .completed-more > ul > li{
+        list-style: none;
+        display: inline-block;
+        font-size:14px;
+        font-weight: 500;
+        /* margin-right:10px; */
+        color: #7f7f7f;
+      }
+      .completed-more > ul > li > span{
+        height: 20px;
+        line-height: 20px;
+        display: inline-block;
+        
+        padding: 0 5px;
+        border-radius: 5px;
+      }
+      .completed-more > ul > li > i{
+        margin-top: -33px;
+        position: absolute;
+        margin-left: 13px;
+        font-size: 55px;
+      }
+      .completed {
+        background: #fff;
+        height: 377px;
+        width:100%;
+      }
+      .completed > p{
+        display: inline-block;
+        padding:10px;
+      }
+      .completed > div > span:nth-child(1) {
+        position: relative;
+        font-family: "微软雅黑", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #7f7f7f;
+      }
+    </style>
+  </body>
+</html>

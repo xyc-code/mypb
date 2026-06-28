@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.ims.oa.todo.dao.PortalTaskDao">
+
+
+    <select id="getReceiveDealDate" parameterType="java.lang.String" resultType="java.lang.String">
+            select to_char(t.DEAL_TIME, 'yyyy-mm-dd') deal_time from dyn_receive_file t
+            where t.id=#{id}
+    </select>
+
+    <!-- 分页查询 OA_CALENDAR -->
+    <select id="searchPortalTaskByPage" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT t.DBID_,
+        t.DBVERSION_,
+        t.EXECUTION_,
+        t.OUTCOME_,
+        t.ASSIGNEE_,
+        t.PRIORITY_,
+        t.STATE_,
+        t.CREATE_,
+        to_char(t.CREATE_,'yyyy-MM-dd hh24:mi:ss') as SEND_TIME,
+        t.END_,
+        t.DURATION_,
+        t.NEXTIDX_,
+        t.SUPERTASK_,
+        t.TASK_ORDER_,
+        t.OPEN_,
+        t.TAKE_STATE_,
+        t.PROCINST_,
+        t.SUSPHISTSTATE_,
+        t.TASK_TYPE_,
+        t.TASK_B_ID_,
+        t.TASK_TITLE_,
+        t.TASK_SENDUSER_,
+        t.TASK_SENDDEPT_,
+        t.FORM_,
+        t.PROCESS_DEF_NAME_,
+        t.TASK_FINISHED_,
+        t.TASK_STATE_,
+        t.TASK_NAME_,
+        t.HISACTINST_,
+        t.WORKHAND_TYPE_,
+        t.WORKHAND_USER_,
+        u.NAME WORKHAND_USER_NAME,
+        t.APP_ID_,
+        t.IS_READTODO_,
+        t.MOBILE_APPROVAL_,
+        t.FORM_URL_MOBILE_,
+        t.FORM_CODE_,
+        t.ASSIGNEE_DEPT_,
+        t.REASONABLE_FINISH_TIME_,
+        t.WARNING_FINISH_TIME_,
+        t.DESCR_
+        FROM BPM_HIST_TASK_V t
+
+        left join sys_user u on t.WORKHAND_USER_=u.id
+        where t.TASK_STATE_ = '1'
+        and t.ASSIGNEE_ = #{userId}
+        and t.TASK_FINISHED_ = '0'
+        <!--待办
+        <if test=" taskType=='0'.toString()">
+            and t.TASK_TYPE_ = '0'
+            and (
+            t.IS_READTODO_ is NULL
+            or t.IS_READTODO_ &lt;&gt; '1'
+            )
+        </if>
+        -->
+        <!--待阅
+        <if test=" taskType=='1'.toString()">
+            and (t.TASK_TYPE_ = '1' or t.IS_READTODO_ = '1')
+        </if>
+        -->
+        <if test="startTime != null and startTime != ''">
+            and t.CREATE_ &gt; to_date(#{startTime},'yyyy-MM-dd hh24:mi:ss')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and t.CREATE_  &lt; to_date(#{endTime},'yyyy-MM-dd hh24:mi:ss')
+        </if>
+        <if test="title != null and title != ''">
+            and t.TASK_TITLE_ like concat(concat('%',#{title}),'%')
+        </if>
+
+        order by t.PRIORITY_ desc, t.CREATE_ desc
+
+    </select>
+
+</mapper>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>会议管理</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+		.meeting_body ul li{
+			overflow: hidden;
+			padding-bottom: 10px;
+		}
+		.meeting_circle{
+		    float: left;
+		    width: 4px;
+		    height: 4px;
+		    background: #FFFFFF;
+		    border: 3px solid #338FE5;
+		    border-radius: 8px;
+		    margin-top: 11px;
+		}
+		.meeting_content{
+			float: left;
+			margin-left: 10px;
+			position: relative;
+		}
+		.meeting_content_name{
+			font-size: 14px;
+			color: #333333;
+			line-height: 32px;
+		    width: 300px;
+		    white-space: nowrap;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		}
+		.meeting_content_time{
+			font-size: 14px;
+			color: #909090;
+			line-height: 20px;
+		}
+		.meeting_line{
+			border-left: 1px solid #C7C7C7;
+			position: absolute;
+			height: 52px;
+			width: 1px;
+		    left: -16px;
+		    top: 28px;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>会议管理</h4>
+				<span class="box_title_right">
+				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('meeting')"></i>
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="meeting_body">
+					<ul>
+						<li>
+							<i class="meeting_circle"></i>
+							<div class="meeting_content">
+								<i class="meeting_line"></i>
+								<p class="meeting_content_name">关于党员如何提升自我学习党史</p>
+								<p class="meeting_content_time">2021-05-27  10:30-11:00   发起人：安芯莹</p>
+							</div>
+						</li>
+						<li>
+							<i class="meeting_circle"></i>
+							<div class="meeting_content">
+								<i class="meeting_line"></i>
+								<p class="meeting_content_name">关于党员如何提升自我学习党史</p>
+								<p class="meeting_content_time">2021-05-27  10:30-11:00   发起人：安芯莹</p>
+							</div>
+						</li>
+						<li>
+							<i class="meeting_circle"></i>
+							<div class="meeting_content">
+								<i class="meeting_line"></i>
+								<p class="meeting_content_name">关于党员如何提升自我学习党史</p>
+								<p class="meeting_content_time">2021-05-27  10:30-11:00   发起人：安芯莹</p>
+							</div>
+						</li>
+						<li>
+							<i class="meeting_circle"></i>
+							<div class="meeting_content">
+								<i class="meeting_line"></i>
+								<p class="meeting_content_name">关于党员如何提升自我学习党史</p>
+								<p class="meeting_content_time">2021-05-27  10:30-11:00   发起人：安芯莹</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

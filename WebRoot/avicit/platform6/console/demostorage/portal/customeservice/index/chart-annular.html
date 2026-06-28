@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>在役机队机区域分布</title>
+  <link rel="stylesheet" type="text/css" href="css/index.css" />
+  <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+  <script src="js/jquery-1.11.1.min.js"></script>
+  <script src="js/echarts.min.js"></script>
+  <style type="text/css">
+
+  </style>
+</head>
+<body>
+  <div class="page-in box">
+    <h2>
+      <span>在役机队机区域分布</span>
+      <div class="toolbar">
+<!--        <a href="##" class="iconfont icon-download"></a>-->
+        <a href="##" class="iconfont icon-more"></a>
+      </div>
+    </h2>
+    <div class="page-con" id="main">
+      <img src="images/chart03.jpg" alt="" />
+    </div>
+  </div>
+</body>
+<script >
+  // import * as echarts from 'echarts';
+var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+var option;
+
+option = {
+    tooltip: {
+        trigger: 'item'
+    },
+    legend: {
+        top: '5%',
+        left: 'center'
+    },
+    series: [
+        {
+            name: '访问来源',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+                show: false,
+                position: 'center'
+            },
+            emphasis: {
+                label: {
+                    show: true,
+                    fontSize: '40',
+                    fontWeight: 'bold'
+                }
+            },
+            labelLine: {
+                show: false
+            },
+            data: [
+                {value: 1048, name: '搜索引擎'},
+                {value: 735, name: '直接访问'},
+                {value: 580, name: '邮件营销'},
+                {value: 484, name: '联盟广告'},
+                {value: 300, name: '视频广告'}
+            ]
+        }
+    ]
+};
+
+option && myChart.setOption(option);
+
+</script>
+</html>

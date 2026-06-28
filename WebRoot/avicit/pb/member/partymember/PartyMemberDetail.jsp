@@ -1,0 +1,417 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib prefix="sec" uri="/WEB-INF/tags/shiro.tld"%>
+<%@taglib prefix="pt6" uri="/WEB-INF/tags/platform6.tld"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="avicit.platform6.commons.utils.ViewUtil"%>
+<%
+	String importlibs = "common,form";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>详情</title>
+<base href="<%=ViewUtil.getRequestPath(request)%>">
+<jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
+<jsp:param value="<%=importlibs%>" name="importlibs"/>
+</jsp:include>
+<style type="text/css">
+.achieveTd{
+	text-align: center!important;
+	border: 1px solid #e8e8e8;
+}
+</style>
+</head>
+<body class="easyui-layout" fit="true">
+	<div data-options="region:'center',split:true,border:false">
+		<form id='form'>
+			<input type="hidden" name="id" value="<c:out value='${partyMemberDTO.id}'/>" />
+			<input type="hidden" name="version" value="<c:out  value='${partyMemberDTO.version}'/>"/>
+			<table class="form_commonTable">
+				<tr>
+					<th width="15%">
+						<label for="userIdAlias">姓名:</label></th>
+					<td width="34%">
+						<div class="input-group input-group-sm">
+							<input type="hidden"  id="userId" name="userId" value="<c:out value='${partyMemberDTO.userId}'/>">
+							<input class="form-control" type="text" id="userIdAlias" name="userIdAlias" readonly="readonly" value="<c:out value='${partyMemberDTO.userIdAlias}'/>">
+							<span class="input-group-addon">
+								<i class="glyphicon glyphicon-user"></i>
+							</span>
+						</div>
+   					</td>
+					<th width="15%">
+						<label for="deptIdAlias">一级部门</label></th>
+					<td width="34%">
+						<div class="input-group input-group-sm">
+							<input type="hidden"  id="deptId" name="deptId" value="<c:out value='${partyMemberDTO.deptId}'/>">
+							<input class="form-control" type="text" id="deptIdAlias" name="deptIdAlias" readonly="readonly" value="<c:out value='${partyMemberDTO.deptIdAlias}'/>">
+							<span class="input-group-addon">
+							<i class="glyphicon glyphicon-equalizer"></i>
+							</span>
+						</div>
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="partyId">党支部:</label></th>
+					<td>
+					<div class="input-group input-group-sm">
+						<input type="hidden" name="partyId"  id="partyId" value="<c:out value='${partyMemberDTO.partyId}'/>">
+						<input class="form-control" placeholder="请选择党支部" type="text" id="partyIdAlias" name="partyIdAlias" value="<c:out value='${partyMemberDTO.partyIdAlias}'/>">
+							<span class="input-group-addon">
+								<i class=" glyphicon glyphicon-pencil"></i>
+							</span>
+							</div>
+   					</td>
+						<th>
+						<label for="attribute01Alias">所在党小组:</label>
+					</th>
+					<td>
+					<div class="input-group input-group-sm">
+						<input type="hidden" name="attribute01"  id="attribute01" value="<c:out value='${partyMemberDTO.attribute01}'/>"/>
+						<input class="form-control" placeholder="请选择党小组" type="text" id="attribute01Alias" name="attribute01Alias" value="<c:out value='${partyMemberDTO.attribute01Alias}'/>">
+							<span class="input-group-addon">
+								<i class=" glyphicon glyphicon-pencil"></i>
+							</span>
+							</div>
+   					</td>
+				</tr>
+					<tr>
+					<th>
+						<label for="attribute06">党小组长:</label>
+					</th>
+					<td>
+						  <pt6:h5select css_class="form-control input-sm" name="attribute06" id="attribute06" title="" isNull="true" lookupCode="PM_GROUP_LEADER_YN" defaultValue="${partyMemberDTO.attribute06}"/>
+   					</td>
+   						<th>
+						<label for="attribute07">各级党代表:</label>
+					</th>
+					<td>
+					<!--<pt6:h5select css_class="form-control input-sm" name="attribute07" id="attribute07" title="" isNull="true" lookupCode="PM_REPRESENT_LEVEL" defaultValue="${partyMemberDTO.attribute07}"/>-->
+					<input class="form-control input-sm" type="text" name="attribute07"  id="attribute07" value="<c:out value='${partyMemberDTO.attribute07}'/>"/>
+   					</td>
+					
+				</tr>
+			
+				<tr>
+				<th>
+						<label for="userCode">人员编码:</label>
+					</th>
+					<td>
+						<input class="form-control input-sm" type="text" name="userCode"  id="userCode" value="<c:out value='${partyMemberDTO.userCode}'/>"/>
+   					</td>
+					<th>
+						<label for="branchPost">党内职务:</label>
+					</th>
+					<td>
+						<!-- <input class="form-control input-sm" type="text" name="branchPost"  id="branchPost" value="<c:out value='${partyMemberDTO.branchPost}'/>"/> -->
+						 <pt6:h5select css_class="form-control input-sm" name="branchPost" id="branchPost" title="" isNull="true" lookupCode="PM_BRANCH_POST_TYPE" defaultValue="${partyMemberDTO.branchPost}"/>
+   					</td>
+   					 
+				</tr>
+    			<tr>
+					<th>
+						<label for="sex">性别:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="sex" id="sex" title="" isNull="true" lookupCode="PLATFORM_SEX" defaultValue="${partyMemberDTO.sex}" />
+   					</td>
+					<th>
+						<label for="birthday">出生年月:</label></th>
+					<td>
+						<div class="input-group input-group-sm">
+							<input class="form-control date-picker" type="text" name="birthday" id="birthday" value="<fmt:formatDate pattern='yyyy-MM-dd' value='${partyMemberDTO.birthday}'/>" />
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="nation">民族:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="nation"  id="nation" value="<c:out value='${partyMemberDTO.nation}'/>">
+   					</td>
+					<th>
+						<label for="orign">籍贯:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="orign"  id="orign" value="<c:out value='${partyMemberDTO.orign}'/>">
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="birthPlace">出生地:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="birthPlace"  id="birthPlace" value="<c:out value='${partyMemberDTO.birthPlace}'/>">
+   					</td>
+					<th>
+						<label for="educationSector">教育类别:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="educationSector" id="educationSector" title="" isNull="true" lookupCode="PM_EDUCATION_TYPE" defaultValue="${partyMemberDTO.educationSector}" />
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="joinParty">入党时间:</label></th>
+					<td>
+						<div class="input-group input-group-sm">
+							<input class="form-control date-picker" type="text" name="joinParty" id="joinParty" value="<fmt:formatDate pattern='yyyy-MM-dd' value='${partyMemberDTO.joinParty}'/>" />
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+   					</td>
+					<th>
+						<label for="educationLevel">文化程度:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="educationLevel" id="educationLevel" title="" isNull="true" lookupCode="PM_EDUCATION_LEVEL" defaultValue="${partyMemberDTO.educationLevel}" />
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="joinpartyDept">入党单位:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="joinpartyDept"  id="joinpartyDept" value="<c:out value='${partyMemberDTO.joinpartyDept}'/>">
+   					</td>
+					<th>
+						<label for="partyType">党员类别:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="partyType" id="partyType" title="" isNull="true" lookupCode="PM_PARTY_TYPE" defaultValue="${partyMemberDTO.partyType}" />
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="introducer">介绍人:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="introducer"  id="introducer" value="<c:out value='${partyMemberDTO.introducer}'/>">
+   					</td>
+					<!-- <th>
+						<label for="graduationTime">毕业时间:</label></th>
+					<td>
+						<div class="input-group input-group-sm">
+							<input class="form-control date-picker" type="text" name="graduationTime" id="graduationTime" value="<fmt:formatDate pattern='yyyy-MM-dd' value='${partyMemberDTO.graduationTime}'/>" />
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+   					</td> -->
+   					<th>
+						<label for="category">身份类别:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="category" id="category" title="" isNull="true" lookupCode="PM_CATEGORY" defaultValue="${partyMemberDTO.category}" />
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="workTime">参加工作时间:</label></th>
+					<td>
+						<div class="input-group input-group-sm">
+							<input class="form-control date-picker" type="text" name="workTime" id="workTime" value="<fmt:formatDate pattern='yyyy-MM-dd' value='${partyMemberDTO.workTime}'/>" />
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+   					</td>
+					<th>
+						<label for="post">职务:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="post"  id="post" value="<c:out value='${partyMemberDTO.post}'/>">
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="professionalRank">职称:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="professionalRank"  id="professionalRank" value="<c:out value='${partyMemberDTO.professionalRank}'/>">
+   					</td>
+					<th>
+						<label for="attribute03">职称等级:</label>
+					</th>
+					<td>
+							<pt6:h5select css_class="form-control input-sm" name="attribute03" id="attribute03" title="" isNull="true" lookupCode="PM_PROFESSIONAL_RANK_LEVEL" defaultValue="${partyMemberDTO.attribute03}"/>
+   					</td>
+				</tr>
+					<tr>
+				<th>
+						<label for="attribute04">技能等级:</label>
+					</th>
+					<td>
+						
+						<!--  <input class="form-control input-sm" type="text" name="attribute04"  id="attribute04" />-->
+						<pt6:h5select css_class="form-control input-sm" name="attribute04" id="attribute04" title="" isNull="true" lookupCode="PM_SKILL_LEVEL" defaultValue="${partyMemberDTO.attribute04}" />
+   					</td>
+   					<th>
+						<label for="joinbranchType">进入支部类型:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="joinbranchType" id="joinbranchType" title="" isNull="true" lookupCode="PM_JOINBRANCH_TYPE" defaultValue="${partyMemberDTO.joinbranchType}" />
+   					</td>
+   					
+				</tr>
+    			<tr>
+					<th>
+						<label for="joinzgType">加入中共组织类型:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="joinzgType" id="joinzgType" title="" isNull="true" lookupCode="PM_JOINZG_TYPE" defaultValue="${partyMemberDTO.joinzgType}" />
+   					</td>
+					<th>
+						<label for="regularDate">转正日期:</label></th>
+					<td>
+						<div class="input-group input-group-sm">
+							<input class="form-control date-picker" type="text" name="regularDate" id="regularDate" value="<fmt:formatDate pattern='yyyy-MM-dd' value='${partyMemberDTO.regularDate}'/>" />
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="regularType">转正类别:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="regularType" id="regularType" title="" isNull="true" lookupCode="PM_REGULAR_TYPE" defaultValue="${partyMemberDTO.regularType}" />
+   					</td>
+					<th>
+						<label for="attribute05">党龄:</label>
+					</th>
+					<td>
+						
+						<input class="form-control input-sm" type="text" name="attribute05"  id="attribute05" disabled="disabled" value="<c:out value='${partyMemberDTO.attribute05}'/>">
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="idcard">身份证号:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="idcard"  id="idcard" value="<c:out value='${partyMemberDTO.idcard}'/>">
+   					</td>
+					<th>
+						<label for="address">常住地址:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="address"  id="address" value="<c:out value='${partyMemberDTO.address}'/>">
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="tel">联系电话:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="tel"  id="tel" value="<c:out value='${partyMemberDTO.tel}'/>">
+   					</td>
+					<!--  <th>
+						<label for="registerAddress">户口地址:</label></th>
+					<td>
+						<input class="form-control input-sm" type="text" name="registerAddress"  id="registerAddress" value="<c:out value='${partyMemberDTO.registerAddress}'/>">
+   					</td>-->
+   					 <th>
+						<label for="attribute02">年龄:</label>
+					</th>
+					<td>
+						<input class="form-control input-sm" type="text" name="attribute02"  id="attribute02" value="<c:out value='${partyMemberDTO.attribute02}'/>">
+   					</td>
+				</tr>
+    			<tr>
+					<th>
+						<label for="partyMoney">党费:</label></th>
+					<td>
+						<div class="input-group input-group-sm spinner" data-trigger="spinner">
+							<input  class="form-control"  type="text" name="partyMoney" id="partyMoney"  data-min="-999999999999" data-max="999999999999" data-step="1" data-precision="2" value="<c:out value='${partyMemberDTO.partyMoney}'/>">
+							<span class="input-group-addon">
+								<a href="javascript:;" class="spin-up" data-spin="up"><i class="glyphicon glyphicon-triangle-top"></i></a>
+								<a href="javascript:;" class="spin-down" data-spin="down"><i class="glyphicon glyphicon-triangle-bottom"></i></a>
+							</span>
+						</div>
+   					</td>
+					<th>
+						<label for="onoffJob">在职/离职:</label></th>
+					<td>
+						<pt6:h5select css_class="form-control input-sm" name="onoffJob" id="onoffJob" title="" isNull="true" lookupCode="PM_ONOFF_JOB" defaultValue="${partyMemberDTO.onoffJob}" />
+   					</td>
+				</tr>
+    			<tr>
+   					<th>
+						<label for="status">是否有效:</label>
+					</th>
+					<td>
+					<pt6:h5select css_class="form-control input-sm" name="status"  id="status" title="" isNull="true" lookupCode="PLATFORM_VALID_FLAG" defaultValue="${partyMemberDTO.status}"/>
+			
+   					</td>
+				</tr>
+					<tr>
+					<th>
+						<label for="attribute08">党内荣誉:</label>
+					</th>
+					<td colspan="3">
+						 <textarea class="form-control input-sm " style="resize:none;width:100%" rows="6" id="attribute08" name="attribute08" title="" maxlength="4000" ><c:out value='${partyMemberDTO.attribute08}'/></textarea>
+   					</td>
+				</tr>
+				<tr>
+   					<th>
+						<label for="attribute09">党纪处分:</label>
+					</th>
+					<td colspan="3">
+						 <textarea class="form-control input-sm " style="resize:none;" rows="6" id="attribute09" name="attribute09" title="" maxlength="4000"><c:out value='${partyMemberDTO.attribute09}'/></textarea>
+   					</td>
+				</tr>
+				<tr id="userAchievements" style="display: none;">
+   					<th>
+						<label>绩效考核信息:</label>
+					</th>
+					<td colspan="3">
+						<table id="userAchievementsTable" style="width:100%;text-align:center;font-size:14px;">
+						</table>
+   					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 50px;">
+		<div id="toolbar"
+			class="datagrid-toolbar datagrid-toolbar-extend foot-formopera">
+			<table class="tableForm" style="border:0;cellspacing:1;width:100%">
+				<tr>
+					<td width="50%" style="padding-right:4%;" align="right">
+						<a href="javascript:void(0)" class="btn btn-grey form-tool-btn btn-sm" role="button" title="返回" id="partyMember_closeForm">返回</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-js.jsp">
+	<jsp:param value="<%=importlibs%>" name="importlibs"/>
+	</jsp:include>
+	<script type="text/javascript">
+		function closeForm(){
+			parent.partyMember.closeDialog("detail");
+		}
+		$(document).ready(function (){
+			//返回按钮绑定事件
+			$('#partyMember_closeForm').bind('click', function(){
+				closeForm();
+			});
+			//查询人员绩效考核信息
+			initAchievements();
+		});
+		//form控件禁用
+		setFormDisabled();
+		$(document).keydown(function(event){  
+			event.returnValue = false;
+			return false;
+		});
+		//20241127 addby wenc 添加人员绩效考核信息
+		function initAchievements(){
+			avicAjax.ajax({
+				url : 'platform/avicit/pb/utils/pbUtilsController/getDyAchievements',
+				data : {
+					userId : '${partyMemberDTO.userId}',
+					queryYears : '6'
+				},
+				type : 'POST',
+				dataType : 'JSON',
+				success : function(result) {
+					if(result.list.length > 0){
+						var achievementsHtml = '<tr><th width="50%" class="achieveTd">年份</td><th width="50%" class="achieveTd">绩效</td></tr>';
+						for(var i = 0; i < result.list.length; i++){
+							achievementsHtml += '<tr><td class="achieveTd">' + result.list[i].achievementsPeriod + '</td>';
+							achievementsHtml += '<td class="achieveTd">' + result.list[i].achievementsLevel + '</td></tr>'
+						}
+						$('#userAchievementsTable').html(achievementsHtml);
+						$('#userAchievements').show();
+					}
+				}
+			})
+		}
+		//20241127 endby wenc 添加人员绩效考核信息
+	</script>
+</body>
+</html>
+

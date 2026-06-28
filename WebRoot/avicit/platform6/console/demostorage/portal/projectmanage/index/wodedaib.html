@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html style="min-width: 300px;">
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" />
+		<link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+		<script src="js/jquery-3.2.1.min.js"></script>
+		<script src="js/jquery.page.js"></script>
+		<link rel="stylesheet" href="css/page.css">
+		<style>
+			.wodedaib-list{
+				width:100%;border:0;color: #454545;font-size: 12px;
+			}
+			.daib-title{
+				font-size: 14px;
+			}
+			.text_todo{
+				color:#4797FF;
+			}
+			.daib-list tr{
+				height: 30px;
+    			line-height: 30px;
+			}
+			.daib-list tr:hover td {
+				background: #f6f7fe;
+				color: #297ce6;
+			}
+			</style>
+	</head>
+
+	<body style="overflow: hidden;">
+		<div class="content_box">
+			<div class="title_switch box_title daib-tab">
+				<ul class="clearfix">
+				<li >
+					<p>我的待阅</p>
+					<div class="title_switch_on"></div>
+					<i class="item_number">5</i>
+				</li>
+				<li class="act"> 
+					<p>我的待办</p>
+					<div class="title_switch_on"></div>
+					<i class="item_number">5</i>
+				</li>
+				</ul>
+				<div class="box_title_right">
+					<div class="icon_more">
+<!--						<i-->
+<!--						class="iconfont icon-download"-->
+<!--						title="下载"-->
+<!--						onclick="downloadFile('wodedaib')"-->
+<!--						></i>-->
+						<i
+						class="iconfont icon-refresh"
+						title="刷新"
+						></i>
+					</div>
+					
+				</div>
+			</div>
+			<div class="content_inner daib_box daib-list" style="height: 220px;">
+				<table cellspacing="0" class="wodedaib-list">
+					<tr>
+						<td class="daib-title">【公告发布审批】</td>
+						<td>拟稿</td>
+						<td class="text_right">平台管理员</td>
+						<td class="text_right">2021-7-22</td>
+						<td class="text_right">1,000,000</td>
+						<td class="text_todo text_right">办理</td>
+					</tr>
+					<tr>
+						<td class="daib-title">【差旅费报销】</td>
+						<td>拟稿</td>
+						<td class="text_right">平台管理员</td>
+						<td class="text_right">2021-7-22</td>
+						<td class="text_right">1,000,000</td>
+						<td class="text_todo text_right">办理</td>
+					</tr>
+					<tr>
+						<td class="daib-title">【录用管理】</td>
+						<td>拟稿</td>
+						<td class="text_right">平台管理员</td>
+						<td class="text_right">2021-7-22</td>
+						<td class="text_right">1,000,000</td>
+						<td class="text_todo text_right">办理</td>
+					</tr>
+					<tr>
+						<td class="daib-title">【通知公告发布】</td>
+						<td>拟稿</td>
+						<td class="text_right">平台管理员</td>
+						<td class="text_right">2021-7-22</td>
+						<td class="text_right">1,000,000</td>
+						<td class="text_todo text_right">办理</td>
+					</tr>
+					<tr>
+						<td class="daib-title">【考勤补充】</td>
+						<td>拟稿</td>
+						<td class="text_right">平台管理员</td>
+						<td class="text_right">2021-7-22</td>
+						<td class="text_right">1,000,000</td>
+						<td class="text_todo text_right">办理</td>
+					</tr>
+					<tr>
+						<td class="daib-title">【通知公告发布】</td>
+						<td>拟稿</td>
+						<td class="text_right">平台管理员</td>
+						<td class="text_right">2021-7-22</td>
+						<td class="text_right">1,000,000</td>
+						<td class="text_todo text_right">办理</td>
+					</tr>
+				</table>
+				<div class="tcdPageCode"></div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(".daib-tab ul li").click(function(){
+				$(".daib-tab ul li").eq($(this).index()).addClass('act')
+				$(".daib-tab ul li").not($(".daib-tab ul li").eq($(this).index())).removeClass('act')
+			})
+			function downloadFile(fileName){
+				let a = document.createElement("a");
+				a.href = '/download/template7/'+fileName+".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+			$(".tcdPageCode").createPage({
+        pageCount:6,
+        current:1,
+        backFn:function(p){
+            console.log(p);
+        }
+    });
+		</script>
+	</body>
+
+</html>

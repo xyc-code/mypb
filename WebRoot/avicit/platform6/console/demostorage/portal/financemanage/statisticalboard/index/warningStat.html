@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/echarts.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>预警统计</title>
+    <style>
+        .warningStat-content {
+          background: #fff;
+          height: 328px;
+        }
+        .warningStat-content > h3{
+          display: inline-block;margin-left:20px;margin-right:20px;
+        }
+        .warningStat-more{
+          color: #A8ADB4;
+          cursor: pointer;
+          float: right;
+        }
+        .warningStat-more > i{
+          margin-right: 10px;
+          font-size: 18px;
+        }
+        .warningStat-more > i:last-child{
+          margin-right: 0;
+        }
+        .warningStat-content > p{
+          display: inline-block;
+        }
+        .warningStat-content > p > span:nth-child(1) {
+          text-align: left;
+          font-weight: 600;
+          font-style: normal;
+          font-size: 16px;
+          color: #1e1e1e;
+        }
+        .warningStat-content > div{
+          float: right;
+          font-weight: 600;
+          color:#7F7F7F;
+          font-size: 16px;
+        }
+        .warningStat-tab{
+          position: absolute;
+          right: 20px;
+          top: 75px;
+        }
+        .warningStat-tab > span{
+            display: inline-block;
+            border: 1px solid #D9D9D9;
+            width: 50px;
+            text-align: center;
+            margin-left: -7px;
+            height: 25px;
+            line-height: 25px;
+            color: #676767;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .warningStat-tab > span:nth-last-child(2){
+            border-left: none;
+            border-right: none;
+        }
+        .warningStat-active{
+            color:cornflowerblue !important;
+            border: 1px solid cornflowerblue !important;
+        }
+      </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>预警统计</h4>
+      <span class="box_title_right">
+        <i
+        class="iconfont icon-refresh"
+        title="刷新"
+        ></i>
+      </span>
+      </div>
+      <div class="warningStat-content content_inner">
+        <div id="warningStatPie" style="width: 100%;height: 100%;"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var warningStatEchart = echarts.init(document.getElementById("warningStatPie"));
+
+      var warningStatOption = {
+        tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        icon: "circle",
+        bottom: '80px',
+        left: 'center',
+        itemWidth: 10,  // 设置宽度
+        itemHeight: 10, // 设置高度
+        itemGap: 5, 
+      },
+      title: {
+          text: "共计",
+          top: "20%",
+          left: "50%",
+          textStyle: {
+            color: "#999",
+            fontSize: "14px"
+          },
+          subtext: "1586次",
+          subtextStyle: {
+            color: "#333",
+            fontSize: "20px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+      series: [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['35%', '55%'],
+              center: ["50%", "30%"], 
+              roseType: 'area',
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2
+            },　
+              avoidLabelOverlap: false,
+              label: {
+                  show: false,
+                  position: 'center'
+              },
+              labelLine: {
+                  show: false
+              },
+              data: [
+                {value: 40, name: '订单超期'},
+                {value: 38, name: '销售订单'},
+                {value: 18, name: '过期商品'},
+                {value: 12, name: '应付账款'},
+              ]
+          }
+        ]
+      };
+      
+
+      warningStatEchart.setOption(warningStatOption); 
+      function change(value){
+        if(value == 'day'){
+
+        }else if(value == 'week'){
+            
+        }else if(value == 'month'){
+
+        }
+      }
+    </script>
+
+    
+  </body>
+</html>

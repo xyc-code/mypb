@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>快捷入口</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+	    .top_card{
+	    	background: #ffffff;
+	    	border-radius: 4px;
+	    }
+		.clearfix{
+			overflow: hidden;
+		}
+		.top_card_list{
+			float: left;
+			padding: 0 28px 24px 28px;
+		}
+		.top_card_box{
+			text-align: center;
+		}
+		.top_card_boximg{
+			width: 56px;
+			height: 56px;
+			border-radius: 28px;
+			position: relative;
+		}
+		.top_card_boximg>.icon{
+			color: #ffffff;
+			position: absolute;
+			top: 13px;
+			left: 13px;
+		}
+		.top_card_boximg>.iconfont{
+			font-size: 30px;
+		}
+		.top_card_imgblue{
+			background: #338FE5;
+		}
+		.top_card_box>p{
+			font-size: 14px;
+			color: #333333;
+			margin: 10px 0 0 0;
+		}
+		.top_card_imggreen{
+			background: #1AA86C;
+		}
+		.top_card_imgpurple{
+			background: #8B6AD4;
+		}
+		.top_card_imgorg{
+			background: #E2734A;
+		}
+		.top_card_imgyellow{
+			background: #EFD425;
+		}
+		.top_card_imggray{
+			background: #AAAAAA;
+		}
+		
+		@media only screen and (min-width: 1024px) and (max-width:1366px) {
+			.card_number{
+				font-size: 20px;
+			}
+			.chart_sm_box{
+				margin-top: 10px;
+			}
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>快捷入口</h4>
+				<span class="box_title_right">
+				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('top_card')"></i>
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="top_card">
+					<ul class="clearfix">
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgblue">
+									<i class="icon iconfont icon-an-feeds"></i>
+								</div>
+								<p>我的待办</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imggreen">
+									<i class="icon iconfont icon-an-tool"></i>
+								</div>
+								<p>打卡记录</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgpurple">
+									<i class="icon iconfont icon-an-time-circle"></i>
+								</div>
+								<p>请假申请</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgorg">
+									<i class="icon iconfont icon-an-writing"></i>
+								</div>
+								<p>补签工时</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgyellow">
+									<i class="icon iconfont icon-an-tradingdata"></i>
+								</div>
+								<p>项目工时</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgblue">
+									<i class="icon iconfont icon-an-feeds"></i>
+								</div>
+								<p>我的待办</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imggreen">
+									<i class="icon iconfont icon-an-tool"></i>
+								</div>
+								<p>打卡记录</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgpurple">
+									<i class="icon iconfont icon-an-time-circle"></i>
+								</div>
+								<p>请假申请</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imgorg">
+									<i class="icon iconfont icon-an-writing"></i>
+								</div>
+								<p>补签工时</p>
+							</div>
+						</li>
+						<li class="top_card_list">
+							<div class="top_card_box">
+								<div class="top_card_boximg top_card_imggray">
+									<i class="icon iconfont icon-an-tool"></i>
+								</div>
+								<p>配置模块</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

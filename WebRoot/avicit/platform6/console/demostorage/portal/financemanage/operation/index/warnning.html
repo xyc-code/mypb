@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>预警信息</title>
+    <style>
+    	*{
+    		box-sizing: border-box
+    	}
+      .warnning-content{
+        background-color: #fff;
+        width:100%;
+        height:318px;
+      }
+      /* .warnning-content > h3{
+        display: inline-block;margin-left:20px;margin-right:20px;
+      }
+      .warnning-more{
+        color: #A8ADB4;
+        cursor: pointer;
+        float: right;
+      }
+      .warnning-more > i{
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .warnning-more > i:last-child{
+        margin-right: 0;
+      } */
+      .warnning-content > ul{
+        margin-top:-16px
+      }
+      .warnning-content > ul > li{
+        list-style: none;
+        display: inline-block;
+        height: 80px;
+        width: 47%;
+        max-width: 300px;
+        text-align: left;
+        background-color: #F4F8FF;
+        padding: 10px 5px 10px 55px;
+        margin: 5px 1.5% 5px;
+        float:left;
+        position: relative;
+      }
+      .warnning-iconbox{
+        width: 30px;
+        position: absolute;
+        left:10px;
+        top:20px;
+      }
+      .warnning-iconbox > i{
+        font-size:36px;
+        color:#377FFC;
+      }
+      .warnning-content > ul > li > p{
+        margin-bottom: 0;
+        font-size:18px;
+        margin-top: 8px;
+        text-align: left;
+        color:#333333;
+        display: block;
+      }
+      .warnning-content > ul > li > span{
+        font-size:12px;
+        display: block;
+        height: 15px;
+        line-height: 15px;
+        color: #7F7F7F;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>预警信息</h4>
+      <span class="box_title_right">
+        <i
+        class="iconfont icon-refresh"
+        title="刷新"
+        ></i>
+      </span>
+      </div>
+      <div class="warnning-content content_inner">
+        <ul>
+          <li>
+            <div class="warnning-iconbox">
+              <i class="iconfont icon-ico_bulk_accounting"></i>
+            </div>
+            <p>2</p>
+            <span>发现预警商品</span>
+          </li>
+          <li>
+            <div class="warnning-iconbox">
+              <i class="iconfont icon-ico_e_advice"></i>
+            </div>
+            <p>4</p>
+            <span>发现过期商品</span>
+          </li>
+          <li>
+            <div class="warnning-iconbox">
+              <i class="iconfont icon-ico_product"></i>
+            </div>
+            <p>54</p>
+            <span>采购订单交期预警</span>
+          </li>
+          <li>
+            <div class="warnning-iconbox">
+              <i class="iconfont icon-yingyong"></i>
+            </div>
+            <p>21</p>
+            <span>销售订单交期预警</span>
+          </li>
+          <li>
+            <div class="warnning-iconbox">
+              <i class="iconfont icon-ico_loan_management"></i>
+            </div>
+            <p>22</p>
+            <span>应付账款预警</span>
+          </li>
+          <li>
+            <div class="warnning-iconbox">
+              <i class="iconfont icon-ico_report_market"></i>
+            </div>
+            <p>22</p>
+            <span>销售订单超期预警</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+    </script>
+  </body>
+</html>

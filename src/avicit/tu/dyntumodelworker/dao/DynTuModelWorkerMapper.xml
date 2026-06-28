@@ -1,0 +1,1501 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.tu.dyntumodelworker.dao.DynTuModelWorkerDAO">
+<resultMap id="DynTuModelWorkerDTOMap" type="avicit.tu.dyntumodelworker.dto.DynTuModelWorkerDTO">
+	<result property="data11" column="DATA_11" jdbcType="TIMESTAMP" />
+	<result property="data10" column="DATA_10" jdbcType="VARCHAR" />
+	<result property="data12" column="DATA_12" jdbcType="DECIMAL" />
+	<result property="requestUser" column="REQUEST_USER" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="annex" column="ANNEX" jdbcType="VARCHAR" />
+	<result property="deptTwoName" column="DEPT_TWO_NAME" jdbcType="VARCHAR" />
+	<result property="honorOrgan" column="HONOR_ORGAN" jdbcType="VARCHAR" />
+	<result property="nation" column="NATION" jdbcType="VARCHAR" />
+	<result property="deptOneId" column="DEPT_ONE_ID" jdbcType="VARCHAR" />
+	<result property="deptThreeId" column="DEPT_THREE_ID" jdbcType="VARCHAR" />
+	<result property="data1" column="DATA_1" jdbcType="VARCHAR" />
+	<result property="data2" column="DATA_2" jdbcType="VARCHAR" />
+	<result property="data3" column="DATA_3" jdbcType="VARCHAR" />
+	<result property="skillLevel" column="SKILL_LEVEL" jdbcType="VARCHAR" />
+	<result property="data4" column="DATA_4" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="birthday" column="BIRTHDAY" jdbcType="TIMESTAMP" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="data9" column="DATA_9" jdbcType="VARCHAR" />
+	<result property="deptId" column="DEPT_ID" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="data5" column="DATA_5" jdbcType="VARCHAR" />
+	<result property="educationLevel" column="EDUCATION_LEVEL" jdbcType="VARCHAR" />
+	<result property="data6" column="DATA_6" jdbcType="VARCHAR" />
+	<result property="autoCode" column="AUTO_CODE" jdbcType="VARCHAR" />
+	<result property="data7" column="DATA_7" jdbcType="VARCHAR" />
+	<result property="data8" column="DATA_8" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="deptThreeName" column="DEPT_THREE_NAME" jdbcType="VARCHAR" />
+	<result property="professionalRank" column="PROFESSIONAL_RANK" jdbcType="VARCHAR" />
+	<result property="politicalOutlook" column="POLITICAL_OUTLOOK" jdbcType="VARCHAR" />
+	<result property="modelLevel" column="MODEL_LEVEL" jdbcType="VARCHAR" />
+	<result property="speciality" column="SPECIALITY" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="modelCompany" column="MODEL_COMPANY" jdbcType="VARCHAR" />
+	<result property="requestUserId" column="REQUEST_USER_ID" jdbcType="VARCHAR" />
+	<result property="deptName" column="DEPT_NAME" jdbcType="VARCHAR" />
+	<result property="sex" column="SEX" jdbcType="VARCHAR" />
+	<result property="modelCountry" column="MODEL_COUNTRY" jdbcType="VARCHAR" />
+	<result property="modelEconomize" column="MODEL_ECONOMIZE" jdbcType="VARCHAR" />
+	<result property="deptTwoId" column="DEPT_TWO_ID" jdbcType="VARCHAR" />
+	<result property="workDate" column="WORK_DATE" jdbcType="TIMESTAMP" />
+	<result property="honorName" column="HONOR_NAME" jdbcType="VARCHAR" />
+	<result property="categoryType" column="CATEGORY_TYPE" jdbcType="VARCHAR" />
+	<result property="postName" column="POST_NAME" jdbcType="VARCHAR" />
+	<result property="userCode" column="USER_CODE" jdbcType="VARCHAR" />
+	<result property="honorFileName" column="HONOR_FILE_NAME" jdbcType="VARCHAR" />
+	<result property="requestDate" column="REQUEST_DATE" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="appointmentLevel" column="APPOINTMENT_LEVEL" jdbcType="VARCHAR" />
+	<result property="tel" column="TEL" jdbcType="DECIMAL" />
+	<result property="deptOneName" column="DEPT_ONE_NAME" jdbcType="VARCHAR" />
+	<result property="modelCity" column="MODEL_CITY" jdbcType="VARCHAR" />
+	<result property="modelName" column="MODEL_NAME" jdbcType="VARCHAR" />
+	<result property="data13" column="DATA_13" jdbcType="BLOB" javaType="byte[]" />
+    <result property="data14" column="DATA_14" jdbcType="CLOB" javaType="String" />
+	<result property="honorDate" column="HONOR_DATE" jdbcType="TIMESTAMP" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.DATA_11,
+	t1.DATA_10,
+	t1.DATA_12,
+	t1.REQUEST_USER,
+	t1.LAST_UPDATE_DATE,
+	t1.ANNEX,
+	t1.DEPT_TWO_NAME,
+	t1.HONOR_ORGAN,
+	t1.NATION,
+	t1.DEPT_ONE_ID,
+	t1.DEPT_THREE_ID,
+	t1.DATA_1,
+	t1.DATA_2,
+	t1.DATA_3,
+	t1.SKILL_LEVEL,
+	t1.DATA_4,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.LAST_UPDATE_IP,
+	t1.BIRTHDAY,
+	t1.CREATED_BY,
+	t1.DATA_9,
+	t1.DEPT_ID,
+	t1.LAST_UPDATED_BY,
+	t1.DATA_5,
+	t1.EDUCATION_LEVEL,
+	t1.DATA_6,
+	t1.AUTO_CODE,
+	t1.DATA_7,
+	t1.DATA_8,
+	t1.CREATION_DATE,
+	t1.DEPT_THREE_NAME,
+	t1.PROFESSIONAL_RANK,
+	t1.POLITICAL_OUTLOOK,
+	t1.MODEL_LEVEL,
+	t1.SPECIALITY,
+	t1.ORG_IDENTITY,
+	t1.MODEL_COMPANY,
+	t1.REQUEST_USER_ID,
+	t1.DEPT_NAME,
+	t1.SEX,
+	t1.MODEL_COUNTRY,
+	t1.MODEL_ECONOMIZE,
+	t1.DEPT_TWO_ID,
+	t1.WORK_DATE,
+	t1.HONOR_NAME,
+	t1.CATEGORY_TYPE,
+	t1.POST_NAME,
+	t1.USER_CODE,
+	t1.HONOR_FILE_NAME,
+	t1.REQUEST_DATE,
+	t1.VERSION,
+	t1.APPOINTMENT_LEVEL,
+	t1.TEL,
+	t1.DEPT_ONE_NAME,
+	t1.MODEL_CITY,
+	t1.MODEL_NAME,
+	t1.DATA_14,
+	t1.HONOR_DATE,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.data11Begin != null">
+		and t1.DATA_11 &gt;= #{bean.data11Begin}
+	</if>
+	<if test="bean.data11End != null">
+		and t1.DATA_11 &lt;= #{bean.data11End}
+	</if>
+	<if test="bean.data10 != null and bean.data10 != ''">
+		and t1.DATA_10 like concat(concat('%',#{bean.data10}),'%')
+	</if>
+	<if test="bean.data12 != null">
+		and t1.DATA_12 = #{bean.data12}
+	</if>
+	<if test="bean.requestUser != null and bean.requestUser != ''">
+		and t1.REQUEST_USER like concat(concat('%',#{bean.requestUser}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.annex != null and bean.annex != ''">
+		and t1.ANNEX like concat(concat('%',#{bean.annex}),'%')
+	</if>
+	<if test="bean.deptTwoName != null and bean.deptTwoName != ''">
+		and t1.DEPT_TWO_NAME like concat(concat('%',#{bean.deptTwoName}),'%')
+	</if>
+	<if test="bean.honorOrgan != null and bean.honorOrgan != ''">
+		and t1.HONOR_ORGAN like concat(concat('%',#{bean.honorOrgan}),'%')
+	</if>
+	<if test="bean.nation != null and bean.nation != ''">
+		and t1.NATION like concat(concat('%',#{bean.nation}),'%')
+	</if>
+	<if test="bean.deptOneId != null and bean.deptOneId != ''">
+		and t1.DEPT_ONE_ID like concat(concat('%',#{bean.deptOneId}),'%')
+	</if>
+	<if test="bean.deptThreeId != null and bean.deptThreeId != ''">
+		and t1.DEPT_THREE_ID like concat(concat('%',#{bean.deptThreeId}),'%')
+	</if>
+	<if test="bean.data1 != null and bean.data1 != ''">
+		and t1.DATA_1 = #{bean.data1}
+	</if>
+	<if test="bean.data2 != null and bean.data2 != ''">
+		and t1.DATA_2 like concat(concat('%',#{bean.data2}),'%')
+	</if>
+	<if test="bean.data3 != null and bean.data3 != ''">
+		and t1.DATA_3 like concat(concat('%',#{bean.data3}),'%')
+	</if>
+	<if test="bean.skillLevel != null and bean.skillLevel != ''">
+		and t1.SKILL_LEVEL like concat(concat('%',#{bean.skillLevel}),'%')
+	</if>
+	<if test="bean.data4 != null and bean.data4 != ''">
+		and t1.DATA_4 like concat(concat('%',#{bean.data4}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.birthdayBegin != null">
+		and t1.BIRTHDAY &gt;= #{bean.birthdayBegin}
+	</if>
+	<if test="bean.birthdayEnd != null">
+		and t1.BIRTHDAY &lt;= #{bean.birthdayEnd}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.data9 != null and bean.data9 != ''">
+		and t1.DATA_9 like concat(concat('%',#{bean.data9}),'%')
+	</if>
+	<if test="bean.deptId != null and bean.deptId != ''">
+		and t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.data5 != null and bean.data5 != ''">
+		and t1.DATA_5 like concat(concat('%',#{bean.data5}),'%')
+	</if>
+	<if test="bean.educationLevel != null and bean.educationLevel != ''">
+		and t1.EDUCATION_LEVEL like concat(concat('%',#{bean.educationLevel}),'%')
+	</if>
+	<if test="bean.data6 != null and bean.data6 != ''">
+		and t1.DATA_6 like concat(concat('%',#{bean.data6}),'%')
+	</if>
+	<if test="bean.autoCode != null and bean.autoCode != ''">
+		and t1.AUTO_CODE like concat(concat('%',#{bean.autoCode}),'%')
+	</if>
+	<if test="bean.data7 != null and bean.data7 != ''">
+		and t1.DATA_7 like concat(concat('%',#{bean.data7}),'%')
+	</if>
+	<if test="bean.data8 != null and bean.data8 != ''">
+		and t1.DATA_8 like concat(concat('%',#{bean.data8}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.deptThreeName != null and bean.deptThreeName != ''">
+		and t1.DEPT_THREE_NAME like concat(concat('%',#{bean.deptThreeName}),'%')
+	</if>
+	<if test="bean.professionalRank != null and bean.professionalRank != ''">
+		and t1.PROFESSIONAL_RANK like concat(concat('%',#{bean.professionalRank}),'%')
+	</if>
+	<if test="bean.politicalOutlook != null and bean.politicalOutlook != ''">
+		and t1.POLITICAL_OUTLOOK like concat(concat('%',#{bean.politicalOutlook}),'%')
+	</if>
+	<if test="bean.modelLevel != null and bean.modelLevel != ''">
+		and t1.MODEL_LEVEL like concat(concat('%',#{bean.modelLevel}),'%')
+	</if>
+	<if test="bean.speciality != null and bean.speciality != ''">
+		and t1.SPECIALITY like concat(concat('%',#{bean.speciality}),'%')
+	</if>
+	<if test="bean.modelCompany != null and bean.modelCompany != ''">
+		and t1.MODEL_COMPANY like concat(concat('%',#{bean.modelCompany}),'%')
+	</if>
+	<if test="bean.requestUserId != null and bean.requestUserId != ''">
+		and t1.REQUEST_USER_ID like concat(concat('%',#{bean.requestUserId}),'%')
+	</if>
+	<if test="bean.deptName != null and bean.deptName != ''">
+		and t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.sex != null and bean.sex != ''">
+		and t1.SEX like concat(concat('%',#{bean.sex}),'%')
+	</if>
+	<if test="bean.modelCountry != null and bean.modelCountry != ''">
+		and t1.MODEL_COUNTRY like concat(concat('%',#{bean.modelCountry}),'%')
+	</if>
+	<if test="bean.modelEconomize != null and bean.modelEconomize != ''">
+		and t1.MODEL_ECONOMIZE like concat(concat('%',#{bean.modelEconomize}),'%')
+	</if>
+	<if test="bean.deptTwoId != null and bean.deptTwoId != ''">
+		and t1.DEPT_TWO_ID like concat(concat('%',#{bean.deptTwoId}),'%')
+	</if>
+	<if test="bean.workDateBegin != null">
+		and t1.WORK_DATE &gt;= #{bean.workDateBegin}
+	</if>
+	<if test="bean.workDateEnd != null">
+		and t1.WORK_DATE &lt;= #{bean.workDateEnd}
+	</if>
+	<if test="bean.honorName != null and bean.honorName != ''">
+		and t1.HONOR_NAME like concat(concat('%',#{bean.honorName}),'%')
+	</if>
+	<if test="bean.categoryType != null and bean.categoryType != ''">
+		and t1.CATEGORY_TYPE like concat(concat('%',#{bean.categoryType}),'%')
+	</if>
+	<if test="bean.postName != null and bean.postName != ''">
+		and t1.POST_NAME like concat(concat('%',#{bean.postName}),'%')
+	</if>
+	<if test="bean.userCode != null and bean.userCode != ''">
+		and t1.USER_CODE like concat(concat('%',#{bean.userCode}),'%')
+	</if>
+	<if test="bean.honorFileName != null and bean.honorFileName != ''">
+		and t1.HONOR_FILE_NAME like concat(concat('%',#{bean.honorFileName}),'%')
+	</if>
+	<if test="bean.requestDate != null and bean.requestDate != ''">
+		and t1.REQUEST_DATE like concat(concat('%',#{bean.requestDate}),'%')
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.appointmentLevel != null and bean.appointmentLevel != ''">
+		and t1.APPOINTMENT_LEVEL like concat(concat('%',#{bean.appointmentLevel}),'%')
+	</if>
+	<if test="bean.tel != null">
+		and t1.TEL = #{bean.tel}
+	</if>
+	<if test="bean.deptOneName != null and bean.deptOneName != ''">
+		and t1.DEPT_ONE_NAME like concat(concat('%',#{bean.deptOneName}),'%')
+	</if>
+	<if test="bean.modelCity != null and bean.modelCity != ''">
+		and t1.MODEL_CITY like concat(concat('%',#{bean.modelCity}),'%')
+	</if>
+	<if test="bean.modelName != null and bean.modelName != ''">
+		and t1.MODEL_NAME like concat(concat('%',#{bean.modelName}),'%')
+	</if>
+	<if test="bean.data14 != null and bean.data14 != ''">
+		and t1.DATA_14 like concat(concat('%',#{bean.data14}),'%')
+	</if>
+	<if test="bean.honorDateBegin != null">
+		and t1.HONOR_DATE &gt;= #{bean.honorDateBegin}
+	</if>
+	<if test="bean.honorDateEnd != null">
+		and t1.HONOR_DATE &lt;= #{bean.honorDateEnd}
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.data11Begin != null">
+		or t1.DATA_11 &gt;= #{bean.data11Begin}
+	</if>
+	<if test="bean.data11End != null">
+		or t1.DATA_11 &lt;= #{bean.data11End}
+	</if>
+	<if test="bean.data10 != null and bean.data10 != ''">
+		or t1.DATA_10 like concat(concat('%',#{bean.data10}),'%')
+	</if>
+	<if test="bean.data12 != null">
+		or t1.DATA_12 = #{bean.data12}
+	</if>
+	<if test="bean.requestUser != null and bean.requestUser != ''">
+		or t1.REQUEST_USER like concat(concat('%',#{bean.requestUser}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.annex != null and bean.annex != ''">
+		or t1.ANNEX like concat(concat('%',#{bean.annex}),'%')
+	</if>
+	<if test="bean.deptTwoName != null and bean.deptTwoName != ''">
+		or t1.DEPT_TWO_NAME like concat(concat('%',#{bean.deptTwoName}),'%')
+	</if>
+	<if test="bean.honorOrgan != null and bean.honorOrgan != ''">
+		or t1.HONOR_ORGAN like concat(concat('%',#{bean.honorOrgan}),'%')
+	</if>
+	<if test="bean.nation != null and bean.nation != ''">
+		or t1.NATION like concat(concat('%',#{bean.nation}),'%')
+	</if>
+	<if test="bean.deptOneId != null and bean.deptOneId != ''">
+		or t1.DEPT_ONE_ID like concat(concat('%',#{bean.deptOneId}),'%')
+	</if>
+	<if test="bean.deptThreeId != null and bean.deptThreeId != ''">
+		or t1.DEPT_THREE_ID like concat(concat('%',#{bean.deptThreeId}),'%')
+	</if>
+	<if test="bean.data1 != null and bean.data1 != ''">
+		or t1.DATA_1 = #{bean.data1}
+	</if>
+	<if test="bean.data2 != null and bean.data2 != ''">
+		or t1.DATA_2 like concat(concat('%',#{bean.data2}),'%')
+	</if>
+	<if test="bean.data3 != null and bean.data3 != ''">
+		or t1.DATA_3 like concat(concat('%',#{bean.data3}),'%')
+	</if>
+	<if test="bean.skillLevel != null and bean.skillLevel != ''">
+		or t1.SKILL_LEVEL like concat(concat('%',#{bean.skillLevel}),'%')
+	</if>
+	<if test="bean.data4 != null and bean.data4 != ''">
+		or t1.DATA_4 like concat(concat('%',#{bean.data4}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.birthdayBegin != null">
+		or t1.BIRTHDAY &gt;= #{bean.birthdayBegin}
+	</if>
+	<if test="bean.birthdayEnd != null">
+		or t1.BIRTHDAY &lt;= #{bean.birthdayEnd}
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.data9 != null and bean.data9 != ''">
+		or t1.DATA_9 like concat(concat('%',#{bean.data9}),'%')
+	</if>
+	<if test="bean.deptId != null and bean.deptId != ''">
+		or t1.DEPT_ID like concat(concat('%',#{bean.deptId}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.data5 != null and bean.data5 != ''">
+		or t1.DATA_5 like concat(concat('%',#{bean.data5}),'%')
+	</if>
+	<if test="bean.educationLevel != null and bean.educationLevel != ''">
+		or t1.EDUCATION_LEVEL like concat(concat('%',#{bean.educationLevel}),'%')
+	</if>
+	<if test="bean.data6 != null and bean.data6 != ''">
+		or t1.DATA_6 like concat(concat('%',#{bean.data6}),'%')
+	</if>
+	<if test="bean.autoCode != null and bean.autoCode != ''">
+		or t1.AUTO_CODE like concat(concat('%',#{bean.autoCode}),'%')
+	</if>
+	<if test="bean.data7 != null and bean.data7 != ''">
+		or t1.DATA_7 like concat(concat('%',#{bean.data7}),'%')
+	</if>
+	<if test="bean.data8 != null and bean.data8 != ''">
+		or t1.DATA_8 like concat(concat('%',#{bean.data8}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.deptThreeName != null and bean.deptThreeName != ''">
+		or t1.DEPT_THREE_NAME like concat(concat('%',#{bean.deptThreeName}),'%')
+	</if>
+	<if test="bean.professionalRank != null and bean.professionalRank != ''">
+		or t1.PROFESSIONAL_RANK like concat(concat('%',#{bean.professionalRank}),'%')
+	</if>
+	<if test="bean.politicalOutlook != null and bean.politicalOutlook != ''">
+		or t1.POLITICAL_OUTLOOK like concat(concat('%',#{bean.politicalOutlook}),'%')
+	</if>
+	<if test="bean.modelLevel != null and bean.modelLevel != ''">
+		or t1.MODEL_LEVEL like concat(concat('%',#{bean.modelLevel}),'%')
+	</if>
+	<if test="bean.speciality != null and bean.speciality != ''">
+		or t1.SPECIALITY like concat(concat('%',#{bean.speciality}),'%')
+	</if>
+	<if test="bean.modelCompany != null and bean.modelCompany != ''">
+		or t1.MODEL_COMPANY like concat(concat('%',#{bean.modelCompany}),'%')
+	</if>
+	<if test="bean.requestUserId != null and bean.requestUserId != ''">
+		or t1.REQUEST_USER_ID like concat(concat('%',#{bean.requestUserId}),'%')
+	</if>
+	<if test="bean.deptName != null and bean.deptName != ''">
+		or t1.DEPT_NAME like concat(concat('%',#{bean.deptName}),'%')
+	</if>
+	<if test="bean.sex != null and bean.sex != ''">
+		or t1.SEX like concat(concat('%',#{bean.sex}),'%')
+	</if>
+	<if test="bean.modelCountry != null and bean.modelCountry != ''">
+		or t1.MODEL_COUNTRY like concat(concat('%',#{bean.modelCountry}),'%')
+	</if>
+	<if test="bean.modelEconomize != null and bean.modelEconomize != ''">
+		or t1.MODEL_ECONOMIZE like concat(concat('%',#{bean.modelEconomize}),'%')
+	</if>
+	<if test="bean.deptTwoId != null and bean.deptTwoId != ''">
+		or t1.DEPT_TWO_ID like concat(concat('%',#{bean.deptTwoId}),'%')
+	</if>
+	<if test="bean.workDateBegin != null">
+		or t1.WORK_DATE &gt;= #{bean.workDateBegin}
+	</if>
+	<if test="bean.workDateEnd != null">
+		or t1.WORK_DATE &lt;= #{bean.workDateEnd}
+	</if>
+	<if test="bean.honorName != null and bean.honorName != ''">
+		or t1.HONOR_NAME like concat(concat('%',#{bean.honorName}),'%')
+	</if>
+	<if test="bean.categoryType != null and bean.categoryType != ''">
+		or t1.CATEGORY_TYPE like concat(concat('%',#{bean.categoryType}),'%')
+	</if>
+	<if test="bean.postName != null and bean.postName != ''">
+		or t1.POST_NAME like concat(concat('%',#{bean.postName}),'%')
+	</if>
+	<if test="bean.userCode != null and bean.userCode != ''">
+		or t1.USER_CODE like concat(concat('%',#{bean.userCode}),'%')
+	</if>
+	<if test="bean.honorFileName != null and bean.honorFileName != ''">
+		or t1.HONOR_FILE_NAME like concat(concat('%',#{bean.honorFileName}),'%')
+	</if>
+	<if test="bean.requestDate != null and bean.requestDate != ''">
+		or t1.REQUEST_DATE like concat(concat('%',#{bean.requestDate}),'%')
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.appointmentLevel != null and bean.appointmentLevel != ''">
+		or t1.APPOINTMENT_LEVEL like concat(concat('%',#{bean.appointmentLevel}),'%')
+	</if>
+	<if test="bean.tel != null">
+		or t1.TEL = #{bean.tel}
+	</if>
+	<if test="bean.deptOneName != null and bean.deptOneName != ''">
+		or t1.DEPT_ONE_NAME like concat(concat('%',#{bean.deptOneName}),'%')
+	</if>
+	<if test="bean.modelCity != null and bean.modelCity != ''">
+		or t1.MODEL_CITY like concat(concat('%',#{bean.modelCity}),'%')
+	</if>
+	<if test="bean.modelName != null and bean.modelName != ''">
+		or t1.MODEL_NAME like concat(concat('%',#{bean.modelName}),'%')
+	</if>
+	<if test="bean.data14 != null and bean.data14 != ''">
+		or t1.DATA_14 like concat(concat('%',#{bean.data14}),'%')
+	</if>
+	<if test="bean.honorDateBegin != null">
+		or t1.HONOR_DATE &gt;= #{bean.honorDateBegin}
+	</if>
+	<if test="bean.honorDateEnd != null">
+		or t1.HONOR_DATE &lt;= #{bean.honorDateEnd}
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_TU_MODEL_WORKER -->
+<select id="searchDynTuModelWorkerByPage" parameterType="java.util.Map" resultMap="DynTuModelWorkerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_TU_MODEL_WORKER t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_TU_MODEL_WORKER -->
+<select id="searchDynTuModelWorker" parameterType="java.util.Map" resultMap="DynTuModelWorkerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_TU_MODEL_WORKER t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_TU_MODEL_WORKER（导出） -->
+<select id="searchDynTuModelWorkerForExport" parameterType="java.util.Map" resultMap="DynTuModelWorkerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_TU_MODEL_WORKER t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_TU_MODEL_WORKER -->
+<select id="findDynTuModelWorkerById" parameterType="java.lang.String" resultMap="DynTuModelWorkerDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_TU_MODEL_WORKER t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_TU_MODEL_WORKER -->
+<insert id="insertDynTuModelWorker" parameterType="avicit.tu.dyntumodelworker.dto.DynTuModelWorkerDTO">
+	insert into DYN_TU_MODEL_WORKER
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="data11 != null">
+			DATA_11,
+		</if>
+		<if test="data10 != null">
+			DATA_10,
+		</if>
+		<if test="data12 != null">
+			DATA_12,
+		</if>
+		<if test="requestUser != null">
+			REQUEST_USER,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="annex != null">
+			ANNEX,
+		</if>
+		<if test="deptTwoName != null">
+			DEPT_TWO_NAME,
+		</if>
+		<if test="honorOrgan != null">
+			HONOR_ORGAN,
+		</if>
+		<if test="nation != null">
+			NATION,
+		</if>
+		<if test="deptOneId != null">
+			DEPT_ONE_ID,
+		</if>
+		<if test="deptThreeId != null">
+			DEPT_THREE_ID,
+		</if>
+		<if test="data1 != null">
+			DATA_1,
+		</if>
+		<if test="data2 != null">
+			DATA_2,
+		</if>
+		<if test="data3 != null">
+			DATA_3,
+		</if>
+		<if test="skillLevel != null">
+			SKILL_LEVEL,
+		</if>
+		<if test="data4 != null">
+			DATA_4,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="birthday != null">
+			BIRTHDAY,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="data9 != null">
+			DATA_9,
+		</if>
+		<if test="deptId != null">
+			DEPT_ID,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="data5 != null">
+			DATA_5,
+		</if>
+		<if test="educationLevel != null">
+			EDUCATION_LEVEL,
+		</if>
+		<if test="data6 != null">
+			DATA_6,
+		</if>
+		<if test="autoCode != null">
+			AUTO_CODE,
+		</if>
+		<if test="data7 != null">
+			DATA_7,
+		</if>
+		<if test="data8 != null">
+			DATA_8,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="deptThreeName != null">
+			DEPT_THREE_NAME,
+		</if>
+		<if test="professionalRank != null">
+			PROFESSIONAL_RANK,
+		</if>
+		<if test="politicalOutlook != null">
+			POLITICAL_OUTLOOK,
+		</if>
+		<if test="modelLevel != null">
+			MODEL_LEVEL,
+		</if>
+		<if test="speciality != null">
+			SPECIALITY,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="modelCompany != null">
+			MODEL_COMPANY,
+		</if>
+		<if test="requestUserId != null">
+			REQUEST_USER_ID,
+		</if>
+		<if test="deptName != null">
+			DEPT_NAME,
+		</if>
+		<if test="sex != null">
+			SEX,
+		</if>
+		<if test="modelCountry != null">
+			MODEL_COUNTRY,
+		</if>
+		<if test="modelEconomize != null">
+			MODEL_ECONOMIZE,
+		</if>
+		<if test="deptTwoId != null">
+			DEPT_TWO_ID,
+		</if>
+		<if test="workDate != null">
+			WORK_DATE,
+		</if>
+		<if test="honorName != null">
+			HONOR_NAME,
+		</if>
+		<if test="categoryType != null">
+			CATEGORY_TYPE,
+		</if>
+		<if test="postName != null">
+			POST_NAME,
+		</if>
+		<if test="userCode != null">
+			USER_CODE,
+		</if>
+		<if test="honorFileName != null">
+			HONOR_FILE_NAME,
+		</if>
+		<if test="requestDate != null">
+			REQUEST_DATE,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="appointmentLevel != null">
+			APPOINTMENT_LEVEL,
+		</if>
+		<if test="tel != null">
+			TEL,
+		</if>
+		<if test="deptOneName != null">
+			DEPT_ONE_NAME,
+		</if>
+		<if test="modelCity != null">
+			MODEL_CITY,
+		</if>
+		<if test="modelName != null">
+			MODEL_NAME,
+		</if>
+		<if test="data13 != null">
+			DATA_13,
+		</if>
+		<if test="data14 != null">
+			DATA_14,
+		</if>
+		<if test="honorDate != null">
+			HONOR_DATE,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="data11 != null">
+			#{data11,jdbcType = TIMESTAMP},
+		</if>
+		<if test="data10 != null">
+			#{data10,jdbcType = VARCHAR},
+		</if>
+		<if test="data12 != null">
+			#{data12,jdbcType = DECIMAL},
+		</if>
+		<if test="requestUser != null">
+			#{requestUser,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="annex != null">
+			#{annex,jdbcType = VARCHAR},
+		</if>
+		<if test="deptTwoName != null">
+			#{deptTwoName,jdbcType = VARCHAR},
+		</if>
+		<if test="honorOrgan != null">
+			#{honorOrgan,jdbcType = VARCHAR},
+		</if>
+		<if test="nation != null">
+			#{nation,jdbcType = VARCHAR},
+		</if>
+		<if test="deptOneId != null">
+			#{deptOneId,jdbcType = VARCHAR},
+		</if>
+		<if test="deptThreeId != null">
+			#{deptThreeId,jdbcType = VARCHAR},
+		</if>
+		<if test="data1 != null">
+			#{data1,jdbcType = VARCHAR},
+		</if>
+		<if test="data2 != null">
+			#{data2,jdbcType = VARCHAR},
+		</if>
+		<if test="data3 != null">
+			#{data3,jdbcType = VARCHAR},
+		</if>
+		<if test="skillLevel != null">
+			#{skillLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="data4 != null">
+			#{data4,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="birthday != null">
+			#{birthday,jdbcType = TIMESTAMP},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="data9 != null">
+			#{data9,jdbcType = VARCHAR},
+		</if>
+		<if test="deptId != null">
+			#{deptId,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="data5 != null">
+			#{data5,jdbcType = VARCHAR},
+		</if>
+		<if test="educationLevel != null">
+			#{educationLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="data6 != null">
+			#{data6,jdbcType = VARCHAR},
+		</if>
+		<if test="autoCode != null">
+			#{autoCode,jdbcType = VARCHAR},
+		</if>
+		<if test="data7 != null">
+			#{data7,jdbcType = VARCHAR},
+		</if>
+		<if test="data8 != null">
+			#{data8,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="deptThreeName != null">
+			#{deptThreeName,jdbcType = VARCHAR},
+		</if>
+		<if test="professionalRank != null">
+			#{professionalRank,jdbcType = VARCHAR},
+		</if>
+		<if test="politicalOutlook != null">
+			#{politicalOutlook,jdbcType = VARCHAR},
+		</if>
+		<if test="modelLevel != null">
+			#{modelLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="speciality != null">
+			#{speciality,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="modelCompany != null">
+			#{modelCompany,jdbcType = VARCHAR},
+		</if>
+		<if test="requestUserId != null">
+			#{requestUserId,jdbcType = VARCHAR},
+		</if>
+		<if test="deptName != null">
+			#{deptName,jdbcType = VARCHAR},
+		</if>
+		<if test="sex != null">
+			#{sex,jdbcType = VARCHAR},
+		</if>
+		<if test="modelCountry != null">
+			#{modelCountry,jdbcType = VARCHAR},
+		</if>
+		<if test="modelEconomize != null">
+			#{modelEconomize,jdbcType = VARCHAR},
+		</if>
+		<if test="deptTwoId != null">
+			#{deptTwoId,jdbcType = VARCHAR},
+		</if>
+		<if test="workDate != null">
+			#{workDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="honorName != null">
+			#{honorName,jdbcType = VARCHAR},
+		</if>
+		<if test="categoryType != null">
+			#{categoryType,jdbcType = VARCHAR},
+		</if>
+		<if test="postName != null">
+			#{postName,jdbcType = VARCHAR},
+		</if>
+		<if test="userCode != null">
+			#{userCode,jdbcType = VARCHAR},
+		</if>
+		<if test="honorFileName != null">
+			#{honorFileName,jdbcType = VARCHAR},
+		</if>
+		<if test="requestDate != null">
+			#{requestDate,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="appointmentLevel != null">
+			#{appointmentLevel,jdbcType = VARCHAR},
+		</if>
+		<if test="tel != null">
+			#{tel,jdbcType = DECIMAL},
+		</if>
+		<if test="deptOneName != null">
+			#{deptOneName,jdbcType = VARCHAR},
+		</if>
+		<if test="modelCity != null">
+			#{modelCity,jdbcType = VARCHAR},
+		</if>
+		<if test="modelName != null">
+			#{modelName,jdbcType = VARCHAR},
+		</if>
+		<if test="data13 != null">
+			#{data13,jdbcType = BLOB},
+		</if>
+		<if test="data14 != null">
+			#{data14,jdbcType = CLOB},
+		</if>
+		<if test="honorDate != null">
+			#{honorDate,jdbcType = TIMESTAMP},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_TU_MODEL_WORKER -->
+<insert id="insertDynTuModelWorkerList" parameterType="java.util.List">
+	insert into DYN_TU_MODEL_WORKER(
+	DATA_11 ,
+	DATA_10 ,
+	DATA_12 ,
+	REQUEST_USER ,
+	LAST_UPDATE_DATE ,
+	ANNEX ,
+	DEPT_TWO_NAME ,
+	HONOR_ORGAN ,
+	NATION ,
+	DEPT_ONE_ID ,
+	DEPT_THREE_ID ,
+	DATA_1 ,
+	DATA_2 ,
+	DATA_3 ,
+	SKILL_LEVEL ,
+	DATA_4 ,
+	ID ,
+	CREATED_DEPT ,
+	LAST_UPDATE_IP ,
+	BIRTHDAY ,
+	CREATED_BY ,
+	DATA_9 ,
+	DEPT_ID ,
+	LAST_UPDATED_BY ,
+	DATA_5 ,
+	EDUCATION_LEVEL ,
+	DATA_6 ,
+	AUTO_CODE ,
+	DATA_7 ,
+	DATA_8 ,
+	CREATION_DATE ,
+	DEPT_THREE_NAME ,
+	PROFESSIONAL_RANK ,
+	POLITICAL_OUTLOOK ,
+	MODEL_LEVEL ,
+	SPECIALITY ,
+	ORG_IDENTITY ,
+	MODEL_COMPANY ,
+	REQUEST_USER_ID ,
+	DEPT_NAME ,
+	SEX ,
+	MODEL_COUNTRY ,
+	MODEL_ECONOMIZE ,
+	DEPT_TWO_ID ,
+	WORK_DATE ,
+	HONOR_NAME ,
+	CATEGORY_TYPE ,
+	POST_NAME ,
+	USER_CODE ,
+	HONOR_FILE_NAME ,
+	REQUEST_DATE ,
+	VERSION ,
+	APPOINTMENT_LEVEL ,
+	TEL ,
+	DEPT_ONE_NAME ,
+	MODEL_CITY ,
+	MODEL_NAME ,
+	DATA_13 ,
+	DATA_14 ,
+	HONOR_DATE )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.data11,jdbcType = TIMESTAMP} ,
+	#{item.data10,jdbcType = VARCHAR} ,
+	#{item.data12,jdbcType = DECIMAL} ,
+	#{item.requestUser,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.annex,jdbcType = VARCHAR} ,
+	#{item.deptTwoName,jdbcType = VARCHAR} ,
+	#{item.honorOrgan,jdbcType = VARCHAR} ,
+	#{item.nation,jdbcType = VARCHAR} ,
+	#{item.deptOneId,jdbcType = VARCHAR} ,
+	#{item.deptThreeId,jdbcType = VARCHAR} ,
+	#{item.data1,jdbcType = VARCHAR} ,
+	#{item.data2,jdbcType = VARCHAR} ,
+	#{item.data3,jdbcType = VARCHAR} ,
+	#{item.skillLevel,jdbcType = VARCHAR} ,
+	#{item.data4,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.birthday,jdbcType = TIMESTAMP} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.data9,jdbcType = VARCHAR} ,
+	#{item.deptId,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.data5,jdbcType = VARCHAR} ,
+	#{item.educationLevel,jdbcType = VARCHAR} ,
+	#{item.data6,jdbcType = VARCHAR} ,
+	#{item.autoCode,jdbcType = VARCHAR} ,
+	#{item.data7,jdbcType = VARCHAR} ,
+	#{item.data8,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.deptThreeName,jdbcType = VARCHAR} ,
+	#{item.professionalRank,jdbcType = VARCHAR} ,
+	#{item.politicalOutlook,jdbcType = VARCHAR} ,
+	#{item.modelLevel,jdbcType = VARCHAR} ,
+	#{item.speciality,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.modelCompany,jdbcType = VARCHAR} ,
+	#{item.requestUserId,jdbcType = VARCHAR} ,
+	#{item.deptName,jdbcType = VARCHAR} ,
+	#{item.sex,jdbcType = VARCHAR} ,
+	#{item.modelCountry,jdbcType = VARCHAR} ,
+	#{item.modelEconomize,jdbcType = VARCHAR} ,
+	#{item.deptTwoId,jdbcType = VARCHAR} ,
+	#{item.workDate,jdbcType = TIMESTAMP} ,
+	#{item.honorName,jdbcType = VARCHAR} ,
+	#{item.categoryType,jdbcType = VARCHAR} ,
+	#{item.postName,jdbcType = VARCHAR} ,
+	#{item.userCode,jdbcType = VARCHAR} ,
+	#{item.honorFileName,jdbcType = VARCHAR} ,
+	#{item.requestDate,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.appointmentLevel,jdbcType = VARCHAR} ,
+	#{item.tel,jdbcType = DECIMAL} ,
+	#{item.deptOneName,jdbcType = VARCHAR} ,
+	#{item.modelCity,jdbcType = VARCHAR} ,
+	#{item.modelName,jdbcType = VARCHAR} ,
+	#{item.data13,jdbcType = BLOB} ,
+	#{item.data14,jdbcType = CLOB} ,
+	#{item.honorDate,jdbcType = TIMESTAMP} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_TU_MODEL_WORKER -->
+<update id="updateDynTuModelWorkerSensitive" parameterType="avicit.tu.dyntumodelworker.dto.DynTuModelWorkerDTO">
+	update DYN_TU_MODEL_WORKER
+	<set>
+		<trim suffixOverrides=",">
+			<if test="data11 != null">
+				DATA_11 = #{data11,jdbcType = TIMESTAMP},
+			</if>
+			<if test="data10 != null">
+				DATA_10 = #{data10,jdbcType = VARCHAR},
+			</if>
+			<if test="data12 != null">
+				DATA_12 = #{data12,jdbcType = DECIMAL},
+			</if>
+			<if test="requestUser != null">
+				REQUEST_USER = #{requestUser,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="annex != null">
+				ANNEX = #{annex,jdbcType = VARCHAR},
+			</if>
+			<if test="deptTwoName != null">
+				DEPT_TWO_NAME = #{deptTwoName,jdbcType = VARCHAR},
+			</if>
+			<if test="honorOrgan != null">
+				HONOR_ORGAN = #{honorOrgan,jdbcType = VARCHAR},
+			</if>
+			<if test="nation != null">
+				NATION = #{nation,jdbcType = VARCHAR},
+			</if>
+			<if test="deptOneId != null">
+				DEPT_ONE_ID = #{deptOneId,jdbcType = VARCHAR},
+			</if>
+			<if test="deptThreeId != null">
+				DEPT_THREE_ID = #{deptThreeId,jdbcType = VARCHAR},
+			</if>
+			<if test="data1 != null">
+				DATA_1 = #{data1,jdbcType = VARCHAR},
+			</if>
+			<if test="data2 != null">
+				DATA_2 = #{data2,jdbcType = VARCHAR},
+			</if>
+			<if test="data3 != null">
+				DATA_3 = #{data3,jdbcType = VARCHAR},
+			</if>
+			<if test="skillLevel != null">
+				SKILL_LEVEL = #{skillLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="data4 != null">
+				DATA_4 = #{data4,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="birthday != null">
+				BIRTHDAY = #{birthday,jdbcType = TIMESTAMP},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="data9 != null">
+				DATA_9 = #{data9,jdbcType = VARCHAR},
+			</if>
+			<if test="deptId != null">
+				DEPT_ID = #{deptId,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="data5 != null">
+				DATA_5 = #{data5,jdbcType = VARCHAR},
+			</if>
+			<if test="educationLevel != null">
+				EDUCATION_LEVEL = #{educationLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="data6 != null">
+				DATA_6 = #{data6,jdbcType = VARCHAR},
+			</if>
+			<if test="autoCode != null">
+				AUTO_CODE = #{autoCode,jdbcType = VARCHAR},
+			</if>
+			<if test="data7 != null">
+				DATA_7 = #{data7,jdbcType = VARCHAR},
+			</if>
+			<if test="data8 != null">
+				DATA_8 = #{data8,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="deptThreeName != null">
+				DEPT_THREE_NAME = #{deptThreeName,jdbcType = VARCHAR},
+			</if>
+			<if test="professionalRank != null">
+				PROFESSIONAL_RANK = #{professionalRank,jdbcType = VARCHAR},
+			</if>
+			<if test="politicalOutlook != null">
+				POLITICAL_OUTLOOK = #{politicalOutlook,jdbcType = VARCHAR},
+			</if>
+			<if test="modelLevel != null">
+				MODEL_LEVEL = #{modelLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="speciality != null">
+				SPECIALITY = #{speciality,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="modelCompany != null">
+				MODEL_COMPANY = #{modelCompany,jdbcType = VARCHAR},
+			</if>
+			<if test="requestUserId != null">
+				REQUEST_USER_ID = #{requestUserId,jdbcType = VARCHAR},
+			</if>
+			<if test="deptName != null">
+				DEPT_NAME = #{deptName,jdbcType = VARCHAR},
+			</if>
+			<if test="sex != null">
+				SEX = #{sex,jdbcType = VARCHAR},
+			</if>
+			<if test="modelCountry != null">
+				MODEL_COUNTRY = #{modelCountry,jdbcType = VARCHAR},
+			</if>
+			<if test="modelEconomize != null">
+				MODEL_ECONOMIZE = #{modelEconomize,jdbcType = VARCHAR},
+			</if>
+			<if test="deptTwoId != null">
+				DEPT_TWO_ID = #{deptTwoId,jdbcType = VARCHAR},
+			</if>
+			<if test="workDate != null">
+				WORK_DATE = #{workDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="honorName != null">
+				HONOR_NAME = #{honorName,jdbcType = VARCHAR},
+			</if>
+			<if test="categoryType != null">
+				CATEGORY_TYPE = #{categoryType,jdbcType = VARCHAR},
+			</if>
+			<if test="postName != null">
+				POST_NAME = #{postName,jdbcType = VARCHAR},
+			</if>
+			<if test="userCode != null">
+				USER_CODE = #{userCode,jdbcType = VARCHAR},
+			</if>
+			<if test="honorFileName != null">
+				HONOR_FILE_NAME = #{honorFileName,jdbcType = VARCHAR},
+			</if>
+			<if test="requestDate != null">
+				REQUEST_DATE = #{requestDate,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="appointmentLevel != null">
+				APPOINTMENT_LEVEL = #{appointmentLevel,jdbcType = VARCHAR},
+			</if>
+			<if test="tel != null">
+				TEL = #{tel,jdbcType = DECIMAL},
+			</if>
+			<if test="deptOneName != null">
+				DEPT_ONE_NAME = #{deptOneName,jdbcType = VARCHAR},
+			</if>
+			<if test="modelCity != null">
+				MODEL_CITY = #{modelCity,jdbcType = VARCHAR},
+			</if>
+			<if test="modelName != null">
+				MODEL_NAME = #{modelName,jdbcType = VARCHAR},
+			</if>
+			<if test="data13 != null">
+				DATA_13 = #{data13,jdbcType = BLOB},
+			</if>
+			<if test="data14 != null">
+				DATA_14 = #{data14,jdbcType = CLOB},
+			</if>
+			<if test="honorDate != null">
+				HONOR_DATE = #{honorDate,jdbcType = TIMESTAMP},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_TU_MODEL_WORKER -->
+<update id="updateDynTuModelWorkerAll" parameterType="avicit.tu.dyntumodelworker.dto.DynTuModelWorkerDTO">
+	update DYN_TU_MODEL_WORKER
+	set
+	DATA_11 = #{data11,jdbcType = TIMESTAMP} ,
+	DATA_10 = #{data10,jdbcType = VARCHAR} ,
+	DATA_12 = #{data12,jdbcType = DECIMAL} ,
+	REQUEST_USER = #{requestUser,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	ANNEX = #{annex,jdbcType = VARCHAR} ,
+	DEPT_TWO_NAME = #{deptTwoName,jdbcType = VARCHAR} ,
+	HONOR_ORGAN = #{honorOrgan,jdbcType = VARCHAR} ,
+	NATION = #{nation,jdbcType = VARCHAR} ,
+	DEPT_ONE_ID = #{deptOneId,jdbcType = VARCHAR} ,
+	DEPT_THREE_ID = #{deptThreeId,jdbcType = VARCHAR} ,
+	DATA_1 = #{data1,jdbcType = VARCHAR} ,
+	DATA_2 = #{data2,jdbcType = VARCHAR} ,
+	DATA_3 = #{data3,jdbcType = VARCHAR} ,
+	SKILL_LEVEL = #{skillLevel,jdbcType = VARCHAR} ,
+	DATA_4 = #{data4,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	BIRTHDAY = #{birthday,jdbcType = TIMESTAMP} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	DATA_9 = #{data9,jdbcType = VARCHAR} ,
+	DEPT_ID = #{deptId,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	DATA_5 = #{data5,jdbcType = VARCHAR} ,
+	EDUCATION_LEVEL = #{educationLevel,jdbcType = VARCHAR} ,
+	DATA_6 = #{data6,jdbcType = VARCHAR} ,
+	AUTO_CODE = #{autoCode,jdbcType = VARCHAR} ,
+	DATA_7 = #{data7,jdbcType = VARCHAR} ,
+	DATA_8 = #{data8,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	DEPT_THREE_NAME = #{deptThreeName,jdbcType = VARCHAR} ,
+	PROFESSIONAL_RANK = #{professionalRank,jdbcType = VARCHAR} ,
+	POLITICAL_OUTLOOK = #{politicalOutlook,jdbcType = VARCHAR} ,
+	MODEL_LEVEL = #{modelLevel,jdbcType = VARCHAR} ,
+	SPECIALITY = #{speciality,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	MODEL_COMPANY = #{modelCompany,jdbcType = VARCHAR} ,
+	REQUEST_USER_ID = #{requestUserId,jdbcType = VARCHAR} ,
+	DEPT_NAME = #{deptName,jdbcType = VARCHAR} ,
+	SEX = #{sex,jdbcType = VARCHAR} ,
+	MODEL_COUNTRY = #{modelCountry,jdbcType = VARCHAR} ,
+	MODEL_ECONOMIZE = #{modelEconomize,jdbcType = VARCHAR} ,
+	DEPT_TWO_ID = #{deptTwoId,jdbcType = VARCHAR} ,
+	WORK_DATE = #{workDate,jdbcType = TIMESTAMP} ,
+	HONOR_NAME = #{honorName,jdbcType = VARCHAR} ,
+	CATEGORY_TYPE = #{categoryType,jdbcType = VARCHAR} ,
+	POST_NAME = #{postName,jdbcType = VARCHAR} ,
+	USER_CODE = #{userCode,jdbcType = VARCHAR} ,
+	HONOR_FILE_NAME = #{honorFileName,jdbcType = VARCHAR} ,
+	REQUEST_DATE = #{requestDate,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	APPOINTMENT_LEVEL = #{appointmentLevel,jdbcType = VARCHAR} ,
+	TEL = #{tel,jdbcType = DECIMAL} ,
+	DEPT_ONE_NAME = #{deptOneName,jdbcType = VARCHAR} ,
+	MODEL_CITY = #{modelCity,jdbcType = VARCHAR} ,
+	MODEL_NAME = #{modelName,jdbcType = VARCHAR} ,
+	DATA_13 = #{data13,jdbcType = BLOB} ,
+	DATA_14 = #{data14,jdbcType = CLOB} ,
+	HONOR_DATE = #{honorDate,jdbcType = TIMESTAMP} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_TU_MODEL_WORKER -->
+<update id="updateDynTuModelWorkerList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_TU_MODEL_WORKER
+		set
+		DATA_11 = #{item.data11,jdbcType = TIMESTAMP} ,
+		DATA_10 = #{item.data10,jdbcType = VARCHAR} ,
+		DATA_12 = #{item.data12,jdbcType = DECIMAL} ,
+		REQUEST_USER = #{item.requestUser,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		ANNEX = #{item.annex,jdbcType = VARCHAR} ,
+		DEPT_TWO_NAME = #{item.deptTwoName,jdbcType = VARCHAR} ,
+		HONOR_ORGAN = #{item.honorOrgan,jdbcType = VARCHAR} ,
+		NATION = #{item.nation,jdbcType = VARCHAR} ,
+		DEPT_ONE_ID = #{item.deptOneId,jdbcType = VARCHAR} ,
+		DEPT_THREE_ID = #{item.deptThreeId,jdbcType = VARCHAR} ,
+		DATA_1 = #{item.data1,jdbcType = VARCHAR} ,
+		DATA_2 = #{item.data2,jdbcType = VARCHAR} ,
+		DATA_3 = #{item.data3,jdbcType = VARCHAR} ,
+		SKILL_LEVEL = #{item.skillLevel,jdbcType = VARCHAR} ,
+		DATA_4 = #{item.data4,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		BIRTHDAY = #{item.birthday,jdbcType = TIMESTAMP} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		DATA_9 = #{item.data9,jdbcType = VARCHAR} ,
+		DEPT_ID = #{item.deptId,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		DATA_5 = #{item.data5,jdbcType = VARCHAR} ,
+		EDUCATION_LEVEL = #{item.educationLevel,jdbcType = VARCHAR} ,
+		DATA_6 = #{item.data6,jdbcType = VARCHAR} ,
+		AUTO_CODE = #{item.autoCode,jdbcType = VARCHAR} ,
+		DATA_7 = #{item.data7,jdbcType = VARCHAR} ,
+		DATA_8 = #{item.data8,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		DEPT_THREE_NAME = #{item.deptThreeName,jdbcType = VARCHAR} ,
+		PROFESSIONAL_RANK = #{item.professionalRank,jdbcType = VARCHAR} ,
+		POLITICAL_OUTLOOK = #{item.politicalOutlook,jdbcType = VARCHAR} ,
+		MODEL_LEVEL = #{item.modelLevel,jdbcType = VARCHAR} ,
+		SPECIALITY = #{item.speciality,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		MODEL_COMPANY = #{item.modelCompany,jdbcType = VARCHAR} ,
+		REQUEST_USER_ID = #{item.requestUserId,jdbcType = VARCHAR} ,
+		DEPT_NAME = #{item.deptName,jdbcType = VARCHAR} ,
+		SEX = #{item.sex,jdbcType = VARCHAR} ,
+		MODEL_COUNTRY = #{item.modelCountry,jdbcType = VARCHAR} ,
+		MODEL_ECONOMIZE = #{item.modelEconomize,jdbcType = VARCHAR} ,
+		DEPT_TWO_ID = #{item.deptTwoId,jdbcType = VARCHAR} ,
+		WORK_DATE = #{item.workDate,jdbcType = TIMESTAMP} ,
+		HONOR_NAME = #{item.honorName,jdbcType = VARCHAR} ,
+		CATEGORY_TYPE = #{item.categoryType,jdbcType = VARCHAR} ,
+		POST_NAME = #{item.postName,jdbcType = VARCHAR} ,
+		USER_CODE = #{item.userCode,jdbcType = VARCHAR} ,
+		HONOR_FILE_NAME = #{item.honorFileName,jdbcType = VARCHAR} ,
+		REQUEST_DATE = #{item.requestDate,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		APPOINTMENT_LEVEL = #{item.appointmentLevel,jdbcType = VARCHAR} ,
+		TEL = #{item.tel,jdbcType = DECIMAL} ,
+		DEPT_ONE_NAME = #{item.deptOneName,jdbcType = VARCHAR} ,
+		MODEL_CITY = #{item.modelCity,jdbcType = VARCHAR} ,
+		MODEL_NAME = #{item.modelName,jdbcType = VARCHAR} ,
+		DATA_13 = #{item.data13,jdbcType = BLOB} ,
+		DATA_14 = #{item.data14,jdbcType = CLOB} ,
+		HONOR_DATE = #{item.honorDate,jdbcType = TIMESTAMP} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_TU_MODEL_WORKER -->
+<delete id="deleteDynTuModelWorkerById" parameterType="java.lang.String">
+	delete from DYN_TU_MODEL_WORKER  where id = #{id}
+</delete>
+
+
+
+ 	<select id="queryOne" resultType="hashmap">
+		select count(dtm.model_level) as "value",
+		       case dtm.model_level
+		         when '1' then  '国家级荣誉'
+		         when '2' then  '省部级荣誉'
+		         when '3' then  '地市级荣誉'
+		         when '4' then  '公司级荣誉'
+		       end as "name"
+		  from dyn_tu_model_worker_f dtm
+		 group by dtm.model_level
+		 order by dtm.model_level
+	</select> 
+
+	<select id="queryOne2" resultType="hashmap">
+		select count(*) as "count"
+		  from dyn_tu_model_worker dtm
+	</select>
+
+ 	<select id="queryAge" resultType="hashmap">
+with psua as (
+select 
+case 
+when TO_NUMBER(TO_CHAR(SYSDATE,'YYYY')-TO_CHAR(dtm.BIRTHDAY,'YYYY')) &lt;= 35 then '小等于35'  
+  when TO_NUMBER(TO_CHAR(SYSDATE,'YYYY')-TO_CHAR(dtm.BIRTHDAY,'YYYY')) &gt;35 and  TO_NUMBER(TO_CHAR(SYSDATE,'YYYY')-TO_CHAR(dtm.BIRTHDAY,'YYYY')) &lt;= 50  then '35-50'   
+when TO_NUMBER(TO_CHAR(SYSDATE,'YYYY')-TO_CHAR(dtm.BIRTHDAY,'YYYY')) &gt;50 then '大于50'  
+end as name 
+from dyn_tu_model_worker dtm
+)
+,psub as (
+select count(psua.name) as val ,psua.name as name from psua
+where psua.name is not null
+group by psua.name
+)
+select psub.val as "value",psub.name as "name" from psub 
+</select>
+	
+ <select id="queryEducation" resultType="hashmap">
+    select count(dtm.EDUCATION_LEVEL) as "value",
+           dtm.EDUCATION_LEVEL as "name"
+      from dyn_tu_model_worker dtm
+		 group by dtm.EDUCATION_LEVEL
+		 order by dtm.EDUCATION_LEVEL
+
+</select>
+	
+<select id="queryPr" resultType="hashmap">
+    select count(dtm.PROFESSIONAL_RANK) as "value",
+           dtm.PROFESSIONAL_RANK as "name"
+      from dyn_tu_model_worker dtm
+     group by dtm.PROFESSIONAL_RANK
+     order by dtm.PROFESSIONAL_RANK
+</select>
+
+<select id="queryType" resultType="hashmap">
+    select count(dtm.CATEGORY_TYPE) as "value",
+           dtm.CATEGORY_TYPE as "name"
+      from dyn_tu_model_worker dtm
+     group by dtm.CATEGORY_TYPE
+     order by dtm.CATEGORY_TYPE
+</select>
+
+<select id="querySex" resultType="hashmap">
+    select count(dtm.DATA_1) as "value",
+           dtm.DATA_1 as "name"
+      from dyn_tu_model_worker dtm
+     group by dtm.DATA_1
+     order by dtm.DATA_1
+</select> 
+
+
+
+	
+
+</mapper>

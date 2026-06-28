@@ -1,0 +1,97 @@
+html,
+body {
+  margin: 0;
+  background:#F0F2F5;;
+}
+
+li {
+  list-style: none;
+}
+ul {
+  margin: 0;
+  padding: 0;
+}
+.clearfix {
+  zoom: 1;
+}
+.clearfix::before,
+.clearfix::after {
+  display: table;
+  content: "";
+}
+.clearfix::after {
+  clear: both;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+* {
+  font-family: "微软雅黑";
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: #f3f4f9;
+  border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #c8d2e0;
+  border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+*::-webkit-scrollbar-corner {
+  background: #c8d2e0;
+}
+.box {
+  padding: 5px 7px;
+}
+
+.pos_re {
+  position: relative;
+  padding-right: 400px;
+}
+.pos_right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 402px;
+}
+.col-2-left {
+  width: 50%;
+  float: left;
+}
+.wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 7px;
+}
+.index-download {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 999;
+  right: 50px;
+  bottom: 50px;
+  color: #338fe5;
+  text-align: center;
+  background-color: rgba(241, 241, 241, 0.8);
+  cursor: pointer;
+}
+.index-download .iconfont {
+  font-size: 32px;
+}
+.index-download:hover {
+  background-color: #90a7ff;
+}

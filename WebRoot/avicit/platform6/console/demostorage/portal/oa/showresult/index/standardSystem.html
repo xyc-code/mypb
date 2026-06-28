@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>规范制度</title>
+    <link href="./iconfont/iconfont.css" type="text/css" rel="stylesheet" />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>规范制度</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('commonFunction')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="content">
+          <li class="ct-list">
+            <span class="ctl-first"
+              ><img src="./img/combined_shape_2_u421.svg" alt=""
+            /></span>
+            <span class="ctl-second">差旅订票规范</span>
+            <span class="ctl-third"><img src="./img/u457.svg" alt=""/></span>
+          </li>
+          <li class="ct-list">
+            <span class="ctl-first"
+              ><img src="./img/combined_shape_2_u421.svg" alt=""
+            /></span>
+            <span class="ctl-second">客户服务制度</span>
+            <span class="ctl-third"><img src="./img/u457.svg" alt=""/></span>
+          </li>
+          <li class="ct-list">
+            <span class="ctl-first"
+              ><img src="./img/combined_shape_2_u421.svg" alt=""
+            /></span>
+            <span class="ctl-second">财务报销规范</span>
+            <span class="ctl-third"><img src="./img/u457.svg" alt=""/></span>
+          </li>
+          <li class="ct-list">
+            <span class="ctl-first"
+              ><img src="./img/combined_shape_2_u421.svg" alt=""
+            /></span>
+            <span class="ctl-second">价格管理制度</span>
+            <span class="ctl-third"><img src="./img/u457.svg" alt=""/></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+      function handleClick() {
+        window.open("standardSystem.html");
+      }
+
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      .content {
+      }
+      .ct-list {
+        border-bottom: 1px solid #eee;
+        padding: 12px;
+      }
+      .ctl-first {
+        display: inline-block;
+        width: 20px;
+        height: 24px;
+        background: url(./img/combined_shape_u419.svg) no-repeat;
+        text-align: center;
+        line-height: 24px;
+        margin: 0 10px;
+        background-size: 100% 100%;
+      }
+      .ctl-second {
+        font-family: 微软雅黑, sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: rgb(30, 30, 30);
+      }
+      .ctl-third {
+        float: right;
+        margin: 0 10px 0 0;
+      }
+    </style>
+  </body>
+</html>

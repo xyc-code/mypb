@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>采购计划</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>采购计划</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('plan')"-->
+<!--          ></i>-->
+          <i class="iconfont icon-refresh" title="刷新"></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <!--<div class="calender">
+          <span>2021-10</span>
+          <i class="iconfont icon-an-calendar11 ico-cale"></i>
+        </div>
+        <div class="clear"></div>-->
+        <div id="gaugeEchart" style="width: 100%;height: 260px;"></div>
+        <ul class="bottom-box">
+          <li class="bottom-list bottom-list-left">
+            <p class="bl-title"><span>2020年度完成率</span></p>
+            <p>
+              <span class="bl-number">50</span><span class="bl-percent">%</span>
+            </p>
+          </li>
+          <li class="bottom-list">
+            <p class="bl-title"><span>2021年度完成率</span></p>
+            <p>
+              <span class="bl-number">60</span><span class="bl-percent">%</span>
+            </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var gaugeChart = echarts.init(document.getElementById("gaugeEchart"));
+
+   var gaugeOption =  {
+    series: [{
+        type: 'gauge',
+        progress: {
+            show: true,
+            width: 10
+        },
+        axisLine: {
+            lineStyle: {
+                width: 10
+            }
+        },
+        axisTick: {
+            show: false
+        },
+        splitLine: {
+        	  distance: 2,
+            length: 5,
+            lineStyle: {
+                width: 2,
+                color: '#999'
+            }
+        },
+        axisLabel: {
+            distance: 15,
+            color: '#999',
+            fontSize: 12
+        },
+        anchor: {
+            show: true,
+            showAbove: true,
+            size: 8,
+            itemStyle: {
+                borderWidth: 15
+            }
+        },
+        title: {
+            show: false
+        },
+        detail: {
+            valueAnimation: true,
+            fontSize: 20,
+            offsetCenter: [0, '70%']
+        },
+        data: [{
+            value: 70
+        }]
+    }]
+};
+setInterval(function () {
+    gaugeOption.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+    gaugeChart.setOption(gaugeOption, true);
+}, 2000);
+
+
+    function downloadFile(fileName) {
+      let a = document.createElement("a");
+      a.href = "/download/template5/" + fileName + ".rar";
+      a.download = fileName + ".rar";
+      a.click();
+    }
+  </script>
+  <style>
+    .calender {
+      width: 30%;
+      height: 28px;
+      padding: 2px 8px 2px 12px;
+      line-height: 25px;
+      float: right;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-family: "Microsoft YaHei UI";
+      font-weight: 400;
+      font-style: normal;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.647058823529412);
+      margin: 0 20px 0 0;
+    }
+    .ico-cale {
+      float: right;
+      font-size: 20px;
+      color: #aaa;
+    }
+    .bottom-box {
+      height: 20%;
+      padding: 10px;
+    }
+    .bottom-list {
+      width: 49.8%;
+      float: left;
+      text-align: center;
+    }
+    .bottom-list-left {
+      border-right: 1px solid #f0f2f5;
+    }
+    .bl-title {
+      margin: 0 0 8px 0;
+      font-family: "PingFang SC 中等", "PingFang SC";
+      font-weight: 400;
+      font-style: normal;
+      font-size: 14px;
+      color: #7f8fa4;
+      line-height: 22px;
+    }
+    .bl-number {
+      font-family: "DIN Medium", "DIN";
+      font-weight: 500;
+      font-style: normal;
+      color: #354052;
+      line-height: 32px;
+      font-size: 24px;
+    }
+    .bl-percent {
+      font-family: "DIN Medium", "DIN";
+      font-weight: 500;
+      font-style: normal;
+      color: #354052;
+      line-height: 32px;
+      font-size: 14px;
+    }
+  </style>
+</html>

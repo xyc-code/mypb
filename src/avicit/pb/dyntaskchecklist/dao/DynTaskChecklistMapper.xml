@@ -1,0 +1,1782 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.dyntaskchecklist.dao.DynTaskChecklistDao">
+
+<resultMap id="DynTaskChecklistDTOMap" type="avicit.pb.dyntaskchecklist.dto.DynTaskChecklistDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="manifestOneAnd" column="MANIFEST_ONE_AND" jdbcType="VARCHAR" />
+		<result property="attribute12" column="ATTRIBUTE_12" jdbcType="VARCHAR" />
+		<result property="manifestPosen" column="MANIFEST_POSEN" jdbcType="VARCHAR" />
+		<result property="attribute11" column="ATTRIBUTE_11" jdbcType="VARCHAR" />
+		<result property="manifestIssue" column="MANIFEST_ISSUE" jdbcType="VARCHAR" />
+		<result property="attribute10" column="ATTRIBUTE_10" jdbcType="VARCHAR" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="manifestDateEnd" column="MANIFEST_DATE_END" jdbcType="TIMESTAMP" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="manifestLeadership" column="MANIFEST_LEADERSHIP" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+		<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+		<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+		<result property="manifestMeasure" column="MANIFEST_MEASURE" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="manifestCause" column="MANIFEST_CAUSE" jdbcType="VARCHAR" />
+		<result property="attribute09" column="ATTRIBUTE_09" jdbcType="VARCHAR" />
+		<result property="attribute08" column="ATTRIBUTE_08" jdbcType="VARCHAR" />
+		<result property="attribute07" column="ATTRIBUTE_07" jdbcType="VARCHAR" />
+		<result property="attribute06" column="ATTRIBUTE_06" jdbcType="VARCHAR" />
+		<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+		<result property="listMainly" column="LIST_MAINLY" jdbcType="VARCHAR" />
+		<result property="manifestIssueCont" column="MANIFEST_ISSUE_CONT" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="manifestQian" column="MANIFEST_QIAN" jdbcType="VARCHAR" />
+</resultMap>
+<resultMap id="BpmTrackExt" type="HashMap">
+ <result column="MESSAGE_" property="MESSAGE_" />
+ <result column="END_" property="END_" />
+  <result column="SEND_UNAME_" property="SEND_UNAME_" />
+</resultMap>
+<resultMap id="DynInspectionDTOMap" type="avicit.pb.dyntaskchecklist.dto.DynInspectionDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="inspectionOpinion" column="INSPECTION_OPINION" jdbcType="VARCHAR" />
+		<result property="attribute11" column="ATTRIBUTE_11" jdbcType="VARCHAR" />
+		<result property="attribute10" column="ATTRIBUTE_10" jdbcType="VARCHAR" />
+		<result property="inspectionMaterial" column="INSPECTION_MATERIAL" jdbcType="VARCHAR" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="inspectionOneAnd" column="INSPECTION_ONE_AND" jdbcType="VARCHAR" />
+		<result property="inspectionOpinionS" column="INSPECTION_OPINION_S" jdbcType="VARCHAR" />
+		<result property="inspectionOpinionEnd" column="INSPECTION_OPINION_END" jdbcType="VARCHAR" />
+		<result property="inspectionOn" column="INSPECTION_ON" jdbcType="VARCHAR" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="inspectionFromPosenTel" column="INSPECTION_FROM_POSEN_TEL" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="inspectionOpinionEndDate" column="INSPECTION_OPINION_END_DATE" jdbcType="TIMESTAMP" />
+		<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+		<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+		<result property="inspectionPosen" column="INSPECTION_POSEN" jdbcType="VARCHAR" />
+		<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+		<result property="inspectionOpinionDate" column="INSPECTION_OPINION_DATE" jdbcType="TIMESTAMP" />
+		<result property="inspectionEndIssueQk" column="INSPECTION_END_ISSUE_QK" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="inspectionFromPosenDept" column="INSPECTION_FROM_POSEN_DEPT" jdbcType="VARCHAR" />
+		<result property="attribute09" column="ATTRIBUTE_09" jdbcType="VARCHAR" />
+		<result property="attribute08" column="ATTRIBUTE_08" jdbcType="VARCHAR" />
+		<result property="attribute07" column="ATTRIBUTE_07" jdbcType="VARCHAR" />
+		<result property="inspectionFromDate" column="INSPECTION_FROM_DATE" jdbcType="TIMESTAMP" />
+		<result property="attribute06" column="ATTRIBUTE_06" jdbcType="VARCHAR" />
+		<result property="inspectionMeasureIssue" column="INSPECTION_MEASURE_ISSUE" jdbcType="VARCHAR" />
+		<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+		<result property="inspectionOpinionDateS" column="INSPECTION_OPINION_DATE_S" jdbcType="TIMESTAMP" />
+		<result property="inspectionFromOn" column="INSPECTION_FROM_ON" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="inspectionFromPosen" column="INSPECTION_FROM_POSEN" jdbcType="VARCHAR" />
+		<result property="inspectionEndIssue" column="INSPECTION_END_ISSUE" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="inspectionIssue" column="INSPECTION_ISSUE" jdbcType="VARCHAR" />
+</resultMap>
+
+<!-- 分页查询 DYN_TASK_CHECKLIST -->
+<select id="searchDynTaskChecklistByPage" parameterType="java.util.Map" resultMap="DynTaskChecklistDTOMap">
+	select
+		t1.id                             ,
+		t1.manifest_one_and               ,
+		t1.attribute_12                   ,
+		t1.manifest_posen                 ,
+		t1.attribute_11                   ,
+		t1.manifest_issue                 ,
+		t1.attribute_10                   ,
+		t1.last_update_date               ,
+		t1.manifest_date_end              ,
+		t1.created_dept                   ,
+		t1.last_update_ip                 ,
+		t1.manifest_leadership            ,
+		t1.created_by                     ,
+		t1.attribute_04                   ,
+		t1.last_updated_by                ,
+		t1.attribute_03                   ,
+		t1.attribute_02                   ,
+		t1.attribute_01                   ,
+		t1.manifest_measure               ,
+		t1.creation_date                  ,
+		t1.manifest_cause                 ,
+		t1.attribute_09                   ,
+		t1.attribute_08                   ,
+		t1.attribute_07                   ,
+		t1.attribute_06                   ,
+		t1.attribute_05                   ,
+		t1.list_mainly                    ,
+		t1.manifest_issue_cont            ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.manifest_qian                  
+	from dyn_task_checklist 	t1
+		<where>
+		t1.attribute_01 !='3'
+		 
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.manifestOneAnd != null and bean.manifestOneAnd != ''">
+				and t1.MANIFEST_ONE_AND like concat(concat('%',#{bean.manifestOneAnd}),'%') 
+			</if>
+			<if test="bean.attribute12 != null and bean.attribute12 != ''">
+				and t1.ATTRIBUTE_12 like concat(concat('%',#{bean.attribute12}),'%') 
+			</if>
+			<if test="bean.manifestPosen != null and bean.manifestPosen != ''">
+				and t1.MANIFEST_POSEN like concat(concat('%',#{bean.manifestPosen}),'%') 
+			</if>
+			<if test="bean.attribute11 != null and bean.attribute11 != ''">
+				and t1.ATTRIBUTE_11 like concat(concat('%',#{bean.attribute11}),'%') 
+			</if>
+			<if test="bean.manifestIssue != null and bean.manifestIssue != ''">
+				and t1.MANIFEST_ISSUE like concat(concat('%',#{bean.manifestIssue}),'%') 
+			</if>
+			<if test="bean.attribute10 != null and bean.attribute10 != ''">
+				and t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.manifestDateEndBegin != null and bean.manifestDateEndBegin != ''">
+				and t1.MANIFEST_DATE_END &gt;= #{bean.manifestDateEndBegin}
+			</if>
+			<if test="bean.manifestDateEndEnd != null and bean.manifestDateEndEnd != ''">
+				and t1.MANIFEST_DATE_END &lt;= #{bean.manifestDateEndEnd}
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.manifestLeadership != null and bean.manifestLeadership != ''">
+				and t1.MANIFEST_LEADERSHIP like concat(concat('%',#{bean.manifestLeadership}),'%') 
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.attribute04 != null and bean.attribute04 != ''">
+				and t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.attribute03 != null and bean.attribute03 != ''">
+				and t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%') 
+			</if>
+			<if test="bean.attribute02 != null and bean.attribute02 != ''">
+				and t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%') 
+			</if>
+			<if test="bean.attribute01 != null and bean.attribute01 != ''">
+				and t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%') 
+			</if>
+			<if test="bean.manifestMeasure != null and bean.manifestMeasure != ''">
+				and t1.MANIFEST_MEASURE like concat(concat('%',#{bean.manifestMeasure}),'%') 
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.manifestCause != null and bean.manifestCause != ''">
+				and t1.MANIFEST_CAUSE like concat(concat('%',#{bean.manifestCause}),'%') 
+			</if>
+			<if test="bean.attribute09 != null and bean.attribute09 != ''">
+				and t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%') 
+			</if>
+			<if test="bean.attribute08 != null and bean.attribute08 != ''">
+				and t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%') 
+			</if>
+			<if test="bean.attribute07 != null and bean.attribute07 != ''">
+				and t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%') 
+			</if>
+			<if test="bean.attribute06 != null and bean.attribute06 != ''">
+				and t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%') 
+			</if>
+			<if test="bean.attribute05 != null and bean.attribute05 != ''">
+				and t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%') 
+			</if>
+			<if test="bean.listMainly != null and bean.listMainly != ''">
+				and t1.LIST_MAINLY like concat(concat('%',#{bean.listMainly}),'%') 
+			</if>
+			<if test="bean.manifestIssueCont != null and bean.manifestIssueCont != ''">
+				and t1.MANIFEST_ISSUE_CONT like concat(concat('%',#{bean.manifestIssueCont}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.manifestQian != null and bean.manifestQian != ''">
+				and t1.MANIFEST_QIAN like concat(concat('%',#{bean.manifestQian}),'%') 
+			</if>
+			</if>
+			<if test="sfnConditions != null and sfnConditions.sql != ''">
+				and ${sfnConditions.sql}			
+			</if>
+			and t1.ORG_IDENTITY =#{org}
+		</where>
+			order by t1.creation_date desc
+</select>
+<!-- 查询列表 DYN_TASK_CHECKLIST -->
+<select id="searchDynTaskChecklist" parameterType="java.util.Map" resultMap="DynTaskChecklistDTOMap">
+	select
+		t1.id                             ,
+		t1.manifest_one_and               ,
+		t1.attribute_12                   ,
+		t1.manifest_posen                 ,
+		t1.attribute_11                   ,
+		t1.manifest_issue                 ,
+		t1.attribute_10                   ,
+		t1.last_update_date               ,
+		t1.manifest_date_end              ,
+		t1.created_dept                   ,
+		t1.last_update_ip                 ,
+		t1.manifest_leadership            ,
+		t1.created_by                     ,
+		t1.attribute_04                   ,
+		t1.last_updated_by                ,
+		t1.attribute_03                   ,
+		t1.attribute_02                   ,
+		t1.attribute_01                   ,
+		t1.manifest_measure               ,
+		t1.creation_date                  ,
+		t1.manifest_cause                 ,
+		t1.attribute_09                   ,
+		t1.attribute_08                   ,
+		t1.attribute_07                   ,
+		t1.attribute_06                   ,
+		t1.attribute_05                   ,
+		t1.list_mainly                    ,
+		t1.manifest_issue_cont            ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.manifest_qian                  
+	from dyn_task_checklist 	t1
+		<where>
+			<if test="id != null and id != ''">
+				and t1.ID =#{id}
+			</if>
+			<if test="manifestOneAnd != null and manifestOneAnd != ''">
+				and t1.MANIFEST_ONE_AND =#{manifestOneAnd}
+			</if>
+			<if test="attribute12 != null and attribute12 != ''">
+				and t1.ATTRIBUTE_12 =#{attribute12}
+			</if>
+			<if test="manifestPosen != null and manifestPosen != ''">
+				and t1.MANIFEST_POSEN =#{manifestPosen}
+			</if>
+			<if test="attribute11 != null and attribute11 != ''">
+				and t1.ATTRIBUTE_11 =#{attribute11}
+			</if>
+			<if test="manifestIssue != null and manifestIssue != ''">
+				and t1.MANIFEST_ISSUE =#{manifestIssue}
+			</if>
+			<if test="attribute10 != null and attribute10 != ''">
+				and t1.ATTRIBUTE_10 =#{attribute10}
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE =#{lastUpdateDate}
+			</if>
+			<if test="manifestDateEndBegin != null and manifestDateEndBegin != ''">
+				and t1.MANIFEST_DATE_END &gt;= #{manifestDateEndBegin}
+			</if>
+			<if test="manifestDateEndEnd != null and manifestDateEndEnd != ''">
+				and t1.MANIFEST_DATE_END &lt;= #{manifestDateEndEnd}
+			</if>
+			<if test="createdDept != null and createdDept != ''">
+				and t1.CREATED_DEPT =#{createdDept}
+			</if>
+			<if test="lastUpdateIp != null and lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP =#{lastUpdateIp}
+			</if>
+			<if test="manifestLeadership != null and manifestLeadership != ''">
+				and t1.MANIFEST_LEADERSHIP =#{manifestLeadership}
+			</if>
+			<if test="createdBy != null and createdBy != ''">
+				and t1.CREATED_BY =#{createdBy}
+			</if>
+			<if test="attribute04 != null and attribute04 != ''">
+				and t1.ATTRIBUTE_04 =#{attribute04}
+			</if>
+			<if test="lastUpdatedBy != null and lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY =#{lastUpdatedBy}
+			</if>
+			<if test="attribute03 != null and attribute03 != ''">
+				and t1.ATTRIBUTE_03 =#{attribute03}
+			</if>
+			<if test="attribute02 != null and attribute02 != ''">
+				and t1.ATTRIBUTE_02 =#{attribute02}
+			</if>
+			<if test="attribute01 != null and attribute01 != ''">
+				and t1.ATTRIBUTE_01 =#{attribute01}
+			</if>
+			<if test="manifestMeasure != null and manifestMeasure != ''">
+				and t1.MANIFEST_MEASURE =#{manifestMeasure}
+			</if>
+			<if test="creationDate != null and creationDate != ''">
+				and t1.CREATION_DATE =#{creationDate}
+			</if>
+			<if test="manifestCause != null and manifestCause != ''">
+				and t1.MANIFEST_CAUSE =#{manifestCause}
+			</if>
+			<if test="attribute09 != null and attribute09 != ''">
+				and t1.ATTRIBUTE_09 =#{attribute09}
+			</if>
+			<if test="attribute08 != null and attribute08 != ''">
+				and t1.ATTRIBUTE_08 =#{attribute08}
+			</if>
+			<if test="attribute07 != null and attribute07 != ''">
+				and t1.ATTRIBUTE_07 =#{attribute07}
+			</if>
+			<if test="attribute06 != null and attribute06 != ''">
+				and t1.ATTRIBUTE_06 =#{attribute06}
+			</if>
+			<if test="attribute05 != null and attribute05 != ''">
+				and t1.ATTRIBUTE_05 =#{attribute05}
+			</if>
+			<if test="listMainly != null and listMainly != ''">
+				and t1.LIST_MAINLY =#{listMainly}
+			</if>
+			<if test="manifestIssueCont != null and manifestIssueCont != ''">
+				and t1.MANIFEST_ISSUE_CONT =#{manifestIssueCont}
+			</if>
+			<if test="version != null">
+				and t1.VERSION =#{version}
+			</if>
+			<if test="orgIdentity != null and orgIdentity != ''">
+				and t1.ORG_IDENTITY =#{orgIdentity}
+			</if>
+			<if test="manifestQian != null and manifestQian != ''">
+				and t1.MANIFEST_QIAN =#{manifestQian}
+			</if>
+		</where>
+</select>
+<!-- 主键查询对象 DYN_TASK_CHECKLIST -->
+<select id="findDynTaskChecklistById" parameterType="java.util.Map" resultMap="DynTaskChecklistDTOMap">
+	select
+		t1.id                             ,
+		t1.manifest_one_and               ,
+		t1.attribute_12                   ,
+		t1.manifest_posen                 ,
+		t1.attribute_11                   ,
+		t1.manifest_issue                 ,
+		t1.attribute_10                   ,
+		t1.last_update_date               ,
+		t1.manifest_date_end              ,
+		t1.created_dept                   ,
+		t1.last_update_ip                 ,
+		t1.manifest_leadership            ,
+		t1.created_by                     ,
+		t1.attribute_04                   ,
+		t1.last_updated_by                ,
+		t1.attribute_03                   ,
+		t1.attribute_02                   ,
+		t1.attribute_01                   ,
+		t1.manifest_measure               ,
+		t1.creation_date                  ,
+		t1.manifest_cause                 ,
+		t1.attribute_09                   ,
+		t1.attribute_08                   ,
+		t1.attribute_07                   ,
+		t1.attribute_06                   ,
+		t1.attribute_05                   ,
+		t1.list_mainly                    ,
+		t1.manifest_issue_cont            ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.manifest_qian                  
+	from dyn_task_checklist 	t1
+		where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_TASK_CHECKLIST -->
+<insert id="insertDynTaskChecklist" parameterType="avicit.pb.dyntaskchecklist.dto.DynTaskChecklistDTO">
+	insert into dyn_task_checklist
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="manifestOneAnd != null">
+				manifest_one_and,
+			</if>
+			<if test="attribute12 != null">
+				attribute_12,
+			</if>
+			<if test="manifestPosen != null">
+				manifest_posen,
+			</if>
+			<if test="attribute11 != null">
+				attribute_11,
+			</if>
+			<if test="manifestIssue != null">
+				manifest_issue,
+			</if>
+			<if test="attribute10 != null">
+				attribute_10,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="manifestDateEnd != null">
+				manifest_date_end,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="manifestLeadership != null">
+				manifest_leadership,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="attribute04 != null">
+				attribute_04,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="attribute03 != null">
+				attribute_03,
+			</if>
+			<if test="attribute02 != null">
+				attribute_02,
+			</if>
+			<if test="attribute01 != null">
+				attribute_01,
+			</if>
+			<if test="manifestMeasure != null">
+				manifest_measure,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="manifestCause != null">
+				manifest_cause,
+			</if>
+			<if test="attribute09 != null">
+				attribute_09,
+			</if>
+			<if test="attribute08 != null">
+				attribute_08,
+			</if>
+			<if test="attribute07 != null">
+				attribute_07,
+			</if>
+			<if test="attribute06 != null">
+				attribute_06,
+			</if>
+			<if test="attribute05 != null">
+				attribute_05,
+			</if>
+			<if test="listMainly != null">
+				list_mainly,
+			</if>
+			<if test="manifestIssueCont != null">
+				manifest_issue_cont,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="manifestQian != null">
+				manifest_qian,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestOneAnd != null">
+				#{manifestOneAnd,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute12 != null">
+				#{attribute12,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestPosen != null">
+				#{manifestPosen,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute11 != null">
+				#{attribute11,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestIssue != null">
+				#{manifestIssue,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute10 != null">
+				#{attribute10,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="manifestDateEnd != null">
+				#{manifestDateEnd,jdbcType=DATE},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestLeadership != null">
+				#{manifestLeadership,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestMeasure != null">
+				#{manifestMeasure,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="manifestCause != null">
+				#{manifestCause,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute09 != null">
+				#{attribute09,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute08 != null">
+				#{attribute08,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				#{attribute07,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="listMainly != null">
+				#{listMainly,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestIssueCont != null">
+				#{manifestIssueCont,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestQian != null">
+				#{manifestQian,jdbcType=VARCHAR},
+			</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_TASK_CHECKLIST -->
+<insert id="insertDynTaskChecklistList" parameterType="java.util.List">
+	insert into dyn_task_checklist(
+			id,
+			manifest_one_and,
+			attribute_12,
+			manifest_posen,
+			attribute_11,
+			manifest_issue,
+			attribute_10,
+			last_update_date,
+			manifest_date_end,
+			created_dept,
+			last_update_ip,
+			manifest_leadership,
+			created_by,
+			attribute_04,
+			last_updated_by,
+			attribute_03,
+			attribute_02,
+			attribute_01,
+			manifest_measure,
+			creation_date,
+			manifest_cause,
+			attribute_09,
+			attribute_08,
+			attribute_07,
+			attribute_06,
+			attribute_05,
+			list_mainly,
+			manifest_issue_cont,
+			version,
+			org_identity,
+			manifest_qian)
+	<foreach collection="list" item="item" index="index" open="(" separator="union all" close=")">
+		select 
+					#{item.id,jdbcType=VARCHAR},
+					#{item.manifestOneAnd,jdbcType=VARCHAR},
+					#{item.attribute12,jdbcType=VARCHAR},
+					#{item.manifestPosen,jdbcType=VARCHAR},
+					#{item.attribute11,jdbcType=VARCHAR},
+					#{item.manifestIssue,jdbcType=VARCHAR},
+					#{item.attribute10,jdbcType=VARCHAR},
+					#{item.lastUpdateDate},
+					#{item.manifestDateEnd,jdbcType=DATE},
+					#{item.createdDept,jdbcType=VARCHAR},
+					#{item.lastUpdateIp,jdbcType=VARCHAR},
+					#{item.manifestLeadership,jdbcType=VARCHAR},
+					#{item.createdBy,jdbcType=VARCHAR},
+					#{item.attribute04,jdbcType=VARCHAR},
+					#{item.lastUpdatedBy,jdbcType=VARCHAR},
+					#{item.attribute03,jdbcType=VARCHAR},
+					#{item.attribute02,jdbcType=VARCHAR},
+					#{item.attribute01,jdbcType=VARCHAR},
+					#{item.manifestMeasure,jdbcType=VARCHAR},
+					#{item.creationDate},
+					#{item.manifestCause,jdbcType=VARCHAR},
+					#{item.attribute09,jdbcType=VARCHAR},
+					#{item.attribute08,jdbcType=VARCHAR},
+					#{item.attribute07,jdbcType=VARCHAR},
+					#{item.attribute06,jdbcType=VARCHAR},
+					#{item.attribute05,jdbcType=VARCHAR},
+					#{item.listMainly,jdbcType=VARCHAR},
+					#{item.manifestIssueCont,jdbcType=VARCHAR},
+					#{item.version,jdbcType=DECIMAL},
+					#{item.orgIdentity,jdbcType=VARCHAR},
+					#{item.manifestQian,jdbcType=VARCHAR}
+		from dual 
+	</foreach>
+</insert>
+<!-- 更新对象 DYN_TASK_CHECKLIST -->
+<update id="updateDynTaskChecklistSensitive" parameterType="avicit.pb.dyntaskchecklist.dto.DynTaskChecklistDTO">
+	update dyn_task_checklist 
+	<set>
+			<if test="id != null">
+				id                             =#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestOneAnd != null">
+				manifest_one_and               =#{manifestOneAnd,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute12 != null">
+				attribute_12                   =#{attribute12,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestPosen != null">
+				manifest_posen                 =#{manifestPosen,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute11 != null">
+				attribute_11                   =#{attribute11,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestIssue != null">
+				manifest_issue                 =#{manifestIssue,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute10 != null">
+				attribute_10                   =#{attribute10,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date               =#{lastUpdateDate},
+			</if>
+			<if test="manifestDateEnd != null">
+				manifest_date_end              =#{manifestDateEnd,jdbcType=DATE},
+			</if>
+			<if test="createdDept != null">
+				created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestLeadership != null">
+				manifest_leadership            =#{manifestLeadership,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				created_by                     =#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestMeasure != null">
+				manifest_measure               =#{manifestMeasure,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				creation_date                  =#{creationDate},
+			</if>
+			<if test="manifestCause != null">
+				manifest_cause                 =#{manifestCause,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute09 != null">
+				attribute_09                   =#{attribute09,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute08 != null">
+				attribute_08                   =#{attribute08,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				attribute_07                   =#{attribute07,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="listMainly != null">
+				list_mainly                    =#{listMainly,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestIssueCont != null">
+				manifest_issue_cont            =#{manifestIssueCont,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version                        =version+1,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="manifestQian != null">
+				manifest_qian                  =#{manifestQian,jdbcType=VARCHAR},
+			</if>
+			<if test="dateManifest !=null">
+			   date_manifest         = to_date(#{dateManifest},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+	</set>
+		where id = #{id} and version =#{version}
+</update>
+<!-- 更新对象 DYN_TASK_CHECKLIST -->
+<update id="updateDynTaskChecklistAll" parameterType="avicit.pb.dyntaskchecklist.dto.DynTaskChecklistDTO">
+	update dyn_task_checklist 
+		set
+			id                             =#{id,jdbcType=VARCHAR},
+			manifest_one_and               =#{manifestOneAnd,jdbcType=VARCHAR},
+			attribute_12                   =#{attribute12,jdbcType=VARCHAR},
+			manifest_posen                 =#{manifestPosen,jdbcType=VARCHAR},
+			attribute_11                   =#{attribute11,jdbcType=VARCHAR},
+			manifest_issue                 =#{manifestIssue,jdbcType=VARCHAR},
+			attribute_10                   =#{attribute10,jdbcType=VARCHAR},
+			last_update_date               =#{lastUpdateDate},
+			manifest_date_end              =#{manifestDateEnd,jdbcType=DATE},
+			created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			manifest_leadership            =#{manifestLeadership,jdbcType=VARCHAR},
+			created_by                     =#{createdBy,jdbcType=VARCHAR},
+			attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			manifest_measure               =#{manifestMeasure,jdbcType=VARCHAR},
+			creation_date                  =#{creationDate},
+			manifest_cause                 =#{manifestCause,jdbcType=VARCHAR},
+			attribute_09                   =#{attribute09,jdbcType=VARCHAR},
+			attribute_08                   =#{attribute08,jdbcType=VARCHAR},
+			attribute_07                   =#{attribute07,jdbcType=VARCHAR},
+			attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			list_mainly                    =#{listMainly,jdbcType=VARCHAR},
+			manifest_issue_cont            =#{manifestIssueCont,jdbcType=VARCHAR},
+			version                        =version+1,
+			org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			manifest_qian                  =#{manifestQian,jdbcType=VARCHAR}
+	where id = #{id} and version =#{version}
+</update>
+<!-- 批量更新对象   DYN_TASK_CHECKLIST -->
+<update id="updateDynTaskChecklistList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator="" close="end;">
+	update dyn_task_checklist 
+		set
+			id                             =#{item.id,jdbcType=VARCHAR},
+			manifest_one_and               =#{item.manifestOneAnd,jdbcType=VARCHAR},
+			attribute_12                   =#{item.attribute12,jdbcType=VARCHAR},
+			manifest_posen                 =#{item.manifestPosen,jdbcType=VARCHAR},
+			attribute_11                   =#{item.attribute11,jdbcType=VARCHAR},
+			manifest_issue                 =#{item.manifestIssue,jdbcType=VARCHAR},
+			attribute_10                   =#{item.attribute10,jdbcType=VARCHAR},
+			last_update_date               =#{item.lastUpdateDate},
+			manifest_date_end              =#{item.manifestDateEnd,jdbcType=DATE},
+			created_dept                   =#{item.createdDept,jdbcType=VARCHAR},
+			last_update_ip                 =#{item.lastUpdateIp,jdbcType=VARCHAR},
+			manifest_leadership            =#{item.manifestLeadership,jdbcType=VARCHAR},
+			created_by                     =#{item.createdBy,jdbcType=VARCHAR},
+			attribute_04                   =#{item.attribute04,jdbcType=VARCHAR},
+			last_updated_by                =#{item.lastUpdatedBy,jdbcType=VARCHAR},
+			attribute_03                   =#{item.attribute03,jdbcType=VARCHAR},
+			attribute_02                   =#{item.attribute02,jdbcType=VARCHAR},
+			attribute_01                   =#{item.attribute01,jdbcType=VARCHAR},
+			manifest_measure               =#{item.manifestMeasure,jdbcType=VARCHAR},
+			creation_date                  =#{item.creationDate},
+			manifest_cause                 =#{item.manifestCause,jdbcType=VARCHAR},
+			attribute_09                   =#{item.attribute09,jdbcType=VARCHAR},
+			attribute_08                   =#{item.attribute08,jdbcType=VARCHAR},
+			attribute_07                   =#{item.attribute07,jdbcType=VARCHAR},
+			attribute_06                   =#{item.attribute06,jdbcType=VARCHAR},
+			attribute_05                   =#{item.attribute05,jdbcType=VARCHAR},
+			list_mainly                    =#{item.listMainly,jdbcType=VARCHAR},
+			manifest_issue_cont            =#{item.manifestIssueCont,jdbcType=VARCHAR},
+			version                        =version+1,
+			org_identity                   =#{item.orgIdentity,jdbcType=VARCHAR},
+			manifest_qian                  =#{item.manifestQian,jdbcType=VARCHAR}
+		where id = #{item.id} and version =#{item.version};
+	</foreach>
+</update>
+<!-- 主键删除 DYN_TASK_CHECKLIST -->
+<delete id="deleteDynTaskChecklistById" parameterType="java.lang.String">
+		delete from dyn_task_checklist  where  id = #{id}
+</delete>
+<!-- 批量主键删除 DYN_TASK_CHECKLIST -->
+<delete id="deleteDynTaskChecklistList" parameterType="java.util.List">
+		delete from dyn_task_checklist  t1
+		<where>
+			<foreach item="idItem" collection="list" open="(" separator="or" close=")">
+				t1.id = #{idItem}
+			</foreach>
+		</where>
+</delete>
+<!-- 更新对象 DYN_INSPECTION -->
+<update id="updateDynInspectionSensitive" parameterType="avicit.pb.dyntaskchecklist.dto.DynInspectionDTO">
+	update dyn_inspection 
+	<set>
+			<if test="id != null">
+				id                             =#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinion != null">
+				inspection_opinion             =#{inspectionOpinion,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute11 != null">
+				attribute_11                   =#{attribute11,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute10 != null">
+				attribute_10                   =#{attribute10,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionMaterial != null">
+				inspection_material            =#{inspectionMaterial,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date               =#{lastUpdateDate},
+			</if>
+			<if test="inspectionOneAnd != null">
+				inspection_one_and             =#{inspectionOneAnd,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionS != null">
+				inspection_opinion_s           =#{inspectionOpinionS,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionEnd != null">
+				inspection_opinion_end         =#{inspectionOpinionEnd,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOn != null">
+				inspection_on                  =#{inspectionOn,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionFromPosenTel != null">
+				inspection_from_posen_tel      =#{inspectionFromPosenTel,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				created_by                     =#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionEndDate != null">
+				inspection_opinion_end_date    =#{inspectionOpinionEndDate,jdbcType=DATE},
+			</if>
+			<if test="attribute03 != null">
+				attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionPosen != null">
+				inspection_posen               =#{inspectionPosen,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionDate != null">
+				inspection_opinion_date        =#{inspectionOpinionDate,jdbcType=DATE},
+			</if>
+			<if test="inspectionEndIssueQk != null">
+				inspection_end_issue_qk        =#{inspectionEndIssueQk,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				creation_date                  =#{creationDate},
+			</if>
+			<if test="inspectionFromPosenDept != null">
+				inspection_from_posen_dept     =#{inspectionFromPosenDept,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute09 != null">
+				attribute_09                   =#{attribute09,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute08 != null">
+				attribute_08                   =#{attribute08,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				attribute_07                   =#{attribute07,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionFromDate != null">
+				inspection_from_date           =#{inspectionFromDate,jdbcType=DATE},
+			</if>
+			<if test="attribute06 != null">
+				attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionMeasureIssue != null">
+				inspection_measure_issue       =#{inspectionMeasureIssue,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionDateS != null">
+				inspection_opinion_date_s      =#{inspectionOpinionDateS,jdbcType=DATE},
+			</if>
+			<if test="inspectionFromOn != null">
+				inspection_from_on             =#{inspectionFromOn,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version                        =version+1,
+			</if>
+			<if test="inspectionFromPosen != null">
+				inspection_from_posen          =#{inspectionFromPosen,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionEndIssue != null">
+				inspection_end_issue           =#{inspectionEndIssue,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionIssue != null">
+				inspection_issue               =#{inspectionIssue,jdbcType=VARCHAR},
+			</if>
+	</set>
+		where id = #{id} and version =#{version}
+</update>
+<select id="findDynInspectionById" parameterType="java.util.Map" resultMap="DynInspectionDTOMap">
+	select
+		t1.id                             ,
+		t1.inspection_opinion             ,
+		t1.attribute_11                   ,
+		t1.attribute_10                   ,
+		t1.inspection_material            ,
+		t1.last_update_date               ,
+		t1.inspection_one_and             ,
+		t1.inspection_opinion_s           ,
+		t1.inspection_opinion_end         ,
+		t1.inspection_on                  ,
+		t1.created_dept                   ,
+		t1.inspection_from_posen_tel      ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.attribute_04                   ,
+		t1.last_updated_by                ,
+		t1.inspection_opinion_end_date    ,
+		t1.attribute_03                   ,
+		t1.attribute_02                   ,
+		t1.inspection_posen               ,
+		t1.attribute_01                   ,
+		t1.inspection_opinion_date        ,
+		t1.inspection_end_issue_qk        ,
+		t1.creation_date                  ,
+		t1.inspection_from_posen_dept     ,
+		t1.attribute_09                   ,
+		t1.attribute_08                   ,
+		t1.attribute_07                   ,
+		t1.inspection_from_date           ,
+		t1.attribute_06                   ,
+		t1.inspection_measure_issue       ,
+		t1.attribute_05                   ,
+		t1.inspection_opinion_date_s      ,
+		t1.inspection_from_on             ,
+		t1.version                        ,
+		t1.inspection_from_posen          ,
+		t1.inspection_end_issue           ,
+		t1.org_identity                   ,
+		t1.inspection_issue               
+	from dyn_inspection 	t1
+		where t1.id = #{id}
+</select>
+<!-- 新增对象 SYS_MESSAGE -->
+<insert id="insertSysMessage" parameterType="avicit.pb.dyntaskchecklist.dto.SysMessageDTO">
+	insert into sys_message
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="urlAddress != null">
+				url_address,
+			</if>
+			<if test="sendUser != null">
+				send_user,
+			</if>
+			<if test="sendDate != null">
+				send_date,
+			</if>
+			<if test="recvUser != null">
+				recv_user,
+			</if>
+			<if test="recvDate != null">
+				recv_date,
+			</if>
+			<if test="isReaded != null">
+				is_readed,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="attribute01 != null">
+				attribute_01,
+			</if>
+			<if test="attribute02 != null">
+				attribute_02,
+			</if>
+			<if test="attribute03 != null">
+				attribute_03,
+			</if>
+			<if test="attribute04 != null">
+				attribute_04,
+			</if>
+			<if test="attribute05 != null">
+				attribute_05,
+			</if>
+			<if test="attribute06 != null">
+				attribute_06,
+			</if>
+			<if test="attribute07 != null">
+				attribute_07,
+			</if>
+			<if test="attribute08 != null">
+				attribute_08,
+			</if>
+			<if test="attribute09 != null">
+				attribute_09,
+			</if>
+			<if test="attribute10 != null">
+				attribute_10,
+			</if>
+			<if test="urlType != null">
+				url_type,
+			</if>
+			<if test="autoDisappear != null">
+				auto_disappear,
+			</if>
+			<if test="disappearDate != null">
+				disappear_date,
+			</if>
+			<if test="sendDeptid != null">
+				send_deptid,
+			</if>
+			<if test="sysApplicationId != null">
+				sys_application_id,
+			</if>
+			<if test="msgId != null">
+				msg_id,
+			</if>
+			<if test="msgMobileUrl != null">
+				msg_mobile_url,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="sourceCode != null">
+				source_code,
+			</if>
+			<if test="sourceName != null">
+				source_name,
+			</if>
+			<if test="sendType != null">
+				send_type,
+			</if>
+			<if test="msgType != null">
+				msg_type,
+			</if>
+			<if test="recvOrSend != null">
+				recv_or_send,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="urlAddress != null">
+				#{urlAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="sendUser != null">
+				#{sendUser,jdbcType=VARCHAR},
+			</if>
+			<if test="sendDate != null">
+				#{sendDate,jdbcType=DATE},
+			</if>
+			<if test="recvUser != null">
+				#{recvUser,jdbcType=VARCHAR},
+			</if>
+			<if test="recvDate != null">
+				#{recvDate,jdbcType=DATE},
+			</if>
+			<if test="isReaded != null">
+				#{isReaded,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute01 != null">
+				#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				#{attribute07,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute08 != null">
+				#{attribute08,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute09 != null">
+				#{attribute09,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute10 != null">
+				#{attribute10,jdbcType=VARCHAR},
+			</if>
+			<if test="urlType != null">
+				#{urlType,jdbcType=VARCHAR},
+			</if>
+			<if test="autoDisappear != null">
+				#{autoDisappear,jdbcType=VARCHAR},
+			</if>
+			<if test="disappearDate != null">
+				#{disappearDate,jdbcType=DATE},
+			</if>
+			<if test="sendDeptid != null">
+				#{sendDeptid,jdbcType=VARCHAR},
+			</if>
+			<if test="sysApplicationId != null">
+				#{sysApplicationId,jdbcType=VARCHAR},
+			</if>
+			<if test="msgId != null">
+				#{msgId,jdbcType=VARCHAR},
+			</if>
+			<if test="msgMobileUrl != null">
+				#{msgMobileUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="sourceCode != null">
+				#{sourceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="sourceName != null">
+				#{sourceName,jdbcType=VARCHAR},
+			</if>
+			<if test="sendType != null">
+				#{sendType,jdbcType=VARCHAR},
+			</if>
+			<if test="msgType != null">
+				#{msgType,jdbcType=VARCHAR},
+			</if>
+			<if test="recvOrSend != null">
+				#{recvOrSend,jdbcType=VARCHAR},
+			</if>
+	</trim>
+</insert>
+<select id="selectLCID" resultType="java.lang.String">
+SELECT ACTIVITYNAME_ FROM "BPM_EXECUTION"  where DBID_ = #{lcid} and ACTIVITYNAME_ = 'task2'
+</select>
+<!-- 新增对象 DYN_INSPEC_IC -->
+<insert id="insertDynInspecIc" parameterType="avicit.pb.dyntaskchecklist.dto.DynInspecIcDTO">
+	insert into dyn_inspec_ic
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="inspectionOpinion != null">
+				inspection_opinion,
+			</if>
+			<if test="attribute11 != null">
+				attribute_11,
+			</if>
+			<if test="attribute10 != null">
+				attribute_10,
+			</if>
+			<if test="inspectionMaterial != null">
+				inspection_material,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="inspectionOneAnd != null">
+				inspection_one_and,
+			</if>
+			<if test="inspectionOpinionS != null">
+				inspection_opinion_s,
+			</if>
+			<if test="inspectionOpinionEnd != null">
+				inspection_opinion_end,
+			</if>
+			<if test="inspectionOn != null">
+				inspection_on,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="inspectionFromPosenTel != null">
+				inspection_from_posen_tel,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="attribute04 != null">
+				attribute_04,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="inspectionOpinionEndDate != null">
+				inspection_opinion_end_date,
+			</if>
+			<if test="attribute03 != null">
+				attribute_03,
+			</if>
+			<if test="attribute02 != null">
+				attribute_02,
+			</if>
+			<if test="inspectionPosen != null">
+				inspection_posen,
+			</if>
+			<if test="attribute01 != null">
+				attribute_01,
+			</if>
+			<if test="inspectionOpinionDate != null">
+				inspection_opinion_date,
+			</if>
+			<if test="inspectionEndIssueQk != null">
+				inspection_end_issue_qk,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="inspectionFromPosenDept != null">
+				inspection_from_posen_dept,
+			</if>
+			<if test="attribute09 != null">
+				attribute_09,
+			</if>
+			<if test="attribute08 != null">
+				attribute_08,
+			</if>
+			<if test="attribute07 != null">
+				attribute_07,
+			</if>
+			<if test="inspectionFromDate != null">
+				inspection_from_date,
+			</if>
+			<if test="attribute06 != null">
+				attribute_06,
+			</if>
+			<if test="inspectionMeasureIssue != null">
+				inspection_measure_issue,
+			</if>
+			<if test="attribute05 != null">
+				attribute_05,
+			</if>
+			<if test="inspectionOpinionDateS != null">
+				inspection_opinion_date_s,
+			</if>
+			<if test="inspectionFromOn != null">
+				inspection_from_on,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="inspectionFromPosen != null">
+				inspection_from_posen,
+			</if>
+			<if test="inspectionEndIssue != null">
+				inspection_end_issue,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="inspectionIssue != null">
+				inspection_issue,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinion != null">
+				#{inspectionOpinion,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute11 != null">
+				#{attribute11,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute10 != null">
+				#{attribute10,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionMaterial != null">
+				#{inspectionMaterial,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="inspectionOneAnd != null">
+				#{inspectionOneAnd,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionS != null">
+				#{inspectionOpinionS,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionEnd != null">
+				#{inspectionOpinionEnd,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOn != null">
+				#{inspectionOn,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionFromPosenTel != null">
+				#{inspectionFromPosenTel,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionEndDate != null">
+				#{inspectionOpinionEndDate,jdbcType=DATE},
+			</if>
+			<if test="attribute03 != null">
+				#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionPosen != null">
+				#{inspectionPosen,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionDate != null">
+				#{inspectionOpinionDate,jdbcType=DATE},
+			</if>
+			<if test="inspectionEndIssueQk != null">
+				#{inspectionEndIssueQk,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="inspectionFromPosenDept != null">
+				#{inspectionFromPosenDept,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute09 != null">
+				#{attribute09,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute08 != null">
+				#{attribute08,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				#{attribute07,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionFromDate != null">
+				#{inspectionFromDate,jdbcType=DATE},
+			</if>
+			<if test="attribute06 != null">
+				#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionMeasureIssue != null">
+				#{inspectionMeasureIssue,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionOpinionDateS != null">
+				#{inspectionOpinionDateS,jdbcType=DATE},
+			</if>
+			<if test="inspectionFromOn != null">
+				#{inspectionFromOn,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="inspectionFromPosen != null">
+				#{inspectionFromPosen,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionEndIssue != null">
+				#{inspectionEndIssue,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="inspectionIssue != null">
+				#{inspectionIssue,jdbcType=VARCHAR},
+			</if>
+	</trim>
+</insert>
+<select id="countFor" resultType="int">
+select count(*) from dyn_inspec_ic where attribute_11 = #{id}
+</select>
+<insert id="insertDynInspection" parameterType="avicit.pb.dyntaskchecklist.dto.DynInspectionDTO">
+	insert into DYN_INSPECTION
+<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="inspectionOpinion != null">
+			INSPECTION_OPINION,
+		</if>
+		<if test="attribute11 != null">
+			ATTRIBUTE_11,
+		</if>
+		<if test="attribute10 != null">
+			ATTRIBUTE_10,
+		</if>
+		<if test="inspectionMaterial != null">
+			INSPECTION_MATERIAL,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="inspectionOneAnd != null">
+			INSPECTION_ONE_AND,
+		</if>
+		<if test="inspectionOpinionS != null">
+			INSPECTION_OPINION_S,
+		</if>
+		<if test="inspectionOpinionEnd != null">
+			INSPECTION_OPINION_END,
+		</if>
+		<if test="inspectionOn != null">
+			INSPECTION_ON,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="inspectionFromPosenTel != null">
+			INSPECTION_FROM_POSEN_TEL,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="attribute04 != null">
+			ATTRIBUTE_04,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="inspectionOpinionEndDate != null">
+			INSPECTION_OPINION_END_DATE,
+		</if>
+		<if test="attribute03 != null">
+			ATTRIBUTE_03,
+		</if>
+		<if test="attribute02 != null">
+			ATTRIBUTE_02,
+		</if>
+		<if test="inspectionPosen != null">
+			INSPECTION_POSEN,
+		</if>
+		<if test="attribute01 != null">
+			ATTRIBUTE_01,
+		</if>
+		<if test="inspectionOpinionDate != null">
+			INSPECTION_OPINION_DATE,
+		</if>
+		<if test="inspectionEndIssueQk != null">
+			INSPECTION_END_ISSUE_QK,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="inspectionFromPosenDept != null">
+			INSPECTION_FROM_POSEN_DEPT,
+		</if>
+		<if test="attribute09 != null">
+			ATTRIBUTE_09,
+		</if>
+		<if test="attribute08 != null">
+			ATTRIBUTE_08,
+		</if>
+		<if test="attribute07 != null">
+			ATTRIBUTE_07,
+		</if>
+		<if test="inspectionFromDate != null">
+			INSPECTION_FROM_DATE,
+		</if>
+		<if test="attribute06 != null">
+			ATTRIBUTE_06,
+		</if>
+		<if test="inspectionMeasureIssue != null">
+			INSPECTION_MEASURE_ISSUE,
+		</if>
+		<if test="attribute05 != null">
+			ATTRIBUTE_05,
+		</if>
+		<if test="inspectionOpinionDateS != null">
+			INSPECTION_OPINION_DATE_S,
+		</if>
+		<if test="inspectionFromOn != null">
+			INSPECTION_FROM_ON,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="inspectionFromPosen != null">
+			INSPECTION_FROM_POSEN,
+		</if>
+		<if test="inspectionEndIssue != null">
+			INSPECTION_END_ISSUE,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="inspectionIssue != null">
+			INSPECTION_ISSUE,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="inspectionOpinion != null">
+			#{inspectionOpinion,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute11 != null">
+			#{attribute11,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute10 != null">
+			#{attribute10,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionMaterial != null">
+			#{inspectionMaterial,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="inspectionOneAnd != null">
+			#{inspectionOneAnd,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionOpinionS != null">
+			#{inspectionOpinionS,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionOpinionEnd != null">
+			#{inspectionOpinionEnd,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionOn != null">
+			#{inspectionOn,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionFromPosenTel != null">
+			#{inspectionFromPosenTel,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute04 != null">
+			#{attribute04,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionOpinionEndDate != null">
+			#{inspectionOpinionEndDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attribute03 != null">
+			#{attribute03,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute02 != null">
+			#{attribute02,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionPosen != null">
+			#{inspectionPosen,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute01 != null">
+			#{attribute01,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionOpinionDate != null">
+			#{inspectionOpinionDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="inspectionEndIssueQk != null">
+			#{inspectionEndIssueQk,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="inspectionFromPosenDept != null">
+			#{inspectionFromPosenDept,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute09 != null">
+			#{attribute09,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute08 != null">
+			#{attribute08,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute07 != null">
+			#{attribute07,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionFromDate != null">
+			#{inspectionFromDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attribute06 != null">
+			#{attribute06,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionMeasureIssue != null">
+			#{inspectionMeasureIssue,jdbcType = VARCHAR},
+		</if>
+		<if test="attribute05 != null">
+			#{attribute05,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionOpinionDateS != null">
+			#{inspectionOpinionDateS,jdbcType = TIMESTAMP},
+		</if>
+		<if test="inspectionFromOn != null">
+			#{inspectionFromOn,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="inspectionFromPosen != null">
+			#{inspectionFromPosen,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionEndIssue != null">
+			#{inspectionEndIssue,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="inspectionIssue != null">
+			#{inspectionIssue,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<select id="selectLczt" resultType="java.lang.String">
+SELECT t3.BUSINESSSTATE_ FROM DYN_TASK_CHECKLIST t1
+ left join DYN_INSPECTION t2 on t1.id = t2.ATTRIBUTE_03 
+LEFT JOIN BPM_HIST_PROCINST t3 ON t2.ID = t3.FORMID_
+ where t1.id =#{id}
+</select>
+<select id="selectlcid" resultType="java.lang.String">
+SELECT t2.id FROM DYN_TASK_CHECKLIST t1 
+left join DYN_INSPECTION t2 on t1.id = t2.ATTRIBUTE_03 
+ where t1.id =#{id}  
+</select>
+ <select id="getTask" parameterType="java.util.Map" resultMap= "BpmTrackExt">
+   select tt.end_,tt.OP_UNAME_,tt.MESSAGE_ from (select MAX(END_) as end_ from ${HashId}  
+   where current_acti_name_ =#{task} and hproci_= #{entryid} 
+   and (OP_UNAME_!=null or OP_UNAME_ is not null) 
+   and (END_!=null or END_ is not null)  
+   group by  OP_UNAME_  order by END_ desc) t left join ${HashId} tt on tt.END_=t.end_
+   
+   
+</select> 
+<select id="getEntryid" resultType="java.lang.String">
+   SELECT t2.DBID_ FROM DYN_INSPECTION t1 left join BPM_HIST_PROCINST t2 ON t1.ID = t2.FORMID_  where t1.ATTRIBUTE_03 = #{id}
+</select>
+<select id="queryAttr3" resultMap = "DynInspectionDTOMap">
+select * from DYN_INSPECTION where ATTRIBUTE_03 = #{attr3}
+</select>
+<select id="getDbid"  resultType="java.lang.String">
+select t3.ID_ as dbid from dyn_task_checklist t2 
+left join dyn_inspection t1 ON t2.id = t1.attribute_03   
+left join BPM_HIST_PROCINST t3 ON t1.id = t3.FORMID_
+where t2.id=#{id}
+</select>
+
+ 
+</mapper>

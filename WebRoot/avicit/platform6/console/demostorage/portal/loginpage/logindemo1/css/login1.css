@@ -1,0 +1,144 @@
+/*图标区Start*/
+@font-face {
+  font-family: "iconfont";
+  src: url("../../../avicit/platform6/portal/css/iconfont/iconfont.eot?t=1494560005217"); /* IE9*/
+  src: url("../../../avicit/platform6/portal/css/iconfont/iconfont.eot?t=1494560005217#iefix")
+      format("embedded-opentype"),
+    /* IE6-IE8 */
+      url("../../../avicit/platform6/portal/css/iconfont/iconfont.woff?t=1494560005217")
+      format("woff"),
+    /* chrome, firefox */
+      url("../../../avicit/platform6/portal/css/iconfont/iconfont.ttf?t=1494560005217")
+      format("truetype"),
+    /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+      url("../../../avicit/platform6/portal/css/iconfont/iconfont.svg?t=1494560005217#iconfont")
+      format("svg"); /* iOS 4.1- */
+}
+
+.icon-user-pic {
+  background: url(../img/login_user.png) no-repeat;
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+}
+.icon-pwd-pic {
+  background: url(../img/login_password.png) no-repeat;
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+}
+
+.icon-code-pic {
+  background: url(../img/Code.png) no-repeat;
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+}
+
+.logoPng {
+  background: url(../img/logo.png) no-repeat;
+  width: 58px;
+  height: 65px;
+  display: inline-block;
+}
+
+.login_Box {
+  font-size: 14px;
+}
+.Login_Top {
+  width: 100%;
+  height: 239px;
+  border-bottom: 1px solid #484b5c;
+  background: #1e202f;
+}
+.Login_Top_Logo {
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 100px;
+}
+.Login_Top_Logo img {
+  width: 88px;
+  height: auto;
+}
+.Login_Top_Logo h1 {
+  font-size: 30px;
+  color: #cacee2;
+}
+.Login_Con {
+  background-color: #2c2f3e;
+  width: 100%;
+  position: absolute;
+  top: 240px;
+  bottom: 0px;
+  left: 0px;
+}
+.Login_Con form {
+  width: 320px;
+  margin: 0 auto;
+}
+.Login_Con_Urse {
+  overflow: hidden;
+  border-bottom: 1px solid #565965;
+}
+.Login_Con_Password {
+  overflow: hidden;
+  margin-top: 4px;
+  border-bottom: 1px solid #565965;
+}
+.Login_Con_Urse input,
+.Login_Con_Password input {
+  display: inline-block;
+  font-size: 16px;
+  height: 50px;
+  width: 278px;
+  line-height: 50px;
+  color: #fff;
+  outline: none;
+  background: none;
+  border: 0px;
+}
+input::-webkit-input-placeholder {
+  color: #a2a4ad;
+}
+input:-moz-placeholder {
+  color: #a2a4ad;
+}
+input::-moz-placeholder {
+  color: #a2a4ad;
+}
+input:-ms-input-placeholder {
+  color: #a2a4ad;
+}
+.tb {
+  display: inline-block;
+  height: 26px;
+  color: #b9bdd3;
+  line-height: 26px;
+  border: 0px;
+  float: left;
+  margin-right: 12px;
+  position: relative;
+  top: 10px;
+  left: 3px;
+}
+.Login_Con_Checkbox {
+  margin-top: 15px;
+  margin-right: 20px;
+  float: right;
+  color: #afb5d2;
+  font-size: 16px;
+}
+.Login_Con_Checkbox input {
+  vertical-align: -4px;
+  margin-right: 5px;
+  width: 16px;
+  height: 16px;
+}
+.Login_Con_Button {
+  clear: both;
+  margin-top: 60px;
+}
+input:-webkit-autofill {
+  background-color: #fff;
+}

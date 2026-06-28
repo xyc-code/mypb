@@ -1,0 +1,7 @@
+interface:
+  display_name: "PB Frontend Guardrails"
+  short_description: "Check frontend framework additions for PB platform conflicts."
+  default_prompt: "Use $pb-frontend-guardrails to check whether a PB frontend change can be added safely."
+
+policy:
+  allow_implicit_invocation: true

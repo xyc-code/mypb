@@ -1,0 +1,131 @@
+@charset "utf-8";
+/* CSS Document */
+* {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border: none;
+  text-decoration: none;
+  font-family: "微软雅黑";
+  outline: none;
+}
+body {
+  background: url(../img/login10-bg.jpg) no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  -webkit-background-size: cover;
+}
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
+}
+.login {
+  position: absolute;
+  width: 430px;
+  height: 480px;
+  top: 50%;
+  margin-top: -240px;
+  left: 50%;
+  margin-left: -215px;
+}
+.logo {
+  width: 300px;
+  height: 60px;
+  margin: 0 auto 30px;
+}
+.logo img {
+  float: left;
+  margin-right: 20px;
+}
+.logo h2 {
+  font-size: 30px;
+  color: #ffffff;
+  padding: 10px 0 0 0;
+  margin: 0;
+  font-weight: normal;
+}
+.login-title {
+  color: #007bff;
+  font-size: 24px;
+  font-weight: 400;
+  text-align: center;
+  margin: 10px 0 20px;
+}
+.loginform {
+  width: 380px;
+  height: 380px;
+  padding: 20px 28px;
+  margin: 9px auto;
+  overflow: hidden;
+  position: relative;
+  background: #ffffff;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.inputstyle {
+  line-height: 36px;
+  color: #666;
+  font-size: 14px;
+  float: left;
+  margin-left: 45px;
+  width: 275px;
+  height: 36px;
+}
+.uinArea {
+  background: url(../img/login10-name.png) no-repeat;
+  width: 325px;
+  height: 36px;
+  margin-top: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+.pwdArea {
+  background: url(../img/login10-mima.png) no-repeat;
+  width: 325px;
+  height: 36px;
+  margin-top: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+.text-tip {
+  color: #6c757d;
+  font-size: 12px;
+  line-height: 30px;
+  display: inline-block;
+  margin-top: 10px;
+}
+.text-tip input {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  margin-right: 5px;
+  float: left;
+  margin-top: 7px;
+}
+.btn {
+  background: #5aa9ff;
+  width: 325px;
+  height: 40px;
+  color: white;
+  font-size: 18px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  margin-top: 25px;
+}
+.operation-text {
+  margin: 20px 0;
+}
+
+.operation-text a {
+  color: #1890ff;
+  font-size: 12px;
+  display: block;
+}

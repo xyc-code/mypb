@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/echarts.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>今日销售额</title>
+    <style>
+      .saleOrderStat-content{
+        background: #F0F2F5;
+        height:120px;
+        
+      }
+      .saleOrderStat-imgbox{
+        height: 100px;
+        width: 100px;
+        margin-left: 20px;
+        float: left;
+      }
+      .saleOrderStat-imgbox > img{
+        width: 70px;
+        height: 70px;
+        margin-top: 15px;
+      }
+      .sale-order-box{
+        background-color: #F0F2F5;
+        width: 25%;
+        height: 100%;
+        float: left;
+      }
+      .saleOrderStat{
+        height:100px;
+        float:left;
+        padding:10px 0 10px 20px;
+      }
+      .saleOrderStat > label{
+        margin-top: 7px;
+        display: inline-block;
+        color:#666;
+        font-size:14px;
+      }
+      .saleOrderStat > p{
+        margin: 10px 0 5px 0;
+        color:#5770CC;
+        font-size:22px;
+      }
+      .saleOrderStat > span{
+        font-size:12px;
+        color:#666;
+        margin-right:15px;
+      }
+      .saleOrderStat > i{
+        font-size:12px;
+      }
+      .todaySale-right{
+        float:right
+      }
+      .icon-down{
+        color:#F04134;
+      }
+      .icon-up{
+        color:#00A854;
+      }
+      .icon-tip{
+        color:#989898;
+      }
+      .todaySale-spacing{
+        margin:0 14px 0 0;
+      }
+      .todaySale-inner-box{
+        height: 100%;background-color: #fff
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction saleOrderStat-content">
+      <div class="sale-order-box">
+        <div class="todaySale-spacing todaySale-inner-box">
+          <div class="saleOrderStat" >
+            <label>今日销售额</label><i class="iconfont icon-tip"></i>
+            <p>￥3,625.93</p>
+            <span>同比昨日增长</span><i class="iconfont icon-down">10%</i>
+          </div>
+          <div id="todaySalePie" style="float:right;margin-right:15px;width: 100px;height: 100%;"></div>
+        </div>
+      </div>
+      <div class="sale-order-box" >
+        <div class="todaySale-spacing todaySale-inner-box">
+        <div class="saleOrderStat">
+          <label>今日订单数</label><i class="iconfont icon-tip"></i>
+          <p>￥3,625.93</p>
+          <span>同比昨日增长</span><i class="iconfont icon-down">10%</i>
+        </div>
+        <div id="todayOrderPie" style="float:right;margin-right:15px;width: 100px;height: 100%;"></div>
+        </div>
+      </div>
+      <div class="sale-order-box">
+        <div class="todaySale-spacing todaySale-inner-box">
+        <div class="saleOrderStat">
+          <label>本月销售额</label><i class="iconfont icon-tip"></i>
+          <p>￥3,625.93</p>
+          <span>同比昨日增长</span><i class="iconfont icon-down">10%</i>
+        </div>
+        <div id="monthSalePie" style="float:right;margin-right:15px;width: 100px;height: 100%;"></div>
+      </div>
+      </div>
+      <div class="sale-order-box" >
+        <div class="todaySale-inner-box">
+          <div class="saleOrderStat">
+            <label>本月订单数</label><i class="iconfont icon-tip"></i>
+            <p>￥3,625.93</p>
+            <span>同比昨日增长</span><i class="iconfont icon-down">10%</i>
+          </div>
+          <div id="monthOrderPie" style="float:right;margin-right:15px;width: 100px;height: 100%;"></div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var todaySaleEchart = echarts.init(document.getElementById("todaySalePie"));
+
+      var todaySaleOption = {
+        tooltip: {
+        trigger: 'item'
+      },
+     
+      title: {
+          text: "已完成",
+          right: -14,
+          top: 35,
+          textStyle: {
+            color: "#ccc",
+            fontSize: "14px"
+          },
+          subtext: "20%",
+          subtextStyle: {
+            color: "#000",
+            fontSize: "16px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+      color:["#3BA1FF","#F0F2F5"],
+      series: [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['80%', '100%'],
+              center: ["50%", "50% "], 
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2
+            },　
+              avoidLabelOverlap: false,
+              label: {
+                  show: false,
+                  position: 'center'
+              },
+              labelLine: {
+                  show: false
+              },
+              data: [
+                { value: 20, name: "已完成 | 20%" },
+                { value: 80, name: "未完成 | 80%" },
+              ]
+          }
+        ]
+      };
+
+
+      todaySaleEchart.setOption(todaySaleOption);
+
+
+      var todayOrderEchart = echarts.init(document.getElementById("todayOrderPie"));
+
+      var todayOrderOption = {
+        tooltip: {
+        trigger: 'item'
+      },
+      
+      title: {
+          text: "已完成",
+          right: -14,
+          top: 35,
+          textStyle: {
+            color: "#ccc",
+            fontSize: "14px"
+          },
+          subtext: "20%",
+          subtextStyle: {
+            color: "#000",
+            fontSize: "16px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+      color:["#3BA1FF","#F0F2F5"],
+      series: [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['80%', '100%'],
+              center: ["50%", "50% "],  
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2
+            },　
+              avoidLabelOverlap: false,
+              label: {
+                  show: false,
+                  position: 'center'
+              },
+              labelLine: {
+                  show: false
+              },
+              data: [
+                { value: 20, name: "已完成 | 20%" },
+                { value: 80, name: "未完成 | 80%" },
+              ]
+          }
+        ]
+      };
+
+
+      todayOrderEchart.setOption(todayOrderOption);
+
+      var monthSaleEchart = echarts.init(document.getElementById("monthSalePie"));
+
+      var monthSaleOption = {
+        tooltip: {
+        trigger: 'item'
+      },
+      
+      title: {
+          text: "已完成",
+          right: -14,
+          top: 35,
+          textStyle: {
+            color: "#ccc",
+            fontSize: "14px"
+          },
+          subtext: "20%",
+          subtextStyle: {
+            color: "#000",
+            fontSize: "16px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+      color:["#FFB661","#F0F2F5"],
+      series: [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['80%', '100%'],
+              center: ["50%", "50% "],  
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2
+            },　
+              avoidLabelOverlap: false,
+              label: {
+                  show: false,
+                  position: 'center'
+              },
+              labelLine: {
+                  show: false
+              },
+              data: [
+                { value: 20, name: "已完成 | 20%" },
+                { value: 80, name: "未完成 | 80%" },
+              ]
+          }
+        ]
+      };
+
+
+      monthSaleEchart.setOption(monthSaleOption);
+      var monthOrderEchart = echarts.init(document.getElementById("monthOrderPie"));
+
+      var monthOrderOption = {
+        tooltip: {
+        trigger: 'item'
+      },
+      
+      title: {
+          text: "已完成",
+          right: -14,
+          top: 35,
+          textStyle: {
+            color: "#ccc",
+            fontSize: "14px"
+          },
+          subtext: "20%",
+          subtextStyle: {
+            color: "#000",
+            fontSize: "16px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+      color:["#FFB661","#F0F2F5"],
+      series: [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['80%', '100%'],
+              center: ["50%", "50%"], 
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2
+            },　
+              avoidLabelOverlap: false,
+              label: {
+                  show: false,
+                  position: 'center'
+              },
+              labelLine: {
+                  show: false
+              },
+              data: [
+                { value: 20, name: "已完成 | 20%" },
+                { value: 80, name: "未完成 | 80%" },
+              ]
+          }
+        ]
+      };
+
+
+      monthOrderEchart.setOption(monthOrderOption);
+      function downloadFile(fileName){
+        let a = document.createElement("a");
+        a.href = '/download/template4/'+fileName+".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>工时汇总</title>
+    <link
+      href="./iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+    <script src="./js/echarts.min.js"></script>
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>工时汇总</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('commonFunction')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="ci-content">
+          <li class="ci-list">
+            <p class="cil-title">36.2</p>
+            <span class="cil-tip">平均时长</span>
+          </li>
+          <li class="ci-list">
+            <p class="cil-title">48.5</p>
+            <span class="cil-tip">最长时长</span>
+          </li>
+          <div class="clear"></div>
+        </ul>
+        <div id="barEchart" style="width: 100%;height: 140px;"></div>
+        <div class="bottom">
+          <div class="bt-img"><img src="./img/u724.svg" alt="" /></div>
+          <div class="bt-content">
+            <p class="btc-title1">研发中心 - Ucd设计团队</p>
+            <p class="btc-title2">总工时 327.6h</p>
+          </div>
+          <div class="bt-bottom">查看考勤</div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var barEchart = echarts.init(document.getElementById("barEchart"));
+
+      var barOption = {
+        color: ["#E7EAEF"],
+        xAxis: {
+          type: "category",
+          show: false,
+          data: [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun",
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun",
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun",
+            "Mon",
+            "Tue"
+          ]
+        },
+        yAxis: {
+          type: "value",
+          show: false
+        },
+
+        grid: {
+          top: 20,
+          height: 90
+        },
+        series: [
+          {
+            data: [
+              120,
+              200,
+              150,
+              80,
+              70,
+              110,
+              130,
+              120,
+              200,
+              150,
+              80,
+              70,
+              110,
+              130,
+              120,
+              200,
+              150,
+              80,
+              {
+                value: 180,
+                itemStyle: {
+                  color: "#6388FC"
+                }
+              },
+              70,
+              110,
+              130,
+              120,
+              200
+            ],
+            type: "bar"
+          }
+        ]
+      };
+
+      barEchart.setOption(barOption);
+
+      function handleClick() {
+        window.open("hourSummary.html");
+      }
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = '/download/template2/'+fileName+".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      .clear {
+        clear: both;
+      }
+      .ci-content {
+        margin: 0 0 0 10px;
+        height: 18%;
+      }
+      .ci-list {
+        width: 80px;
+        float: left;
+      }
+      .cil-title {
+        font-family: "Microsoft YaHei UI Semibold", "Microsoft YaHei UI Regular",
+          "Microsoft YaHei UI", sans-serif;
+        font-weight: 600;
+        font-style: normal;
+        font-size: 24px;
+      }
+      .cil-tip {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #7f7f7f;
+      }
+      .bottom {
+        width: 89%;
+        height: 60px;
+        padding: 20px;
+      }
+      .bt-img {
+        width: 32px;
+        height: 32px;
+        float: left;
+        background: #6388fc;
+        text-align: center;
+        line-height: 32px;
+        border-radius: 100%;
+      }
+      .bt-content {
+        float: left;
+        margin: 0 0 0 10px;
+      }
+      .btc-title1 {
+        font-family: "Microsoft YaHei UI Semibold", "Microsoft YaHei UI Regular",
+          "Microsoft YaHei UI", sans-serif;
+        font-weight: 600;
+        font-style: normal;
+        font-size: 14px;
+      }
+      .btc-title2 {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.6);
+        margin: 8px 0 0 0;
+      }
+      .bt-bottom {
+        float: right;
+        background: #6388fc;
+        width: 88px;
+        height: 40px;
+        border: none;
+        text-align: center;
+        line-height: 40px;
+        border-radius: 4px;
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #ffffff;
+      }
+    </style>
+  </body>
+</html>

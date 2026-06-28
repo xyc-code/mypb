@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>本月单据数量</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>本月单据数量</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('monthReceipts')"-->
+<!--          ></i>-->
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="receipts">
+          <li class="receiptslist rec-left">
+            <div id="pineChart" style="width: 104.1px;height: 121px;"></div>
+            <div class="receiptslist-cont rel-list" style="background: none;">
+              <p class="rel-title rel-tips rel-top" style="background: none;">
+                <span>本月入库总量</span>
+              </p>
+              <p class="rel-title rel-tips rel-mid" style="background: none;">
+                <span>¥3,625.93</span>
+              </p>
+              <p class="rel-title rel-tips" style="background: none;">
+                <span class="relb-tip">同比增长</span
+                ><i class="iconfont icon-up" style="color: #F04134;"></i
+                ><span class="relb-per">10%</span>
+              </p>
+            </div>
+          </li>
+          <li class="receiptslist">
+            <div class="receiptslist-cont">
+              <p class="rel-title"><span>本月入库数量</span></p>
+              <ul>
+                <li class="rignt-list">
+                  <p class="tips"><span>工装</span></p>
+                  <p class="nums">
+                    <span class="odd">12</span><span class="even">笔</span
+                    ><span class="odd">2</span><span class="even">件</span>
+                  </p>
+                </li>
+                <li class="rignt-list" style="width: 43%;float: right;">
+                  <p class="tips"><span>工具</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="receiptslist">
+            <div class="receiptslist-cont">
+              <p class="rel-title"><span>本月借出数量</span></p>
+              <ul>
+                <li class="rignt-list">
+                  <p class="tips"><span>工装</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+                <li class="rignt-list" style="width: 43%;float: right;">
+                  <p class="tips"><span>工具</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="receiptslist">
+            <div class="receiptslist-cont">
+              <p class="rel-title"><span>本月送检数量</span></p>
+              <ul>
+                <li class="rignt-list">
+                  <p class="tips"><span>工装</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+                <li class="rignt-list" style="width: 43%;float: right;">
+                  <p class="tips"><span>工具</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="receiptslist">
+            <div class="receiptslist-cont">
+              <p class="rel-title"><span>本月已判数量</span></p>
+              <ul>
+                <li class="rignt-list">
+                  <p class="tips"><span>工装</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+                <li class="rignt-list" style="width: 43%;float: right;">
+                  <p class="tips"><span>工具</span></p>
+                  <p class="nums">
+                    <span class="odd">15</span><span class="even">笔</span
+                    ><span class="odd">3</span><span class="even">件</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var nextEchart = echarts.init(document.getElementById("pineChart"));
+
+    var nextOption = {
+      tooltip: {
+        trigger: "item"
+      },
+      legend: {
+        show: false
+      },
+      title: {
+        text: "已完成",
+        top: "30%",
+        left: "45%",
+        textStyle: {
+          color: "#ccc",
+          fontSize: "12px"
+        },
+        subtext: "28%",
+        subtextStyle: {
+          color: "#000",
+          fontSize: "16px",
+          align: "center"
+        },
+        textAlign: "center"
+      },
+      color: ["#3BA1FF", "#EBEDF1"],
+      series: [
+        {
+          type: "pie",
+          top: "10%",
+          hoverAnimation: false,
+          radius: ["81%", "96%"],
+          avoidLabelOverlap: false,
+          tooltip: {
+            show: false
+          },
+          labelLine: {
+            show: false
+          },
+          data: [
+            { value: 28, name: "已完成" },
+            { value: 72, name: "未完成" }
+          ]
+        }
+      ]
+    };
+
+    nextEchart.setOption(nextOption);
+
+    function downloadFile(fileName) {
+      let a = document.createElement("a");
+      a.href = "/download/template5/" + fileName + ".rar";
+      a.download = fileName + ".rar";
+      a.click();
+    }
+  </script>
+  <style>
+  	*{
+  		box-sizing: border-box;
+  	}
+    #pineChart {
+      height: 100%;
+      background: #fff;
+      float: left;
+    }
+    .receiptslist {
+      width: 20%;
+      float: left;
+      padding: 7px;
+    }
+    .receiptslist-cont {
+      background: #f7f9fa;
+      height: 121px;
+    }
+    .rec-left {
+      border-right: 1px solid #ebebeb;
+      width:18%;
+      margin-right: 2%;
+    }
+    .rel-list {
+      padding: 10px 0 0 10px;
+      height: 100%;
+      width: 42%;
+      float: left;
+      background: #fff;
+    }
+    .rel-tips {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .relb-tip {
+      font-weight: 400;
+      font-style: normal;
+      font-size: 10px;
+      color: #b8b8c1;
+    }
+    .relb-per {
+      color: #f04134;
+      font-weight: 400;
+      font-style: normal;
+      font-size: 10px;
+    }
+    .rel-title {
+      width: 100%;
+      height: 30%;
+      background: #f0f3f5;
+      text-align: center;
+      line-height: 38px;
+      font-weight: 700;
+      font-style: normal;
+      font-size: 13px;
+      color: #666666;
+    }
+    .rignt-list {
+      width: 45%;
+      float: left;
+      padding: 5px;
+      text-align: center;
+    }
+    .tips {
+      font-weight: 400;
+      font-style: normal;
+      color: #666666;
+      font-size: 13px;
+      margin: 15px 0 0 0;
+    }
+    .nums {
+      margin: 10px 0 0 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+    .odd {
+      font-weight: 400;
+      font-size: 20px;
+      text-decoration: none;
+      color: #d9001b;
+      margin: 0 5px 0 0;
+    }
+    .even {
+      font-weight: 400;
+      text-decoration: none;
+      color: #999999;
+      font-size: 8px;
+      margin: 0 10px 0 0;
+    }
+    .rel-top {
+      font-weight: 400;
+      font-style: normal;
+      color: #666666;
+    }
+    .rel-mid {
+      font-size: 24px;
+      color: #526ecc;
+      text-align: center;
+      font-family: "Arial Normal", "Arial";
+      font-weight: 400;
+      font-style: normal;
+    }
+  </style>
+</html>

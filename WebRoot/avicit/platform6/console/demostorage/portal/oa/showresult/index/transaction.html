@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>事务统计</title>
+    <link
+      href="./iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>事务统计</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('commonFunction')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul>
+          <li class="ci-content">
+            <p class="ci-num">15</p>
+            <p class="ci-tip">参与的会议</p>
+          </li>
+          <li class="ci-content">
+            <p class="ci-num">20</p>
+            <p class="ci-tip">发起的流程</p>
+          </li>
+          <li class="ci-content">
+            <p class="ci-num">13</p>
+            <p class="ci-tip">负责的督办</p>
+          </li>
+          <li class="ci-content">
+            <p class="ci-num">12</p>
+            <p class="ci-tip">负责的任务</p>
+          </li>
+          <li class="ci-content">
+            <p class="ci-num">3</p>
+            <p class="ci-tip">负责的项目</p>
+          </li>
+          <div class="clear"></div>
+        </ul>
+        <div class="content">
+          <p class="title">预估工时</p>
+          <div class="e"></div>
+          <p class="title">使用工时+剩余工时</p>
+          <div class="f">
+            <div class="first"></div>
+          </div>
+          <div class="g">
+            <p class="last"></p>
+            <p style="position: relative;top: 42px" class="last"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function handleClick() {
+        window.open("transaction.html");
+      }
+
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = '/download/template2/'+fileName+".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+
+      function handleClick() {
+        window.open("transaction.html");
+      }
+    </script>
+    <style>
+      .clear {
+        clear: both;
+      }
+      .ci-content {
+        float: left;
+        width: 30%;
+        height: 48px;
+        padding: 10px 0;
+        background: inherit;
+        background-color: rgba(249, 249, 249, 1);
+        border: none;
+        border-radius: 4px;
+        margin: 15px 10px 0 0;
+        text-align: center;
+      }
+      .ci-num {
+        font-family: "Microsoft YaHei UI Semibold", "Microsoft YaHei UI Regular",
+          "Microsoft YaHei UI", sans-serif;
+        font-weight: 600;
+        font-style: normal;
+        font-size: 24px;
+      }
+      .ci-tip {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #7f7f7f;
+      }
+      .content {
+        width: 100%;
+        margin: 10px 0 0 0;
+        position: relative;
+      }
+      .title {
+        font-family: "Microsoft YaHei UI", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 12px;
+        color: rgb(127, 127, 127);
+      }
+      .e {
+        width: 90%;
+        height: 14px;
+        background: linear-gradient(
+          270deg,
+          rgb(103, 135, 254) 0%,
+          rgb(51, 143, 229) 100%
+        );
+        border: none;
+        border-radius: 2px;
+        box-shadow: none;
+        margin: 5px 0 10px 0;
+      }
+      .f {
+        width: 90%;
+        height: 14px;
+        background-color: #f3b443;
+        border: none;
+        border-radius: 2px;
+        box-shadow: none;
+        margin: 5px 0 0 0;
+      }
+      .first {
+        width: 70%;
+        height: 100%;
+        background: #24b47e;
+      }
+      .g {
+        height: 84px;
+        background: url(./img/u779.svg) no-repeat;
+        position: absolute;
+        top: 10%;
+        left: 90%;
+      }
+      .last{
+        width: 41px;
+        height: 12px;
+        border: 1px solid #ea7382;
+        background: #f8d2d5;
+        position: relative;
+        top: 12px;
+      }
+    </style>
+  </body>
+</html>

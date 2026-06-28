@@ -1,0 +1,1121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.platform6.rljcRest.dao.DynMdmRyDao">
+
+<resultMap id="DynMdmRyDTOMap" type="avicit.platform6.rljcRest.dto.DynMdmRyDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="zcdj" column="ZCDJ" jdbcType="VARCHAR" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="cjgzrq" column="CJGZRQ" jdbcType="VARCHAR" />
+		<result property="szbm" column="SZBM" jdbcType="VARCHAR" />
+		<result property="csd" column="CSD" jdbcType="VARCHAR" />
+		<result property="jrbdwsj" column="JRBDWSJ" jdbcType="VARCHAR" />
+		<result property="whcd" column="WHCD" jdbcType="VARCHAR" />
+		<result property="rylb" column="RYLB" jdbcType="VARCHAR" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="sfqy" column="SFQY" jdbcType="VARCHAR" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="sfzh" column="SFZH" jdbcType="VARCHAR" />
+		<result property="jylb" column="JYLB" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="jtzz" column="JTZZ" jdbcType="VARCHAR" />
+		<result property="jndj" column="JNDJ" jdbcType="VARCHAR" />
+		<result property="zc" column="ZC" jdbcType="VARCHAR" />
+		<result property="xb" column="XB" jdbcType="VARCHAR" />
+		<result property="jtygbm" column="JTYGBM" jdbcType="VARCHAR" />
+		<result property="mz" column="MZ" jdbcType="VARCHAR" />
+		<result property="sflb" column="SFLB" jdbcType="VARCHAR" />
+		<result property="csrq" column="CSRQ" jdbcType="TIMESTAMP" />
+		<result property="szgw" column="SZGW" jdbcType="VARCHAR" />
+		<result property="rybm" column="RYBM" jdbcType="VARCHAR" />
+		<result property="xm" column="XM" jdbcType="VARCHAR" />
+		<result property="yjbm" column="YJBM" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="jg" column="JG" jdbcType="VARCHAR" />
+		<result property="nl" column="NL" jdbcType="DECIMAL" />
+		<result property="ryid" column="RYID" jdbcType="VARCHAR" />
+</resultMap>
+<!-- 分页查询 DYN_MDM_RY -->
+<select id="searchDynMdmRyByPage" parameterType="java.util.Map" resultMap="DynMdmRyDTOMap">
+	select
+		t1.id                             ,
+		t1.zcdj                           ,
+		t1.last_update_date               ,
+		t1.cjgzrq                         ,
+		t1.szbm                           ,
+		t1.csd                            ,
+		t1.jrbdwsj                        ,
+		t1.whcd                           ,
+		t1.rylb                           ,
+		t1.created_dept                   ,
+		t1.sfqy                           ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.sfzh                           ,
+		t1.jylb                           ,
+		t1.creation_date                  ,
+		t1.jtzz                           ,
+		t1.jndj                           ,
+		t1.zc                             ,
+		t1.xb                             ,
+		t1.jtygbm                         ,
+		t1.mz                             ,
+		t1.sflb                           ,
+		t1.csrq                           ,
+		t1.szgw                           ,
+		t1.rybm                           ,
+		t1.xm                             ,
+		t1.yjbm                           ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.jg                             ,
+		t1.nl ,
+	    t1.ryid
+	from dyn_mdm_ry 	t1
+		<where>
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.zcdj != null and bean.zcdj != ''">
+				and t1.ZCDJ like concat(concat('%',#{bean.zcdj}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.cjgzrq != null and bean.cjgzrq != ''">
+				and t1.CJGZRQ like concat(concat('%',#{bean.cjgzrq}),'%') 
+			</if>
+			<if test="bean.szbm != null and bean.szbm != ''">
+				and t1.SZBM like concat(concat('%',#{bean.szbm}),'%') 
+			</if>
+			<if test="bean.csd != null and bean.csd != ''">
+				and t1.CSD like concat(concat('%',#{bean.csd}),'%') 
+			</if>
+			<if test="bean.jrbdwsj != null and bean.jrbdwsj != ''">
+				and t1.JRBDWSJ like concat(concat('%',#{bean.jrbdwsj}),'%') 
+			</if>
+			<if test="bean.whcd != null and bean.whcd != ''">
+				and t1.WHCD like concat(concat('%',#{bean.whcd}),'%') 
+			</if>
+			<if test="bean.rylb != null and bean.rylb != ''">
+				and t1.RYLB like concat(concat('%',#{bean.rylb}),'%') 
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.sfqy != null and bean.sfqy != ''">
+				and t1.SFQY like concat(concat('%',#{bean.sfqy}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.sfzh != null and bean.sfzh != ''">
+				and t1.SFZH like concat(concat('%',#{bean.sfzh}),'%') 
+			</if>
+			<if test="bean.jylb != null and bean.jylb != ''">
+				and t1.JYLB like concat(concat('%',#{bean.jylb}),'%') 
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.jtzz != null and bean.jtzz != ''">
+				and t1.JTZZ like concat(concat('%',#{bean.jtzz}),'%') 
+			</if>
+			<if test="bean.jndj != null and bean.jndj != ''">
+				and t1.JNDJ like concat(concat('%',#{bean.jndj}),'%') 
+			</if>
+			<if test="bean.zc != null and bean.zc != ''">
+				and t1.ZC like concat(concat('%',#{bean.zc}),'%') 
+			</if>
+			<if test="bean.xb != null and bean.xb != ''">
+				and t1.XB like concat(concat('%',#{bean.xb}),'%') 
+			</if>
+			<if test="bean.jtygbm != null and bean.jtygbm != ''">
+				and t1.JTYGBM like concat(concat('%',#{bean.jtygbm}),'%') 
+			</if>
+			<if test="bean.mz != null and bean.mz != ''">
+				and t1.MZ like concat(concat('%',#{bean.mz}),'%') 
+			</if>
+			<if test="bean.sflb != null and bean.sflb != ''">
+				and t1.SFLB like concat(concat('%',#{bean.sflb}),'%') 
+			</if>
+			<if test="bean.csrqBegin != null and bean.csrqBegin != ''">
+				and t1.CSRQ &gt;= #{bean.csrqBegin}
+			</if>
+			<if test="bean.csrqEnd != null and bean.csrqEnd != ''">
+				and t1.CSRQ &lt;= #{bean.csrqEnd}
+			</if>
+			<if test="bean.szgw != null and bean.szgw != ''">
+				and t1.SZGW like concat(concat('%',#{bean.szgw}),'%') 
+			</if>
+			<if test="bean.rybm != null and bean.rybm != ''">
+				and t1.RYBM like concat(concat('%',#{bean.rybm}),'%') 
+			</if>
+			<if test="bean.xm != null and bean.xm != ''">
+				and t1.XM like concat(concat('%',#{bean.xm}),'%') 
+			</if>
+			<if test="bean.yjbm != null and bean.yjbm != ''">
+				and t1.YJBM like concat(concat('%',#{bean.yjbm}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.jg != null and bean.jg != ''">
+				and t1.JG like concat(concat('%',#{bean.jg}),'%') 
+			</if>
+			<if test="bean.nl != null ">
+				and t1.NL like concat(concat('%',#{bean.nl}),'%') 
+			</if>
+			<if test="bean.ryid != null and bean.ryid != ''">
+				and t1.RYID like concat(concat('%',#{bean.ryid}),'%')
+			</if>
+			</if>
+			and t1.ORG_IDENTITY =#{org}
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.creation_date desc
+			</otherwise>
+		</choose>
+</select>
+<!-- 分页查询 OrDYN_MDM_RY -->
+<select id="searchDynMdmRyByPageOr" parameterType="java.util.Map" resultMap="DynMdmRyDTOMap">
+	select
+		t1.id                             ,
+		t1.zcdj                           ,
+		t1.last_update_date               ,
+		t1.cjgzrq                         ,
+		t1.szbm                           ,
+		t1.csd                            ,
+		t1.jrbdwsj                        ,
+		t1.whcd                           ,
+		t1.rylb                           ,
+		t1.created_dept                   ,
+		t1.sfqy                           ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.sfzh                           ,
+		t1.jylb                           ,
+		t1.creation_date                  ,
+		t1.jtzz                           ,
+		t1.jndj                           ,
+		t1.zc                             ,
+		t1.xb                             ,
+		t1.jtygbm                         ,
+		t1.mz                             ,
+		t1.sflb                           ,
+		t1.csrq                           ,
+		t1.szgw                           ,
+		t1.rybm                           ,
+		t1.xm                             ,
+		t1.yjbm                           ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.jg                             ,
+		t1.nl ,
+	       t1.ryid
+	from dyn_mdm_ry 	t1
+		<where>
+			<if test="bean != null">
+			<trim prefix="(" suffix=")" prefixOverrides="or">
+			<if test="bean.id != null and bean.id != ''">
+				or t1.ID =#{bean.id}
+			</if>
+			<if test="bean.zcdj != null and bean.zcdj != ''">
+				or t1.ZCDJ like concat(concat('%',#{bean.zcdj}),'%')  
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				or t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%')  
+			</if>
+			<if test="bean.cjgzrq != null and bean.cjgzrq != ''">
+				or t1.CJGZRQ like concat(concat('%',#{bean.cjgzrq}),'%')  
+			</if>
+			<if test="bean.szbm != null and bean.szbm != ''">
+				or t1.SZBM like concat(concat('%',#{bean.szbm}),'%')  
+			</if>
+			<if test="bean.csd != null and bean.csd != ''">
+				or t1.CSD like concat(concat('%',#{bean.csd}),'%')  
+			</if>
+			<if test="bean.jrbdwsj != null and bean.jrbdwsj != ''">
+				or t1.JRBDWSJ like concat(concat('%',#{bean.jrbdwsj}),'%')  
+			</if>
+			<if test="bean.whcd != null and bean.whcd != ''">
+				or t1.WHCD like concat(concat('%',#{bean.whcd}),'%')  
+			</if>
+			<if test="bean.rylb != null and bean.rylb != ''">
+				or t1.RYLB like concat(concat('%',#{bean.rylb}),'%')  
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				or t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%')  
+			</if>
+			<if test="bean.sfqy != null and bean.sfqy != ''">
+				or t1.SFQY like concat(concat('%',#{bean.sfqy}),'%')  
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				or t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%')  
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				or t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%')  
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				or t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%')  
+			</if>
+			<if test="bean.sfzh != null and bean.sfzh != ''">
+				or t1.SFZH like concat(concat('%',#{bean.sfzh}),'%')  
+			</if>
+			<if test="bean.jylb != null and bean.jylb != ''">
+				or t1.JYLB like concat(concat('%',#{bean.jylb}),'%')  
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				or t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%')  
+			</if>
+			<if test="bean.jtzz != null and bean.jtzz != ''">
+				or t1.JTZZ like concat(concat('%',#{bean.jtzz}),'%')  
+			</if>
+			<if test="bean.jndj != null and bean.jndj != ''">
+				or t1.JNDJ like concat(concat('%',#{bean.jndj}),'%')  
+			</if>
+			<if test="bean.zc != null and bean.zc != ''">
+				or t1.ZC like concat(concat('%',#{bean.zc}),'%')  
+			</if>
+			<if test="bean.xb != null and bean.xb != ''">
+				or t1.XB like concat(concat('%',#{bean.xb}),'%')  
+			</if>
+			<if test="bean.jtygbm != null and bean.jtygbm != ''">
+				or t1.JTYGBM like concat(concat('%',#{bean.jtygbm}),'%')  
+			</if>
+			<if test="bean.mz != null and bean.mz != ''">
+				or t1.MZ like concat(concat('%',#{bean.mz}),'%')  
+			</if>
+			<if test="bean.sflb != null and bean.sflb != ''">
+				or t1.SFLB like concat(concat('%',#{bean.sflb}),'%')  
+			</if>
+			<if test="bean.csrqBegin != null and bean.csrqBegin != ''">
+				or t1.CSRQ &gt;= #{bean.csrqBegin}
+			</if>
+			<if test="bean.csrqEnd != null and bean.csrqEnd != ''">
+				or t1.CSRQ &lt;= #{bean.csrqEnd}
+			</if>
+			<if test="bean.szgw != null and bean.szgw != ''">
+				or t1.SZGW like concat(concat('%',#{bean.szgw}),'%')  
+			</if>
+			<if test="bean.rybm != null and bean.rybm != ''">
+				or t1.RYBM like concat(concat('%',#{bean.rybm}),'%')  
+			</if>
+			<if test="bean.xm != null and bean.xm != ''">
+				or t1.XM like concat(concat('%',#{bean.xm}),'%')  
+			</if>
+			<if test="bean.yjbm != null and bean.yjbm != ''">
+				or t1.YJBM like concat(concat('%',#{bean.yjbm}),'%')  
+			</if>
+			<if test="bean.version != null">
+				or t1.VERSION like concat(concat('%',#{bean.version}),'%')  
+			</if>
+			<if test="bean.jg != null and bean.jg != ''">
+				or t1.JG like concat(concat('%',#{bean.jg}),'%')  
+			</if>
+			<if test="bean.nl != null">
+				or t1.NL like concat(concat('%',#{bean.nl}),'%')  
+			</if>
+			<if test="bean.ryid != null and bean.ryid != ''">
+				or t1.RYID like concat(concat('%',#{bean.ryid}),'%')
+			</if>
+			</trim>
+			</if>
+			<if test="org != null and org != ''">
+				and t1.ORG_IDENTITY =#{org}
+			</if>
+		</where>
+		<choose>
+			<when test="pOrderBy != null and pOrderBy != ''">
+				order by ${pOrderBy}			
+			</when>
+			<otherwise>
+				order by t1.creation_date desc
+			</otherwise>
+		</choose>
+</select>
+<!-- 查询列表 DYN_MDM_RY -->
+<select id="searchDynMdmRy" parameterType="java.util.Map" resultMap="DynMdmRyDTOMap">
+	select
+		t1.id                             ,
+		t1.zcdj                           ,
+		t1.last_update_date               ,
+		t1.cjgzrq                         ,
+		t1.szbm                           ,
+		t1.csd                            ,
+		t1.jrbdwsj                        ,
+		t1.whcd                           ,
+		t1.rylb                           ,
+		t1.created_dept                   ,
+		t1.sfqy                           ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.sfzh                           ,
+		t1.jylb                           ,
+		t1.creation_date                  ,
+		t1.jtzz                           ,
+		t1.jndj                           ,
+		t1.zc                             ,
+		t1.xb                             ,
+		t1.jtygbm                         ,
+		t1.mz                             ,
+		t1.sflb                           ,
+		t1.csrq                           ,
+		t1.szgw                           ,
+		t1.rybm                           ,
+		t1.xm                             ,
+		t1.yjbm                           ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.jg                             ,
+		t1.nl  ,
+	       t1.ryid
+	from dyn_mdm_ry 	t1
+		<where>
+			<if test="id != null and id != ''">
+				and t1.ID =#{id}
+			</if>
+			<if test="zcdj != null and zcdj != ''">
+				and t1.ZCDJ =#{zcdj}
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE =#{lastUpdateDate}
+			</if>
+			<if test="cjgzrq != null and cjgzrq != ''">
+				and t1.CJGZRQ =#{cjgzrq}
+			</if>
+			<if test="szbm != null and szbm != ''">
+				and t1.SZBM =#{szbm}
+			</if>
+			<if test="csd != null and csd != ''">
+				and t1.CSD =#{csd}
+			</if>
+			<if test="jrbdwsj != null and jrbdwsj != ''">
+				and t1.JRBDWSJ =#{jrbdwsj}
+			</if>
+			<if test="whcd != null and whcd != ''">
+				and t1.WHCD =#{whcd}
+			</if>
+			<if test="rylb != null and rylb != ''">
+				and t1.RYLB =#{rylb}
+			</if>
+			<if test="createdDept != null and createdDept != ''">
+				and t1.CREATED_DEPT =#{createdDept}
+			</if>
+			<if test="sfqy != null and sfqy != ''">
+				and t1.SFQY =#{sfqy}
+			</if>
+			<if test="lastUpdateIp != null and lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP =#{lastUpdateIp}
+			</if>
+			<if test="createdBy != null and createdBy != ''">
+				and t1.CREATED_BY =#{createdBy}
+			</if>
+			<if test="lastUpdatedBy != null and lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY =#{lastUpdatedBy}
+			</if>
+			<if test="sfzh != null and sfzh != ''">
+				and t1.SFZH =#{sfzh}
+			</if>
+			<if test="jylb != null and jylb != ''">
+				and t1.JYLB =#{jylb}
+			</if>
+			<if test="creationDate != null and creationDate != ''">
+				and t1.CREATION_DATE =#{creationDate}
+			</if>
+			<if test="jtzz != null and jtzz != ''">
+				and t1.JTZZ =#{jtzz}
+			</if>
+			<if test="jndj != null and jndj != ''">
+				and t1.JNDJ =#{jndj}
+			</if>
+			<if test="zc != null and zc != ''">
+				and t1.ZC =#{zc}
+			</if>
+			<if test="xb != null and xb != ''">
+				and t1.XB =#{xb}
+			</if>
+			<if test="jtygbm != null and jtygbm != ''">
+				and t1.JTYGBM =#{jtygbm}
+			</if>
+			<if test="mz != null and mz != ''">
+				and t1.MZ =#{mz}
+			</if>
+			<if test="sflb != null and sflb != ''">
+				and t1.SFLB =#{sflb}
+			</if>
+			<if test="csrqBegin != null and csrqBegin != ''">
+				and t1.CSRQ &gt;= #{csrqBegin}
+			</if>
+			<if test="csrqEnd != null and csrqEnd != ''">
+				and t1.CSRQ &lt;= #{csrqEnd}
+			</if>
+			<if test="szgw != null and szgw != ''">
+				and t1.SZGW =#{szgw}
+			</if>
+			<if test="rybm != null and rybm != ''">
+				and t1.RYBM =#{rybm}
+			</if>
+			<if test="xm != null and xm != ''">
+				and t1.XM =#{xm}
+			</if>
+			<if test="yjbm != null and yjbm != ''">
+				and t1.YJBM =#{yjbm}
+			</if>
+			<if test="version != null">
+				and t1.VERSION =#{version}
+			</if>
+			<if test="orgIdentity != null and orgIdentity != ''">
+				and t1.ORG_IDENTITY =#{orgIdentity}
+			</if>
+			<if test="jg != null and jg != ''">
+				and t1.JG =#{jg}
+			</if>
+			<if test="nl != null">
+				and t1.NL =#{nl}
+			</if>
+			<if test="ryid != null and ryid != ''">
+				and t1.RYID =#{ryid}
+			</if>
+		</where>
+</select>
+<!-- 主键查询对象 DYN_MDM_RY -->
+<select id="findDynMdmRyById" parameterType="java.util.Map" resultMap="DynMdmRyDTOMap">
+	select
+		t1.id                             ,
+		t1.zcdj                           ,
+		t1.last_update_date               ,
+		t1.cjgzrq                         ,
+		t1.szbm                           ,
+		t1.csd                            ,
+		t1.jrbdwsj                        ,
+		t1.whcd                           ,
+		t1.rylb                           ,
+		t1.created_dept                   ,
+		t1.sfqy                           ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.sfzh                           ,
+		t1.jylb                           ,
+		t1.creation_date                  ,
+		t1.jtzz                           ,
+		t1.jndj                           ,
+		t1.zc                             ,
+		t1.xb                             ,
+		t1.jtygbm                         ,
+		t1.mz                             ,
+		t1.sflb                           ,
+		t1.csrq                           ,
+		t1.szgw                           ,
+		t1.rybm                           ,
+		t1.xm                             ,
+		t1.yjbm                           ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.jg                             ,
+		t1.nl  ,
+	    t1.ryid
+	from dyn_mdm_ry 	t1
+		where t1.id = #{id}
+</select>
+
+<!-- 人员主键查询对象 DYN_MDM_RY -->
+<select id="findDynMdmRyByRyId" parameterType="java.util.Map" resultMap="DynMdmRyDTOMap">
+	select
+		t1.id                             ,
+		t1.zcdj                           ,
+		t1.last_update_date               ,
+		t1.cjgzrq                         ,
+		t1.szbm                           ,
+		t1.csd                            ,
+		t1.jrbdwsj                        ,
+		t1.whcd                           ,
+		t1.rylb                           ,
+		t1.created_dept                   ,
+		t1.sfqy                           ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.sfzh                           ,
+		t1.jylb                           ,
+		t1.creation_date                  ,
+		t1.jtzz                           ,
+		t1.jndj                           ,
+		t1.zc                             ,
+		t1.xb                             ,
+		t1.jtygbm                         ,
+		t1.mz                             ,
+		t1.sflb                           ,
+		t1.csrq                           ,
+		t1.szgw                           ,
+		t1.rybm                           ,
+		t1.xm                             ,
+		t1.yjbm                           ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.jg                             ,
+		t1.nl  ,
+	    t1.ryid
+	from dyn_mdm_ry 	t1
+	where t1.ryid = #{ryId}
+</select>
+<!-- 新增对象 DYN_MDM_RY -->
+<insert id="insertDynMdmRy" parameterType="avicit.platform6.rljcRest.dto.DynMdmRyDTO">
+	insert into dyn_mdm_ry
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="zcdj != null">
+				zcdj,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="cjgzrq != null">
+				cjgzrq,
+			</if>
+			<if test="szbm != null">
+				szbm,
+			</if>
+			<if test="csd != null">
+				csd,
+			</if>
+			<if test="jrbdwsj != null">
+				jrbdwsj,
+			</if>
+			<if test="whcd != null">
+				whcd,
+			</if>
+			<if test="rylb != null">
+				rylb,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="sfqy != null">
+				sfqy,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="sfzh != null">
+				sfzh,
+			</if>
+			<if test="jylb != null">
+				jylb,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="jtzz != null">
+				jtzz,
+			</if>
+			<if test="jndj != null">
+				jndj,
+			</if>
+			<if test="zc != null">
+				zc,
+			</if>
+			<if test="xb != null">
+				xb,
+			</if>
+			<if test="jtygbm != null">
+				jtygbm,
+			</if>
+			<if test="mz != null">
+				mz,
+			</if>
+			<if test="sflb != null">
+				sflb,
+			</if>
+			<if test="csrq != null">
+				csrq,
+			</if>
+			<if test="szgw != null">
+				szgw,
+			</if>
+			<if test="rybm != null">
+				rybm,
+			</if>
+			<if test="xm != null">
+				xm,
+			</if>
+			<if test="yjbm != null">
+				yjbm,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="jg != null">
+				jg,
+			</if>
+			<if test="nl != null">
+				nl,
+			</if>
+		<if test="ryid != null">
+			ryid,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="zcdj != null">
+				#{zcdj,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="cjgzrq != null">
+				#{cjgzrq,jdbcType=VARCHAR},
+			</if>
+			<if test="szbm != null">
+				#{szbm,jdbcType=VARCHAR},
+			</if>
+			<if test="csd != null">
+				#{csd,jdbcType=VARCHAR},
+			</if>
+			<if test="jrbdwsj != null">
+				#{jrbdwsj,jdbcType=VARCHAR},
+			</if>
+			<if test="whcd != null">
+				#{whcd,jdbcType=VARCHAR},
+			</if>
+			<if test="rylb != null">
+				#{rylb,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="sfqy != null">
+				#{sfqy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="sfzh != null">
+				#{sfzh,jdbcType=VARCHAR},
+			</if>
+			<if test="jylb != null">
+				#{jylb,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="jtzz != null">
+				#{jtzz,jdbcType=VARCHAR},
+			</if>
+			<if test="jndj != null">
+				#{jndj,jdbcType=VARCHAR},
+			</if>
+			<if test="zc != null">
+				#{zc,jdbcType=VARCHAR},
+			</if>
+			<if test="xb != null">
+				#{xb,jdbcType=VARCHAR},
+			</if>
+			<if test="jtygbm != null">
+				#{jtygbm,jdbcType=VARCHAR},
+			</if>
+			<if test="mz != null">
+				#{mz,jdbcType=VARCHAR},
+			</if>
+			<if test="sflb != null">
+				#{sflb,jdbcType=VARCHAR},
+			</if>
+			<if test="csrq != null">
+				#{csrq,jdbcType=DATE},
+			</if>
+			<if test="szgw != null">
+				#{szgw,jdbcType=VARCHAR},
+			</if>
+			<if test="rybm != null">
+				#{rybm,jdbcType=VARCHAR},
+			</if>
+			<if test="xm != null">
+				#{xm,jdbcType=VARCHAR},
+			</if>
+			<if test="yjbm != null">
+				#{yjbm,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="jg != null">
+				#{jg,jdbcType=VARCHAR},
+			</if>
+			<if test="nl != null">
+				#{nl,jdbcType=DECIMAL},
+			</if>
+		<if test="ryid != null">
+			#{ryid,jdbcType=VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_MDM_RY -->
+<insert id="insertDynMdmRyList" parameterType="java.util.List">
+	insert into dyn_mdm_ry(
+			id,
+			zcdj,
+			last_update_date,
+			cjgzrq,
+			szbm,
+			csd,
+			jrbdwsj,
+			whcd,
+			rylb,
+			created_dept,
+			sfqy,
+			last_update_ip,
+			created_by,
+			last_updated_by,
+			sfzh,
+			jylb,
+			creation_date,
+			jtzz,
+			jndj,
+			zc,
+			xb,
+			jtygbm,
+			mz,
+			sflb,
+			csrq,
+			szgw,
+			rybm,
+			xm,
+			yjbm,
+			version,
+			org_identity,
+			jg,
+			nl,
+	        ryid)
+	<foreach collection="list" item="item" index="index" open="(" separator="union all" close=")">
+		select 
+					#{item.id,jdbcType=VARCHAR},
+					#{item.zcdj,jdbcType=VARCHAR},
+					#{item.lastUpdateDate},
+					#{item.cjgzrq,jdbcType=VARCHAR},
+					#{item.szbm,jdbcType=VARCHAR},
+					#{item.csd,jdbcType=VARCHAR},
+					#{item.jrbdwsj,jdbcType=VARCHAR},
+					#{item.whcd,jdbcType=VARCHAR},
+					#{item.rylb,jdbcType=VARCHAR},
+					#{item.createdDept,jdbcType=VARCHAR},
+					#{item.sfqy,jdbcType=VARCHAR},
+					#{item.lastUpdateIp,jdbcType=VARCHAR},
+					#{item.createdBy,jdbcType=VARCHAR},
+					#{item.lastUpdatedBy,jdbcType=VARCHAR},
+					#{item.sfzh,jdbcType=VARCHAR},
+					#{item.jylb,jdbcType=VARCHAR},
+					#{item.creationDate},
+					#{item.jtzz,jdbcType=VARCHAR},
+					#{item.jndj,jdbcType=VARCHAR},
+					#{item.zc,jdbcType=VARCHAR},
+					#{item.xb,jdbcType=VARCHAR},
+					#{item.jtygbm,jdbcType=VARCHAR},
+					#{item.mz,jdbcType=VARCHAR},
+					#{item.sflb,jdbcType=VARCHAR},
+					#{item.csrq,jdbcType=DATE},
+					#{item.szgw,jdbcType=VARCHAR},
+					#{item.rybm,jdbcType=VARCHAR},
+					#{item.xm,jdbcType=VARCHAR},
+					#{item.yjbm,jdbcType=VARCHAR},
+					#{item.version,jdbcType=DECIMAL},
+					#{item.orgIdentity,jdbcType=VARCHAR},
+					#{item.jg,jdbcType=VARCHAR},
+					#{item.nl,jdbcType=DECIMAL},
+					#{item.ryid,jdbcType=VARCHAR}
+		from dual
+	</foreach>
+</insert>
+<!-- 更新对象 DYN_MDM_RY -->
+<update id="updateDynMdmRySensitive" parameterType="avicit.platform6.rljcRest.dto.DynMdmRyDTO">
+	update dyn_mdm_ry 
+	<set>
+			<if test="id != null">
+				id                             =#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="zcdj != null">
+				zcdj                           =#{zcdj,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date               =#{lastUpdateDate},
+			</if>
+			<if test="cjgzrq != null">
+				cjgzrq                         =#{cjgzrq,jdbcType=VARCHAR},
+			</if>
+			<if test="szbm != null">
+				szbm                           =#{szbm,jdbcType=VARCHAR},
+			</if>
+			<if test="csd != null">
+				csd                            =#{csd,jdbcType=VARCHAR},
+			</if>
+			<if test="jrbdwsj != null">
+				jrbdwsj                        =#{jrbdwsj,jdbcType=VARCHAR},
+			</if>
+			<if test="whcd != null">
+				whcd                           =#{whcd,jdbcType=VARCHAR},
+			</if>
+			<if test="rylb != null">
+				rylb                           =#{rylb,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="sfqy != null">
+				sfqy                           =#{sfqy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				created_by                     =#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="sfzh != null">
+				sfzh                           =#{sfzh,jdbcType=VARCHAR},
+			</if>
+			<if test="jylb != null">
+				jylb                           =#{jylb,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				creation_date                  =#{creationDate},
+			</if>
+			<if test="jtzz != null">
+				jtzz                           =#{jtzz,jdbcType=VARCHAR},
+			</if>
+			<if test="jndj != null">
+				jndj                           =#{jndj,jdbcType=VARCHAR},
+			</if>
+			<if test="zc != null">
+				zc                             =#{zc,jdbcType=VARCHAR},
+			</if>
+			<if test="xb != null">
+				xb                             =#{xb,jdbcType=VARCHAR},
+			</if>
+			<if test="jtygbm != null">
+				jtygbm                         =#{jtygbm,jdbcType=VARCHAR},
+			</if>
+			<if test="mz != null">
+				mz                             =#{mz,jdbcType=VARCHAR},
+			</if>
+			<if test="sflb != null">
+				sflb                           =#{sflb,jdbcType=VARCHAR},
+			</if>
+			<if test="csrq != null">
+				csrq                           =#{csrq,jdbcType=DATE},
+			</if>
+			<if test="szgw != null">
+				szgw                           =#{szgw,jdbcType=VARCHAR},
+			</if>
+			<if test="rybm != null">
+				rybm                           =#{rybm,jdbcType=VARCHAR},
+			</if>
+			<if test="xm != null">
+				xm                             =#{xm,jdbcType=VARCHAR},
+			</if>
+			<if test="yjbm != null">
+				yjbm                           =#{yjbm,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version                        =version+1,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="jg != null">
+				jg                             =#{jg,jdbcType=VARCHAR},
+			</if>
+			<if test="nl != null">
+				nl                             =#{nl,jdbcType=DECIMAL},
+			</if>
+		    <if test="ryid != null">
+				ryid                             =#{ryid,jdbcType=VARCHAR},
+			</if>
+	</set>
+		where id = #{id} and version =#{version}
+</update>
+<!-- 更新对象 DYN_MDM_RY -->
+<update id="updateDynMdmRyAll" parameterType="avicit.platform6.rljcRest.dto.DynMdmRyDTO">
+	update dyn_mdm_ry 
+		set
+			id                             =#{id,jdbcType=VARCHAR},
+			zcdj                           =#{zcdj,jdbcType=VARCHAR},
+			last_update_date               =#{lastUpdateDate},
+			cjgzrq                         =#{cjgzrq,jdbcType=VARCHAR},
+			szbm                           =#{szbm,jdbcType=VARCHAR},
+			csd                            =#{csd,jdbcType=VARCHAR},
+			jrbdwsj                        =#{jrbdwsj,jdbcType=VARCHAR},
+			whcd                           =#{whcd,jdbcType=VARCHAR},
+			rylb                           =#{rylb,jdbcType=VARCHAR},
+			created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			sfqy                           =#{sfqy,jdbcType=VARCHAR},
+			last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			created_by                     =#{createdBy,jdbcType=VARCHAR},
+			last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			sfzh                           =#{sfzh,jdbcType=VARCHAR},
+			jylb                           =#{jylb,jdbcType=VARCHAR},
+			creation_date                  =#{creationDate},
+			jtzz                           =#{jtzz,jdbcType=VARCHAR},
+			jndj                           =#{jndj,jdbcType=VARCHAR},
+			zc                             =#{zc,jdbcType=VARCHAR},
+			xb                             =#{xb,jdbcType=VARCHAR},
+			jtygbm                         =#{jtygbm,jdbcType=VARCHAR},
+			mz                             =#{mz,jdbcType=VARCHAR},
+			sflb                           =#{sflb,jdbcType=VARCHAR},
+			csrq                           =#{csrq,jdbcType=DATE},
+			szgw                           =#{szgw,jdbcType=VARCHAR},
+			rybm                           =#{rybm,jdbcType=VARCHAR},
+			xm                             =#{xm,jdbcType=VARCHAR},
+			yjbm                           =#{yjbm,jdbcType=VARCHAR},
+			version                        =version+1,
+			org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			jg                             =#{jg,jdbcType=VARCHAR},
+			nl                             =#{nl,jdbcType=DECIMAL},
+			ryid                             =#{ryid,jdbcType=VARCHAR}
+	where id = #{id} and version =#{version}
+</update>
+<!-- 批量更新对象   DYN_MDM_RY -->
+<update id="updateDynMdmRyList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator="" close="end;">
+	update dyn_mdm_ry 
+		set
+			id                             =#{item.id,jdbcType=VARCHAR},
+			zcdj                           =#{item.zcdj,jdbcType=VARCHAR},
+			last_update_date               =#{item.lastUpdateDate},
+			cjgzrq                         =#{item.cjgzrq,jdbcType=VARCHAR},
+			szbm                           =#{item.szbm,jdbcType=VARCHAR},
+			csd                            =#{item.csd,jdbcType=VARCHAR},
+			jrbdwsj                        =#{item.jrbdwsj,jdbcType=VARCHAR},
+			whcd                           =#{item.whcd,jdbcType=VARCHAR},
+			rylb                           =#{item.rylb,jdbcType=VARCHAR},
+			created_dept                   =#{item.createdDept,jdbcType=VARCHAR},
+			sfqy                           =#{item.sfqy,jdbcType=VARCHAR},
+			last_update_ip                 =#{item.lastUpdateIp,jdbcType=VARCHAR},
+			created_by                     =#{item.createdBy,jdbcType=VARCHAR},
+			last_updated_by                =#{item.lastUpdatedBy,jdbcType=VARCHAR},
+			sfzh                           =#{item.sfzh,jdbcType=VARCHAR},
+			jylb                           =#{item.jylb,jdbcType=VARCHAR},
+			creation_date                  =#{item.creationDate},
+			jtzz                           =#{item.jtzz,jdbcType=VARCHAR},
+			jndj                           =#{item.jndj,jdbcType=VARCHAR},
+			zc                             =#{item.zc,jdbcType=VARCHAR},
+			xb                             =#{item.xb,jdbcType=VARCHAR},
+			jtygbm                         =#{item.jtygbm,jdbcType=VARCHAR},
+			mz                             =#{item.mz,jdbcType=VARCHAR},
+			sflb                           =#{item.sflb,jdbcType=VARCHAR},
+			csrq                           =#{item.csrq,jdbcType=DATE},
+			szgw                           =#{item.szgw,jdbcType=VARCHAR},
+			rybm                           =#{item.rybm,jdbcType=VARCHAR},
+			xm                             =#{item.xm,jdbcType=VARCHAR},
+			yjbm                           =#{item.yjbm,jdbcType=VARCHAR},
+			version                        =version+1,
+			org_identity                   =#{item.orgIdentity,jdbcType=VARCHAR},
+			jg                             =#{item.jg,jdbcType=VARCHAR},
+			nl                             =#{item.nl,jdbcType=DECIMAL},
+			ryid                           =#{item.ryid,jdbcType=VARCHAR}
+		where id = #{item.id} and version =#{item.version};
+	</foreach>
+</update>
+<!-- 主键删除 DYN_MDM_RY -->
+<delete id="deleteDynMdmRyById" parameterType="java.lang.String">
+		delete from dyn_mdm_ry  where  id = #{id}
+</delete>
+<!-- 批量主键删除 DYN_MDM_RY -->
+<delete id="deleteDynMdmRyList" parameterType="java.util.List">
+		delete from dyn_mdm_ry  t1
+		<where>
+			<foreach item="idItem" collection="list" open="(" separator="or" close=")">
+				t1.id = #{idItem}
+			</foreach>
+		</where>
+</delete>
+<!-- 员工编码查询对象 DYN_MDM_RY -->
+<select id="findDynMdmRyByCode" parameterType="java.util.Map" resultMap="DynMdmRyDTOMap">
+select
+		t1.id                             ,
+		t1.zcdj                           ,
+		t1.last_update_date               ,
+		t1.cjgzrq                         ,
+		t1.szbm                           ,
+		t1.csd                            ,
+		t1.jrbdwsj                        ,
+		t1.whcd                           ,
+		t1.rylb                           ,
+		t1.created_dept                   ,
+		t1.sfqy                           ,
+		t1.last_update_ip                 ,
+		t1.created_by                     ,
+		t1.last_updated_by                ,
+		t1.sfzh                           ,
+		t1.jylb                           ,
+		t1.creation_date                  ,
+		t1.jtzz                           ,
+		t1.jndj                           ,
+		t1.zc                             ,
+		t1.xb                             ,
+		t1.jtygbm                         ,
+		t1.mz                             ,
+		t1.sflb                           ,
+		t1.csrq                           ,
+		t1.szgw                           ,
+		t1.rybm                           ,
+		t1.xm                             ,
+		t1.yjbm                           ,
+		t1.version                        ,
+		t1.org_identity                   ,
+		t1.jg                             ,
+		t1.nl                             ,
+       t1.ryid
+	from dyn_mdm_ry 	t1
+		where t1.jtygbm = #{code}
+
+
+
+</select>
+
+
+
+</mapper>

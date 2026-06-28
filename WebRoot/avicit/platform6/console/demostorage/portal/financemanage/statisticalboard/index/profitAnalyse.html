@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>利润结构分析</title>
+    <style>
+        .profitAnalyse-content {
+          background: #fff;
+          height: 328px;
+        }
+        .profitAnalyse-content > h3{
+          display: inline-block;margin-left:20px;margin-right:20px;
+        }
+        .profitAnalyse-more{
+          color: #A8ADB4;
+          cursor: pointer;
+          float: right;
+        }
+        .profitAnalyse-more > i{
+          margin-right: 10px;
+          font-size: 18px;
+        }
+        .profitAnalyse-more > i:last-child{
+          margin-right: 0;
+        }
+        .profitAnalyse-content > p{
+          display: inline-block;
+        }
+        .profitAnalyse-content > p > span:nth-child(1) {
+          text-align: left;
+          font-weight: 600;
+          font-style: normal;
+          font-size: 16px;
+          color: #1e1e1e;
+        }
+        .profitAnalyse-content > div{
+          float: right;
+          font-weight: 600;
+          color:#7F7F7F;
+          font-size: 16px;
+        }
+        .profitAnalyse-tab{
+          position: absolute;
+          right: 20px;
+          top: 75px;
+        }
+        .profitAnalyse-tab > span{
+            display: inline-block;
+            border: 1px solid #D9D9D9;
+            width: 50px;
+            text-align: center;
+            margin-left: -7px;
+            height: 25px;
+            line-height: 25px;
+            color: #676767;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .profitAnalyse-tab > span:nth-last-child(2){
+            border-left: none;
+            border-right: none;
+        }
+        .profitAnalyse-active{
+            color:cornflowerblue !important;
+            border: 1px solid cornflowerblue !important;
+        }
+        
+      </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+      <h4>利润结构分析</h4>
+      <span class="box_title_right">
+        <i
+        class="iconfont icon-refresh"
+        title="刷新"
+        ></i>
+      </span>
+      </div>
+      <div class="profitAnalyse-content content_inner">
+        <div id="profitAnalysePie" style="width: 100%;height: 100%;"></div>
+        <div class="profitAnalyse-tab">
+          <span class="profitAnalyse-active" onclick="changeDate(0)">今日</span>
+          <span onclick="changeDate(1)">本周</span>
+          <span onclick="changeDate(2)">本月</span>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var profitAnalyseEchart = echarts.init(document.getElementById("profitAnalysePie"));
+
+      var profitAnalyseOption = {
+        tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        icon: "circle",
+        orient: "vertical",
+        top: '20%',
+        right:'5%',
+        textStyle: {
+          color: '#999'
+        },
+      },
+      title: {
+          text: "销售额",
+          top: "32%",
+          left: "19%",
+          textStyle: {
+            color: "#999",
+            fontSize: "12px",
+            fontWeight:"normal"
+          },
+          subtext: "￥122,22.1",
+          subtextStyle: {
+            color: "#333",
+            fontSize: "16px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+      series: [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['30%', '40%'],
+              center: ["20%", "40%"], 
+              // roseType: 'area',
+              itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2
+            },　
+              avoidLabelOverlap: false,
+              label: {
+                  show: false,
+                  position: 'center'
+              },
+              labelLine: {
+                  show: false
+              },
+              data: [
+                { value: 24, name: "成本 | 8%    ￥2,522" },
+                { value: 32, name: "收入 | 20%   ￥2,522" },
+                { value: 32, name: "费用 | 12%   ￥2,522" },
+                { value: 6, name: "净利润 | 50%  ￥2,522" },
+                { value: 6, name: "税金 | 5%     ￥2,522" },
+                { value: 6, name: "其他 | 5%     ￥2,522" },
+              ]
+          }
+        ]
+      };
+      
+
+      profitAnalyseEchart.setOption(profitAnalyseOption);
+
+      function handleClick () {
+        window.open('profitAnalyse.html');
+      }
+      function changeDate(value){
+        $(".profitAnalyse-tab span").eq(value).addClass('profitAnalyse-active')
+        $(".profitAnalyse-tab span").not($(".profitAnalyse-tab span").eq(value)).removeClass('profitAnalyse-active')
+        if(value == 0){
+          profitAnalyseOption.series[0].data = [
+            { value: 14, name: "成本 | 12%    ￥2,522" },
+            { value: 26, name: "其他 | 4%     ￥2,522" },
+            { value: 41, name: "收入 | 4%     ￥2,522" },
+            { value: 22, name: "费用 | 12%    ￥2,522" },
+            { value: 12, name: "净利润 | 54%  ￥2,522" },
+            { value: 3, name: "税金 | 1%      ￥2,522" },
+          ]
+        }else if(value == 1){
+          profitAnalyseOption.series[0].data = [
+            { value: 11, name: "成本 | 22%    ￥2,522" },
+            { value: 33, name: "其他 | 5%     ￥2,522" },
+            { value: 46, name: "收入 | 2%     ￥2,522" },
+            { value: 18, name: "费用 | 18%    ￥2,522" },
+            { value: 22, name: "净利润 | 51%  ￥2,522" },
+            { value: 5, name: "税金 | 3%      ￥2,522" },
+          ]
+        }else if(value == 2){
+        }
+        profitAnalyseEchart.setOption(profitAnalyseOption);
+      }
+      function change(value){
+        if(value == 'day'){
+
+        }else if(value == 'week'){
+            
+        }else if(value == 'month'){
+
+        }
+      }
+    </script>
+
+    
+  </body>
+</html>

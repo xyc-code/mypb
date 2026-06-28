@@ -1,0 +1,474 @@
+package avicit.cape.pmprojectys.pmprojectyszjbg.dto;
+
+import javax.persistence.Id;
+import avicit.platform6.core.domain.BeanDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import avicit.platform6.core.properties.PlatformConstant.LogType;
+import avicit.platform6.core.annotation.log.LogField;
+import avicit.platform6.core.annotation.log.FieldRemark;
+import avicit.platform6.core.annotation.log.PojoRemark;
+
+/**
+ * @金航数码科技有限责任公司
+ * @作者：请填写
+ * @邮箱：请填写
+ * @创建时间： 2026-06-09 17:38 
+ * @类说明：项目验收管理-总结报告
+ * @修改记录：
+ */
+@PojoRemark(table = "pm_project_ys_zjbg", object = "PmProjectYsZjbgDTO", name = "项目验收管理-总结报告")
+public class PmProjectYsZjbgDTO extends BeanDTO {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@LogField
+	@FieldRemark(column = "id", field = "id", name = "主键")
+	/*
+	 *主键
+	 */
+	private java.lang.String id;
+	@FieldRemark(column = "secret_level", field = "secretLevel", name = "密级")
+	/*
+	 *密级
+	 */
+	private java.lang.String secretLevel;
+	@FieldRemark(column = "project_id", field = "projectId", name = "项目id")
+	/*
+	 *项目id
+	 */
+	private java.lang.String projectId;
+	@FieldRemark(column = "project_name", field = "projectName", name = "所属项目")
+	/*
+	 *所属项目
+	 */
+	private java.lang.String projectName;
+	@FieldRemark(column = "task_id", field = "taskId", name = "任务id")
+	/*
+	 *任务id
+	 */
+	private java.lang.String taskId;
+	@FieldRemark(column = "task_name", field = "taskName", name = "任务名称")
+	/*
+	 *任务名称
+	 */
+	private java.lang.String taskName;
+	@FieldRemark(column = "title", field = "title", name = "标题")
+	/*
+	 *标题
+	 */
+	private java.lang.String title;
+	@FieldRemark(column = "zj_type", field = "zjType", name = "类型")
+	/*
+	 *类型
+	 */
+	private java.lang.String zjType;
+	@FieldRemark(column = "content", field = "content", name = "内容")
+	/*
+	 *内容
+	 */
+	private java.lang.String content;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *创建时间开始时间
+	 */
+	private java.util.Date creationDateBegin;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *创建时间截止时间
+	 */
+	private java.util.Date creationDateEnd;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *最后修改时间开始时间
+	 */
+	private java.util.Date lastUpdateDateBegin;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *最后修改时间截止时间
+	 */
+	private java.util.Date lastUpdateDateEnd;
+	@FieldRemark(column = "created_dept", field = "createdDept", name = "创建部门")
+	/*
+	 *创建部门
+	 */
+	private java.lang.String createdDept;
+	@FieldRemark(column = "org_identity", field = "orgIdentity", name = "多组织ID")
+	/*
+	 *多组织ID
+	 */
+	private java.lang.String orgIdentity;
+	@FieldRemark(column = "attribute_01", field = "attribute01", name = "扩展预留字段1")
+	/*
+	 *扩展预留字段1
+	 */
+	private java.lang.String attribute01;
+	@FieldRemark(column = "attribute_02", field = "attribute02", name = "扩展预留字段2")
+	/*
+	 *扩展预留字段2
+	 */
+	private java.lang.String attribute02;
+	@FieldRemark(column = "attribute_03", field = "attribute03", name = "扩展预留字段3")
+	/*
+	 *扩展预留字段3
+	 */
+	private java.lang.String attribute03;
+	@FieldRemark(column = "attribute_04", field = "attribute04", name = "扩展预留字段4")
+	/*
+	 *扩展预留字段4
+	 */
+	private java.lang.String attribute04;
+	@FieldRemark(column = "attribute_05", field = "attribute05", name = "扩展预留字段5")
+	/*
+	 *扩展预留字段5
+	 */
+	private java.lang.String attribute05;
+	@FieldRemark(column = "attribute_06", field = "attribute06", name = "扩展预留字段6")
+	/*
+	 *扩展预留字段6
+	 */
+	private java.lang.String attribute06;
+	@FieldRemark(column = "attribute_07", field = "attribute07", name = "扩展预留字段7")
+	/*
+	 *扩展预留字段7
+	 */
+	private java.math.BigDecimal attribute07;
+	@FieldRemark(column = "attribute_08", field = "attribute08", name = "扩展预留字段8")
+	/*
+	 *扩展预留字段8
+	 */
+	private java.math.BigDecimal attribute08;
+	@FieldRemark(column = "attribute_09", field = "attribute09", name = "扩展预留字段9")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *扩展预留字段9
+	 */
+	private java.util.Date attribute09;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *扩展预留字段9开始时间
+	 */
+	private java.util.Date attribute09Begin;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *扩展预留字段9截止时间
+	 */
+	private java.util.Date attribute09End;
+	@FieldRemark(column = "attribute_10", field = "attribute10", name = "扩展预留字段10")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *扩展预留字段10
+	 */
+	private java.util.Date attribute10;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *扩展预留字段10开始时间
+	 */
+	private java.util.Date attribute10Begin;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	/*
+	 *扩展预留字段10截止时间
+	 */
+	private java.util.Date attribute10End;
+
+	public java.lang.String getId() {
+		return id;
+	}
+
+	public void setId(java.lang.String id) {
+		this.id = id;
+	}
+
+	public java.lang.String getSecretLevel() {
+		return secretLevel;
+	}
+
+	public void setSecretLevel(java.lang.String secretLevel) {
+		this.secretLevel = secretLevel;
+	}
+
+	public java.lang.String getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(java.lang.String projectId) {
+		this.projectId = projectId;
+	}
+
+	public java.lang.String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(java.lang.String projectName) {
+		this.projectName = projectName;
+	}
+
+	public java.lang.String getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(java.lang.String taskId) {
+		this.taskId = taskId;
+	}
+
+	public java.lang.String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(java.lang.String taskName) {
+		this.taskName = taskName;
+	}
+
+	public java.lang.String getTitle() {
+		return title;
+	}
+
+	public void setTitle(java.lang.String title) {
+		this.title = title;
+	}
+
+	public java.lang.String getZjType() {
+		return zjType;
+	}
+
+	public void setZjType(java.lang.String zjType) {
+		this.zjType = zjType;
+	}
+
+	public java.lang.String getContent() {
+		return content;
+	}
+
+	public void setContent(java.lang.String content) {
+		this.content = content;
+	}
+
+	public java.util.Date getCreationDateBegin() {
+		return creationDateBegin;
+	}
+
+	public void setCreationDateBegin(java.util.Date creationDateBegin) {
+		this.creationDateBegin = creationDateBegin;
+	}
+
+	public java.util.Date getCreationDateEnd() {
+		return creationDateEnd;
+	}
+
+	public void setCreationDateEnd(java.util.Date creationDateEnd) {
+		this.creationDateEnd = creationDateEnd;
+	}
+
+	public java.util.Date getLastUpdateDateBegin() {
+		return lastUpdateDateBegin;
+	}
+
+	public void setLastUpdateDateBegin(java.util.Date lastUpdateDateBegin) {
+		this.lastUpdateDateBegin = lastUpdateDateBegin;
+	}
+
+	public java.util.Date getLastUpdateDateEnd() {
+		return lastUpdateDateEnd;
+	}
+
+	public void setLastUpdateDateEnd(java.util.Date lastUpdateDateEnd) {
+		this.lastUpdateDateEnd = lastUpdateDateEnd;
+	}
+
+	public java.lang.String getCreatedDept() {
+		return createdDept;
+	}
+
+	public void setCreatedDept(java.lang.String createdDept) {
+		this.createdDept = createdDept;
+	}
+
+	public java.lang.String getOrgIdentity() {
+		return orgIdentity;
+	}
+
+	public void setOrgIdentity(java.lang.String orgIdentity) {
+		this.orgIdentity = orgIdentity;
+	}
+
+	public java.lang.String getAttribute01() {
+		return attribute01;
+	}
+
+	public void setAttribute01(java.lang.String attribute01) {
+		this.attribute01 = attribute01;
+	}
+
+	public java.lang.String getAttribute02() {
+		return attribute02;
+	}
+
+	public void setAttribute02(java.lang.String attribute02) {
+		this.attribute02 = attribute02;
+	}
+
+	public java.lang.String getAttribute03() {
+		return attribute03;
+	}
+
+	public void setAttribute03(java.lang.String attribute03) {
+		this.attribute03 = attribute03;
+	}
+
+	public java.lang.String getAttribute04() {
+		return attribute04;
+	}
+
+	public void setAttribute04(java.lang.String attribute04) {
+		this.attribute04 = attribute04;
+	}
+
+	public java.lang.String getAttribute05() {
+		return attribute05;
+	}
+
+	public void setAttribute05(java.lang.String attribute05) {
+		this.attribute05 = attribute05;
+	}
+
+	public java.lang.String getAttribute06() {
+		return attribute06;
+	}
+
+	public void setAttribute06(java.lang.String attribute06) {
+		this.attribute06 = attribute06;
+	}
+
+	public java.math.BigDecimal getAttribute07() {
+		return attribute07;
+	}
+
+	public void setAttribute07(java.math.BigDecimal attribute07) {
+		this.attribute07 = attribute07;
+	}
+
+	public java.math.BigDecimal getAttribute08() {
+		return attribute08;
+	}
+
+	public void setAttribute08(java.math.BigDecimal attribute08) {
+		this.attribute08 = attribute08;
+	}
+
+	public java.util.Date getAttribute09() {
+		return attribute09;
+	}
+
+	public void setAttribute09(java.util.Date attribute09) {
+		this.attribute09 = attribute09;
+	}
+
+	public java.util.Date getAttribute09Begin() {
+		return attribute09Begin;
+	}
+
+	public void setAttribute09Begin(java.util.Date attribute09Begin) {
+		this.attribute09Begin = attribute09Begin;
+	}
+
+	public java.util.Date getAttribute09End() {
+		return attribute09End;
+	}
+
+	public void setAttribute09End(java.util.Date attribute09End) {
+		this.attribute09End = attribute09End;
+	}
+
+	public java.util.Date getAttribute10() {
+		return attribute10;
+	}
+
+	public void setAttribute10(java.util.Date attribute10) {
+		this.attribute10 = attribute10;
+	}
+
+	public java.util.Date getAttribute10Begin() {
+		return attribute10Begin;
+	}
+
+	public void setAttribute10Begin(java.util.Date attribute10Begin) {
+		this.attribute10Begin = attribute10Begin;
+	}
+
+	public java.util.Date getAttribute10End() {
+		return attribute10End;
+	}
+
+	public void setAttribute10End(java.util.Date attribute10End) {
+		this.attribute10End = attribute10End;
+	}
+
+	public String getLogFormName() {
+		if (super.logFormName == null || super.logFormName.equals("")) {
+			return "项目验收管理-总结报告";
+		} else {
+			return super.logFormName;
+		}
+	}
+
+	public String getLogTitle() {
+		if (super.logTitle == null || super.logTitle.equals("")) {
+			return "项目验收管理-总结报告";
+		} else {
+			return super.logTitle;
+		}
+	}
+
+	public LogType getLogType() {
+		if (super.logType == null || super.logType.equals("")) {
+			return LogType.module_operate;
+		} else {
+			return super.logType;
+		}
+	}
+
+	private String activityalias_;
+	private String businessstate_;
+	private String bpmType;
+	private String bpmState;
+	private String currUserId;
+
+	public String getActivityalias_() {
+		return activityalias_;
+	}
+
+	public void setActivityalias_(String activityalias_) {
+		this.activityalias_ = activityalias_;
+	}
+
+	public String getBusinessstate_() {
+		return businessstate_;
+	}
+
+	public void setBusinessstate_(String businessstate_) {
+		this.businessstate_ = businessstate_;
+	}
+
+	public String getBpmType() {
+		return bpmType;
+	}
+
+	public void setBpmType(String bpmType) {
+		this.bpmType = bpmType;
+	}
+
+	public String getBpmState() {
+		return bpmState;
+	}
+
+	public void setBpmState(String bpmState) {
+		this.bpmState = bpmState;
+	}
+
+	public String getCurrUserId() {
+		return currUserId;
+	}
+
+	public void setCurrUserId(String currUserId) {
+		this.currUserId = currUserId;
+	}
+}

@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.milepost.dynsubzxbasb1.dao.DynSubZxbasb1DAO">
+<resultMap id="DynSubZxbasb1DTOMap" type="avicit.pb.milepost.dynsubzxbasb1.dto.DynSubZxbasb1DTO">
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="fkSubColId" column="FK_SUB_COL_ID" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="tjdZhiwu" column="TJD_ZHIWU" jdbcType="VARCHAR" />
+	<result property="tjdAge" column="TJD_AGE" jdbcType="DECIMAL" />
+	<result property="tjdDuizhangname" column="TJD_DUIZHANGNAME" jdbcType="VARCHAR" />
+	<result property="tjdDuiyuanname" column="TJD_DUIYUANNAME" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="tjdDanwei" column="TJD_DANWEI" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="tjdFiledUsername" column="TJD_FILED_USERNAME" jdbcType="VARCHAR" />
+</resultMap>
+<resultMap id="DynYouthRecordDTOMap" type="avicit.pb.milepost.dynyouthrecord.dto.DynYouthRecordDTO">
+	<result property="commandoesTheme" column="COMMANDOES_THEME" jdbcType="VARCHAR" />
+	<result property="commandoesType" column="COMMANDOES_TYPE" jdbcType="VARCHAR" />
+	<result property="commandoesCaptains" column="COMMANDOES_CAPTAINS" jdbcType="VARCHAR" />
+	<result property="commandoesDate" column="COMMANDOES_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr9" column="ATTR9" jdbcType="VARCHAR" />
+	<result property="commandoesTaskDate" column="COMMANDOES_TASK_DATE" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamTask" column="COMMANDOES_TEAM_TASK" jdbcType="VARCHAR" />
+	<result property="attr4" column="ATTR4" jdbcType="VARCHAR" />
+	<result property="applicationUnit" column="APPLICATION_UNIT" jdbcType="VARCHAR" />
+	<result property="attr3" column="ATTR3" jdbcType="VARCHAR" />
+	<result property="commandoesName" column="COMMANDOES_NAME" jdbcType="VARCHAR" />
+	<result property="attr2" column="ATTR2" jdbcType="VARCHAR" />
+	<result property="attr1" column="ATTR1" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="attr8" column="ATTR8" jdbcType="VARCHAR" />
+	<result property="attr7" column="ATTR7" jdbcType="VARCHAR" />
+	<result property="attr20" column="ATTR20" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamDept" column="COMMANDOES_TEAM_DEPT" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="attr6" column="ATTR6" jdbcType="VARCHAR" />
+	<result property="attr5" column="ATTR5" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="attr12" column="ATTR12" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="attr13" column="ATTR13" jdbcType="VARCHAR" />
+	<result property="attr10" column="ATTR10" jdbcType="VARCHAR" />
+	<result property="attr11" column="ATTR11" jdbcType="VARCHAR" />
+	<result property="attr16" column="ATTR16" jdbcType="TIMESTAMP" />
+	<result property="attr17" column="ATTR17" jdbcType="TIMESTAMP" />
+	<result property="attr14" column="ATTR14" jdbcType="VARCHAR" />
+	<result property="attr15" column="ATTR15" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr18" column="ATTR18" jdbcType="TIMESTAMP" />
+	<result property="attr19" column="ATTR19" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamName" column="COMMANDOES_TEAM_NAME" jdbcType="VARCHAR" />
+	<result property="commandoesTeamCount" column="COMMANDOES_TEAM_COUNT" jdbcType="VARCHAR" />
+	<result property="commandoesTeamAge" column="COMMANDOES_TEAM_AGE" jdbcType="VARCHAR" />
+	<result property="applicationNumber" column="APPLICATION_NUMBER" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+    <result property="expectedIncome" column="EXPECTED_INCOME" jdbcType="CLOB" javaType="String" />
+	<result property="activityalias_" column="activityalias_" jdbcType="VARCHAR" />
+	<result property="businessstate_" column="businessstate_" jdbcType="VARCHAR" />
+	<result property="assigneenames_" column="assigneenames_" jdbcType="VARCHAR" />
+</resultMap>
+<resultMap id="DynYouthDeclarationDTOMap" type="avicit.pb.milepost.dynyouthdeclaration.dto.DynYouthDeclarationDTO">
+	<result property="commandoesType" column="COMMANDOES_TYPE" jdbcType="VARCHAR" />
+    <result property="expectedIncome" column="EXPECTED_INCOME" jdbcType="CLOB" javaType="String" />
+	<result property="commandoesCaptains" column="COMMANDOES_CAPTAINS" jdbcType="VARCHAR" />
+	<result property="commandoesDate" column="COMMANDOES_DATE" jdbcType="TIMESTAMP" />
+	<result property="commandoesContent" column="COMMANDOES_CONTENT" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr9" column="ATTR9" jdbcType="VARCHAR" />
+	<result property="commandoesTaskDate" column="COMMANDOES_TASK_DATE" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamTask" column="COMMANDOES_TEAM_TASK" jdbcType="VARCHAR" />
+	<result property="attr4" column="ATTR4" jdbcType="VARCHAR" />
+	<result property="applicationUnit" column="APPLICATION_UNIT" jdbcType="VARCHAR" />
+	<result property="attr3" column="ATTR3" jdbcType="VARCHAR" />
+	<result property="commandoesName" column="COMMANDOES_NAME" jdbcType="VARCHAR" />
+	<result property="attr2" column="ATTR2" jdbcType="VARCHAR" />
+	<result property="attr1" column="ATTR1" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="attr8" column="ATTR8" jdbcType="VARCHAR" />
+	<result property="attr7" column="ATTR7" jdbcType="VARCHAR" />
+	<result property="attr20" column="ATTR20" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamDept" column="COMMANDOES_TEAM_DEPT" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="attr6" column="ATTR6" jdbcType="VARCHAR" />
+	<result property="attr5" column="ATTR5" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="attr12" column="ATTR12" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="attr13" column="ATTR13" jdbcType="VARCHAR" />
+	<result property="attr10" column="ATTR10" jdbcType="VARCHAR" />
+	<result property="attr11" column="ATTR11" jdbcType="VARCHAR" />
+	<result property="attr16" column="ATTR16" jdbcType="TIMESTAMP" />
+	<result property="attr17" column="ATTR17" jdbcType="TIMESTAMP" />
+	<result property="attr14" column="ATTR14" jdbcType="VARCHAR" />
+	<result property="attr15" column="ATTR15" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr18" column="ATTR18" jdbcType="TIMESTAMP" />
+	<result property="attr19" column="ATTR19" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamName" column="COMMANDOES_TEAM_NAME" jdbcType="VARCHAR" />
+	<result property="commandoesPosenTel" column="COMMANDOES_POSEN_TEL" jdbcType="VARCHAR" />
+	<result property="commandoesTeamCount" column="COMMANDOES_TEAM_COUNT" jdbcType="VARCHAR" />
+	<result property="commandoesPxqk" column="COMMANDOES_PXQK" jdbcType="VARCHAR" />
+	<result property="commandoesTeamAge" column="COMMANDOES_TEAM_AGE" jdbcType="VARCHAR" />
+	<result property="applicationNumber" column="APPLICATION_NUMBER" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="commandoesPosen" column="COMMANDOES_POSEN" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="activityalias_" column="activityalias_" jdbcType="VARCHAR" />
+	<result property="businessstate_" column="businessstate_" jdbcType="VARCHAR" />
+	<result property="assigneenames_" column="assigneenames_" jdbcType="VARCHAR" />
+</resultMap>
+<resultMap id="DynFiveOfDTOMap" type="avicit.pb.milepost.dynfiveof.dto.DynFiveOfDTO">
+	<result property="fiveDate" column="FIVE_DATE" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="fiveNo" column="FIVE_NO" jdbcType="VARCHAR" />
+	<result property="attr9" column="ATTR9" jdbcType="VARCHAR" />
+	<result property="attr4" column="ATTR4" jdbcType="VARCHAR" />
+	<result property="fiveName" column="FIVE_NAME" jdbcType="VARCHAR" />
+	<result property="attr3" column="ATTR3" jdbcType="VARCHAR" />
+	<result property="attr2" column="ATTR2" jdbcType="VARCHAR" />
+	<result property="attr1" column="ATTR1" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="fiveSituation" column="FIVE_SITUATION" jdbcType="VARCHAR" />
+	<result property="attr8" column="ATTR8" jdbcType="VARCHAR" />
+	<result property="attr7" column="ATTR7" jdbcType="VARCHAR" />
+	<result property="attr20" column="ATTR20" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="attr6" column="ATTR6" jdbcType="VARCHAR" />
+	<result property="attr5" column="ATTR5" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="attr12" column="ATTR12" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="attr13" column="ATTR13" jdbcType="VARCHAR" />
+	<result property="attr10" column="ATTR10" jdbcType="VARCHAR" />
+	<result property="posenTel" column="POSEN_TEL" jdbcType="VARCHAR" />
+	<result property="attr11" column="ATTR11" jdbcType="VARCHAR" />
+	<result property="attr16" column="ATTR16" jdbcType="VARCHAR" />
+	<result property="attr17" column="ATTR17" jdbcType="VARCHAR" />
+	<result property="attr14" column="ATTR14" jdbcType="VARCHAR" />
+	<result property="attr15" column="ATTR15" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr18" column="ATTR18" jdbcType="TIMESTAMP" />
+	<result property="attr19" column="ATTR19" jdbcType="TIMESTAMP" />
+	<result property="fiveEffect" column="FIVE_EFFECT" jdbcType="VARCHAR" />
+	<result property="fiveDept" column="FIVE_DEPT" jdbcType="VARCHAR" />
+	<result property="fivePosition" column="FIVE_POSITION" jdbcType="VARCHAR" />
+	<result property="fiveProspects" column="FIVE_PROSPECTS" jdbcType="VARCHAR" />
+	<result property="posenName" column="POSEN_NAME" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="fvieAge" column="FVIE_AGE" jdbcType="VARCHAR" />
+	<result property="fiveDeclarations" column="FIVE_DECLARATIONS" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+    <result property="fiveProblem" column="FIVE_PROBLEM" jdbcType="CLOB" javaType="String" />
+    <result property="fiveMeasures" column="FIVE_MEASURES" jdbcType="CLOB" javaType="String" />
+	<result property="activityalias_" column="activityalias_" jdbcType="VARCHAR" />
+	<result property="businessstate_" column="businessstate_" jdbcType="VARCHAR" />
+	<result property="assigneenames_" column="assigneenames_" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.CREATED_BY,
+	t1.LAST_UPDATED_BY,
+	t1.FK_SUB_COL_ID,
+	t1.CREATION_DATE,
+	t1.LAST_UPDATE_DATE,
+	t1.TJD_ZHIWU,
+	t1.TJD_AGE,
+	t1.TJD_DUIZHANGNAME,
+	t1.TJD_DUIYUANNAME,
+	t1.VERSION,
+	t1.TJD_DANWEI,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ORG_IDENTITY,
+	t1.LAST_UPDATE_IP,
+	t1.TJD_FILED_USERNAME,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.fkSubColId != null and bean.fkSubColId != ''">
+		and t1.FK_SUB_COL_ID like concat(concat('%',#{bean.fkSubColId}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.tjdZhiwu != null and bean.tjdZhiwu != ''">
+		and t1.TJD_ZHIWU like concat(concat('%',#{bean.tjdZhiwu}),'%')
+	</if>
+	<if test="bean.tjdAge != null">
+		and t1.TJD_AGE = #{bean.tjdAge}
+	</if>
+	<if test="bean.tjdDuizhangname != null and bean.tjdDuizhangname != ''">
+		and t1.TJD_DUIZHANGNAME like concat(concat('%',#{bean.tjdDuizhangname}),'%')
+	</if>
+	<if test="bean.tjdDuiyuanname != null and bean.tjdDuiyuanname != ''">
+		and t1.TJD_DUIYUANNAME like concat(concat('%',#{bean.tjdDuiyuanname}),'%')
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.tjdDanwei != null and bean.tjdDanwei != ''">
+		and t1.TJD_DANWEI like concat(concat('%',#{bean.tjdDanwei}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.tjdFiledUsername != null and bean.tjdFiledUsername != ''">
+		and t1.TJD_FILED_USERNAME like concat(concat('%',#{bean.tjdFiledUsername}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.fkSubColId != null and bean.fkSubColId != ''">
+		or t1.FK_SUB_COL_ID like concat(concat('%',#{bean.fkSubColId}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.tjdZhiwu != null and bean.tjdZhiwu != ''">
+		or t1.TJD_ZHIWU like concat(concat('%',#{bean.tjdZhiwu}),'%')
+	</if>
+	<if test="bean.tjdAge != null">
+		or t1.TJD_AGE = #{bean.tjdAge}
+	</if>
+	<if test="bean.tjdDuizhangname != null and bean.tjdDuizhangname != ''">
+		or t1.TJD_DUIZHANGNAME like concat(concat('%',#{bean.tjdDuizhangname}),'%')
+	</if>
+	<if test="bean.tjdDuiyuanname != null and bean.tjdDuiyuanname != ''">
+		or t1.TJD_DUIYUANNAME like concat(concat('%',#{bean.tjdDuiyuanname}),'%')
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.tjdDanwei != null and bean.tjdDanwei != ''">
+		or t1.TJD_DANWEI like concat(concat('%',#{bean.tjdDanwei}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.tjdFiledUsername != null and bean.tjdFiledUsername != ''">
+		or t1.TJD_FILED_USERNAME like concat(concat('%',#{bean.tjdFiledUsername}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_SUB_ZXBASB_1 -->
+<select id="searchDynSubZxbasb1ByPage" parameterType="java.util.Map" resultMap="DynSubZxbasb1DTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_SUB_ZXBASB_1 t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_SUB_ZXBASB_1 -->
+<select id="searchDynSubZxbasb1" parameterType="java.util.Map" resultMap="DynSubZxbasb1DTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_SUB_ZXBASB_1 t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_SUB_ZXBASB_1（导出） -->
+<select id="searchDynSubZxbasb1ForExport" parameterType="java.util.Map" resultMap="DynSubZxbasb1DTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_SUB_ZXBASB_1 t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_SUB_ZXBASB_1 -->
+<select id="findDynSubZxbasb1ById" parameterType="java.lang.String" resultMap="DynSubZxbasb1DTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_SUB_ZXBASB_1 t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_SUB_ZXBASB_1 -->
+<insert id="insertDynSubZxbasb1" parameterType="avicit.pb.milepost.dynsubzxbasb1.dto.DynSubZxbasb1DTO">
+	insert into DYN_SUB_ZXBASB_1
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="fkSubColId != null">
+			FK_SUB_COL_ID,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="tjdZhiwu != null">
+			TJD_ZHIWU,
+		</if>
+		<if test="tjdAge != null">
+			TJD_AGE,
+		</if>
+		<if test="tjdDuizhangname != null">
+			TJD_DUIZHANGNAME,
+		</if>
+		<if test="tjdDuiyuanname != null">
+			TJD_DUIYUANNAME,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="tjdDanwei != null">
+			TJD_DANWEI,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="tjdFiledUsername != null">
+			TJD_FILED_USERNAME,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="fkSubColId != null">
+			#{fkSubColId,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="tjdZhiwu != null">
+			#{tjdZhiwu,jdbcType = VARCHAR},
+		</if>
+		<if test="tjdAge != null">
+			#{tjdAge,jdbcType = DECIMAL},
+		</if>
+		<if test="tjdDuizhangname != null">
+			#{tjdDuizhangname,jdbcType = VARCHAR},
+		</if>
+		<if test="tjdDuiyuanname != null">
+			#{tjdDuiyuanname,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="tjdDanwei != null">
+			#{tjdDanwei,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="tjdFiledUsername != null">
+			#{tjdFiledUsername,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_SUB_ZXBASB_1 -->
+<insert id="insertDynSubZxbasb1List" parameterType="java.util.List">
+	insert into DYN_SUB_ZXBASB_1(
+	CREATED_BY ,
+	LAST_UPDATED_BY ,
+	FK_SUB_COL_ID ,
+	CREATION_DATE ,
+	LAST_UPDATE_DATE ,
+	TJD_ZHIWU ,
+	TJD_AGE ,
+	TJD_DUIZHANGNAME ,
+	TJD_DUIYUANNAME ,
+	VERSION ,
+	TJD_DANWEI ,
+	ID ,
+	CREATED_DEPT ,
+	ORG_IDENTITY ,
+	LAST_UPDATE_IP ,
+	TJD_FILED_USERNAME )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.fkSubColId,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.tjdZhiwu,jdbcType = VARCHAR} ,
+	#{item.tjdAge,jdbcType = DECIMAL} ,
+	#{item.tjdDuizhangname,jdbcType = VARCHAR} ,
+	#{item.tjdDuiyuanname,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.tjdDanwei,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.tjdFiledUsername,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_SUB_ZXBASB_1 -->
+<update id="updateDynSubZxbasb1Sensitive" parameterType="avicit.pb.milepost.dynsubzxbasb1.dto.DynSubZxbasb1DTO">
+	update DYN_SUB_ZXBASB_1
+	<set>
+		<trim suffixOverrides=",">
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="fkSubColId != null">
+				FK_SUB_COL_ID = #{fkSubColId,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="tjdZhiwu != null">
+				TJD_ZHIWU = #{tjdZhiwu,jdbcType = VARCHAR},
+			</if>
+			<if test="tjdAge != null">
+				TJD_AGE = #{tjdAge,jdbcType = DECIMAL},
+			</if>
+			<if test="tjdDuizhangname != null">
+				TJD_DUIZHANGNAME = #{tjdDuizhangname,jdbcType = VARCHAR},
+			</if>
+			<if test="tjdDuiyuanname != null">
+				TJD_DUIYUANNAME = #{tjdDuiyuanname,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="tjdDanwei != null">
+				TJD_DANWEI = #{tjdDanwei,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="tjdFiledUsername != null">
+				TJD_FILED_USERNAME = #{tjdFiledUsername,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_SUB_ZXBASB_1 -->
+<update id="updateDynSubZxbasb1All" parameterType="avicit.pb.milepost.dynsubzxbasb1.dto.DynSubZxbasb1DTO">
+	update DYN_SUB_ZXBASB_1
+	set
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	FK_SUB_COL_ID = #{fkSubColId,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	TJD_ZHIWU = #{tjdZhiwu,jdbcType = VARCHAR} ,
+	TJD_AGE = #{tjdAge,jdbcType = DECIMAL} ,
+	TJD_DUIZHANGNAME = #{tjdDuizhangname,jdbcType = VARCHAR} ,
+	TJD_DUIYUANNAME = #{tjdDuiyuanname,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	TJD_DANWEI = #{tjdDanwei,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	TJD_FILED_USERNAME = #{tjdFiledUsername,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_SUB_ZXBASB_1 -->
+<update id="updateDynSubZxbasb1List" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_SUB_ZXBASB_1
+		set
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		FK_SUB_COL_ID = #{item.fkSubColId,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		TJD_ZHIWU = #{item.tjdZhiwu,jdbcType = VARCHAR} ,
+		TJD_AGE = #{item.tjdAge,jdbcType = DECIMAL} ,
+		TJD_DUIZHANGNAME = #{item.tjdDuizhangname,jdbcType = VARCHAR} ,
+		TJD_DUIYUANNAME = #{item.tjdDuiyuanname,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		TJD_DANWEI = #{item.tjdDanwei,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		TJD_FILED_USERNAME = #{item.tjdFiledUsername,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_SUB_ZXBASB_1 -->
+<delete id="deleteDynSubZxbasb1ById" parameterType="java.lang.String">
+	delete from DYN_SUB_ZXBASB_1  where id = #{id}
+</delete>
+<select id="fomart" resultMap ='DynSubZxbasb1DTOMap'>
+    select * from  Dyn_Sub_Zxbasb_1 where FK_SUB_COL_ID = #{fitId} and TJD_DUIZHANGNAME = #{type}
+</select>
+<!--  -->
+<select id="searchDynYouthRecord" parameterType="java.util.Map" resultMap="DynYouthRecordDTOMap">
+	select
+	*
+	from DYN_YOUTH_RECORD t1 left join sys_bpm_hist_procinst v on t1.id = v.formid_
+	where v.BUSINESSSTATE_ = 'ended'
+</select>
+<select id="searchDynYouthDeclaration" parameterType="java.util.Map" resultMap="DynYouthDeclarationDTOMap">
+	select
+       *
+	from DYN_YOUTH_DECLARATION t1 left join sys_bpm_hist_procinst v on t1.id = v.formid_
+	where v.BUSINESSSTATE_ = 'ended'
+	</select>
+	<select id="searchDynFiveOf" parameterType="java.util.Map" resultMap="DynFiveOfDTOMap">
+	select
+	*
+	from DYN_FIVE_OF t1 left join BPM_CLIENT_HIST_PROCINST_V v on t1.id = v.formid_
+	where v.BUSINESSSTATE_ = 'ended'
+	</select>
+</mapper>

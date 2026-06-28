@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link
+      href="iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.page.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <link href="css/page.css" type="text/css" rel="stylesheet" />
+    <title>待办列表</title>
+    <style>
+      
+      .todo-content > h3 {
+        display: inline-block;
+        margin-left: 10px;
+      }
+      .todo-list {
+        width: 100%;
+        padding: 0;
+        border: 0;
+      }
+      .todo-list th,
+      td {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+      .todo-list th {
+        color: #333;
+        font-weight: 500;
+      }
+      .todo-title {
+        width: 40%;
+        text-align: left;
+      }
+      .todo-other {
+        width: 20%;
+      }
+      .todo-other i {
+        color: #3f8deb;
+        font-size: 16px;
+      }
+      .todo-title i {
+        font-size: 18px;
+        color: #fff;
+        display: inline-block;
+        line-height: 28px;
+      }
+      .todo-title p {
+        height: 28px;
+        width: 28px;
+        text-align: center;
+        display: inline-block;
+        border-radius: 4px;
+        margin-right: 4px;
+      }
+
+      tr {
+        line-height: 30px;
+        height: 30px;
+      }
+      th {
+        color: #686868;
+        font-size: 16px;
+        border-bottom: 1px solid #ededed;
+      }
+      td {
+        text-align: center;
+        font-size: 14px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 1px solid #ededed;
+      }
+      .todo-status {
+        height: 28px;
+        line-height: 28px;
+        width: 72px;
+        display: inline-block;
+        text-align: center;
+        border-radius: 4px;
+        margin-top: 0;
+      }
+      .clam {
+        background-color: #eaf8f2;
+        color: #24b47e;
+      }
+      .primary {
+        background-color: #ebf4fc;
+        color: #338fe5;
+      }
+      .orange {
+        background-color: #fcf1ed;
+        color: #e2734a;
+      }
+      #open {
+        display: block;
+        z-index: 999;
+        position: absolute;
+        background-color: rgb(255, 255, 255);
+        font-size: 14px;
+        width: 73px;
+        font-weight: 500;
+        text-align: center;
+        top: 95px;
+        left: 14px;
+        padding-left: 10px;
+      }
+      #open > li {
+        list-style-type: none;
+      }
+      #open li:hover {
+        color: #3f8deb;
+      }
+      .opeartion {
+        display: none;
+      }
+      .todo-btn-box {
+        display: block;
+        text-align: right;
+      }
+      .todo-btn i {
+        font-size: 20px;
+        color: #888888;
+        line-height: 20px;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+      .todo-list tr:hover {
+        background-color: #f7f7f7;
+      }
+      .todo-list tr:hover .opeartion {
+        display: block;
+      }
+      .todo-list tr:hover .opeartion .icon-more {
+        display: inline-block;
+        transform: rotate(90deg);
+        -ms-transform: rotate(90deg); /* Internet Explorer */
+        -moz-transform: rotate(90deg); /* Firefox */
+        -webkit-transform: rotate(90deg); /* Safari 和 Chrome */
+        -o-transform: rotate(90deg); /* Opera */
+      }
+
+      .todo-list tr:hover .todo-btn {
+        display: none;
+      }
+      .opeartion i {
+        font-size: 20px;
+        color: #3f8deb;
+        line-height: 20px;
+        vertical-align: middle;
+        width: 24px;
+        margin-left: 8px;
+        display: inline-block;
+        cursor: pointer;
+      }
+      .todo-content {
+        padding: 0 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+        <h4>待办列表</h4>
+        <span class="box_title_right">
+          <i class="iconfont icon-refresh" title="刷新"></i>
+          <i class="iconfont icon-more" title="刷新"></i>
+        </span>
+      </div>
+      <div class="content_inner todo-content">
+        <table class="todo-list" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <th class="todo-title">
+              全部待办
+              <label onclick="openAll()">></label>
+              <ul id="open" style="display: none;">
+                <li style="background-color:#EEF1FD;color:#3F8DEB;">
+                  全部待办
+                </li>
+                <li>流程待办</li>
+                <li>通知公告</li>
+                <li>消息</li>
+              </ul>
+            </th>
+            <th class="todo-other">状态</th>
+            <th class="todo-other">创建人</th>
+            <th class="todo-other"></th>
+          </tr>
+          <tr>
+            <td class="todo-title">
+              <p style="background-color:#338FE5">
+                <i class="iconfont icon-file-fill"></i>
+              </p>
+              <span>SQL节点验证</span>
+            </td>
+            <td class="todo-other">
+              <span class="todo-status clam">已确认</span>
+            </td>
+            <td class="todo-other">张红生</td>
+            <td class="todo-btn-box">
+              <span class="todo-btn"><i class="iconfont icon-more"></i></span>
+              <span class="opeartion">
+                <i class="iconfont icon-eye-fill"></i>
+                <i class="iconfont icon-edit-fill"></i>
+                <i class="iconfont icon-more"></i>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="todo-title">
+              <p style="background-color:#FBB70E">
+                <i class="iconfont icon-file-fill"></i>
+              </p>
+              <span>SQL节点验证</span>
+            </td>
+            <td class="todo-other">
+              <span class="todo-status clam">已确认</span>
+            </td>
+            <td class="todo-other">张红生</td>
+            <td class="todo-btn-box">
+              <span class="todo-btn"><i class="iconfont icon-more"></i></span>
+              <span class="opeartion">
+                <i class="iconfont icon-eye-fill"></i>
+                <i class="iconfont icon-edit-fill"></i>
+                <i class="iconfont icon-more"></i>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="todo-title">
+              <p style="background-color:#6966FD">
+                <i class="iconfont icon-file-fill"></i>
+              </p>
+              <span>SQL节点验证</span>
+            </td>
+            <td class="todo-other">
+              <span class="todo-status clam">已确认</span>
+            </td>
+            <td class="todo-other">张红生</td>
+            <td class="todo-btn-box">
+              <span class="todo-btn"><i class="iconfont icon-more"></i></span>
+              <span class="opeartion">
+                <i class="iconfont icon-eye-fill"></i>
+                <i class="iconfont icon-edit-fill"></i>
+                <i class="iconfont icon-more"></i>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="todo-title">
+              <p style="background-color:#1AA86C">
+                <i class="iconfont icon-file-fill"></i>
+              </p>
+              <span>SQL节点验证</span>
+            </td>
+            <td class="todo-other">
+              <span class="todo-status clam">已确认</span>
+            </td>
+            <td class="todo-other">张红生</td>
+            <td class="todo-btn-box">
+              <span class="todo-btn"><i class="iconfont icon-more"></i></span>
+              <span class="opeartion">
+                <i class="iconfont icon-eye-fill"></i>
+                <i class="iconfont icon-edit-fill"></i>
+                <i class="iconfont icon-more"></i>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="todo-title">
+              <p style="background-color:#6966FD">
+                <i class="iconfont icon-file-fill"></i>
+              </p>
+              <span>密级控制流向</span>
+            </td>
+            <td class="todo-other">
+              <span class="todo-status primary">拟稿中</span>
+            </td>
+            <td class="todo-other">张红生</td>
+            <td class="todo-btn-box">
+              <span class="todo-btn"><i class="iconfont icon-more"></i></span>
+              <span class="opeartion">
+                <i class="iconfont icon-eye-fill"></i>
+                <i class="iconfont icon-edit-fill"></i>
+                <i class="iconfont icon-more"></i>
+              </span>
+            </td>
+          </tr>
+          <!-- <tr>
+            <td class="todo-title">
+              <p style="background-color:#338FE5">
+                <i class="iconfont icon-file-fill"></i>
+              </p>
+              <span>综合办公系统日</span>
+            </td>
+            <td class="todo-other">
+              <span class="todo-status orange">待审批</span>
+            </td>
+            <td class="todo-other">张红生</td>
+            <td class="todo-btn-box">
+              <span class="todo-btn"><i class="iconfont icon-more"></i></span>
+              <span class="opeartion">
+                <i class="iconfont icon-eye-fill"></i>
+                <i class="iconfont icon-edit-fill"></i>
+                <i class="iconfont icon-more"></i>
+              </span>
+            </td>
+          </tr> -->
+        </table>
+        <div class="tcdPageCode"></div>
+      </div>
+    </div>
+
+    <script>
+      $(".tcdPageCode").createPage({
+        pageCount:6,
+        current:1,
+        backFn:function(p){
+            console.log(p);
+        }
+    });
+      
+      function handleClick() {
+        window.open("todoList.html");
+      }
+      function openAll() {
+        var a = document.getElementById("open");
+        if (a.style.display == "block") {
+          a.style.display = "none";
+        } else {
+          a.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>

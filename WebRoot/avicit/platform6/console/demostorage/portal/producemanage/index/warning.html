@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预警信息</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+    <div class="box">
+        <div class="box_title">
+          <h4>预警信息</h4>
+          <span class="box_title_right">
+<!--            <i class="iconfont icon-download-fill" title="下载" onclick="downloadFile('warning')"></i>-->
+            <i class="iconfont icon-refresh" title="刷新"></i>
+          </span>
+        </div>
+        <div class="content_inner">
+            <ul class="warning-content">
+                <li class="warning-content-list wcl-left">
+                    <p class="wcl-title"><span>待检验</span></p>
+                    <div id="firstPie" style="width: 150px;height: 150px;"></div>
+                    <div class="last-content">
+                        <p class="lc-left"><span>未在库</span></p>
+                        <p class="lc-left lc-lineh"><span>在库</span></p>
+                    </div>
+                    <div class="last-content">
+                        <p class="lc-left lc-left-second"><span>超期</span><span class="lc-num">8</span><span>笔</span></p>
+                        <p class="lc-left lc-left-second"><span>超期</span><span class="lc-num">12</span><span>笔</span></p>
+                    </div>
+                </li>
+                <li class="warning-content-list">
+                    <p class="wcl-title"><span>待归还</span></p>
+                    <div id="secondPie" style="width: 150px;height: 150px;"></div>
+                    <div class="last-content">
+                        <p class="lc-left"><span>未在库</span></p>
+                        <p class="lc-left lc-lineh"><span>在库</span></p>
+                    </div>
+                    <div class="last-content">
+                        <p class="lc-left lc-left-second"><span>超期</span><span class="lc-num">8</span><span>笔</span></p>
+                        <p class="lc-left lc-left-second"><span>超期</span><span class="lc-num">12</span><span>笔</span></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var firstEchart = echarts.init(document.getElementById("firstPie"));
+
+    var secondEchart = echarts.init(document.getElementById("secondPie"));
+
+    var firstOption = {
+        tooltip: {
+            trigger: "item"
+        },
+        legend: {
+            show: false
+        },
+        title: {
+            text: "共计",
+            top: "40%",
+            left: "46%",
+            textStyle: {
+            color: "#ccc",
+            fontSize: "13px"
+            },
+            subtext: "20笔",
+            subtextStyle: {
+            color: "#000",
+            fontSize: "14px",
+            align: "center"
+            },
+            textAlign: "center"
+        },
+        color: ["#3BA1FF", "#EBEDF1"],
+        series: [
+            {
+            type: "pie",
+            top: "10%",
+            hoverAnimation: false,
+            radius: ["70%", "80%"],
+            avoidLabelOverlap: false,
+            tooltip: {
+                show: false
+            },
+            labelLine: {
+                show: false
+            },
+            data: [{ value: 20, name: "" }, { value: 80, name: "" }]
+            }
+        ]
+    };
+
+    var secondOption = {
+        tooltip: {
+            trigger: "item"
+        },
+        legend: {
+            show: false
+        },
+        title: {
+            text: "共计",
+            top: "40%",
+            left: "46%",
+            textStyle: {
+            color: "#ccc",
+            fontSize: "13px"
+            },
+            subtext: "125笔",
+            subtextStyle: {
+            color: "#000",
+            fontSize: "14px",
+            align: "center"
+            },
+            textAlign: "center"
+        },
+        color: ["#FFB661", "#EBEDF1"],
+        series: [
+            {
+            type: "pie",
+            top: "10%",
+            hoverAnimation: false,
+            radius: ["70%", "80%"],
+            avoidLabelOverlap: false,
+            tooltip: {
+                show: false
+            },
+            labelLine: {
+                show: false
+            },
+            data: [{ value: 125, name: "" }, { value: 45, name: "" }]
+            }
+        ]
+    };
+
+    firstEchart.setOption(firstOption);
+
+    secondEchart.setOption(secondOption);
+
+    function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template5/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+    }
+</script>
+<style>
+    #firstPie {
+        width: 100%;
+        height: 30%;
+        margin: 10px auto;
+    }
+    #secondPie {
+        width: 100%;
+        height: 30%;
+        margin: 10px auto;
+    }
+    .warning-content-list {
+        width: 44%;
+        float: left;
+        padding: 10px;
+        text-align: center;
+    }
+    .wcl-left {
+        border-right: 1px solid #ebebeb;
+    }
+    .wcl-title {
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 18px;
+        color: #1593F5;
+    }
+    .last-content {
+        float: left;
+        margin: 10px;
+    }
+    .lc-left {
+        text-align: left;
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        line-height: 24px;
+    }
+    .lc-left-second {
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 12px;
+        color: #7F7F7F;
+        text-align: right;
+    }
+    .lc-num {
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-size: 18px;
+        text-decoration: none;
+        color: #D9001B;
+        margin: 0 5px;
+    }
+    .lc-lineh {
+        margin: 3px 0 0 0;
+    }
+</style>
+</html>

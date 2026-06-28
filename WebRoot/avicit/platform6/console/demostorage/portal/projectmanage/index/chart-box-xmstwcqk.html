@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="iconfont/iconfont.css" />
+		<script src="js/echarts.min.js"></script>
+		<script src="js/jquery1.42.min.js"></script>
+	</head>
+	<body>
+		<div class="content_box">
+			<div class="title_switch box_title ">
+				<div class="title">多项目类型完成情况视图</div>
+				<div class="box_title_right">
+					<div class="icon_more">
+						<i
+						class="iconfont icon-refresh"
+						title="刷新"
+						></i>
+					</div>
+					<div class="time_select">
+						<select>
+							<option>2019-12</option>
+							<option>2019-11</option>
+							<option>2019-10</option>
+							<option>2019-09</option>
+							<option>2019-08</option>
+							<option>2019-07</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			
+			<div class="content_inner">
+				<div id="xmstwcqkBar" style="height: 270px;"></div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var xmstwcqkEchart = echarts.init(document.getElementById("xmstwcqkBar"));
+
+			var xmstwcqkOption = {
+				xAxis: {
+					type: 'category',
+					data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11','12']
+				},
+				yAxis: {
+					type: 'value'
+				},
+				color: ['#3BA1FF'],
+				series: [{
+					data: [35, 75, 94, 46, 67, 46, 66, 24, 24, 22, 57, 99],
+					type: 'bar'
+				}]
+			};
+
+			xmstwcqkEchart.setOption(xmstwcqkOption);
+			$(window).resize(function() { //重置容器高宽 
+				xmstwcqkEchart.resize(); 
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,7 @@
+interface:
+  display_name: "PB Intranet Packager"
+  short_description: "Package PB test changes for intranet deployment."
+  default_prompt: "Use $pb-intranet-packager to create an intranet delivery package for the PB project."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,272 @@
+/* 设置帮助页样式 */
+* {
+	padding: 0;
+	margin: 0;
+}
+img {
+	border: 0;
+	margin: 0;
+}
+a {
+	text-decoration: none;
+}
+table {
+	border-collapse: collapse;
+}
+li {
+	list-style: none;
+}
+body {
+	margin: 0;
+	padding: 0;
+	_font-family: "Microsoft YaHei";
+}
+.clearfix {
+    clear: both;
+}
+*::-webkit-scrollbar-corner {
+    background: #c8d2e0;
+}
+*::-webkit-scrollbar-thumb {
+    background: #c8d2e0;
+    border-radius: 10px;
+}
+*::-webkit-scrollbar-track {
+    background: #f3f4f9;
+    border-radius: 2px;
+}
+
+.pageIndex {
+    font-weight: normal;
+    clear: both;
+    position: fixed;
+    z-index: 999;
+    box-sizing: border-box;
+    top: 68px;
+    width: 240px;
+    border-right: 1px solid #d9d9d9;
+    padding: 10px 0;
+    bottom: 0;
+}
+.pageIndex li{
+	
+}
+.pageIndex li a{
+		display: block;
+	padding-left: 20px;
+}
+.pageIndex li a:BEFORE{
+	
+}
+.pageIndex li a:HOVER {
+	background: #edf3fc;
+	color: #508ae2;
+	border-right: 2px solid #508ae2;
+}
+.pageIndex .firstLevel a{
+	line-height: 40px;
+	font-family: "microsoft yahei";
+	font-size: 16px;
+    text-decoration: inherit;
+    color: #222;
+}
+.pageIndex .secondLevel a{
+	line-height: 34px;
+	font-family: "microsoft yahei";
+	font-size: 14px;
+    text-decoration: inherit;
+    color: #222;
+    padding-left: 38px;
+	box-sizing: border-box;
+}
+
+.wapper {
+    padding: 68px 10px 10px 240px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.head-wrap {
+    width: 100%;
+    height: 68px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-bottom: 1px solid #d9d9d9;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.head-wrap h1 {
+    font-size: 24px;
+    color: #333333;
+    line-height: 68px;
+    display: inline-block;
+}
+
+.codeGenerator {
+    margin-bottom: 20px;
+}
+
+.codeGenerator h4 {
+    color: #508ae2;
+    font-weight: normal;
+}
+
+.codeGenerator h4 span {
+    font-size: 16px;
+    color: #508ae2;
+    font-weight: normal;
+}
+
+.codeGenerator, .codeGenerator2 {
+    width: 100%;
+    background-color: #fff;
+    padding: 14px 28px;
+    box-sizing: border-box;
+}
+
+.codeGenerator h2, .codeGenerator2 h2 {
+    font-size: 20px;
+    color: #508ae2;
+    font-weight: 600;
+}
+
+.codeGenerator .title_content {
+    font-size: 16px;
+    color: #333333;
+    font-weight: normal;
+    padding: 20px 20px 0 20px;
+    box-sizing: border-box;
+    text-indent: 32px;
+}
+
+.tableStructure {
+    padding: 6px 16px 0 16px;
+}
+
+.tableStructure h3 {
+    font-size: 16px;
+    color: #508ae2;
+    line-height: 42px;
+}
+
+.tableStructure table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableStructure table th, .tableStructure table td {
+    border: 1px solid #d9d9d9;
+    line-height: 32px;
+    padding: 4px 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: "microsoft yahei";
+    color: #454545;
+}
+
+.tableStructure table tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+.tableStructure table tbody tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+.tableStructure table tbody th {
+    text-align: left;
+}
+
+.codeGenerator2 {
+    margin-bottom: 20px;
+}
+
+.codeGenerator2 h2 span {
+    font-size: 16px;
+    color: #508ae2;
+    margin-left: 16px;
+    font-weight: normal;
+}
+
+.codeGenerator_choose {
+    padding: 6px 16px 0 16px;
+}
+
+.codeGenerator_choose h3 {
+    font-size: 16px;
+    color: #222;
+    line-height: 36px;
+	padding-top: 10px;
+}
+
+.codeGenerator_choose ul {
+    padding-left: 40px;
+    box-sizing: border-box;
+}
+
+.codeGenerator_choose ul li {
+    font-size: 14px;
+    line-height: 28px;
+    color: #484848;
+    list-style-type: disc;
+}
+
+.codeGenerator_choose ul li h4 {
+    float: left;
+    font-weight: normal;
+    margin: 0;
+}
+
+.codeGenerator_choose ul li span {
+    /*float: left;*/
+}
+
+.codeGenerator_img {
+    margin: 10px 0;
+}
+.codeGenerator_img img{
+    width: 100%;
+    height: auto;
+}
+.backToTop {
+    width: 48px;
+    height: 40px;
+    clear: both;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0px -1px 7px #dedede;
+    padding: 10px;
+    border-radius: 4px;
+    color: #333333;
+}
+.backToTop:hover{
+	background-color: #508ae2;
+	color: #ffffff;
+}
+
+.backToTop img{
+	position: absolute;
+    top: 12px;
+    left: 24px;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto 6px auto;
+    display: block;
+}
+.backToTop p{
+	font-size: 12px;
+	text-align: center;
+	margin-top: 26px;
+}
+.anmao{
+    height: 0;
+    position: relative;
+    top: -68px
+}

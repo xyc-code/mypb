@@ -1,0 +1,1177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.milepost.dynyouthdeclaration.dao.DynYouthDeclarationDAO">
+<resultMap id="DynYouthDeclarationDTOMap" type="avicit.pb.milepost.dynyouthdeclaration.dto.DynYouthDeclarationDTO">
+	<result property="commandoesType" column="COMMANDOES_TYPE" jdbcType="VARCHAR" />
+    <result property="expectedIncome" column="EXPECTED_INCOME" jdbcType="CLOB" javaType="String" />
+	<result property="commandoesCaptains" column="COMMANDOES_CAPTAINS" jdbcType="VARCHAR" />
+	<result property="commandoesDate" column="COMMANDOES_DATE" jdbcType="TIMESTAMP" />
+	<result property="commandoesContent" column="COMMANDOES_CONTENT" jdbcType="VARCHAR" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr9" column="ATTR9" jdbcType="VARCHAR" />
+	<result property="commandoesTaskDate" column="COMMANDOES_TASK_DATE" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamTask" column="COMMANDOES_TEAM_TASK" jdbcType="VARCHAR" />
+	<result property="attr4" column="ATTR4" jdbcType="VARCHAR" />
+	<result property="applicationUnit" column="APPLICATION_UNIT" jdbcType="VARCHAR" />
+	<result property="attr3" column="ATTR3" jdbcType="VARCHAR" />
+	<result property="commandoesName" column="COMMANDOES_NAME" jdbcType="VARCHAR" />
+	<result property="attr2" column="ATTR2" jdbcType="VARCHAR" />
+	<result property="attr1" column="ATTR1" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="attr8" column="ATTR8" jdbcType="VARCHAR" />
+	<result property="attr7" column="ATTR7" jdbcType="VARCHAR" />
+	<result property="attr20" column="ATTR20" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamDept" column="COMMANDOES_TEAM_DEPT" jdbcType="VARCHAR" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="attr6" column="ATTR6" jdbcType="VARCHAR" />
+	<result property="attr5" column="ATTR5" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="attr12" column="ATTR12" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="attr13" column="ATTR13" jdbcType="VARCHAR" />
+	<result property="attr10" column="ATTR10" jdbcType="VARCHAR" />
+	<result property="attr11" column="ATTR11" jdbcType="VARCHAR" />
+	<result property="attr16" column="ATTR16" jdbcType="TIMESTAMP" />
+	<result property="attr17" column="ATTR17" jdbcType="TIMESTAMP" />
+	<result property="attr14" column="ATTR14" jdbcType="VARCHAR" />
+	<result property="attr15" column="ATTR15" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr18" column="ATTR18" jdbcType="TIMESTAMP" />
+	<result property="attr19" column="ATTR19" jdbcType="TIMESTAMP" />
+	<result property="commandoesTeamName" column="COMMANDOES_TEAM_NAME" jdbcType="VARCHAR" />
+	<result property="commandoesPosenTel" column="COMMANDOES_POSEN_TEL" jdbcType="VARCHAR" />
+	<result property="commandoesTeamCount" column="COMMANDOES_TEAM_COUNT" jdbcType="VARCHAR" />
+	<result property="commandoesPxqk" column="COMMANDOES_PXQK" jdbcType="VARCHAR" />
+	<result property="commandoesTeamAge" column="COMMANDOES_TEAM_AGE" jdbcType="VARCHAR" />
+	<result property="applicationNumber" column="APPLICATION_NUMBER" jdbcType="VARCHAR" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="commandoesPosen" column="COMMANDOES_POSEN" jdbcType="VARCHAR" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="activityalias_" column="activityalias_" jdbcType="VARCHAR" />
+	<result property="businessstate_" column="businessstate_" jdbcType="VARCHAR" />
+	<result property="assigneenames_" column="assigneenames_" jdbcType="VARCHAR" />
+</resultMap>
+<sql id="commonColums">
+	t1.COMMANDOES_TYPE,
+	t1.EXPECTED_INCOME,
+	t1.COMMANDOES_CAPTAINS,
+	t1.COMMANDOES_DATE,
+	t1.COMMANDOES_CONTENT,
+	t1.LAST_UPDATE_DATE,
+	t1.ATTR9,
+	t1.COMMANDOES_TASK_DATE,
+	t1.COMMANDOES_TEAM_TASK,
+	t1.ATTR4,
+	t1.APPLICATION_UNIT,
+	t1.ATTR3,
+	t1.COMMANDOES_NAME,
+	t1.ATTR2,
+	t1.ATTR1,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ATTR8,
+	t1.ATTR7,
+	t1.ATTR20,
+	t1.COMMANDOES_TEAM_DEPT,
+	t1.LAST_UPDATE_IP,
+	t1.ATTR6,
+	t1.ATTR5,
+	t1.CREATED_BY,
+	t1.ATTR12,
+	t1.LAST_UPDATED_BY,
+	t1.ATTR13,
+	t1.ATTR10,
+	t1.ATTR11,
+	t1.ATTR16,
+	t1.ATTR17,
+	t1.ATTR14,
+	t1.ATTR15,
+	t1.CREATION_DATE,
+	t1.ATTR18,
+	t1.ATTR19,
+	t1.COMMANDOES_TEAM_NAME,
+	t1.COMMANDOES_POSEN_TEL,
+	t1.COMMANDOES_TEAM_COUNT,
+	t1.COMMANDOES_PXQK,
+	t1.COMMANDOES_TEAM_AGE,
+	t1.APPLICATION_NUMBER,
+	t1.VERSION,
+	t1.COMMANDOES_POSEN,
+	t1.ORG_IDENTITY</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.commandoesType != null and bean.commandoesType != ''">
+		and t1.COMMANDOES_TYPE like concat(concat('%',#{bean.commandoesType}),'%')
+	</if>
+	<if test="bean.expectedIncome != null and bean.expectedIncome != ''">
+		and t1.EXPECTED_INCOME like concat(concat('%',#{bean.expectedIncome}),'%')
+	</if>
+	<if test="bean.commandoesCaptains != null and bean.commandoesCaptains != ''">
+		and t1.COMMANDOES_CAPTAINS like concat(concat('%',#{bean.commandoesCaptains}),'%')
+	</if>
+	<if test="bean.commandoesDateBegin != null">
+		and t1.COMMANDOES_DATE &gt;= #{bean.commandoesDateBegin}
+	</if>
+	<if test="bean.commandoesDateEnd != null">
+		and t1.COMMANDOES_DATE &lt;= #{bean.commandoesDateEnd}
+	</if>
+	<if test="bean.commandoesContent != null and bean.commandoesContent != ''">
+		and t1.COMMANDOES_CONTENT like concat(concat('%',#{bean.commandoesContent}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.attr9 != null and bean.attr9 != ''">
+		and t1.ATTR9 like concat(concat('%',#{bean.attr9}),'%')
+	</if>
+	<if test="bean.commandoesTaskDateBegin != null">
+		and t1.COMMANDOES_TASK_DATE &gt;= #{bean.commandoesTaskDateBegin}
+	</if>
+	<if test="bean.commandoesTaskDateEnd != null">
+		and t1.COMMANDOES_TASK_DATE &lt;= #{bean.commandoesTaskDateEnd}
+	</if>
+	<if test="bean.commandoesTeamTask != null and bean.commandoesTeamTask != ''">
+		and t1.COMMANDOES_TEAM_TASK like concat(concat('%',#{bean.commandoesTeamTask}),'%')
+	</if>
+	<if test="bean.attr4 != null and bean.attr4 != ''">
+		and t1.ATTR4 like concat(concat('%',#{bean.attr4}),'%')
+	</if>
+	<if test="bean.applicationUnit != null and bean.applicationUnit != ''">
+		and t1.APPLICATION_UNIT like concat(concat('%',#{bean.applicationUnit}),'%')
+	</if>
+	<if test="bean.attr3 != null and bean.attr3 != ''">
+		and t1.ATTR3 like concat(concat('%',#{bean.attr3}),'%')
+	</if>
+	<if test="bean.commandoesName != null and bean.commandoesName != ''">
+		and t1.COMMANDOES_NAME like concat(concat('%',#{bean.commandoesName}),'%')
+	</if>
+	<if test="bean.attr2 != null and bean.attr2 != ''">
+		and t1.ATTR2 like concat(concat('%',#{bean.attr2}),'%')
+	</if>
+	<if test="bean.attr1 != null and bean.attr1 != ''">
+		and t1.ATTR1 like concat(concat('%',#{bean.attr1}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.attr8 != null and bean.attr8 != ''">
+		and t1.ATTR8 like concat(concat('%',#{bean.attr8}),'%')
+	</if>
+	<if test="bean.attr7 != null and bean.attr7 != ''">
+		and t1.ATTR7 like concat(concat('%',#{bean.attr7}),'%')
+	</if>
+	<if test="bean.attr20Begin != null">
+		and t1.ATTR20 &gt;= #{bean.attr20Begin}
+	</if>
+	<if test="bean.attr20End != null">
+		and t1.ATTR20 &lt;= #{bean.attr20End}
+	</if>
+	<if test="bean.commandoesTeamDept != null and bean.commandoesTeamDept != ''">
+		and t1.COMMANDOES_TEAM_DEPT like concat(concat('%',#{bean.commandoesTeamDept}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.attr6 != null and bean.attr6 != ''">
+		and t1.ATTR6 like concat(concat('%',#{bean.attr6}),'%')
+	</if>
+	<if test="bean.attr5 != null and bean.attr5 != ''">
+		and t1.ATTR5 like concat(concat('%',#{bean.attr5}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.attr12 != null and bean.attr12 != ''">
+		and t1.ATTR12 like concat(concat('%',#{bean.attr12}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.attr13 != null and bean.attr13 != ''">
+		and t1.ATTR13 like concat(concat('%',#{bean.attr13}),'%')
+	</if>
+	<if test="bean.attr10 != null and bean.attr10 != ''">
+		and t1.ATTR10 like concat(concat('%',#{bean.attr10}),'%')
+	</if>
+	<if test="bean.attr11 != null and bean.attr11 != ''">
+		and t1.ATTR11 like concat(concat('%',#{bean.attr11}),'%')
+	</if>
+	<if test="bean.attr16Begin != null">
+		and t1.ATTR16 &gt;= #{bean.attr16Begin}
+	</if>
+	<if test="bean.attr16End != null">
+		and t1.ATTR16 &lt;= #{bean.attr16End}
+	</if>
+	<if test="bean.attr17Begin != null">
+		and t1.ATTR17 &gt;= #{bean.attr17Begin}
+	</if>
+	<if test="bean.attr17End != null">
+		and t1.ATTR17 &lt;= #{bean.attr17End}
+	</if>
+	<if test="bean.attr14 != null and bean.attr14 != ''">
+		and t1.ATTR14 like concat(concat('%',#{bean.attr14}),'%')
+	</if>
+	<if test="bean.attr15 != null and bean.attr15 != ''">
+		and t1.ATTR15 like concat(concat('%',#{bean.attr15}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.attr18Begin != null">
+		and t1.ATTR18 &gt;= #{bean.attr18Begin}
+	</if>
+	<if test="bean.attr18End != null">
+		and t1.ATTR18 &lt;= #{bean.attr18End}
+	</if>
+	<if test="bean.attr19Begin != null">
+		and t1.ATTR19 &gt;= #{bean.attr19Begin}
+	</if>
+	<if test="bean.attr19End != null">
+		and t1.ATTR19 &lt;= #{bean.attr19End}
+	</if>
+	<if test="bean.commandoesTeamName != null and bean.commandoesTeamName != ''">
+		and t1.COMMANDOES_TEAM_NAME like concat(concat('%',#{bean.commandoesTeamName}),'%')
+	</if>
+	<if test="bean.commandoesPosenTel != null and bean.commandoesPosenTel != ''">
+		and t1.COMMANDOES_POSEN_TEL like concat(concat('%',#{bean.commandoesPosenTel}),'%')
+	</if>
+	<if test="bean.commandoesTeamCount != null and bean.commandoesTeamCount != ''">
+		and t1.COMMANDOES_TEAM_COUNT like concat(concat('%',#{bean.commandoesTeamCount}),'%')
+	</if>
+	<if test="bean.commandoesPxqk != null and bean.commandoesPxqk != ''">
+		and t1.COMMANDOES_PXQK like concat(concat('%',#{bean.commandoesPxqk}),'%')
+	</if>
+	<if test="bean.commandoesTeamAge != null and bean.commandoesTeamAge != ''">
+		and t1.COMMANDOES_TEAM_AGE like concat(concat('%',#{bean.commandoesTeamAge}),'%')
+	</if>
+	<if test="bean.applicationNumber != null and bean.applicationNumber != ''">
+		and t1.APPLICATION_NUMBER like concat(concat('%',#{bean.applicationNumber}),'%')
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.commandoesPosen != null and bean.commandoesPosen != ''">
+		and t1.COMMANDOES_POSEN like concat(concat('%',#{bean.commandoesPosen}),'%')
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.commandoesType != null and bean.commandoesType != ''">
+		or t1.COMMANDOES_TYPE like concat(concat('%',#{bean.commandoesType}),'%')
+	</if>
+	<if test="bean.expectedIncome != null and bean.expectedIncome != ''">
+		or t1.EXPECTED_INCOME like concat(concat('%',#{bean.expectedIncome}),'%')
+	</if>
+	<if test="bean.commandoesCaptains != null and bean.commandoesCaptains != ''">
+		or t1.COMMANDOES_CAPTAINS like concat(concat('%',#{bean.commandoesCaptains}),'%')
+	</if>
+	<if test="bean.commandoesDateBegin != null">
+		or t1.COMMANDOES_DATE &gt;= #{bean.commandoesDateBegin}
+	</if>
+	<if test="bean.commandoesDateEnd != null">
+		or t1.COMMANDOES_DATE &lt;= #{bean.commandoesDateEnd}
+	</if>
+	<if test="bean.commandoesContent != null and bean.commandoesContent != ''">
+		or t1.COMMANDOES_CONTENT like concat(concat('%',#{bean.commandoesContent}),'%')
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.attr9 != null and bean.attr9 != ''">
+		or t1.ATTR9 like concat(concat('%',#{bean.attr9}),'%')
+	</if>
+	<if test="bean.commandoesTaskDateBegin != null">
+		or t1.COMMANDOES_TASK_DATE &gt;= #{bean.commandoesTaskDateBegin}
+	</if>
+	<if test="bean.commandoesTaskDateEnd != null">
+		or t1.COMMANDOES_TASK_DATE &lt;= #{bean.commandoesTaskDateEnd}
+	</if>
+	<if test="bean.commandoesTeamTask != null and bean.commandoesTeamTask != ''">
+		or t1.COMMANDOES_TEAM_TASK like concat(concat('%',#{bean.commandoesTeamTask}),'%')
+	</if>
+	<if test="bean.attr4 != null and bean.attr4 != ''">
+		or t1.ATTR4 like concat(concat('%',#{bean.attr4}),'%')
+	</if>
+	<if test="bean.applicationUnit != null and bean.applicationUnit != ''">
+		or t1.APPLICATION_UNIT like concat(concat('%',#{bean.applicationUnit}),'%')
+	</if>
+	<if test="bean.attr3 != null and bean.attr3 != ''">
+		or t1.ATTR3 like concat(concat('%',#{bean.attr3}),'%')
+	</if>
+	<if test="bean.commandoesName != null and bean.commandoesName != ''">
+		or t1.COMMANDOES_NAME like concat(concat('%',#{bean.commandoesName}),'%')
+	</if>
+	<if test="bean.attr2 != null and bean.attr2 != ''">
+		or t1.ATTR2 like concat(concat('%',#{bean.attr2}),'%')
+	</if>
+	<if test="bean.attr1 != null and bean.attr1 != ''">
+		or t1.ATTR1 like concat(concat('%',#{bean.attr1}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.attr8 != null and bean.attr8 != ''">
+		or t1.ATTR8 like concat(concat('%',#{bean.attr8}),'%')
+	</if>
+	<if test="bean.attr7 != null and bean.attr7 != ''">
+		or t1.ATTR7 like concat(concat('%',#{bean.attr7}),'%')
+	</if>
+	<if test="bean.attr20Begin != null">
+		or t1.ATTR20 &gt;= #{bean.attr20Begin}
+	</if>
+	<if test="bean.attr20End != null">
+		or t1.ATTR20 &lt;= #{bean.attr20End}
+	</if>
+	<if test="bean.commandoesTeamDept != null and bean.commandoesTeamDept != ''">
+		or t1.COMMANDOES_TEAM_DEPT like concat(concat('%',#{bean.commandoesTeamDept}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.attr6 != null and bean.attr6 != ''">
+		or t1.ATTR6 like concat(concat('%',#{bean.attr6}),'%')
+	</if>
+	<if test="bean.attr5 != null and bean.attr5 != ''">
+		or t1.ATTR5 like concat(concat('%',#{bean.attr5}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.attr12 != null and bean.attr12 != ''">
+		or t1.ATTR12 like concat(concat('%',#{bean.attr12}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.attr13 != null and bean.attr13 != ''">
+		or t1.ATTR13 like concat(concat('%',#{bean.attr13}),'%')
+	</if>
+	<if test="bean.attr10 != null and bean.attr10 != ''">
+		or t1.ATTR10 like concat(concat('%',#{bean.attr10}),'%')
+	</if>
+	<if test="bean.attr11 != null and bean.attr11 != ''">
+		or t1.ATTR11 like concat(concat('%',#{bean.attr11}),'%')
+	</if>
+	<if test="bean.attr16Begin != null">
+		or t1.ATTR16 &gt;= #{bean.attr16Begin}
+	</if>
+	<if test="bean.attr16End != null">
+		or t1.ATTR16 &lt;= #{bean.attr16End}
+	</if>
+	<if test="bean.attr17Begin != null">
+		or t1.ATTR17 &gt;= #{bean.attr17Begin}
+	</if>
+	<if test="bean.attr17End != null">
+		or t1.ATTR17 &lt;= #{bean.attr17End}
+	</if>
+	<if test="bean.attr14 != null and bean.attr14 != ''">
+		or t1.ATTR14 like concat(concat('%',#{bean.attr14}),'%')
+	</if>
+	<if test="bean.attr15 != null and bean.attr15 != ''">
+		or t1.ATTR15 like concat(concat('%',#{bean.attr15}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.attr18Begin != null">
+		or t1.ATTR18 &gt;= #{bean.attr18Begin}
+	</if>
+	<if test="bean.attr18End != null">
+		or t1.ATTR18 &lt;= #{bean.attr18End}
+	</if>
+	<if test="bean.attr19Begin != null">
+		or t1.ATTR19 &gt;= #{bean.attr19Begin}
+	</if>
+	<if test="bean.attr19End != null">
+		or t1.ATTR19 &lt;= #{bean.attr19End}
+	</if>
+	<if test="bean.commandoesTeamName != null and bean.commandoesTeamName != ''">
+		or t1.COMMANDOES_TEAM_NAME like concat(concat('%',#{bean.commandoesTeamName}),'%')
+	</if>
+	<if test="bean.commandoesPosenTel != null and bean.commandoesPosenTel != ''">
+		or t1.COMMANDOES_POSEN_TEL like concat(concat('%',#{bean.commandoesPosenTel}),'%')
+	</if>
+	<if test="bean.commandoesTeamCount != null and bean.commandoesTeamCount != ''">
+		or t1.COMMANDOES_TEAM_COUNT like concat(concat('%',#{bean.commandoesTeamCount}),'%')
+	</if>
+	<if test="bean.commandoesPxqk != null and bean.commandoesPxqk != ''">
+		or t1.COMMANDOES_PXQK like concat(concat('%',#{bean.commandoesPxqk}),'%')
+	</if>
+	<if test="bean.commandoesTeamAge != null and bean.commandoesTeamAge != ''">
+		or t1.COMMANDOES_TEAM_AGE like concat(concat('%',#{bean.commandoesTeamAge}),'%')
+	</if>
+	<if test="bean.applicationNumber != null and bean.applicationNumber != ''">
+		or t1.APPLICATION_NUMBER like concat(concat('%',#{bean.applicationNumber}),'%')
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.commandoesPosen != null and bean.commandoesPosen != ''">
+		or t1.COMMANDOES_POSEN like concat(concat('%',#{bean.commandoesPosen}),'%')
+	</if>
+	</trim>
+</sql>
+<sql id="commonBpmWhereAnd">
+    <if test="bean.bpmType != null and bean.bpmType != '' and bean.bpmType == 'my'">
+        and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{bean.currUserId})
+    </if>
+    <if test="bean.bpmState != null and bean.bpmState != '' and bean.bpmState != 'all'">
+        and v.businessstate_ = #{bean.bpmState}
+    </if>
+</sql>
+<sql id="commonBpmColums">
+    v.activityalias_,
+    v.businessstate_,
+	v.assigneenames_,
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_YOUTH_DECLARATION -->
+<select id="searchDynYouthDeclarationByPage" parameterType="java.util.Map" resultMap="DynYouthDeclarationDTOMap">
+	select
+	<include refid="commonBpmColums"/>
+	<include refid="commonColums"/>
+	from DYN_YOUTH_DECLARATION t1 left join BPM_CLIENT_HIST_PROCINST_V v on t1.id = v.formid_
+<where>
+	<if test="bean != null">
+		<choose>
+			<when test="keyWord != null and keyWord != '' ">
+				<include refid="commonWhereOr"/>
+				<include refid="commonBpmWhereAnd"/>
+			</when>
+			<otherwise>
+				<include refid="commonWhereAnd"/>
+				<include refid="commonBpmWhereAnd"/>
+			</otherwise>
+		</choose>
+		<include refid="defaultWhereAnd"/>
+	</if>
+</where>
+<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_YOUTH_DECLARATION -->
+<select id="searchDynYouthDeclaration" parameterType="java.util.Map" resultMap="DynYouthDeclarationDTOMap">
+	select
+	<include refid="commonBpmColums"/>
+	<include refid="commonColums"/>
+	from DYN_YOUTH_DECLARATION t1 left join sys_bpm_hist_procinst v on t1.id = v.formid_
+<where>
+	<if test="bean != null">
+		<choose>
+			<when test="keyWord != null and keyWord != '' ">
+				<include refid="commonWhereOr"/>
+				<include refid="commonBpmWhereAnd"/>
+			</when>
+			<otherwise>
+				<include refid="commonWhereAnd"/>
+				<include refid="commonBpmWhereAnd"/>
+			</otherwise>
+		</choose>
+		<include refid="defaultWhereAnd"/>
+	</if>
+</where>
+<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_YOUTH_DECLARATION（导出） -->
+<select id="searchDynYouthDeclarationForExport" parameterType="java.util.Map" resultMap="DynYouthDeclarationDTOMap">
+	select
+	<include refid="commonBpmColums"/>
+	<include refid="commonColums"/>
+	from DYN_YOUTH_DECLARATION t1 left join sys_bpm_hist_procinst v on t1.id = v.formid_
+<where>
+	<if test="bean != null">
+		<include refid="commonWhereAnd"/>
+		<include refid="commonBpmWhereAnd"/>
+		<include refid="defaultWhereAnd"/>
+	</if>
+	<if test="ids != null and ids.size > 0">
+		and t1.id in
+		<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</if>
+</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_YOUTH_DECLARATION -->
+<select id="findDynYouthDeclarationById" parameterType="java.lang.String" resultMap="DynYouthDeclarationDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_YOUTH_DECLARATION t1 left join BPM_HIST_PROCINST t3 ON t3.FORMID_ = t1.id	
+	where t1.id = #{id} and t3.BUSINESSSTATE_ = 'ended'
+</select>
+<!-- 新增对象 DYN_YOUTH_DECLARATION -->
+<insert id="insertDynYouthDeclaration" parameterType="avicit.pb.milepost.dynyouthdeclaration.dto.DynYouthDeclarationDTO">
+	insert into DYN_YOUTH_DECLARATION
+<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="commandoesType != null">
+			COMMANDOES_TYPE,
+		</if>
+		<if test="expectedIncome != null">
+			EXPECTED_INCOME,
+		</if>
+		<if test="commandoesCaptains != null">
+			COMMANDOES_CAPTAINS,
+		</if>
+		<if test="commandoesDate != null">
+			COMMANDOES_DATE,
+		</if>
+		<if test="commandoesContent != null">
+			COMMANDOES_CONTENT,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="attr9 != null">
+			ATTR9,
+		</if>
+		<if test="commandoesTaskDate != null">
+			COMMANDOES_TASK_DATE,
+		</if>
+		<if test="commandoesTeamTask != null">
+			COMMANDOES_TEAM_TASK,
+		</if>
+		<if test="attr4 != null">
+			ATTR4,
+		</if>
+		<if test="applicationUnit != null">
+			APPLICATION_UNIT,
+		</if>
+		<if test="attr3 != null">
+			ATTR3,
+		</if>
+		<if test="commandoesName != null">
+			COMMANDOES_NAME,
+		</if>
+		<if test="attr2 != null">
+			ATTR2,
+		</if>
+		<if test="attr1 != null">
+			ATTR1,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="attr8 != null">
+			ATTR8,
+		</if>
+		<if test="attr7 != null">
+			ATTR7,
+		</if>
+		<if test="attr20 != null">
+			ATTR20,
+		</if>
+		<if test="commandoesTeamDept != null">
+			COMMANDOES_TEAM_DEPT,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="attr6 != null">
+			ATTR6,
+		</if>
+		<if test="attr5 != null">
+			ATTR5,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="attr12 != null">
+			ATTR12,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="attr13 != null">
+			ATTR13,
+		</if>
+		<if test="attr10 != null">
+			ATTR10,
+		</if>
+		<if test="attr11 != null">
+			ATTR11,
+		</if>
+		<if test="attr16 != null">
+			ATTR16,
+		</if>
+		<if test="attr17 != null">
+			ATTR17,
+		</if>
+		<if test="attr14 != null">
+			ATTR14,
+		</if>
+		<if test="attr15 != null">
+			ATTR15,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="attr18 != null">
+			ATTR18,
+		</if>
+		<if test="attr19 != null">
+			ATTR19,
+		</if>
+		<if test="commandoesTeamName != null">
+			COMMANDOES_TEAM_NAME,
+		</if>
+		<if test="commandoesPosenTel != null">
+			COMMANDOES_POSEN_TEL,
+		</if>
+		<if test="commandoesTeamCount != null">
+			COMMANDOES_TEAM_COUNT,
+		</if>
+		<if test="commandoesPxqk != null">
+			COMMANDOES_PXQK,
+		</if>
+		<if test="commandoesTeamAge != null">
+			COMMANDOES_TEAM_AGE,
+		</if>
+		<if test="applicationNumber != null">
+			APPLICATION_NUMBER,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="commandoesPosen != null">
+			COMMANDOES_POSEN,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="commandoesType != null">
+			#{commandoesType,jdbcType = VARCHAR},
+		</if>
+		<if test="expectedIncome != null">
+			#{expectedIncome,jdbcType = CLOB},
+		</if>
+		<if test="commandoesCaptains != null">
+			#{commandoesCaptains,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesDate != null">
+			#{commandoesDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="commandoesContent != null">
+			#{commandoesContent,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr9 != null">
+			#{attr9,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesTaskDate != null">
+			#{commandoesTaskDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="commandoesTeamTask != null">
+			#{commandoesTeamTask,jdbcType = VARCHAR},
+		</if>
+		<if test="attr4 != null">
+			#{attr4,jdbcType = VARCHAR},
+		</if>
+		<if test="applicationUnit != null">
+			#{applicationUnit,jdbcType = VARCHAR},
+		</if>
+		<if test="attr3 != null">
+			#{attr3,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesName != null">
+			#{commandoesName,jdbcType = VARCHAR},
+		</if>
+		<if test="attr2 != null">
+			#{attr2,jdbcType = VARCHAR},
+		</if>
+		<if test="attr1 != null">
+			#{attr1,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="attr8 != null">
+			#{attr8,jdbcType = VARCHAR},
+		</if>
+		<if test="attr7 != null">
+			#{attr7,jdbcType = VARCHAR},
+		</if>
+		<if test="attr20 != null">
+			#{attr20,jdbcType = TIMESTAMP},
+		</if>
+		<if test="commandoesTeamDept != null">
+			#{commandoesTeamDept,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="attr6 != null">
+			#{attr6,jdbcType = VARCHAR},
+		</if>
+		<if test="attr5 != null">
+			#{attr5,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attr12 != null">
+			#{attr12,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attr13 != null">
+			#{attr13,jdbcType = VARCHAR},
+		</if>
+		<if test="attr10 != null">
+			#{attr10,jdbcType = VARCHAR},
+		</if>
+		<if test="attr11 != null">
+			#{attr11,jdbcType = VARCHAR},
+		</if>
+		<if test="attr16 != null">
+			#{attr16,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr17 != null">
+			#{attr17,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr14 != null">
+			#{attr14,jdbcType = VARCHAR},
+		</if>
+		<if test="attr15 != null">
+			#{attr15,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr18 != null">
+			#{attr18,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr19 != null">
+			#{attr19,jdbcType = TIMESTAMP},
+		</if>
+		<if test="commandoesTeamName != null">
+			#{commandoesTeamName,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesPosenTel != null">
+			#{commandoesPosenTel,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesTeamCount != null">
+			#{commandoesTeamCount,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesPxqk != null">
+			#{commandoesPxqk,jdbcType = VARCHAR},
+		</if>
+		<if test="commandoesTeamAge != null">
+			#{commandoesTeamAge,jdbcType = VARCHAR},
+		</if>
+		<if test="applicationNumber != null">
+			#{applicationNumber,jdbcType = VARCHAR},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="commandoesPosen != null">
+			#{commandoesPosen,jdbcType = VARCHAR},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_YOUTH_DECLARATION -->
+<insert id="insertDynYouthDeclarationList" parameterType="java.util.List">
+	insert into DYN_YOUTH_DECLARATION(
+	COMMANDOES_TYPE ,
+	EXPECTED_INCOME ,
+	COMMANDOES_CAPTAINS ,
+	COMMANDOES_DATE ,
+	COMMANDOES_CONTENT ,
+	LAST_UPDATE_DATE ,
+	ATTR9 ,
+	COMMANDOES_TASK_DATE ,
+	COMMANDOES_TEAM_TASK ,
+	ATTR4 ,
+	APPLICATION_UNIT ,
+	ATTR3 ,
+	COMMANDOES_NAME ,
+	ATTR2 ,
+	ATTR1 ,
+	ID ,
+	CREATED_DEPT ,
+	ATTR8 ,
+	ATTR7 ,
+	ATTR20 ,
+	COMMANDOES_TEAM_DEPT ,
+	LAST_UPDATE_IP ,
+	ATTR6 ,
+	ATTR5 ,
+	CREATED_BY ,
+	ATTR12 ,
+	LAST_UPDATED_BY ,
+	ATTR13 ,
+	ATTR10 ,
+	ATTR11 ,
+	ATTR16 ,
+	ATTR17 ,
+	ATTR14 ,
+	ATTR15 ,
+	CREATION_DATE ,
+	ATTR18 ,
+	ATTR19 ,
+	COMMANDOES_TEAM_NAME ,
+	COMMANDOES_POSEN_TEL ,
+	COMMANDOES_TEAM_COUNT ,
+	COMMANDOES_PXQK ,
+	COMMANDOES_TEAM_AGE ,
+	APPLICATION_NUMBER ,
+	VERSION ,
+	COMMANDOES_POSEN ,
+	ORG_IDENTITY )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.commandoesType,jdbcType = VARCHAR} ,
+	#{item.expectedIncome,jdbcType = CLOB} ,
+	#{item.commandoesCaptains,jdbcType = VARCHAR} ,
+	#{item.commandoesDate,jdbcType = TIMESTAMP} ,
+	#{item.commandoesContent,jdbcType = VARCHAR} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.attr9,jdbcType = VARCHAR} ,
+	#{item.commandoesTaskDate,jdbcType = TIMESTAMP} ,
+	#{item.commandoesTeamTask,jdbcType = VARCHAR} ,
+	#{item.attr4,jdbcType = VARCHAR} ,
+	#{item.applicationUnit,jdbcType = VARCHAR} ,
+	#{item.attr3,jdbcType = VARCHAR} ,
+	#{item.commandoesName,jdbcType = VARCHAR} ,
+	#{item.attr2,jdbcType = VARCHAR} ,
+	#{item.attr1,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.attr8,jdbcType = VARCHAR} ,
+	#{item.attr7,jdbcType = VARCHAR} ,
+	#{item.attr20,jdbcType = TIMESTAMP} ,
+	#{item.commandoesTeamDept,jdbcType = VARCHAR} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.attr6,jdbcType = VARCHAR} ,
+	#{item.attr5,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.attr12,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.attr13,jdbcType = VARCHAR} ,
+	#{item.attr10,jdbcType = VARCHAR} ,
+	#{item.attr11,jdbcType = VARCHAR} ,
+	#{item.attr16,jdbcType = TIMESTAMP} ,
+	#{item.attr17,jdbcType = TIMESTAMP} ,
+	#{item.attr14,jdbcType = VARCHAR} ,
+	#{item.attr15,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.attr18,jdbcType = TIMESTAMP} ,
+	#{item.attr19,jdbcType = TIMESTAMP} ,
+	#{item.commandoesTeamName,jdbcType = VARCHAR} ,
+	#{item.commandoesPosenTel,jdbcType = VARCHAR} ,
+	#{item.commandoesTeamCount,jdbcType = VARCHAR} ,
+	#{item.commandoesPxqk,jdbcType = VARCHAR} ,
+	#{item.commandoesTeamAge,jdbcType = VARCHAR} ,
+	#{item.applicationNumber,jdbcType = VARCHAR} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.commandoesPosen,jdbcType = VARCHAR} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_YOUTH_DECLARATION -->
+<update id="updateDynYouthDeclarationSensitive" parameterType="avicit.pb.milepost.dynyouthdeclaration.dto.DynYouthDeclarationDTO">
+	update DYN_YOUTH_DECLARATION
+	<set>
+		<trim suffixOverrides=",">
+			<if test="commandoesType != null">
+				COMMANDOES_TYPE = #{commandoesType,jdbcType = VARCHAR},
+			</if>
+			<if test="expectedIncome != null">
+				EXPECTED_INCOME = #{expectedIncome,jdbcType = CLOB},
+			</if>
+			<if test="commandoesCaptains != null">
+				COMMANDOES_CAPTAINS = #{commandoesCaptains,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesDate != null">
+				COMMANDOES_DATE = #{commandoesDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="commandoesContent != null">
+				COMMANDOES_CONTENT = #{commandoesContent,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr9 != null">
+				ATTR9 = #{attr9,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesTaskDate != null">
+				COMMANDOES_TASK_DATE = #{commandoesTaskDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="commandoesTeamTask != null">
+				COMMANDOES_TEAM_TASK = #{commandoesTeamTask,jdbcType = VARCHAR},
+			</if>
+			<if test="attr4 != null">
+				ATTR4 = #{attr4,jdbcType = VARCHAR},
+			</if>
+			<if test="applicationUnit != null">
+				APPLICATION_UNIT = #{applicationUnit,jdbcType = VARCHAR},
+			</if>
+			<if test="attr3 != null">
+				ATTR3 = #{attr3,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesName != null">
+				COMMANDOES_NAME = #{commandoesName,jdbcType = VARCHAR},
+			</if>
+			<if test="attr2 != null">
+				ATTR2 = #{attr2,jdbcType = VARCHAR},
+			</if>
+			<if test="attr1 != null">
+				ATTR1 = #{attr1,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="attr8 != null">
+				ATTR8 = #{attr8,jdbcType = VARCHAR},
+			</if>
+			<if test="attr7 != null">
+				ATTR7 = #{attr7,jdbcType = VARCHAR},
+			</if>
+			<if test="attr20 != null">
+				ATTR20 = #{attr20,jdbcType = TIMESTAMP},
+			</if>
+			<if test="commandoesTeamDept != null">
+				COMMANDOES_TEAM_DEPT = #{commandoesTeamDept,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="attr6 != null">
+				ATTR6 = #{attr6,jdbcType = VARCHAR},
+			</if>
+			<if test="attr5 != null">
+				ATTR5 = #{attr5,jdbcType = VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="attr12 != null">
+				ATTR12 = #{attr12,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="attr13 != null">
+				ATTR13 = #{attr13,jdbcType = VARCHAR},
+			</if>
+			<if test="attr10 != null">
+				ATTR10 = #{attr10,jdbcType = VARCHAR},
+			</if>
+			<if test="attr11 != null">
+				ATTR11 = #{attr11,jdbcType = VARCHAR},
+			</if>
+			<if test="attr16 != null">
+				ATTR16 = #{attr16,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr17 != null">
+				ATTR17 = #{attr17,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr14 != null">
+				ATTR14 = #{attr14,jdbcType = VARCHAR},
+			</if>
+			<if test="attr15 != null">
+				ATTR15 = #{attr15,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr18 != null">
+				ATTR18 = #{attr18,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr19 != null">
+				ATTR19 = #{attr19,jdbcType = TIMESTAMP},
+			</if>
+			<if test="commandoesTeamName != null">
+				COMMANDOES_TEAM_NAME = #{commandoesTeamName,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesPosenTel != null">
+				COMMANDOES_POSEN_TEL = #{commandoesPosenTel,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesTeamCount != null">
+				COMMANDOES_TEAM_COUNT = #{commandoesTeamCount,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesPxqk != null">
+				COMMANDOES_PXQK = #{commandoesPxqk,jdbcType = VARCHAR},
+			</if>
+			<if test="commandoesTeamAge != null">
+				COMMANDOES_TEAM_AGE = #{commandoesTeamAge,jdbcType = VARCHAR},
+			</if>
+			<if test="applicationNumber != null">
+				APPLICATION_NUMBER = #{applicationNumber,jdbcType = VARCHAR},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="commandoesPosen != null">
+				COMMANDOES_POSEN = #{commandoesPosen,jdbcType = VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_YOUTH_DECLARATION -->
+<update id="updateDynYouthDeclarationAll" parameterType="avicit.pb.milepost.dynyouthdeclaration.dto.DynYouthDeclarationDTO">
+	update DYN_YOUTH_DECLARATION
+	set
+	COMMANDOES_TYPE = #{commandoesType,jdbcType = VARCHAR} ,
+	EXPECTED_INCOME = #{expectedIncome,jdbcType = CLOB} ,
+	COMMANDOES_CAPTAINS = #{commandoesCaptains,jdbcType = VARCHAR} ,
+	COMMANDOES_DATE = #{commandoesDate,jdbcType = TIMESTAMP} ,
+	COMMANDOES_CONTENT = #{commandoesContent,jdbcType = VARCHAR} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	ATTR9 = #{attr9,jdbcType = VARCHAR} ,
+	COMMANDOES_TASK_DATE = #{commandoesTaskDate,jdbcType = TIMESTAMP} ,
+	COMMANDOES_TEAM_TASK = #{commandoesTeamTask,jdbcType = VARCHAR} ,
+	ATTR4 = #{attr4,jdbcType = VARCHAR} ,
+	APPLICATION_UNIT = #{applicationUnit,jdbcType = VARCHAR} ,
+	ATTR3 = #{attr3,jdbcType = VARCHAR} ,
+	COMMANDOES_NAME = #{commandoesName,jdbcType = VARCHAR} ,
+	ATTR2 = #{attr2,jdbcType = VARCHAR} ,
+	ATTR1 = #{attr1,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ATTR8 = #{attr8,jdbcType = VARCHAR} ,
+	ATTR7 = #{attr7,jdbcType = VARCHAR} ,
+	ATTR20 = #{attr20,jdbcType = TIMESTAMP} ,
+	COMMANDOES_TEAM_DEPT = #{commandoesTeamDept,jdbcType = VARCHAR} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	ATTR6 = #{attr6,jdbcType = VARCHAR} ,
+	ATTR5 = #{attr5,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	ATTR12 = #{attr12,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	ATTR13 = #{attr13,jdbcType = VARCHAR} ,
+	ATTR10 = #{attr10,jdbcType = VARCHAR} ,
+	ATTR11 = #{attr11,jdbcType = VARCHAR} ,
+	ATTR16 = #{attr16,jdbcType = TIMESTAMP} ,
+	ATTR17 = #{attr17,jdbcType = TIMESTAMP} ,
+	ATTR14 = #{attr14,jdbcType = VARCHAR} ,
+	ATTR15 = #{attr15,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	ATTR18 = #{attr18,jdbcType = TIMESTAMP} ,
+	ATTR19 = #{attr19,jdbcType = TIMESTAMP} ,
+	COMMANDOES_TEAM_NAME = #{commandoesTeamName,jdbcType = VARCHAR} ,
+	COMMANDOES_POSEN_TEL = #{commandoesPosenTel,jdbcType = VARCHAR} ,
+	COMMANDOES_TEAM_COUNT = #{commandoesTeamCount,jdbcType = VARCHAR} ,
+	COMMANDOES_PXQK = #{commandoesPxqk,jdbcType = VARCHAR} ,
+	COMMANDOES_TEAM_AGE = #{commandoesTeamAge,jdbcType = VARCHAR} ,
+	APPLICATION_NUMBER = #{applicationNumber,jdbcType = VARCHAR} ,
+	VERSION = version+1 ,
+	COMMANDOES_POSEN = #{commandoesPosen,jdbcType = VARCHAR} ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_YOUTH_DECLARATION -->
+<update id="updateDynYouthDeclarationList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_YOUTH_DECLARATION
+		set
+		COMMANDOES_TYPE = #{item.commandoesType,jdbcType = VARCHAR} ,
+		EXPECTED_INCOME = #{item.expectedIncome,jdbcType = CLOB} ,
+		COMMANDOES_CAPTAINS = #{item.commandoesCaptains,jdbcType = VARCHAR} ,
+		COMMANDOES_DATE = #{item.commandoesDate,jdbcType = TIMESTAMP} ,
+		COMMANDOES_CONTENT = #{item.commandoesContent,jdbcType = VARCHAR} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		ATTR9 = #{item.attr9,jdbcType = VARCHAR} ,
+		COMMANDOES_TASK_DATE = #{item.commandoesTaskDate,jdbcType = TIMESTAMP} ,
+		COMMANDOES_TEAM_TASK = #{item.commandoesTeamTask,jdbcType = VARCHAR} ,
+		ATTR4 = #{item.attr4,jdbcType = VARCHAR} ,
+		APPLICATION_UNIT = #{item.applicationUnit,jdbcType = VARCHAR} ,
+		ATTR3 = #{item.attr3,jdbcType = VARCHAR} ,
+		COMMANDOES_NAME = #{item.commandoesName,jdbcType = VARCHAR} ,
+		ATTR2 = #{item.attr2,jdbcType = VARCHAR} ,
+		ATTR1 = #{item.attr1,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ATTR8 = #{item.attr8,jdbcType = VARCHAR} ,
+		ATTR7 = #{item.attr7,jdbcType = VARCHAR} ,
+		ATTR20 = #{item.attr20,jdbcType = TIMESTAMP} ,
+		COMMANDOES_TEAM_DEPT = #{item.commandoesTeamDept,jdbcType = VARCHAR} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		ATTR6 = #{item.attr6,jdbcType = VARCHAR} ,
+		ATTR5 = #{item.attr5,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		ATTR12 = #{item.attr12,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		ATTR13 = #{item.attr13,jdbcType = VARCHAR} ,
+		ATTR10 = #{item.attr10,jdbcType = VARCHAR} ,
+		ATTR11 = #{item.attr11,jdbcType = VARCHAR} ,
+		ATTR16 = #{item.attr16,jdbcType = TIMESTAMP} ,
+		ATTR17 = #{item.attr17,jdbcType = TIMESTAMP} ,
+		ATTR14 = #{item.attr14,jdbcType = VARCHAR} ,
+		ATTR15 = #{item.attr15,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		ATTR18 = #{item.attr18,jdbcType = TIMESTAMP} ,
+		ATTR19 = #{item.attr19,jdbcType = TIMESTAMP} ,
+		COMMANDOES_TEAM_NAME = #{item.commandoesTeamName,jdbcType = VARCHAR} ,
+		COMMANDOES_POSEN_TEL = #{item.commandoesPosenTel,jdbcType = VARCHAR} ,
+		COMMANDOES_TEAM_COUNT = #{item.commandoesTeamCount,jdbcType = VARCHAR} ,
+		COMMANDOES_PXQK = #{item.commandoesPxqk,jdbcType = VARCHAR} ,
+		COMMANDOES_TEAM_AGE = #{item.commandoesTeamAge,jdbcType = VARCHAR} ,
+		APPLICATION_NUMBER = #{item.applicationNumber,jdbcType = VARCHAR} ,
+		VERSION = version+1  ,
+		COMMANDOES_POSEN = #{item.commandoesPosen,jdbcType = VARCHAR} ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_YOUTH_DECLARATION -->
+<delete id="deleteDynYouthDeclarationById" parameterType="java.lang.String">
+	delete from DYN_YOUTH_DECLARATION  where id = #{id}
+</delete>
+</mapper>

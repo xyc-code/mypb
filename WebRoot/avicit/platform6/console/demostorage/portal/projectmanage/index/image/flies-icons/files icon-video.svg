@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 120">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#627cfe"/>
+      <stop offset="1" stop-color="#3042cc"/>
+    </linearGradient>
+    <filter id="Path" x="57" y="0" width="46" height="46" filterUnits="userSpaceOnUse">
+      <feOffset dy="-2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feFlood flood-opacity="0.09"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="files_icon-video" data-name="files icon-video" transform="translate(0 0)">
+    <path id="Combined_Shape" data-name="Combined Shape" d="M60,0l40,40v66a14,14,0,0,1-14,14H14A14,14,0,0,1,0,106V14A14,14,0,0,1,14,0Z" opacity="0.8" fill="url(#linear-gradient)"/>
+    <g transform="matrix(1, 0, 0, 1, 0, -5)" filter="url(#Path)">
+      <path id="Path-2" data-name="Path" d="M0,0H25.293C33.025,0,40,6.975,40,14.707V40Z" transform="translate(100 45) rotate(180)" fill="rgba(255,255,255,0.4)"/>
+    </g>
+    <g id="视频_1_" data-name="视频 (1)" transform="translate(20 60)">
+      <path id="Path-3" data-name="Path" d="M0,8.579v7.784l14.421,8.6V0Z" transform="translate(31.016 2.511)" fill="#fff" opacity="0.99"/>
+      <path id="Shape" d="M32.792,29.98H2.657A2.659,2.659,0,0,1,0,27.325V2.655A2.659,2.659,0,0,1,2.657,0H32.77a2.674,2.674,0,0,1,2.679,2.632V27.325A2.659,2.659,0,0,1,32.792,29.98ZM11.491,5.674v18.61l15.17-9.305Z" transform="translate(0.018 0.014)" fill="#fff" opacity="0.99"/>
+    </g>
+  </g>
+</svg>

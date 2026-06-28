@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>常用功能</title>
+    <link
+      href="./iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+    <script src="./js/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+        <h4>常用功能</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('commonFunction')"-->
+<!--          ></i>-->
+          <!-- <i class="iconfont icon-refresh" title="刷新"></i> -->
+          <i
+            class="iconfont icon-plus"
+            onclick="addApplication()"
+            title="添加"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul class="application-list">
+          <li class="ci-list">
+            <img src="./img/u104.svg" alt="" class="img blue" />
+            <p class="ci-title">项目管理</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u95.svg" alt="" class="img green" />
+            <p class="ci-title">我的日程</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u101.svg" alt="" class="img purple" />
+            <p class="ci-title">待办审批</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u98.svg" alt="" class="img orange" />
+            <p class="ci-title">会议管理</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u107.svg" alt="" class="img red" />
+            <p class="ci-title">出差报销</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u95.svg" alt="" class="img green" />
+            <p class="ci-title">请假</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u101.svg" alt="" class="img purple" />
+            <p class="ci-title">审批</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u95.svg" alt="" class="img orange" />
+            <p class="ci-title">请假2</p>
+          </li>
+          <li class="ci-list">
+            <img src="./img/u101.svg" alt="" class="img red" />
+            <p class="ci-title">审批2</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var count = 0;
+      function addApplication() {
+        var name = "name" + count++;
+        var temp =
+          '<li class="ci-list"><img src="./img/u95.svg" alt="" class="img blue" /><p contenteditable id="' +
+          name +
+          '" class="ci-title"> 应用名称</p></li>';
+        $(".application-list").append(temp);
+        $("#" + name).focus();
+      }
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      .ci-list {
+        width: 98px;
+        display: inline-block;
+        text-align: center;
+        margin: 0 0 5px 0;
+      }
+      .img {
+        width: 48px;
+        height: 48px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .ci-title {
+        font-family: "微软雅黑", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #1e1e1e;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 8px auto;
+      }
+      .blue {
+        background: #6387fb;
+      }
+      .green {
+        background: #24b37e;
+      }
+      .purple {
+        background: #8b6ad4;
+      }
+      .orange {
+        background: #efa000;
+      }
+      .red {
+        background: #e1734a;
+      }
+    </style>
+  </body>
+</html>

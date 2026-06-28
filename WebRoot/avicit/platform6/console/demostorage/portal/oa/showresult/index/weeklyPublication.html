@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>员工周报</title>
+    <link href="./iconfont/iconfont.css" type="text/css" rel="stylesheet" />
+    <link href="style\index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>员工周报</h4>
+        <span class="box_title_right">
+<!--          <i-->
+<!--            class="iconfont icon-download"-->
+<!--            title="下载"-->
+<!--            onclick="downloadFile('commonFunction')"-->
+<!--          ></i>-->
+          <i
+            class="iconfont icon-more"
+            onclick="handleClick()"
+            title="详情"
+          ></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <ul>
+          <li class="content-list">
+            <span class="ctl-first"><img src="./img/u799.svg" alt=""/></span>
+            <span class="ctl-second">马成才第三周工作总结</span>
+            <span class="ctl-third">5月第3周</span>
+          </li>
+          <li class="content-list">
+            <span class="ctl-first"><img src="./img/u799.svg" alt=""/></span>
+            <span class="ctl-second">王宇第三周工作总结</span>
+            <span class="ctl-third">5月第3周</span>
+          </li>
+          <li class="content-list">
+            <span class="ctl-first"><img src="./img/u799.svg" alt=""/></span>
+            <span class="ctl-second">陈明第三周工作总结</span>
+            <span class="ctl-third">5月第3周</span>
+          </li>
+          <li class="content-list">
+            <span class="ctl-first"><img src="./img/u799.svg" alt=""/></span>
+            <span class="ctl-second">李志刚第三周工作总结</span>
+            <span class="ctl-third">5月第3周</span>
+          </li>
+          <li class="content-list">
+            <span class="ctl-first"><img src="./img/u799.svg" alt=""/></span>
+            <span class="ctl-second">某某第三周工作总结</span>
+            <span class="ctl-third">5月第3周</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+      function handleClick() {
+        window.open("weeklyPublication.html");
+      }
+      function downloadFile(fileName) {
+        let a = document.createElement("a");
+        a.href = "/download/template2/" + fileName + ".rar";
+        a.download = fileName + ".rar";
+        a.click();
+      }
+    </script>
+    <style>
+      .content-list {
+        border-bottom: 1px solid #eee;
+        padding: 8px;
+      }
+      .ctl-first {
+        display: inline-block;
+        width: 10%;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .ctl-second {
+        display: inline-block;
+        width: 60%;
+        font-family: 微软雅黑, sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: rgb(30, 30, 30);
+        line-height: 24px;
+      }
+      .ctl-third {
+        width: 20%;
+        font-family: 微软雅黑, sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: rgb(127, 127, 127);
+        float: right;
+      }
+    </style>
+  </body>
+</html>

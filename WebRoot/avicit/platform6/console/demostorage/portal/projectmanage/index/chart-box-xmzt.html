@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="iconfont/iconfont.css" />
+		<script src="js/echarts.min.js"></script>
+    <script src="js/jquery1.42.min.js"></script>
+	</head>
+	<body>
+		<div class="content_box">
+      <div class="title_switch box_title ">
+        <div class="title">多项目状态视图</div>
+        <div class="box_title_right">
+          <div class="icon_more">
+              <i
+              class="iconfont icon-refresh"
+              title="刷新"
+              ></i>
+          </div>
+          <div class="time_select">
+            <select>
+              <option>2019-12</option>
+              <option>2019-11</option>
+              <option>2019-10</option>
+              <option>2019-09</option>
+              <option>2019-08</option>
+              <option>2019-07</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="content_inner">
+        <div id="xmztPie" style="height: 260px;"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var xmztEchart = echarts.init(document.getElementById("xmztPie"));
+
+      var xmztOption = {
+        title: {
+          text: "完成总数",
+          top: "38%",
+          left: "33%",
+          textStyle: {
+            color: "#333",
+            fontSize: "18px",
+            fontWeight: "normal"
+          },
+          subtext: "122",
+          subtextStyle: {
+            color: "#52A0E9",
+            fontSize: "32px",
+            align: "center"
+          },
+          textAlign: "center"
+        },
+
+        tooltip: {
+          trigger: "item"
+        },
+        color: ["#37CBCB", "#3BA1FF", "#4FCB74", "#FBD438", "#9860E5", "#F04864"],
+        legend: {
+          icon: "circle",
+          orient: "vertical",
+          right: "10%",
+          top: "15%",
+          itemWidth: 16,
+          itemHeight: 16,
+          textStyle: {
+            color: "#999",
+            fontSize: "14px"
+          }
+        },
+
+        series: [
+          {
+            name: "访问来源",
+            type: "pie",
+            center: ["34%", "50%"],
+            radius: ["66%", "80%"],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              // borderRadius: 4,
+              borderColor: "#fff",
+              borderWidth: 2
+            },
+            label: {
+              show: false,
+              position: "center"
+            },
+            emphasis: {
+              label: {
+                show: false,
+                fontSize: "40",
+                fontWeight: "bold"
+              }
+            },
+            grid: {
+              left: "1%",
+              top: "3%"
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 1048, name: "图例1 |  42%" },
+              { value: 580, name: "图例2 |  12%" },
+              { value: 484, name: "图例3 |  11%" },
+              { value: 300, name: "图例4 |  6%" },
+              { value: 310, name: "图例5 |  5%" },
+              { value: 200, name: "图例6 |  3%" }
+            ]
+          }
+        ]
+      };
+
+      xmztEchart.setOption(xmztOption);
+      $(window).resize(function() { //重置容器高宽 
+        xmztEchart.resize(); 
+      });
+      
+      </script>
+	</body>
+</html>

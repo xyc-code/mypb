@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.cape.pmprojectys.pmprojectyszjbg.dao.PmProjectYsZjbgDao">
+
+<resultMap id="PmProjectYsZjbgDTOMap" type="avicit.cape.pmprojectys.pmprojectyszjbg.dto.PmProjectYsZjbgDTO">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="secretLevel" column="SECRET_LEVEL" jdbcType="VARCHAR" />
+		<result property="projectId" column="PROJECT_ID" jdbcType="VARCHAR" />
+		<result property="projectName" column="PROJECT_NAME" jdbcType="VARCHAR" />
+		<result property="taskId" column="TASK_ID" jdbcType="VARCHAR" />
+		<result property="taskName" column="TASK_NAME" jdbcType="VARCHAR" />
+		<result property="title" column="TITLE" jdbcType="VARCHAR" />
+		<result property="zjType" column="ZJ_TYPE" jdbcType="VARCHAR" />
+		<result property="content" column="CONTENT" jdbcType="VARCHAR" />
+		<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+		<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+		<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+		<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+		<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+		<result property="version" column="VERSION" jdbcType="DECIMAL" />
+		<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+		<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+		<result property="attribute01" column="ATTRIBUTE_01" jdbcType="VARCHAR" />
+		<result property="attribute02" column="ATTRIBUTE_02" jdbcType="VARCHAR" />
+		<result property="attribute03" column="ATTRIBUTE_03" jdbcType="VARCHAR" />
+		<result property="attribute04" column="ATTRIBUTE_04" jdbcType="VARCHAR" />
+		<result property="attribute05" column="ATTRIBUTE_05" jdbcType="VARCHAR" />
+		<result property="attribute06" column="ATTRIBUTE_06" jdbcType="VARCHAR" />
+		<result property="attribute07" column="ATTRIBUTE_07" jdbcType="DECIMAL" />
+		<result property="attribute08" column="ATTRIBUTE_08" jdbcType="DECIMAL" />
+		<result property="attribute09" column="ATTRIBUTE_09" jdbcType="TIMESTAMP" />
+		<result property="attribute10" column="ATTRIBUTE_10" jdbcType="TIMESTAMP" />
+		<result property="activityalias_" column="activityalias_" jdbcType="VARCHAR" />
+		<result property="businessstate_" column="businessstate_" jdbcType="VARCHAR" />
+</resultMap>
+<!-- 分页查询 PM_PROJECT_YS_ZJBG -->
+<select id="searchPmProjectYsZjbgByPage" parameterType="java.util.Map" resultMap="PmProjectYsZjbgDTOMap">
+	select
+		v.activityalias_                 ,
+		v.businessstate_                 ,
+		t1.id                             ,
+		t1.secret_level                   ,
+		t1.project_id                     ,
+		t1.project_name                   ,
+		t1.task_id                        ,
+		t1.task_name                      ,
+		t1.title                          ,
+		t1.zj_type                        ,
+		t1.content                        ,
+		t1.created_by                     ,
+		t1.creation_date                  ,
+		t1.last_updated_by                ,
+		t1.last_update_date               ,
+		t1.last_update_ip                 ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.attribute_01                   ,
+		t1.attribute_02                   ,
+		t1.attribute_03                   ,
+		t1.attribute_04                   ,
+		t1.attribute_05                   ,
+		t1.attribute_06                   ,
+		t1.attribute_07                   ,
+		t1.attribute_08                   ,
+		t1.attribute_09                   ,
+		t1.attribute_10                   
+	from pm_project_ys_zjbg 	t1 left join bpm_client_hist_procinst_v v on t1.id = v.formid_ 
+		<where>
+			<if test="bean != null">
+			<if test="bean.id != null and bean.id != ''">
+				and t1.ID =#{bean.id}
+			</if>
+			<if test="bean.secretLevel != null and bean.secretLevel != ''">
+				and t1.SECRET_LEVEL like concat(concat('%',#{bean.secretLevel}),'%') 
+			</if>
+			<if test="bean.projectId != null and bean.projectId != ''">
+				and t1.PROJECT_ID like concat(concat('%',#{bean.projectId}),'%') 
+			</if>
+			<if test="bean.projectName != null and bean.projectName != ''">
+				and t1.PROJECT_NAME like concat(concat('%',#{bean.projectName}),'%') 
+			</if>
+			<if test="bean.taskId != null and bean.taskId != ''">
+				and t1.TASK_ID like concat(concat('%',#{bean.taskId}),'%') 
+			</if>
+			<if test="bean.taskName != null and bean.taskName != ''">
+				and t1.TASK_NAME like concat(concat('%',#{bean.taskName}),'%') 
+			</if>
+			<if test="bean.title != null and bean.title != ''">
+				and t1.TITLE like concat(concat('%',#{bean.title}),'%') 
+			</if>
+			<if test="bean.zjType != null and bean.zjType != ''">
+				and t1.ZJ_TYPE like concat(concat('%',#{bean.zjType}),'%') 
+			</if>
+			<if test="bean.content != null and bean.content != ''">
+				and t1.CONTENT like concat(concat('%',#{bean.content}),'%') 
+			</if>
+			<if test="bean.createdBy != null and bean.createdBy != ''">
+				and t1.CREATED_BY like concat(concat('%',#{bean.createdBy}),'%') 
+			</if>
+			<if test="bean.creationDate != null and bean.creationDate != ''">
+				and t1.CREATION_DATE like concat(concat('%',#{bean.creationDate}),'%') 
+			</if>
+			<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY like concat(concat('%',#{bean.lastUpdatedBy}),'%') 
+			</if>
+			<if test="bean.lastUpdateDate != null and bean.lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE like concat(concat('%',#{bean.lastUpdateDate}),'%') 
+			</if>
+			<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP like concat(concat('%',#{bean.lastUpdateIp}),'%') 
+			</if>
+			<if test="bean.version != null ">
+				and t1.VERSION like concat(concat('%',#{bean.version}),'%') 
+			</if>
+			<if test="bean.createdDept != null and bean.createdDept != ''">
+				and t1.CREATED_DEPT like concat(concat('%',#{bean.createdDept}),'%') 
+			</if>
+			<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+				and t1.ORG_IDENTITY like concat(concat('%',#{bean.orgIdentity}),'%') 
+			</if>
+			<if test="bean.attribute01 != null and bean.attribute01 != ''">
+				and t1.ATTRIBUTE_01 like concat(concat('%',#{bean.attribute01}),'%') 
+			</if>
+			<if test="bean.attribute02 != null and bean.attribute02 != ''">
+				and t1.ATTRIBUTE_02 like concat(concat('%',#{bean.attribute02}),'%') 
+			</if>
+			<if test="bean.attribute03 != null and bean.attribute03 != ''">
+				and t1.ATTRIBUTE_03 like concat(concat('%',#{bean.attribute03}),'%') 
+			</if>
+			<if test="bean.attribute04 != null and bean.attribute04 != ''">
+				and t1.ATTRIBUTE_04 like concat(concat('%',#{bean.attribute04}),'%') 
+			</if>
+			<if test="bean.attribute05 != null and bean.attribute05 != ''">
+				and t1.ATTRIBUTE_05 like concat(concat('%',#{bean.attribute05}),'%') 
+			</if>
+			<if test="bean.attribute06 != null and bean.attribute06 != ''">
+				and t1.ATTRIBUTE_06 like concat(concat('%',#{bean.attribute06}),'%') 
+			</if>
+			<if test="bean.attribute07 != null ">
+				and t1.ATTRIBUTE_07 like concat(concat('%',#{bean.attribute07}),'%') 
+			</if>
+			<if test="bean.attribute08 != null ">
+				and t1.ATTRIBUTE_08 like concat(concat('%',#{bean.attribute08}),'%') 
+			</if>
+			<if test="bean.attribute09 != null and bean.attribute09 != ''">
+				and t1.ATTRIBUTE_09 like concat(concat('%',#{bean.attribute09}),'%') 
+			</if>
+			<if test="bean.attribute10 != null and bean.attribute10 != ''">
+				and t1.ATTRIBUTE_10 like concat(concat('%',#{bean.attribute10}),'%') 
+			</if>
+						<if test="bean.bpmType !=null and bean.bpmType !='' and bean.bpmType == 'my'">
+				 and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{bean.currUserId}) 
+			</if>
+			<if test="bean.bpmState != null and bean.bpmState !='' and bean.bpmState != 'all'">
+				and v.businessstate_ = #{bean.bpmState}
+			</if>
+</if>
+			<if test="sfnConditions != null and sfnConditions.sql != ''">
+				and ${sfnConditions.sql}			
+			</if>
+			<if test="org != null and org != ''">
+				and t1.ORG_IDENTITY =#{org}
+			</if>
+		</where>
+			order by t1.creation_date desc
+</select>
+<!-- 查询列表 PM_PROJECT_YS_ZJBG -->
+<select id="searchPmProjectYsZjbg" parameterType="java.util.Map" resultMap="PmProjectYsZjbgDTOMap">
+	select
+		v.activityalias_                 ,
+		v.businessstate_                 ,
+		t1.id                             ,
+		t1.secret_level                   ,
+		t1.project_id                     ,
+		t1.project_name                   ,
+		t1.task_id                        ,
+		t1.task_name                      ,
+		t1.title                          ,
+		t1.zj_type                        ,
+		t1.content                        ,
+		t1.created_by                     ,
+		t1.creation_date                  ,
+		t1.last_updated_by                ,
+		t1.last_update_date               ,
+		t1.last_update_ip                 ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.attribute_01                   ,
+		t1.attribute_02                   ,
+		t1.attribute_03                   ,
+		t1.attribute_04                   ,
+		t1.attribute_05                   ,
+		t1.attribute_06                   ,
+		t1.attribute_07                   ,
+		t1.attribute_08                   ,
+		t1.attribute_09                   ,
+		t1.attribute_10                   
+	from pm_project_ys_zjbg 	t1 left join bpm_client_hist_procinst_v v on t1.id = v.formid_ 
+		<where>
+			<if test="id != null and id != ''">
+				and t1.ID =#{id}
+			</if>
+			<if test="secretLevel != null and secretLevel != ''">
+				and t1.SECRET_LEVEL =#{secretLevel}
+			</if>
+			<if test="projectId != null and projectId != ''">
+				and t1.PROJECT_ID =#{projectId}
+			</if>
+			<if test="projectName != null and projectName != ''">
+				and t1.PROJECT_NAME =#{projectName}
+			</if>
+			<if test="taskId != null and taskId != ''">
+				and t1.TASK_ID =#{taskId}
+			</if>
+			<if test="taskName != null and taskName != ''">
+				and t1.TASK_NAME =#{taskName}
+			</if>
+			<if test="title != null and title != ''">
+				and t1.TITLE =#{title}
+			</if>
+			<if test="zjType != null and zjType != ''">
+				and t1.ZJ_TYPE =#{zjType}
+			</if>
+			<if test="content != null and content != ''">
+				and t1.CONTENT =#{content}
+			</if>
+			<if test="createdBy != null and createdBy != ''">
+				and t1.CREATED_BY =#{createdBy}
+			</if>
+			<if test="creationDate != null and creationDate != ''">
+				and t1.CREATION_DATE =#{creationDate}
+			</if>
+			<if test="lastUpdatedBy != null and lastUpdatedBy != ''">
+				and t1.LAST_UPDATED_BY =#{lastUpdatedBy}
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				and t1.LAST_UPDATE_DATE =#{lastUpdateDate}
+			</if>
+			<if test="lastUpdateIp != null and lastUpdateIp != ''">
+				and t1.LAST_UPDATE_IP =#{lastUpdateIp}
+			</if>
+			<if test="version != null">
+				and t1.VERSION =#{version}
+			</if>
+			<if test="createdDept != null and createdDept != ''">
+				and t1.CREATED_DEPT =#{createdDept}
+			</if>
+			<if test="orgIdentity != null and orgIdentity != ''">
+				and t1.ORG_IDENTITY =#{orgIdentity}
+			</if>
+			<if test="attribute01 != null and attribute01 != ''">
+				and t1.ATTRIBUTE_01 =#{attribute01}
+			</if>
+			<if test="attribute02 != null and attribute02 != ''">
+				and t1.ATTRIBUTE_02 =#{attribute02}
+			</if>
+			<if test="attribute03 != null and attribute03 != ''">
+				and t1.ATTRIBUTE_03 =#{attribute03}
+			</if>
+			<if test="attribute04 != null and attribute04 != ''">
+				and t1.ATTRIBUTE_04 =#{attribute04}
+			</if>
+			<if test="attribute05 != null and attribute05 != ''">
+				and t1.ATTRIBUTE_05 =#{attribute05}
+			</if>
+			<if test="attribute06 != null and attribute06 != ''">
+				and t1.ATTRIBUTE_06 =#{attribute06}
+			</if>
+			<if test="attribute07 != null">
+				and t1.ATTRIBUTE_07 =#{attribute07}
+			</if>
+			<if test="attribute08 != null">
+				and t1.ATTRIBUTE_08 =#{attribute08}
+			</if>
+			<if test="attribute09 != null and attribute09 != ''">
+				and t1.ATTRIBUTE_09 =#{attribute09}
+			</if>
+			<if test="attribute10 != null and attribute10 != ''">
+				and t1.ATTRIBUTE_10 =#{attribute10}
+			</if>
+			<if test="bpmType !=null and bpmType !='' and bpmType == 'my'">
+				 and exists (select 1 from BPM_CLIENT_HIST_TASK_V os where os.task_b_id_ = t1.id and os.assignee_ = #{currUserId}) 
+			</if>
+			<if test="bpmState != null and bpmState !='' and bpmState != 'all'">
+				and v.businessstate_ = #{bpmState}
+			</if>
+		</where>
+</select>
+<!-- 主键查询对象 PM_PROJECT_YS_ZJBG -->
+<select id="findPmProjectYsZjbgById" parameterType="java.util.Map" resultMap="PmProjectYsZjbgDTOMap">
+	select
+		t1.id                             ,
+		t1.secret_level                   ,
+		t1.project_id                     ,
+		t1.project_name                   ,
+		t1.task_id                        ,
+		t1.task_name                      ,
+		t1.title                          ,
+		t1.zj_type                        ,
+		t1.content                        ,
+		t1.created_by                     ,
+		t1.creation_date                  ,
+		t1.last_updated_by                ,
+		t1.last_update_date               ,
+		t1.last_update_ip                 ,
+		t1.version                        ,
+		t1.created_dept                   ,
+		t1.org_identity                   ,
+		t1.attribute_01                   ,
+		t1.attribute_02                   ,
+		t1.attribute_03                   ,
+		t1.attribute_04                   ,
+		t1.attribute_05                   ,
+		t1.attribute_06                   ,
+		t1.attribute_07                   ,
+		t1.attribute_08                   ,
+		t1.attribute_09                   ,
+		t1.attribute_10                   
+	from pm_project_ys_zjbg 	t1
+		where t1.id = #{id}
+</select>
+<!-- 新增对象 PM_PROJECT_YS_ZJBG -->
+<insert id="insertPmProjectYsZjbg" parameterType="avicit.cape.pmprojectys.pmprojectyszjbg.dto.PmProjectYsZjbgDTO">
+	insert into pm_project_ys_zjbg
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="secretLevel != null">
+				secret_level,
+			</if>
+			<if test="projectId != null">
+				project_id,
+			</if>
+			<if test="projectName != null">
+				project_name,
+			</if>
+			<if test="taskId != null">
+				task_id,
+			</if>
+			<if test="taskName != null">
+				task_name,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="zjType != null">
+				zj_type,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="createdBy != null">
+				created_by,
+			</if>
+			<if test="creationDate != null">
+				creation_date,
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by,
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date,
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="createdDept != null">
+				created_dept,
+			</if>
+			<if test="orgIdentity != null">
+				org_identity,
+			</if>
+			<if test="attribute01 != null">
+				attribute_01,
+			</if>
+			<if test="attribute02 != null">
+				attribute_02,
+			</if>
+			<if test="attribute03 != null">
+				attribute_03,
+			</if>
+			<if test="attribute04 != null">
+				attribute_04,
+			</if>
+			<if test="attribute05 != null">
+				attribute_05,
+			</if>
+			<if test="attribute06 != null">
+				attribute_06,
+			</if>
+			<if test="attribute07 != null">
+				attribute_07,
+			</if>
+			<if test="attribute08 != null">
+				attribute_08,
+			</if>
+			<if test="attribute09 != null">
+				attribute_09,
+			</if>
+			<if test="attribute10 != null">
+				attribute_10,
+			</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="secretLevel != null">
+				#{secretLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="projectId != null">
+				#{projectId,jdbcType=VARCHAR},
+			</if>
+			<if test="projectName != null">
+				#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="taskId != null">
+				#{taskId,jdbcType=VARCHAR},
+			</if>
+			<if test="taskName != null">
+				#{taskName,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="zjType != null">
+				#{zjType,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				#{creationDate},
+			</if>
+			<if test="lastUpdatedBy != null">
+				#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate},
+			</if>
+			<if test="lastUpdateIp != null">
+				#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=DECIMAL},
+			</if>
+			<if test="createdDept != null">
+				#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				#{attribute07,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute08 != null">
+				#{attribute08,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute09 != null">
+				#{attribute09,jdbcType=TIMESTAMP},
+			</if>
+			<if test="attribute10 != null">
+				#{attribute10,jdbcType=TIMESTAMP},
+			</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 PM_PROJECT_YS_ZJBG -->
+<insert id="insertPmProjectYsZjbgList" parameterType="java.util.List">
+	insert into pm_project_ys_zjbg(
+			id,
+			secret_level,
+			project_id,
+			project_name,
+			task_id,
+			task_name,
+			title,
+			zj_type,
+			content,
+			created_by,
+			creation_date,
+			last_updated_by,
+			last_update_date,
+			last_update_ip,
+			version,
+			created_dept,
+			org_identity,
+			attribute_01,
+			attribute_02,
+			attribute_03,
+			attribute_04,
+			attribute_05,
+			attribute_06,
+			attribute_07,
+			attribute_08,
+			attribute_09,
+			attribute_10)
+	<foreach collection="list" item="item" index="index" open="(" separator="union all" close=")">
+		select 
+					#{item.id,jdbcType=VARCHAR},
+					#{item.secretLevel,jdbcType=VARCHAR},
+					#{item.projectId,jdbcType=VARCHAR},
+					#{item.projectName,jdbcType=VARCHAR},
+					#{item.taskId,jdbcType=VARCHAR},
+					#{item.taskName,jdbcType=VARCHAR},
+					#{item.title,jdbcType=VARCHAR},
+					#{item.zjType,jdbcType=VARCHAR},
+					#{item.content,jdbcType=VARCHAR},
+					#{item.createdBy,jdbcType=VARCHAR},
+					#{item.creationDate},
+					#{item.lastUpdatedBy,jdbcType=VARCHAR},
+					#{item.lastUpdateDate},
+					#{item.lastUpdateIp,jdbcType=VARCHAR},
+					#{item.version,jdbcType=DECIMAL},
+					#{item.createdDept,jdbcType=VARCHAR},
+					#{item.orgIdentity,jdbcType=VARCHAR},
+					#{item.attribute01,jdbcType=VARCHAR},
+					#{item.attribute02,jdbcType=VARCHAR},
+					#{item.attribute03,jdbcType=VARCHAR},
+					#{item.attribute04,jdbcType=VARCHAR},
+					#{item.attribute05,jdbcType=VARCHAR},
+					#{item.attribute06,jdbcType=VARCHAR},
+					#{item.attribute07,jdbcType=DECIMAL},
+					#{item.attribute08,jdbcType=DECIMAL},
+					#{item.attribute09,jdbcType=TIMESTAMP},
+					#{item.attribute10,jdbcType=TIMESTAMP}
+		from dual 
+	</foreach>
+</insert>
+<!-- 更新对象 PM_PROJECT_YS_ZJBG -->
+<update id="updatePmProjectYsZjbgSensitive" parameterType="avicit.cape.pmprojectys.pmprojectyszjbg.dto.PmProjectYsZjbgDTO">
+	update pm_project_ys_zjbg 
+	<set>
+			<if test="id != null">
+				id                             =#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="secretLevel != null">
+				secret_level                   =#{secretLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="projectId != null">
+				project_id                     =#{projectId,jdbcType=VARCHAR},
+			</if>
+			<if test="projectName != null">
+				project_name                   =#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="taskId != null">
+				task_id                        =#{taskId,jdbcType=VARCHAR},
+			</if>
+			<if test="taskName != null">
+				task_name                      =#{taskName,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				title                          =#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="zjType != null">
+				zj_type                        =#{zjType,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content                        =#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				created_by                     =#{createdBy,jdbcType=VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				creation_date                  =#{creationDate},
+			</if>
+			<if test="lastUpdatedBy != null">
+				last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				last_update_date               =#{lastUpdateDate},
+			</if>
+			<if test="lastUpdateIp != null">
+				last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				version                        =version+1,
+			</if>
+			<if test="createdDept != null">
+				created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			</if>
+			<if test="orgIdentity != null">
+				org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute01 != null">
+				attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute02 != null">
+				attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute03 != null">
+				attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute04 != null">
+				attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute05 != null">
+				attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute06 != null">
+				attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			</if>
+			<if test="attribute07 != null">
+				attribute_07                   =#{attribute07,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute08 != null">
+				attribute_08                   =#{attribute08,jdbcType=DECIMAL},
+			</if>
+			<if test="attribute09 != null">
+				attribute_09                   =#{attribute09,jdbcType=TIMESTAMP},
+			</if>
+			<if test="attribute10 != null">
+				attribute_10                   =#{attribute10,jdbcType=TIMESTAMP},
+			</if>
+	</set>
+		where id = #{id} and version =#{version}
+</update>
+<!-- 更新对象 PM_PROJECT_YS_ZJBG -->
+<update id="updatePmProjectYsZjbgAll" parameterType="avicit.cape.pmprojectys.pmprojectyszjbg.dto.PmProjectYsZjbgDTO">
+	update pm_project_ys_zjbg 
+		set
+			id                             =#{id,jdbcType=VARCHAR},
+			secret_level                   =#{secretLevel,jdbcType=VARCHAR},
+			project_id                     =#{projectId,jdbcType=VARCHAR},
+			project_name                   =#{projectName,jdbcType=VARCHAR},
+			task_id                        =#{taskId,jdbcType=VARCHAR},
+			task_name                      =#{taskName,jdbcType=VARCHAR},
+			title                          =#{title,jdbcType=VARCHAR},
+			zj_type                        =#{zjType,jdbcType=VARCHAR},
+			content                        =#{content,jdbcType=VARCHAR},
+			created_by                     =#{createdBy,jdbcType=VARCHAR},
+			creation_date                  =#{creationDate},
+			last_updated_by                =#{lastUpdatedBy,jdbcType=VARCHAR},
+			last_update_date               =#{lastUpdateDate},
+			last_update_ip                 =#{lastUpdateIp,jdbcType=VARCHAR},
+			version                        =version+1,
+			created_dept                   =#{createdDept,jdbcType=VARCHAR},
+			org_identity                   =#{orgIdentity,jdbcType=VARCHAR},
+			attribute_01                   =#{attribute01,jdbcType=VARCHAR},
+			attribute_02                   =#{attribute02,jdbcType=VARCHAR},
+			attribute_03                   =#{attribute03,jdbcType=VARCHAR},
+			attribute_04                   =#{attribute04,jdbcType=VARCHAR},
+			attribute_05                   =#{attribute05,jdbcType=VARCHAR},
+			attribute_06                   =#{attribute06,jdbcType=VARCHAR},
+			attribute_07                   =#{attribute07,jdbcType=DECIMAL},
+			attribute_08                   =#{attribute08,jdbcType=DECIMAL},
+			attribute_09                   =#{attribute09,jdbcType=TIMESTAMP},
+			attribute_10                   =#{attribute10,jdbcType=TIMESTAMP}
+	where id = #{id} and version =#{version}
+</update>
+<!-- 批量更新对象   PM_PROJECT_YS_ZJBG -->
+<update id="updatePmProjectYsZjbgList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator="" close="end;">
+	update pm_project_ys_zjbg 
+		set
+			id                             =#{item.id,jdbcType=VARCHAR},
+			secret_level                   =#{item.secretLevel,jdbcType=VARCHAR},
+			project_id                     =#{item.projectId,jdbcType=VARCHAR},
+			project_name                   =#{item.projectName,jdbcType=VARCHAR},
+			task_id                        =#{item.taskId,jdbcType=VARCHAR},
+			task_name                      =#{item.taskName,jdbcType=VARCHAR},
+			title                          =#{item.title,jdbcType=VARCHAR},
+			zj_type                        =#{item.zjType,jdbcType=VARCHAR},
+			content                        =#{item.content,jdbcType=VARCHAR},
+			created_by                     =#{item.createdBy,jdbcType=VARCHAR},
+			creation_date                  =#{item.creationDate},
+			last_updated_by                =#{item.lastUpdatedBy,jdbcType=VARCHAR},
+			last_update_date               =#{item.lastUpdateDate},
+			last_update_ip                 =#{item.lastUpdateIp,jdbcType=VARCHAR},
+			version                        =version+1,
+			created_dept                   =#{item.createdDept,jdbcType=VARCHAR},
+			org_identity                   =#{item.orgIdentity,jdbcType=VARCHAR},
+			attribute_01                   =#{item.attribute01,jdbcType=VARCHAR},
+			attribute_02                   =#{item.attribute02,jdbcType=VARCHAR},
+			attribute_03                   =#{item.attribute03,jdbcType=VARCHAR},
+			attribute_04                   =#{item.attribute04,jdbcType=VARCHAR},
+			attribute_05                   =#{item.attribute05,jdbcType=VARCHAR},
+			attribute_06                   =#{item.attribute06,jdbcType=VARCHAR},
+			attribute_07                   =#{item.attribute07,jdbcType=DECIMAL},
+			attribute_08                   =#{item.attribute08,jdbcType=DECIMAL},
+			attribute_09                   =#{item.attribute09,jdbcType=TIMESTAMP},
+			attribute_10                   =#{item.attribute10,jdbcType=TIMESTAMP}
+		where id = #{item.id} and version =#{item.version};
+	</foreach>
+</update>
+<!-- 主键删除 PM_PROJECT_YS_ZJBG -->
+<delete id="deletePmProjectYsZjbgById" parameterType="java.lang.String">
+		delete from pm_project_ys_zjbg  where  id = #{id}
+</delete>
+<!-- 批量主键删除 PM_PROJECT_YS_ZJBG -->
+<delete id="deletePmProjectYsZjbgList" parameterType="java.util.List">
+		delete from pm_project_ys_zjbg  t1
+		<where>
+			<foreach item="idItem" collection="list" open="(" separator="or" close=")">
+				t1.id = #{idItem}
+			</foreach>
+		</where>
+</delete>
+</mapper>

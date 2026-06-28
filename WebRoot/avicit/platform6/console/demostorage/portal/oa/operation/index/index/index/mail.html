@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>邮件中心</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+	</head>
+	<style>
+		.mail_body table{
+			width: 100%;
+		}
+		.mail_body table tbody tr td{
+			/*height: 36px;*/
+		}
+		.mail_email_icon{
+			width: 24px;
+		}
+		.mail_email_bg{
+			width: 24;
+			height: 24px;
+			background: #F0A100;
+			border-radius: 12px;
+		}
+		.mail_email_bg>.icon{
+			margin-left: 4px;
+		}
+		.mail_email_bg>.iconfont{
+			font-size: 16px;
+		}
+		.mail_link{
+			width: 18px;
+		}
+		.mail_link>.icon{
+			
+		}
+		.mail_link>.iconfont{
+			font-size: 18px;
+		}
+		.mail_name{
+			font-size: 14px;
+			color: #333333;
+			line-height: 36px;
+			max-width: 154px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		.mail_person{
+			font-size: 14px;
+			color: #909090;
+			line-height: 36px;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>邮件中心</h4>
+				<span class="box_title_right">
+				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('mail')"></i>
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="mail_body">
+					<table>
+						<tbody>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<!--<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>-->
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<!--<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>-->
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<!--<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>-->
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<!--<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>-->
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+							<tr>
+								<td class="mail_email_icon">
+									<div class="mail_email_bg">
+										<i class="icon iconfont icon-an-mail" style="color: #ffffff;"></i>
+									</div>
+								</td>
+								<td class="mail_link">
+									<i class="icon iconfont icon-an-attachment" style="color: #7F7F7F;"></i>
+								</td>
+								<td class="mail_name" title="关于V6平台升级的注意事项">关于V6平台升级的注意事项</td>
+								<td class="mail_person">张某某</td>
+								<td class="mail_person">2021.05.26</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>

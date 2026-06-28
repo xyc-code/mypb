@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link href="iconfont/iconfont.css" type="text/css" rel="stylesheet"/>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <title>我的邮件</title>
+    <style>
+      .email-content {
+        background-color: #fff;
+        width: 100%;
+      }
+      .email-content > h3 {
+        display: inline-block;
+        margin-left: 10px;
+      }
+      .email-list {
+        width: 100%;
+      }
+      .email-list td {
+        line-height: 28px;
+        padding: 8px;
+        font-size: 14px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 1px solid #ededed;
+      }
+      .email-list tr:hover {
+        background-color: #f7f7f7;
+      }
+
+      .email-title i {
+        font-size: 24px;
+        vertical-align: middle;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+      }
+      .email-other {
+        color: #7f7f7f;
+        font-size: 12px;
+        width: 25%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box commonFunction">
+      <div class="box_title">
+        <h4>我的邮件</h4>
+        <span class="box_title_right">
+          <i class="iconfont icon-refresh" title="刷新"></i>
+          <i class="iconfont icon-more" title="更多"></i>
+        </span>
+      </div>
+      <div class="content_inner email-content">
+        <table class="email-list" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td class="email-title">
+              <i class="iconfont icon-email" style="color:#F1A607"></i>
+              <i class="iconfont icon-attach" style="color:#C8C8C8"></i>
+              Your Steam
+            </td>
+            <td class="email-other">刘伟生</td>
+            <td class="email-other">2021/6/25 8:20</td>
+          </tr>
+          <tr>
+            <td class="email-title">
+              <i class="iconfont icon-email" style="color:#F1A607"></i>
+              <i class="iconfont icon-attach" style="color:#C8C8C8"></i>
+              平台需求调研汇总
+            </td>
+            <td class="email-other">刘伟生</td>
+            <td class="email-other">2021/6/25 8:20</td>
+          </tr>
+          <tr>
+            <td class="email-title">
+              <i class="iconfont icon-email" style="color:#F1A607"></i>
+              <i></i>
+              平台需求调研汇总
+            </td>
+            <td class="email-other">刘伟生</td>
+            <td class="email-other">2021/6/25 8:20</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <script type="text/javascript">
+      function handleClick() {
+        window.open("email.html");
+      }
+    </script>
+  </body>
+</html>

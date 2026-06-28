@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>销售任务看板</title>
+    <script src="./source/js/echarts.min.js"></script>
+    <link
+      href="./source/iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+    <script src="./source/js/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>销售任务看板</h4>
+        <p class="bt-tab">
+          <span class="tabs tabsf">数量</span>
+          <span class="tabs">订单履约情况</span>
+          <span class="tabs">产值</span>
+        </p>
+        <span class="box_title_right">
+<!--          <i class="iconfont icon-download"-->
+<!--            title="下载" onclick="downloadFile('blank')"></i>-->
+          <i class="iconfont icon-refresh" title="刷新"></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <div id="zzEchart" style="width: 100%;height: 284px;"></div>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var zzEchart = echarts.init(document.getElementById("zzEchart"));
+
+    var zzOption = {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+          crossStyle: {
+            color: "#999"
+          }
+        }
+      },
+      toolbox: {
+        feature: {
+          dataView: { show: true, readOnly: false },
+          magicType: { show: true, type: ["line", "bar"] },
+          restore: { show: true },
+          saveAsImage: { show: true }
+        }
+      },
+      legend: {
+        data: ["未完成", "已完成", "完成率"],
+        itemWidth: 10,
+        itemHeight: 10
+      },
+      color: ["#3BA1FF", "#2FC25B", "#FACC14"],
+      xAxis: [
+        {
+          type: "category",
+          data: [
+            "01月",
+            "02月",
+            "03月",
+            "04月",
+            "05月",
+            "06月",
+            "07月",
+            "08月",
+            "09月",
+            "10月",
+            "11月",
+            "12月"
+          ],
+          axisPointer: {
+            type: "shadow"
+          },
+          splitLine: {
+            lineStyle: {
+              type: "dashed",
+              dashOffset: 10
+            }
+          }
+        }
+      ],
+      yAxis: [
+        {
+          type: "value",
+          name: "订单数（个）",
+          min: 0,
+          max: 3,
+          interval: 0.5,
+          splitLine: {
+            lineStyle: {
+              type: "dashed"
+            }
+          }
+        },
+        {
+          type: "value",
+          name: "温度",
+          min: 0,
+          max: 25,
+          interval: 5,
+          axisLabel: {
+            formatter: "{value} °C"
+          },
+          show: false,
+          splitLine: {
+            lineStyle: {
+              type: "dashed"
+            }
+          }
+        }
+      ],
+      series: [
+        {
+          name: "未完成",
+          type: "bar",
+          data: [2.0, 0.9, 3.0, 2.2, 2.6, 1.7, 1.6, 2.2, 2.6, 0.0, 2.4, 0.3]
+        },
+        {
+          name: "已完成",
+          type: "bar",
+          data: [2.6, 1.9, 3.0, 2.4, 2.7, 0.7, 1.6, 2.2, 2.7, 1.8, 3.0, 2.3]
+        },
+        {
+          name: "完成率",
+          type: "line",
+          yAxisIndex: 1,
+          data: [
+            2.0,
+            2.2,
+            3.3,
+            4.5,
+            6.3,
+            10.2,
+            20.3,
+            23.4,
+            23.0,
+            16.5,
+            12.0,
+            6.2
+          ]
+        }
+      ],
+      grid: {
+        top: "10%",
+        bottom: "8%",
+        left: "5%",
+        right: "0%",
+      }
+    };
+
+    zzEchart.setOption(zzOption);
+
+    function downloadFile(fileName) {
+      let a = document.createElement("a");
+      a.href = "/download/template5/" + fileName + ".rar";
+      a.download = fileName + ".rar";
+      a.click();
+    }
+
+    $('.tabs').click(function(event) {
+        $(this).addClass('tabsf');
+        $(this).siblings().removeClass('tabsf');
+    })
+  </script>
+  <style>
+  	*{
+  		box-sizing: border-box;
+  	}
+    .bt-tab {
+      position: absolute;
+      top: 13px;
+      right:70px;
+    }
+    .tabs {
+      display: inline-block;
+      margin: 0 15px 0 0;
+      cursor: pointer;
+      color: #999999;
+      font-size: 14px;
+      font-family: "Arial Normal", "Arial";
+      font-weight: 400;
+      font-style: normal;
+    }
+    .tabsf {
+      color: #1593f5;
+      padding: 0 0 10px 0;
+      border-bottom: 3px solid #1593f5;
+    }
+  </style>
+</html>

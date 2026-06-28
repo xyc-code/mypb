@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>利润趋势分析</title>
+    <script src="js/echarts.min.js"></script>
+    <link
+      href="iconfont/iconfont.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link href="css/index.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="box_title">
+        <h4>利润趋势分析</h4>
+        <span class="box_title_right">
+          <i class="iconfont icon-refresh" title="刷新"></i>
+        </span>
+      </div>
+      <div class="content_inner">
+        <div id="lineEchart" style="width: 100%;height: 260px;"></div>
+      </div>
+  </body>
+  <script type="text/javascript">
+    var lineEchart = echarts.init(document.getElementById("lineEchart"));
+
+    var lineOption = {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross"
+        }
+      },
+      legend: {
+        data: ["本期", "上期"],
+        // right: 40,
+        itemWidth: 10,
+        itemHeight: 10,
+        bottom: 10,
+      },
+      color: ["#108EE9", "#2FC25B"],
+      grid: {
+        top: 10,
+        left: "3%",
+        right: "2%",
+        bottom:45,
+        containLabel: true
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: [
+          "1月",
+          "2月",
+          "3月",
+          "4月",
+          "5月",
+          "6月",
+          "7月",
+          "8月",
+          "9月",
+          "10月",
+          "11月",
+          "12月"
+        ],
+        splitLine: {
+          lineStyle: {
+            dashOffset: 10
+          }
+        }
+      },
+      yAxis: {
+        type: "value",
+        splitLine: {
+          lineStyle: {
+            type: "dashed"
+          }
+        }
+      },
+      series: [
+        {
+          name: "本期",
+          type: "line",
+          data: [1200, 3200, 1000, 3400, 4000, 3000, 2100, 1200, 3200, 1000, 3400, 4800]
+        },
+        {
+          name: "上期",
+          type: "line",
+          data: [3400, 1000, 3000, 4500, 1200, 3200, 1200, 3200, 1000, 3400, 4500, 3000]
+        }
+      ]
+    };
+
+    lineEchart.setOption(lineOption);
+  </script>
+</html>

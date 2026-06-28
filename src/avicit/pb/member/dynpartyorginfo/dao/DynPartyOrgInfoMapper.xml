@@ -1,0 +1,1140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="avicit.pb.member.dynpartyorginfo.dao.DynPartyOrgInfoDAO">
+<resultMap id="DynPartyOrgInfoDTOMap" type="avicit.pb.member.dynpartyorginfo.dto.DynPartyOrgInfoDTO">
+	<result property="sessionName" column="SESSION_NAME" jdbcType="VARCHAR" />
+	<result property="creaTimeDateTj" column="CREA_TIME_DATE_TJ" jdbcType="TIMESTAMP" />
+	<result property="lastUpdateDate" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" />
+	<result property="partyType" column="PARTY_TYPE" jdbcType="VARCHAR" />
+	<result property="attr9" column="ATTR9" jdbcType="VARCHAR" />
+	<result property="creaTimeDate" column="CREA_TIME_DATE" jdbcType="TIMESTAMP" />
+	<result property="attr4" column="ATTR4" jdbcType="VARCHAR" />
+	<result property="partyName" column="PARTY_NAME" jdbcType="VARCHAR" />
+	<result property="sessionType" column="SESSION_TYPE" jdbcType="VARCHAR" />
+	<result property="attr3" column="ATTR3" jdbcType="VARCHAR" />
+	<result property="attr2" column="ATTR2" jdbcType="VARCHAR" />
+	<result property="attr1" column="ATTR1" jdbcType="VARCHAR" />
+	<result property="sessionJd" column="SESSION_JD" jdbcType="VARCHAR" />
+	<result property="id" column="ID" jdbcType="VARCHAR" />
+	<result property="createdDept" column="CREATED_DEPT" jdbcType="VARCHAR" />
+	<result property="attr8" column="ATTR8" jdbcType="VARCHAR" />
+	<result property="attr7" column="ATTR7" jdbcType="VARCHAR" />
+	<result property="attr20" column="ATTR20" jdbcType="BLOB" javaType="byte[]" />
+	<result property="lastUpdateIp" column="LAST_UPDATE_IP" jdbcType="VARCHAR" />
+	<result property="attr6" column="ATTR6" jdbcType="VARCHAR" />
+	<result property="zkdydh" column="ZKDYDH" jdbcType="TIMESTAMP" />
+	<result property="attr5" column="ATTR5" jdbcType="VARCHAR" />
+	<result property="createdBy" column="CREATED_BY" jdbcType="VARCHAR" />
+	<result property="attr12" column="ATTR12" jdbcType="VARCHAR" />
+	<result property="lastUpdatedBy" column="LAST_UPDATED_BY" jdbcType="VARCHAR" />
+	<result property="attr13" column="ATTR13" jdbcType="VARCHAR" />
+	<result property="attr10" column="ATTR10" jdbcType="VARCHAR" />
+	<result property="attr11" column="ATTR11" jdbcType="VARCHAR" />
+	<result property="attr16" column="ATTR16" jdbcType="VARCHAR" />
+	<result property="creaTime" column="CREA_TIME" jdbcType="TIMESTAMP" />
+	<result property="attr17" column="ATTR17" jdbcType="VARCHAR" />
+	<result property="attr14" column="ATTR14" jdbcType="VARCHAR" />
+	<result property="attr15" column="ATTR15" jdbcType="VARCHAR" />
+	<result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP" />
+	<result property="orgFile" column="ORG_FILE" jdbcType="VARCHAR" />
+	<result property="partyOrgContent" column="PARTY_ORG_CONTENT" jdbcType="VARCHAR" />
+	<result property="jwych" column="JWYCH" jdbcType="TIMESTAMP" />
+	<result property="attr18" column="ATTR18" jdbcType="TIMESTAMP" />
+	<result property="attr19" column="ATTR19" jdbcType="TIMESTAMP" />
+	<result property="wyych" column="WYYCH" jdbcType="TIMESTAMP" />
+	<result property="version" column="VERSION" jdbcType="DECIMAL" />
+	<result property="orgIdentity" column="ORG_IDENTITY" jdbcType="VARCHAR" />
+	<result property="sessionId" column="SESSION_ID" jdbcType="DECIMAL" />
+	<result property="partyId" column="PARTY_ID" jdbcType="VARCHAR" />
+	<result property="creaTimeDateTjyb" column="CREA_TIME_DATE_TJYB" jdbcType="TIMESTAMP" />
+</resultMap>
+<sql id="commonColums">
+	<trim suffixOverrides=",">
+	t1.SESSION_NAME,
+	t1.CREA_TIME_DATE_TJ,
+	t1.LAST_UPDATE_DATE,
+	t1.PARTY_TYPE,
+	t1.ATTR9,
+	t1.CREA_TIME_DATE,
+	t1.ATTR4,
+	t1.PARTY_NAME,
+	t1.SESSION_TYPE,
+	t1.ATTR3,
+	t1.ATTR2,
+	t1.ATTR1,
+	t1.SESSION_JD,
+	t1.ID,
+	t1.CREATED_DEPT,
+	t1.ATTR8,
+	t1.ATTR7,
+	t1.LAST_UPDATE_IP,
+	t1.ATTR6,
+	t1.ZKDYDH,
+	t1.ATTR5,
+	t1.CREATED_BY,
+	t1.ATTR12,
+	t1.LAST_UPDATED_BY,
+	t1.ATTR13,
+	t1.ATTR10,
+	t1.ATTR11,
+	t1.ATTR16,
+	t1.CREA_TIME,
+	t1.ATTR17,
+	t1.ATTR14,
+	t1.ATTR15,
+	t1.CREATION_DATE,
+	t1.ORG_FILE,
+	t1.PARTY_ORG_CONTENT,
+	t1.JWYCH,
+	t1.ATTR18,
+	t1.ATTR19,
+	t1.WYYCH,
+	t1.VERSION,
+	t1.ORG_IDENTITY,
+	t1.SESSION_ID,
+	t1.PARTY_ID,
+	t1.CREA_TIME_DATE_TJYB,
+	</trim>
+</sql>
+<!-- 默认查询条件 -->
+<sql id="defaultWhereAnd">
+	<if test="bean.orgIdentity != null and bean.orgIdentity != ''">
+		and t1.org_identity = #{bean.orgIdentity}
+	</if>
+</sql>
+<sql id="commonWhereAnd">
+	<if test="bean.sessionName != null and bean.sessionName != ''">
+		and t1.SESSION_NAME like concat(concat('%',#{bean.sessionName}),'%')
+	</if>
+	<if test="bean.creaTimeDateTjBegin != null">
+		and t1.CREA_TIME_DATE_TJ &gt;= #{bean.creaTimeDateTjBegin}
+	</if>
+	<if test="bean.creaTimeDateTjEnd != null">
+		and t1.CREA_TIME_DATE_TJ &lt;= #{bean.creaTimeDateTjEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		and t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		and t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.partyType != null and bean.partyType != ''">
+		and t1.PARTY_TYPE like concat(concat('%',#{bean.partyType}),'%')
+	</if>
+	<if test="bean.attr9 != null and bean.attr9 != ''">
+		and t1.ATTR9 like concat(concat('%',#{bean.attr9}),'%')
+	</if>
+	<if test="bean.creaTimeDateBegin != null">
+		and t1.CREA_TIME_DATE &gt;= #{bean.creaTimeDateBegin}
+	</if>
+	<if test="bean.creaTimeDateEnd != null">
+		and t1.CREA_TIME_DATE &lt;= #{bean.creaTimeDateEnd}
+	</if>
+	<if test="bean.attr4 != null and bean.attr4 != ''">
+		and t1.ATTR4 like concat(concat('%',#{bean.attr4}),'%')
+	</if>
+	<if test="bean.partyName != null and bean.partyName != ''">
+		and t1.PARTY_NAME like concat(concat('%',#{bean.partyName}),'%')
+	</if>
+	<if test="bean.sessionType != null and bean.sessionType != ''">
+		and t1.SESSION_TYPE like concat(concat('%',#{bean.sessionType}),'%')
+	</if>
+	<if test="bean.attr3 != null and bean.attr3 != ''">
+		and t1.ATTR3 like concat(concat('%',#{bean.attr3}),'%')
+	</if>
+	<if test="bean.attr2 != null and bean.attr2 != ''">
+		and t1.ATTR2 like concat(concat('%',#{bean.attr2}),'%')
+	</if>
+	<if test="bean.attr1 != null and bean.attr1 != ''">
+		and t1.ATTR1 like concat(concat('%',#{bean.attr1}),'%')
+	</if>
+	<if test="bean.sessionJd != null and bean.sessionJd != ''">
+		and t1.SESSION_JD like concat(concat('%',#{bean.sessionJd}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		and t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		and t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.attr8 != null and bean.attr8 != ''">
+		and t1.ATTR8 like concat(concat('%',#{bean.attr8}),'%')
+	</if>
+	<if test="bean.attr7 != null and bean.attr7 != ''">
+		and t1.ATTR7 like concat(concat('%',#{bean.attr7}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		and t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.attr6 != null and bean.attr6 != ''">
+		and t1.ATTR6 like concat(concat('%',#{bean.attr6}),'%')
+	</if>
+	<if test="bean.zkdydhBegin != null">
+		and t1.ZKDYDH &gt;= #{bean.zkdydhBegin}
+	</if>
+	<if test="bean.zkdydhEnd != null">
+		and t1.ZKDYDH &lt;= #{bean.zkdydhEnd}
+	</if>
+	<if test="bean.attr5 != null and bean.attr5 != ''">
+		and t1.ATTR5 like concat(concat('%',#{bean.attr5}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		and t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.attr12 != null and bean.attr12 != ''">
+		and t1.ATTR12 like concat(concat('%',#{bean.attr12}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		and t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.attr13 != null and bean.attr13 != ''">
+		and t1.ATTR13 like concat(concat('%',#{bean.attr13}),'%')
+	</if>
+	<if test="bean.attr10 != null and bean.attr10 != ''">
+		and t1.ATTR10 like concat(concat('%',#{bean.attr10}),'%')
+	</if>
+	<if test="bean.attr11 != null and bean.attr11 != ''">
+		and t1.ATTR11 like concat(concat('%',#{bean.attr11}),'%')
+	</if>
+	<if test="bean.attr16 != null and bean.attr16 != ''">
+		and t1.ATTR16 like concat(concat('%',#{bean.attr16}),'%')
+	</if>
+	<if test="bean.creaTimeBegin != null">
+		and t1.CREA_TIME &gt;= #{bean.creaTimeBegin}
+	</if>
+	<if test="bean.creaTimeEnd != null">
+		and t1.CREA_TIME &lt;= #{bean.creaTimeEnd}
+	</if>
+	<if test="bean.attr17 != null and bean.attr17 != ''">
+		and t1.ATTR17 like concat(concat('%',#{bean.attr17}),'%')
+	</if>
+	<if test="bean.attr14 != null and bean.attr14 != ''">
+		and t1.ATTR14 like concat(concat('%',#{bean.attr14}),'%')
+	</if>
+	<if test="bean.attr15 != null and bean.attr15 != ''">
+		and t1.ATTR15 like concat(concat('%',#{bean.attr15}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		and t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		and t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.orgFile != null and bean.orgFile != ''">
+		and t1.ORG_FILE like concat(concat('%',#{bean.orgFile}),'%')
+	</if>
+	<if test="bean.partyOrgContent != null and bean.partyOrgContent != ''">
+		and t1.PARTY_ORG_CONTENT like concat(concat('%',#{bean.partyOrgContent}),'%')
+	</if>
+	<if test="bean.jwychBegin != null">
+		and t1.JWYCH &gt;= #{bean.jwychBegin}
+	</if>
+	<if test="bean.jwychEnd != null">
+		and t1.JWYCH &lt;= #{bean.jwychEnd}
+	</if>
+	<if test="bean.attr18Begin != null">
+		and t1.ATTR18 &gt;= #{bean.attr18Begin}
+	</if>
+	<if test="bean.attr18End != null">
+		and t1.ATTR18 &lt;= #{bean.attr18End}
+	</if>
+	<if test="bean.attr19Begin != null">
+		and t1.ATTR19 &gt;= #{bean.attr19Begin}
+	</if>
+	<if test="bean.attr19End != null">
+		and t1.ATTR19 &lt;= #{bean.attr19End}
+	</if>
+	<if test="bean.wyychBegin != null">
+		and t1.WYYCH &gt;= #{bean.wyychBegin}
+	</if>
+	<if test="bean.wyychEnd != null">
+		and t1.WYYCH &lt;= #{bean.wyychEnd}
+	</if>
+	<if test="bean.version != null">
+		and t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.sessionId != null">
+		and t1.SESSION_ID = #{bean.sessionId}
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		and t1.PARTY_ID like concat(concat('%',#{bean.partyId}),'%')
+	</if>
+	<if test="bean.creaTimeDateTjybBegin != null">
+		and t1.CREA_TIME_DATE_TJYB &gt;= #{bean.creaTimeDateTjybBegin}
+	</if>
+	<if test="bean.creaTimeDateTjybEnd != null">
+		and t1.CREA_TIME_DATE_TJYB &lt;= #{bean.creaTimeDateTjybEnd}
+	</if>
+</sql>
+<sql id="commonWhereOr">
+	<trim prefix="(" suffix=")" prefixOverrides="or">
+	<if test="bean.sessionName != null and bean.sessionName != ''">
+		or t1.SESSION_NAME like concat(concat('%',#{bean.sessionName}),'%')
+	</if>
+	<if test="bean.creaTimeDateTjBegin != null">
+		or t1.CREA_TIME_DATE_TJ &gt;= #{bean.creaTimeDateTjBegin}
+	</if>
+	<if test="bean.creaTimeDateTjEnd != null">
+		or t1.CREA_TIME_DATE_TJ &lt;= #{bean.creaTimeDateTjEnd}
+	</if>
+	<if test="bean.lastUpdateDateBegin != null">
+		or t1.LAST_UPDATE_DATE &gt;= #{bean.lastUpdateDateBegin}
+	</if>
+	<if test="bean.lastUpdateDateEnd != null">
+		or t1.LAST_UPDATE_DATE &lt;= #{bean.lastUpdateDateEnd}
+	</if>
+	<if test="bean.partyType != null and bean.partyType != ''">
+		or t1.PARTY_TYPE like concat(concat('%',#{bean.partyType}),'%')
+	</if>
+	<if test="bean.attr9 != null and bean.attr9 != ''">
+		or t1.ATTR9 like concat(concat('%',#{bean.attr9}),'%')
+	</if>
+	<if test="bean.creaTimeDateBegin != null">
+		or t1.CREA_TIME_DATE &gt;= #{bean.creaTimeDateBegin}
+	</if>
+	<if test="bean.creaTimeDateEnd != null">
+		or t1.CREA_TIME_DATE &lt;= #{bean.creaTimeDateEnd}
+	</if>
+	<if test="bean.attr4 != null and bean.attr4 != ''">
+		or t1.ATTR4 like concat(concat('%',#{bean.attr4}),'%')
+	</if>
+	<if test="bean.partyName != null and bean.partyName != ''">
+		or t1.PARTY_NAME like concat(concat('%',#{bean.partyName}),'%')
+	</if>
+	<if test="bean.sessionType != null and bean.sessionType != ''">
+		or t1.SESSION_TYPE like concat(concat('%',#{bean.sessionType}),'%')
+	</if>
+	<if test="bean.attr3 != null and bean.attr3 != ''">
+		or t1.ATTR3 like concat(concat('%',#{bean.attr3}),'%')
+	</if>
+	<if test="bean.attr2 != null and bean.attr2 != ''">
+		or t1.ATTR2 like concat(concat('%',#{bean.attr2}),'%')
+	</if>
+	<if test="bean.attr1 != null and bean.attr1 != ''">
+		or t1.ATTR1 like concat(concat('%',#{bean.attr1}),'%')
+	</if>
+	<if test="bean.sessionJd != null and bean.sessionJd != ''">
+		or t1.SESSION_JD like concat(concat('%',#{bean.sessionJd}),'%')
+	</if>
+	<if test="bean.id != null and bean.id != ''">
+		or t1.ID = #{bean.id}
+	</if>
+	<if test="bean.createdDept != null and bean.createdDept != ''">
+		or t1.CREATED_DEPT = #{bean.createdDept}
+	</if>
+	<if test="bean.attr8 != null and bean.attr8 != ''">
+		or t1.ATTR8 like concat(concat('%',#{bean.attr8}),'%')
+	</if>
+	<if test="bean.attr7 != null and bean.attr7 != ''">
+		or t1.ATTR7 like concat(concat('%',#{bean.attr7}),'%')
+	</if>
+	<if test="bean.lastUpdateIp != null and bean.lastUpdateIp != ''">
+		or t1.LAST_UPDATE_IP = #{bean.lastUpdateIp}
+	</if>
+	<if test="bean.attr6 != null and bean.attr6 != ''">
+		or t1.ATTR6 like concat(concat('%',#{bean.attr6}),'%')
+	</if>
+	<if test="bean.zkdydhBegin != null">
+		or t1.ZKDYDH &gt;= #{bean.zkdydhBegin}
+	</if>
+	<if test="bean.zkdydhEnd != null">
+		or t1.ZKDYDH &lt;= #{bean.zkdydhEnd}
+	</if>
+	<if test="bean.attr5 != null and bean.attr5 != ''">
+		or t1.ATTR5 like concat(concat('%',#{bean.attr5}),'%')
+	</if>
+	<if test="bean.createdBy != null and bean.createdBy != ''">
+		or t1.CREATED_BY = #{bean.createdBy}
+	</if>
+	<if test="bean.attr12 != null and bean.attr12 != ''">
+		or t1.ATTR12 like concat(concat('%',#{bean.attr12}),'%')
+	</if>
+	<if test="bean.lastUpdatedBy != null and bean.lastUpdatedBy != ''">
+		or t1.LAST_UPDATED_BY = #{bean.lastUpdatedBy}
+	</if>
+	<if test="bean.attr13 != null and bean.attr13 != ''">
+		or t1.ATTR13 like concat(concat('%',#{bean.attr13}),'%')
+	</if>
+	<if test="bean.attr10 != null and bean.attr10 != ''">
+		or t1.ATTR10 like concat(concat('%',#{bean.attr10}),'%')
+	</if>
+	<if test="bean.attr11 != null and bean.attr11 != ''">
+		or t1.ATTR11 like concat(concat('%',#{bean.attr11}),'%')
+	</if>
+	<if test="bean.attr16 != null and bean.attr16 != ''">
+		or t1.ATTR16 like concat(concat('%',#{bean.attr16}),'%')
+	</if>
+	<if test="bean.creaTimeBegin != null">
+		or t1.CREA_TIME &gt;= #{bean.creaTimeBegin}
+	</if>
+	<if test="bean.creaTimeEnd != null">
+		or t1.CREA_TIME &lt;= #{bean.creaTimeEnd}
+	</if>
+	<if test="bean.attr17 != null and bean.attr17 != ''">
+		or t1.ATTR17 like concat(concat('%',#{bean.attr17}),'%')
+	</if>
+	<if test="bean.attr14 != null and bean.attr14 != ''">
+		or t1.ATTR14 like concat(concat('%',#{bean.attr14}),'%')
+	</if>
+	<if test="bean.attr15 != null and bean.attr15 != ''">
+		or t1.ATTR15 like concat(concat('%',#{bean.attr15}),'%')
+	</if>
+	<if test="bean.creationDateBegin != null">
+		or t1.CREATION_DATE &gt;= #{bean.creationDateBegin}
+	</if>
+	<if test="bean.creationDateEnd != null">
+		or t1.CREATION_DATE &lt;= #{bean.creationDateEnd}
+	</if>
+	<if test="bean.orgFile != null and bean.orgFile != ''">
+		or t1.ORG_FILE like concat(concat('%',#{bean.orgFile}),'%')
+	</if>
+	<if test="bean.partyOrgContent != null and bean.partyOrgContent != ''">
+		or t1.PARTY_ORG_CONTENT like concat(concat('%',#{bean.partyOrgContent}),'%')
+	</if>
+	<if test="bean.jwychBegin != null">
+		or t1.JWYCH &gt;= #{bean.jwychBegin}
+	</if>
+	<if test="bean.jwychEnd != null">
+		or t1.JWYCH &lt;= #{bean.jwychEnd}
+	</if>
+	<if test="bean.attr18Begin != null">
+		or t1.ATTR18 &gt;= #{bean.attr18Begin}
+	</if>
+	<if test="bean.attr18End != null">
+		or t1.ATTR18 &lt;= #{bean.attr18End}
+	</if>
+	<if test="bean.attr19Begin != null">
+		or t1.ATTR19 &gt;= #{bean.attr19Begin}
+	</if>
+	<if test="bean.attr19End != null">
+		or t1.ATTR19 &lt;= #{bean.attr19End}
+	</if>
+	<if test="bean.wyychBegin != null">
+		or t1.WYYCH &gt;= #{bean.wyychBegin}
+	</if>
+	<if test="bean.wyychEnd != null">
+		or t1.WYYCH &lt;= #{bean.wyychEnd}
+	</if>
+	<if test="bean.version != null">
+		or t1.VERSION = #{bean.version}
+	</if>
+	<if test="bean.sessionId != null">
+		or t1.SESSION_ID = #{bean.sessionId}
+	</if>
+	<if test="bean.partyId != null and bean.partyId != ''">
+		or t1.PARTY_ID like concat(concat('%',#{bean.partyId}),'%')
+	</if>
+	<if test="bean.creaTimeDateTjybBegin != null">
+		or t1.CREA_TIME_DATE_TJYB &gt;= #{bean.creaTimeDateTjybBegin}
+	</if>
+	<if test="bean.creaTimeDateTjybEnd != null">
+		or t1.CREA_TIME_DATE_TJYB &lt;= #{bean.creaTimeDateTjybEnd}
+	</if>
+	</trim>
+</sql>
+<sql id="commonOrderBy">
+	<choose>
+		<when test="pOrderBy != null and pOrderBy != ''">
+			order by ${pOrderBy}
+		</when>
+		<otherwise>
+			order by t1.creation_date desc
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 分页查询 DYN_PARTY_ORG_INFO -->
+<select id="searchDynPartyOrgInfoByPage" parameterType="java.util.Map" resultMap="DynPartyOrgInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_ORG_INFO t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询列表 DYN_PARTY_ORG_INFO -->
+<select id="searchDynPartyOrgInfo" parameterType="java.util.Map" resultMap="DynPartyOrgInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_ORG_INFO t1
+	<where>
+		<if test="bean != null">
+			<choose>
+				<when test="keyWord != null and keyWord != '' ">
+					<include refid="commonWhereOr"/>
+				</when>
+				<otherwise>
+					<include refid="commonWhereAnd"/>
+				</otherwise>
+			</choose>
+			<include refid="defaultWhereAnd"/>
+		</if>
+	</where>
+	<include refid="commonOrderBy"></include>
+</select>
+<!-- 查询 DYN_PARTY_ORG_INFO（导出） -->
+<select id="searchDynPartyOrgInfoForExport" parameterType="java.util.Map" resultMap="DynPartyOrgInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_ORG_INFO t1
+	<where>
+		<if test="bean != null">
+			<include refid="commonWhereAnd"/>
+			<include refid="defaultWhereAnd"/>
+		</if>
+		<if test="ids != null and ids.size > 0">
+			and t1.id in
+			<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	order by t1.creation_date desc
+</select>
+<!-- 主键查询对象 DYN_PARTY_ORG_INFO -->
+<select id="findDynPartyOrgInfoById" parameterType="java.lang.String" resultMap="DynPartyOrgInfoDTOMap">
+	select
+	<include refid="commonColums"/>
+	from DYN_PARTY_ORG_INFO t1
+	where t1.id = #{id}
+</select>
+<!-- 新增对象 DYN_PARTY_ORG_INFO -->
+<insert id="insertDynPartyOrgInfo" parameterType="avicit.pb.member.dynpartyorginfo.dto.DynPartyOrgInfoDTO">
+	insert into DYN_PARTY_ORG_INFO
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="sessionName != null">
+			SESSION_NAME,
+		</if>
+		<if test="creaTimeDateTj != null">
+			CREA_TIME_DATE_TJ,
+		</if>
+		<if test="lastUpdateDate != null">
+			LAST_UPDATE_DATE,
+		</if>
+		<if test="partyType != null">
+			PARTY_TYPE,
+		</if>
+		<if test="attr9 != null">
+			ATTR9,
+		</if>
+		<if test="creaTimeDate != null">
+			CREA_TIME_DATE,
+		</if>
+		<if test="attr4 != null">
+			ATTR4,
+		</if>
+		<if test="partyName != null">
+			PARTY_NAME,
+		</if>
+		<if test="sessionType != null">
+			SESSION_TYPE,
+		</if>
+		<if test="attr3 != null">
+			ATTR3,
+		</if>
+		<if test="attr2 != null">
+			ATTR2,
+		</if>
+		<if test="attr1 != null">
+			ATTR1,
+		</if>
+		<if test="sessionJd != null">
+			SESSION_JD,
+		</if>
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="createdDept != null">
+			CREATED_DEPT,
+		</if>
+		<if test="attr8 != null">
+			ATTR8,
+		</if>
+		<if test="attr7 != null">
+			ATTR7,
+		</if>
+		<if test="attr20 != null">
+			ATTR20,
+		</if>
+		<if test="lastUpdateIp != null">
+			LAST_UPDATE_IP,
+		</if>
+		<if test="attr6 != null">
+			ATTR6,
+		</if>
+		<if test="zkdydh != null">
+			ZKDYDH,
+		</if>
+		<if test="attr5 != null">
+			ATTR5,
+		</if>
+		<if test="createdBy != null">
+			CREATED_BY,
+		</if>
+		<if test="attr12 != null">
+			ATTR12,
+		</if>
+		<if test="lastUpdatedBy != null">
+			LAST_UPDATED_BY,
+		</if>
+		<if test="attr13 != null">
+			ATTR13,
+		</if>
+		<if test="attr10 != null">
+			ATTR10,
+		</if>
+		<if test="attr11 != null">
+			ATTR11,
+		</if>
+		<if test="attr16 != null">
+			ATTR16,
+		</if>
+		<if test="creaTime != null">
+			CREA_TIME,
+		</if>
+		<if test="attr17 != null">
+			ATTR17,
+		</if>
+		<if test="attr14 != null">
+			ATTR14,
+		</if>
+		<if test="attr15 != null">
+			ATTR15,
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE,
+		</if>
+		<if test="orgFile != null">
+			ORG_FILE,
+		</if>
+		<if test="partyOrgContent != null">
+			PARTY_ORG_CONTENT,
+		</if>
+		<if test="jwych != null">
+			JWYCH,
+		</if>
+		<if test="attr18 != null">
+			ATTR18,
+		</if>
+		<if test="attr19 != null">
+			ATTR19,
+		</if>
+		<if test="wyych != null">
+			WYYCH,
+		</if>
+		<if test="version != null">
+			VERSION,
+		</if>
+		<if test="orgIdentity != null">
+			ORG_IDENTITY,
+		</if>
+		<if test="sessionId != null">
+			SESSION_ID,
+		</if>
+		<if test="partyId != null">
+			PARTY_ID,
+		</if>
+		<if test="creaTimeDateTjyb != null">
+			CREA_TIME_DATE_TJYB,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="sessionName != null">
+			#{sessionName,jdbcType = VARCHAR},
+		</if>
+		<if test="creaTimeDateTj != null">
+			#{creaTimeDateTj,jdbcType = TIMESTAMP},
+		</if>
+		<if test="lastUpdateDate != null">
+			#{lastUpdateDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="partyType != null">
+			#{partyType,jdbcType = VARCHAR},
+		</if>
+		<if test="attr9 != null">
+			#{attr9,jdbcType = VARCHAR},
+		</if>
+		<if test="creaTimeDate != null">
+			#{creaTimeDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr4 != null">
+			#{attr4,jdbcType = VARCHAR},
+		</if>
+		<if test="partyName != null">
+			#{partyName,jdbcType = VARCHAR},
+		</if>
+		<if test="sessionType != null">
+			#{sessionType,jdbcType = VARCHAR},
+		</if>
+		<if test="attr3 != null">
+			#{attr3,jdbcType = VARCHAR},
+		</if>
+		<if test="attr2 != null">
+			#{attr2,jdbcType = VARCHAR},
+		</if>
+		<if test="attr1 != null">
+			#{attr1,jdbcType = VARCHAR},
+		</if>
+		<if test="sessionJd != null">
+			#{sessionJd,jdbcType = VARCHAR},
+		</if>
+		<if test="id != null">
+			#{id,jdbcType = VARCHAR},
+		</if>
+		<if test="createdDept != null">
+			#{createdDept,jdbcType = VARCHAR},
+		</if>
+		<if test="attr8 != null">
+			#{attr8,jdbcType = VARCHAR},
+		</if>
+		<if test="attr7 != null">
+			#{attr7,jdbcType = VARCHAR},
+		</if>
+		<if test="attr20 != null">
+			#{attr20,jdbcType = BLOB},
+		</if>
+		<if test="lastUpdateIp != null">
+			#{lastUpdateIp,jdbcType = VARCHAR},
+		</if>
+		<if test="attr6 != null">
+			#{attr6,jdbcType = VARCHAR},
+		</if>
+		<if test="zkdydh != null">
+			#{zkdydh,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr5 != null">
+			#{attr5,jdbcType = VARCHAR},
+		</if>
+		<if test="createdBy != null">
+			#{createdBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attr12 != null">
+			#{attr12,jdbcType = VARCHAR},
+		</if>
+		<if test="lastUpdatedBy != null">
+			#{lastUpdatedBy,jdbcType = VARCHAR},
+		</if>
+		<if test="attr13 != null">
+			#{attr13,jdbcType = VARCHAR},
+		</if>
+		<if test="attr10 != null">
+			#{attr10,jdbcType = VARCHAR},
+		</if>
+		<if test="attr11 != null">
+			#{attr11,jdbcType = VARCHAR},
+		</if>
+		<if test="attr16 != null">
+			#{attr16,jdbcType = VARCHAR},
+		</if>
+		<if test="creaTime != null">
+			#{creaTime,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr17 != null">
+			#{attr17,jdbcType = VARCHAR},
+		</if>
+		<if test="attr14 != null">
+			#{attr14,jdbcType = VARCHAR},
+		</if>
+		<if test="attr15 != null">
+			#{attr15,jdbcType = VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			#{creationDate,jdbcType = TIMESTAMP},
+		</if>
+		<if test="orgFile != null">
+			#{orgFile,jdbcType = VARCHAR},
+		</if>
+		<if test="partyOrgContent != null">
+			#{partyOrgContent,jdbcType = VARCHAR},
+		</if>
+		<if test="jwych != null">
+			#{jwych,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr18 != null">
+			#{attr18,jdbcType = TIMESTAMP},
+		</if>
+		<if test="attr19 != null">
+			#{attr19,jdbcType = TIMESTAMP},
+		</if>
+		<if test="wyych != null">
+			#{wyych,jdbcType = TIMESTAMP},
+		</if>
+		<if test="version != null">
+			#{version,jdbcType = DECIMAL},
+		</if>
+		<if test="orgIdentity != null">
+			#{orgIdentity,jdbcType = VARCHAR},
+		</if>
+		<if test="sessionId != null">
+			#{sessionId,jdbcType = DECIMAL},
+		</if>
+		<if test="partyId != null">
+			#{partyId,jdbcType = VARCHAR},
+		</if>
+		<if test="creaTimeDateTjyb != null">
+			#{creaTimeDateTjyb,jdbcType = TIMESTAMP},
+		</if>
+	</trim>
+</insert>
+<!-- 批量新增对象 DYN_PARTY_ORG_INFO -->
+<insert id="insertDynPartyOrgInfoList" parameterType="java.util.List">
+	insert into DYN_PARTY_ORG_INFO(
+	SESSION_NAME ,
+	CREA_TIME_DATE_TJ ,
+	LAST_UPDATE_DATE ,
+	PARTY_TYPE ,
+	ATTR9 ,
+	CREA_TIME_DATE ,
+	ATTR4 ,
+	PARTY_NAME ,
+	SESSION_TYPE ,
+	ATTR3 ,
+	ATTR2 ,
+	ATTR1 ,
+	SESSION_JD ,
+	ID ,
+	CREATED_DEPT ,
+	ATTR8 ,
+	ATTR7 ,
+	ATTR20 ,
+	LAST_UPDATE_IP ,
+	ATTR6 ,
+	ZKDYDH ,
+	ATTR5 ,
+	CREATED_BY ,
+	ATTR12 ,
+	LAST_UPDATED_BY ,
+	ATTR13 ,
+	ATTR10 ,
+	ATTR11 ,
+	ATTR16 ,
+	CREA_TIME ,
+	ATTR17 ,
+	ATTR14 ,
+	ATTR15 ,
+	CREATION_DATE ,
+	ORG_FILE ,
+	PARTY_ORG_CONTENT ,
+	JWYCH ,
+	ATTR18 ,
+	ATTR19 ,
+	WYYCH ,
+	VERSION ,
+	ORG_IDENTITY ,
+	SESSION_ID ,
+	PARTY_ID ,
+	CREA_TIME_DATE_TJYB )
+<foreach collection="dtoList" item="item" index="index" open="(" separator="union all" close=")">
+	select
+	#{item.sessionName,jdbcType = VARCHAR} ,
+	#{item.creaTimeDateTj,jdbcType = TIMESTAMP} ,
+	#{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+	#{item.partyType,jdbcType = VARCHAR} ,
+	#{item.attr9,jdbcType = VARCHAR} ,
+	#{item.creaTimeDate,jdbcType = TIMESTAMP} ,
+	#{item.attr4,jdbcType = VARCHAR} ,
+	#{item.partyName,jdbcType = VARCHAR} ,
+	#{item.sessionType,jdbcType = VARCHAR} ,
+	#{item.attr3,jdbcType = VARCHAR} ,
+	#{item.attr2,jdbcType = VARCHAR} ,
+	#{item.attr1,jdbcType = VARCHAR} ,
+	#{item.sessionJd,jdbcType = VARCHAR} ,
+	#{item.id,jdbcType = VARCHAR} ,
+	#{item.createdDept,jdbcType = VARCHAR} ,
+	#{item.attr8,jdbcType = VARCHAR} ,
+	#{item.attr7,jdbcType = VARCHAR} ,
+	#{item.attr20,jdbcType = BLOB} ,
+	#{item.lastUpdateIp,jdbcType = VARCHAR} ,
+	#{item.attr6,jdbcType = VARCHAR} ,
+	#{item.zkdydh,jdbcType = TIMESTAMP} ,
+	#{item.attr5,jdbcType = VARCHAR} ,
+	#{item.createdBy,jdbcType = VARCHAR} ,
+	#{item.attr12,jdbcType = VARCHAR} ,
+	#{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+	#{item.attr13,jdbcType = VARCHAR} ,
+	#{item.attr10,jdbcType = VARCHAR} ,
+	#{item.attr11,jdbcType = VARCHAR} ,
+	#{item.attr16,jdbcType = VARCHAR} ,
+	#{item.creaTime,jdbcType = TIMESTAMP} ,
+	#{item.attr17,jdbcType = VARCHAR} ,
+	#{item.attr14,jdbcType = VARCHAR} ,
+	#{item.attr15,jdbcType = VARCHAR} ,
+	#{item.creationDate,jdbcType = TIMESTAMP} ,
+	#{item.orgFile,jdbcType = VARCHAR} ,
+	#{item.partyOrgContent,jdbcType = VARCHAR} ,
+	#{item.jwych,jdbcType = TIMESTAMP} ,
+	#{item.attr18,jdbcType = TIMESTAMP} ,
+	#{item.attr19,jdbcType = TIMESTAMP} ,
+	#{item.wyych,jdbcType = TIMESTAMP} ,
+	#{item.version,jdbcType = DECIMAL} ,
+	#{item.orgIdentity,jdbcType = VARCHAR} ,
+	#{item.sessionId,jdbcType = DECIMAL} ,
+	#{item.partyId,jdbcType = VARCHAR} ,
+	#{item.creaTimeDateTjyb,jdbcType = TIMESTAMP} 	from dual
+</foreach>
+</insert>
+<!-- 更新对象 DYN_PARTY_ORG_INFO -->
+<update id="updateDynPartyOrgInfoSensitive" parameterType="avicit.pb.member.dynpartyorginfo.dto.DynPartyOrgInfoDTO">
+	update DYN_PARTY_ORG_INFO
+	<set>
+		<trim suffixOverrides=",">
+			<if test="sessionName != null">
+				SESSION_NAME = #{sessionName,jdbcType = VARCHAR},
+			</if>
+			<if test="creaTimeDateTj != null">
+				CREA_TIME_DATE_TJ = #{creaTimeDateTj,jdbcType = TIMESTAMP},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="partyType != null">
+				PARTY_TYPE = #{partyType,jdbcType = VARCHAR},
+			</if>
+			<if test="attr9 != null">
+				ATTR9 = #{attr9,jdbcType = VARCHAR},
+			</if>
+			<if test="creaTimeDate != null">
+				CREA_TIME_DATE = #{creaTimeDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr4 != null">
+				ATTR4 = #{attr4,jdbcType = VARCHAR},
+			</if>
+			<if test="partyName != null">
+				PARTY_NAME = #{partyName,jdbcType = VARCHAR},
+			</if>
+			<if test="sessionType != null">
+				SESSION_TYPE = #{sessionType,jdbcType = VARCHAR},
+			</if>
+			<if test="attr3 != null">
+				ATTR3 = #{attr3,jdbcType = VARCHAR},
+			</if>
+			<if test="attr2 != null">
+				ATTR2 = #{attr2,jdbcType = VARCHAR},
+			</if>
+			<if test="attr1 != null">
+				ATTR1 = #{attr1,jdbcType = VARCHAR},
+			</if>
+			<if test="sessionJd != null">
+				SESSION_JD = #{sessionJd,jdbcType = VARCHAR},
+			</if>
+			<if test="id != null">
+				ID = #{id,jdbcType = VARCHAR},
+			</if>
+			<if test="createdDept != null">
+				CREATED_DEPT = #{createdDept,jdbcType = VARCHAR},
+			</if>
+			<if test="attr8 != null">
+				ATTR8 = #{attr8,jdbcType = VARCHAR},
+			</if>
+			<if test="attr7 != null">
+				ATTR7 = #{attr7,jdbcType = VARCHAR},
+			</if>
+			<if test="attr20 != null">
+				ATTR20 = #{attr20,jdbcType = BLOB},
+			</if>
+			<if test="lastUpdateIp != null">
+				LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR},
+			</if>
+			<if test="attr6 != null">
+				ATTR6 = #{attr6,jdbcType = VARCHAR},
+			</if>
+			<if test="zkdydh != null">
+				ZKDYDH = #{zkdydh,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr5 != null">
+				ATTR5 = #{attr5,jdbcType = VARCHAR},
+			</if>
+			<if test="createdBy != null">
+				CREATED_BY = #{createdBy,jdbcType = VARCHAR},
+			</if>
+			<if test="attr12 != null">
+				ATTR12 = #{attr12,jdbcType = VARCHAR},
+			</if>
+			<if test="lastUpdatedBy != null">
+				LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR},
+			</if>
+			<if test="attr13 != null">
+				ATTR13 = #{attr13,jdbcType = VARCHAR},
+			</if>
+			<if test="attr10 != null">
+				ATTR10 = #{attr10,jdbcType = VARCHAR},
+			</if>
+			<if test="attr11 != null">
+				ATTR11 = #{attr11,jdbcType = VARCHAR},
+			</if>
+			<if test="attr16 != null">
+				ATTR16 = #{attr16,jdbcType = VARCHAR},
+			</if>
+			<if test="creaTime != null">
+				CREA_TIME = #{creaTime,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr17 != null">
+				ATTR17 = #{attr17,jdbcType = VARCHAR},
+			</if>
+			<if test="attr14 != null">
+				ATTR14 = #{attr14,jdbcType = VARCHAR},
+			</if>
+			<if test="attr15 != null">
+				ATTR15 = #{attr15,jdbcType = VARCHAR},
+			</if>
+			<if test="creationDate != null">
+				CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP},
+			</if>
+			<if test="orgFile != null">
+				ORG_FILE = #{orgFile,jdbcType = VARCHAR},
+			</if>
+			<if test="partyOrgContent != null">
+				PARTY_ORG_CONTENT = #{partyOrgContent,jdbcType = VARCHAR},
+			</if>
+			<if test="jwych != null">
+				JWYCH = #{jwych,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr18 != null">
+				ATTR18 = #{attr18,jdbcType = TIMESTAMP},
+			</if>
+			<if test="attr19 != null">
+				ATTR19 = #{attr19,jdbcType = TIMESTAMP},
+			</if>
+			<if test="wyych != null">
+				WYYCH = #{wyych,jdbcType = TIMESTAMP},
+			</if>
+			<if test="version != null">
+				VERSION = version+1,
+			</if>
+			<if test="orgIdentity != null">
+				ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR},
+			</if>
+			<if test="sessionId != null">
+				SESSION_ID = #{sessionId,jdbcType = DECIMAL},
+			</if>
+			<if test="partyId != null">
+				PARTY_ID = #{partyId,jdbcType = VARCHAR},
+			</if>
+			<if test="creaTimeDateTjyb != null">
+				CREA_TIME_DATE_TJYB = #{creaTimeDateTjyb,jdbcType = TIMESTAMP},
+			</if>
+		</trim>
+	</set>
+	where id = #{id} 
+	and version = #{version}
+</update>
+<!-- 更新对象 DYN_PARTY_ORG_INFO -->
+<update id="updateDynPartyOrgInfoAll" parameterType="avicit.pb.member.dynpartyorginfo.dto.DynPartyOrgInfoDTO">
+	update DYN_PARTY_ORG_INFO
+	set
+	SESSION_NAME = #{sessionName,jdbcType = VARCHAR} ,
+	CREA_TIME_DATE_TJ = #{creaTimeDateTj,jdbcType = TIMESTAMP} ,
+	LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType = TIMESTAMP} ,
+	PARTY_TYPE = #{partyType,jdbcType = VARCHAR} ,
+	ATTR9 = #{attr9,jdbcType = VARCHAR} ,
+	CREA_TIME_DATE = #{creaTimeDate,jdbcType = TIMESTAMP} ,
+	ATTR4 = #{attr4,jdbcType = VARCHAR} ,
+	PARTY_NAME = #{partyName,jdbcType = VARCHAR} ,
+	SESSION_TYPE = #{sessionType,jdbcType = VARCHAR} ,
+	ATTR3 = #{attr3,jdbcType = VARCHAR} ,
+	ATTR2 = #{attr2,jdbcType = VARCHAR} ,
+	ATTR1 = #{attr1,jdbcType = VARCHAR} ,
+	SESSION_JD = #{sessionJd,jdbcType = VARCHAR} ,
+	ID = #{id,jdbcType = VARCHAR} ,
+	CREATED_DEPT = #{createdDept,jdbcType = VARCHAR} ,
+	ATTR8 = #{attr8,jdbcType = VARCHAR} ,
+	ATTR7 = #{attr7,jdbcType = VARCHAR} ,
+	ATTR20 = #{attr20,jdbcType = BLOB} ,
+	LAST_UPDATE_IP = #{lastUpdateIp,jdbcType = VARCHAR} ,
+	ATTR6 = #{attr6,jdbcType = VARCHAR} ,
+	ZKDYDH = #{zkdydh,jdbcType = TIMESTAMP} ,
+	ATTR5 = #{attr5,jdbcType = VARCHAR} ,
+	CREATED_BY = #{createdBy,jdbcType = VARCHAR} ,
+	ATTR12 = #{attr12,jdbcType = VARCHAR} ,
+	LAST_UPDATED_BY = #{lastUpdatedBy,jdbcType = VARCHAR} ,
+	ATTR13 = #{attr13,jdbcType = VARCHAR} ,
+	ATTR10 = #{attr10,jdbcType = VARCHAR} ,
+	ATTR11 = #{attr11,jdbcType = VARCHAR} ,
+	ATTR16 = #{attr16,jdbcType = VARCHAR} ,
+	CREA_TIME = #{creaTime,jdbcType = TIMESTAMP} ,
+	ATTR17 = #{attr17,jdbcType = VARCHAR} ,
+	ATTR14 = #{attr14,jdbcType = VARCHAR} ,
+	ATTR15 = #{attr15,jdbcType = VARCHAR} ,
+	CREATION_DATE = #{creationDate,jdbcType = TIMESTAMP} ,
+	ORG_FILE = #{orgFile,jdbcType = VARCHAR} ,
+	PARTY_ORG_CONTENT = #{partyOrgContent,jdbcType = VARCHAR} ,
+	JWYCH = #{jwych,jdbcType = TIMESTAMP} ,
+	ATTR18 = #{attr18,jdbcType = TIMESTAMP} ,
+	ATTR19 = #{attr19,jdbcType = TIMESTAMP} ,
+	WYYCH = #{wyych,jdbcType = TIMESTAMP} ,
+	VERSION = version+1 ,
+	ORG_IDENTITY = #{orgIdentity,jdbcType = VARCHAR} ,
+	SESSION_ID = #{sessionId,jdbcType = DECIMAL} ,
+	PARTY_ID = #{partyId,jdbcType = VARCHAR} ,
+	CREA_TIME_DATE_TJYB = #{creaTimeDateTjyb,jdbcType = TIMESTAMP} 	where id = #{id}
+	and version = #{version}
+</update>
+<!-- 批量更新对象   DYN_PARTY_ORG_INFO -->
+<update id="updateDynPartyOrgInfoList" parameterType="java.util.List">
+	<foreach collection="dtoList" item="item" index="index" open="begin" separator=";" close=";end;">
+		update DYN_PARTY_ORG_INFO
+		set
+		SESSION_NAME = #{item.sessionName,jdbcType = VARCHAR} ,
+		CREA_TIME_DATE_TJ = #{item.creaTimeDateTj,jdbcType = TIMESTAMP} ,
+		LAST_UPDATE_DATE = #{item.lastUpdateDate,jdbcType = TIMESTAMP} ,
+		PARTY_TYPE = #{item.partyType,jdbcType = VARCHAR} ,
+		ATTR9 = #{item.attr9,jdbcType = VARCHAR} ,
+		CREA_TIME_DATE = #{item.creaTimeDate,jdbcType = TIMESTAMP} ,
+		ATTR4 = #{item.attr4,jdbcType = VARCHAR} ,
+		PARTY_NAME = #{item.partyName,jdbcType = VARCHAR} ,
+		SESSION_TYPE = #{item.sessionType,jdbcType = VARCHAR} ,
+		ATTR3 = #{item.attr3,jdbcType = VARCHAR} ,
+		ATTR2 = #{item.attr2,jdbcType = VARCHAR} ,
+		ATTR1 = #{item.attr1,jdbcType = VARCHAR} ,
+		SESSION_JD = #{item.sessionJd,jdbcType = VARCHAR} ,
+		ID = #{item.id,jdbcType = VARCHAR} ,
+		CREATED_DEPT = #{item.createdDept,jdbcType = VARCHAR} ,
+		ATTR8 = #{item.attr8,jdbcType = VARCHAR} ,
+		ATTR7 = #{item.attr7,jdbcType = VARCHAR} ,
+		ATTR20 = #{item.attr20,jdbcType = BLOB} ,
+		LAST_UPDATE_IP = #{item.lastUpdateIp,jdbcType = VARCHAR} ,
+		ATTR6 = #{item.attr6,jdbcType = VARCHAR} ,
+		ZKDYDH = #{item.zkdydh,jdbcType = TIMESTAMP} ,
+		ATTR5 = #{item.attr5,jdbcType = VARCHAR} ,
+		CREATED_BY = #{item.createdBy,jdbcType = VARCHAR} ,
+		ATTR12 = #{item.attr12,jdbcType = VARCHAR} ,
+		LAST_UPDATED_BY = #{item.lastUpdatedBy,jdbcType = VARCHAR} ,
+		ATTR13 = #{item.attr13,jdbcType = VARCHAR} ,
+		ATTR10 = #{item.attr10,jdbcType = VARCHAR} ,
+		ATTR11 = #{item.attr11,jdbcType = VARCHAR} ,
+		ATTR16 = #{item.attr16,jdbcType = VARCHAR} ,
+		CREA_TIME = #{item.creaTime,jdbcType = TIMESTAMP} ,
+		ATTR17 = #{item.attr17,jdbcType = VARCHAR} ,
+		ATTR14 = #{item.attr14,jdbcType = VARCHAR} ,
+		ATTR15 = #{item.attr15,jdbcType = VARCHAR} ,
+		CREATION_DATE = #{item.creationDate,jdbcType = TIMESTAMP} ,
+		ORG_FILE = #{item.orgFile,jdbcType = VARCHAR} ,
+		PARTY_ORG_CONTENT = #{item.partyOrgContent,jdbcType = VARCHAR} ,
+		JWYCH = #{item.jwych,jdbcType = TIMESTAMP} ,
+		ATTR18 = #{item.attr18,jdbcType = TIMESTAMP} ,
+		ATTR19 = #{item.attr19,jdbcType = TIMESTAMP} ,
+		WYYCH = #{item.wyych,jdbcType = TIMESTAMP} ,
+		VERSION = version+1  ,
+		ORG_IDENTITY = #{item.orgIdentity,jdbcType = VARCHAR} ,
+		SESSION_ID = #{item.sessionId,jdbcType = DECIMAL} ,
+		PARTY_ID = #{item.partyId,jdbcType = VARCHAR} ,
+		CREA_TIME_DATE_TJYB = #{item.creaTimeDateTjyb,jdbcType = TIMESTAMP} 		where id = #{item.id}
+		and version = #{item.version}
+	</foreach>
+</update>
+<!-- 主键删除 DYN_PARTY_ORG_INFO -->
+<delete id="deleteDynPartyOrgInfoById" parameterType="java.lang.String">
+	delete from DYN_PARTY_ORG_INFO  where id = #{id}
+</delete>
+</mapper>

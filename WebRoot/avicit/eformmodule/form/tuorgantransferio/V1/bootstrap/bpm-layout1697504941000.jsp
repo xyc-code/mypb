@@ -1,0 +1,298 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="sec" uri="/WEB-INF/tags/shiro.tld"%>
+<%@ taglib prefix="pt6" uri="/WEB-INF/tags/platform6.tld"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ page import="avicit.platform6.commons.utils.ViewUtil"%>
+<%
+String importlibs = "common,table,form,fileupload,tree";
+%>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="<%=ViewUtil.getRequestPath(request)%>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=10;IE=9;IE=8;IE=EDGE">
+    <title>工会会员关系转接</title>
+    <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
+        <jsp:param value="<%=importlibs%>" name="importlibs"/>
+    </jsp:include>
+    <!-- 框架 样式 -->
+    <link rel="stylesheet" type="text/css" href="avicit/platform6/bpmreform/bpmbusiness/include2/common/css/style.css?v=${jsversion}">
+    <!-- 时间轴 样式 -->
+    <link rel="stylesheet" type="text/css" href="static/h5/timeliner/css/timeliner.css?v=${jsversion}">
+    <link rel="stylesheet" type="text/css" href="static/css/platform/eform/eformcss.min.css?v=${jsversion}" />
+    <link rel="stylesheet" type="text/css" href="static/h5/jquery-ui-1.9.2.custom/css/base/jquery-ui-1.9.2.custom.css?v=${jsversion}"/>
+            <link rel="stylesheet" type="text/css" href="avicit/platform6/eform/formdesign/css/tinymce-content/default.css"/>
+    
+</head>
+<body>
+<%@ include file="/avicit/platform6/bpmreform/bpmbusiness/include2/buttons.jsp" %>
+
+<div id="formBut" style="display:none">
+                                            </div>
+
+
+<div id="formTab" style="display:none">
+    <input id="tableId" value="DYN_TU_TRANSFER" type="hidden"/>
+    <form id='form' onkeydown="if(event.keyCode==13){return (event.srcElement.tagName=='TEXTAREA'||event.srcElement.className.indexOf('ui-pg-input')>-1)?true:false;}">
+        <input id="comId" value="${comId}" name="comId" type="hidden"/>
+        <input id="subTableData" name="subTableData" type="hidden"/>
+        <div class="mce-content-body">
+ <div style="text-align: center; font-size: 24px; margin: 15px;">
+   工会会员关系转接 
+ </div>
+ <table style=" margin-left: auto; margin-right: auto;" id="OPmou4ouwIRWmFeK8gSSexGk52gYfYX5" bordercolor="#d4d4d4" class="form_commonTable1"> 
+  <tbody> 
+   <tr style="height: 30px;"> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="REQUEST_USER" class=" " style=";" id="nmCOwpVC9gVBJ7DvmAlB48CDvItunvtU"> <i class="required">*</i>上报人： </label> </td> 
+    <td style="width:19%; height: 30px; text-align: center;"> 
+     <div class="input-group-sm "> 
+      <input type="text" class="form-control input-sm" style=";" id="REQUEST_USER" name="REQUEST_USER" readonly title="上报人" maxlength="255" value="<c:out  value='${map["REQUEST_USER"]}'/>"> 
+     </div></td> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="REQUEST_DEPT" class=" " style=";" id="s98W5HtjjewfkEH3z3vSkYLnyAFIyeUq"> 上报部门： </label> </td> 
+    <td style="width:21%; height: 30px; text-align: center;"> 
+     <div class="input-group-sm "> 
+      <input type="text" class="form-control input-sm" style=";" id="REQUEST_DEPT" name="REQUEST_DEPT" readonly title="上报部门" maxlength="255" value="<c:out  value='${map["REQUEST_DEPT"]}'/>"> 
+     </div></td> 
+   </tr> 
+   <tr style="height: 30px;"> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="REQUEST_DATE" class=" " style=";" id="gnCYeGCNjne3039ZmuZyaAAmImicN9T3"> 上报日期： </label> </td> 
+    <td style="width:19%; height: 30px; text-align: center;"> 
+     <div class="input-group-sm "> 
+      <input type="text" class="form-control input-sm" style=";" id="REQUEST_DATE" name="REQUEST_DATE" readonly title="上报日期" maxlength="50" value="<c:out  value='${map["REQUEST_DATE"]}'/>"> 
+     </div></td> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="AUTO_CODE" class=" " style=";" id="WYIleDUgVUXsmqoun0SsXVNUQ1pCGHpf"> 表单编号： </label> </td> 
+    <td style="width:21%; height: 30px; text-align: center;"> 
+     <div id="AUTO_CODE" class="bpm_self_class " title="表单编号" style="width:100%;"> 
+      <input type="text" class="form-control input-sm" readonly name="AUTO_CODE" value="<c:out  value='${map["AUTO_CODE"]}'/>"> 
+     </div></td> 
+   </tr> 
+   <tr style="height: 30px;"> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="TEL" class=" " style=";" id="fCY4HqFkatiJEU6eAIEVOBPQX1GuVauG"> 上报人电话： </label> </td> 
+    <td style="width:19%; height: 30px; text-align: center;"> 
+     <div class="input-group input-group-sm spinner " data-trigger="spinner"> 
+      <input type="text" class="form-control input-sm" style=";" id="TEL" name="TEL" data-min="-999999999999999" data-max="999999999999999" data-precision="0" title="上报人电话：" maxlength="20" value="<c:out  value='${map["TEL"]}'/>"> 
+      <span class="input-group-addon number-box-act"> <a href="javascript:" class="spin-up" data-spin="up"><i class="glyphicon glyphicon-triangle-top"></i></a> <a href="javascript:" class="spin-down" data-spin="down"><i class="glyphicon glyphicon-triangle-bottom"></i></a> </span> 
+     </div></td> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="TRADE_UNION_NAME" class=" " style=";" id="LxMUpkpMJUkilREYiJbq68TOJmXpd0fq"> 所在工会： </label> </td> 
+    <td style="width:21%; height: 30px; text-align: center;"> 
+     <div class="input-group input-group-sm " style="width:100%"> 
+      <input type="text" class="form-control input-sm" style=";" autocomplete="off" id="UNION" name="TRADE_UNION_NAME" title="所在工会" maxlength="255" value="<c:out  value='${map["TRADE_UNION_NAME"]}'/>"> 
+      <span class="input-group-addon dictionary-box-act" id="UNIONButton"> <i class="	glyphicon glyphicon-search"></i> </span> 
+     </div></td> 
+   </tr> 
+   <tr style="height: 30px;"> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="请选择" class=" " style=";" id="请选择EformLabel"> 变动类别 </label> </td> 
+    <td style="width:19%; height: 30px; text-align: center;"> 
+     <div class="input-group-sm "> 
+      <select class="form-control input-sm" style="; " id="TRANSFER_TYPE" name="TRANSFER_TYPE" title="变动类别"> <option value="">请选择</option> <option value="0" <c:if test="${map['TRANSFER_TYPE'] eq '0'}">selected</c:if> >内部转出</option> <option value="1" <c:if test="${map['TRANSFER_TYPE'] eq '1'}">selected</c:if> >外部转出</option> <option value="4" <c:if test="${map['TRANSFER_TYPE'] eq '4'}">selected</c:if> >外部转入</option> <option value="5" <c:if test="${map['TRANSFER_TYPE'] eq '5'}">selected</c:if> >保留会籍</option> </select> 
+     </div> </td> 
+    <td style="width:4%; height: 30px; text-align: center;"><label for="IN_TU_ORG" class=" " style=";" id="irY65aSXadBIglDxbUH3rxYjlrqrdq5e"> 目的工会： </label> </td> 
+    <td style="width:21%; height: 30px; text-align: center;"> 
+     <div class="input-group input-group-sm " style="width:100%"> 
+      <input type="text" class="form-control input-sm" style=";" autocomplete="off" id="IN_TU_ORG" name="IN_TU_ORG" title="目的工会" maxlength="255" value="<c:out  value='${map["IN_TU_ORG"]}'/>"> 
+      <span class="input-group-addon dictionary-box-act" id="IN_TU_ORGButton"> <i class="	glyphicon glyphicon-search"></i> </span> 
+     </div></td> 
+   </tr> 
+   <tr style="height: 63.675px;"> 
+    <td style="width:4%; height: 63.675px; text-align: center;"><label for="请选择" class=" " style=";" id="请选择EformLabel"> 会员信息： </label> </td> 
+    <td style="width:44%; height: 63.675px;" colspan="3"> 
+     <table title="" style="table-layout: fixed;margin: 0;width: 100%;"> 
+      <tbody> 
+       <tr> 
+        <td> 
+         <div title="DYN_TU_TRANSFER_V" id="DYN_TU_TRANSFER_V_control" class="eform_subtable_bpm_auth"> 
+          <div title=""> 
+           <table id="DYN_TU_TRANSFER_V" class="datatable eform_component" datapermission="eform_data_DYN_TU_TRANSFER_V"></table> 
+           <div id="DYN_TU_TRANSFER_VPager"></div> 
+           <div id="DYN_TU_TRANSFER_VToolbar" class="toolbar"> 
+            <div class="toolbar-left"> 
+             <a id="DYN_TU_TRANSFER_V_insertBtn" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm eform_subtable_bpm_button_auth btn-point" role="button" title="添加"><span class="glyphicon glyphicon-plus"></span> 添加</a> 
+             <a id="DYN_TU_TRANSFER_V_importBtn" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm eform_subtable_bpm_button_auth" role="button" title="导入" style="display:none;"><span class="glyphicon glyphicon-import"></span> 导入</a> 
+             <a id="DYN_TU_TRANSFER_V_exportBtn" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm eform_subtable_bpm_button_auth" role="button" title="导出" style="display:none;"><span class="glyphicon glyphicon-export"></span> 导出</a> 
+             <a id="DYN_TU_TRANSFER_V_inputBtn" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm eform_subtable_bpm_button_auth" role="button" title="参考录入" style="display:none;"><span class="glyphicon glyphicon-th"></span> 参考录入</a> 
+             <a id="DYN_TU_TRANSFER_V_deleteBtn" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm eform_subtable_bpm_button_auth" role="button" title="删除"><span class="glyphicon glyphicon-trash"></span> 删除</a> 
+            </div> 
+            <div class="toolbar-right"> 
+            </div> 
+           </div> 
+          </div> 
+         </div> </td> 
+       </tr> 
+      </tbody> 
+     </table> </td> 
+   </tr> 
+   <tr style="height: 30px;"> 
+    <td style="width:4%; text-align: right; height: 30px;"></td> 
+    <td style="width:19%; height: 30px;"></td> 
+    <td style="width:4%; text-align: right; height: 30px;"></td> 
+    <td style="width:21%; height: 30px;"></td> 
+   </tr> 
+   <tr style="height: 30px;"> 
+    <td style="width:4%; text-align: right; height: 30px;"></td> 
+    <td style="width:19%; height: 30px;"></td> 
+    <td style="width:4%; text-align: right; height: 30px;"></td> 
+    <td style="width:21%; height: 30px;"></td> 
+   </tr> 
+  </tbody> 
+ </table>
+ <p> </p>
+ <div class="input-group-sm "> 
+  <input type="text" class="form-control input-sm" style=" ; display:none;" id="TRADE_UNION_ID" name="TRADE_UNION_ID" title="所在工会ID" maxlength="50" value="<c:out  value='${map["TRADE_UNION_ID"]}'/>"> 
+ </div>
+ <p></p>
+ <p> </p>
+ <div class="input-group-sm "> 
+  <input type="text" class="form-control input-sm" style=" ; display:none;" id="IN_TU_ORG_ID" name="IN_TU_ORG_ID" title="目的工会ID" maxlength="255" value="<c:out  value='${map["IN_TU_ORG_ID"]}'/>"> 
+ </div> 
+ <div class="input-group-sm "> 
+  <input type="text" class="form-control input-sm" style=" ; display:none;" id="DATA_1" name="DATA_1" title="退回标志N退回" maxlength="255" value="<c:out  value='${map["DATA_1"]}'/>"> 
+ </div>
+ <p></p>
+ <p></p>
+ <p></p>
+ <p></p>
+ <p></p>
+ <p></p>
+ <p></p>
+ <p></p>
+ <p></p>
+</div>
+    </form>
+
+</div>
+
+<div id="addUserPhotoDialog" style="overflow: auto;display: none">
+    <form action="" method="post"  onkeydown="if(event.keyCode==13){return event.srcElement.tagName=='TEXTAREA'?true:false;}"
+          id="uploadForm" enctype="multipart/form-data" style="margin-top: 20px;">
+        <table width="100%" border="0">
+            <tbody>
+            <tr>
+                <td width="10%" nowrap>选择本地图片文件</td>
+                <td width="90%" align="left"><input type="file" style="width:90%" id="eform_add_photo" name="eform_add_photo"></td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="hidden" id="photo_eformId" name="photo_eformId" value="${comId}">
+    </form>
+</div>
+<div class="contextMenu" id="eform-tab-menu">
+    <ul>
+        <li id="eform-refresh">刷新</li>
+    </ul>
+</div>
+<jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-js.jsp">
+    <jsp:param value="<%=importlibs%>" name="importlibs"/>
+</jsp:include>
+
+<script type="text/javascript" src="static/h5/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.js?v=${jsversion}"></script>
+<script src="static/h5/jqGrid-5.2.0/plugins/jquery.contextmenu.js?v=${jsversion}" ></script>
+<!-- 框架脚本 -->
+<script type="text/javascript"
+        src="avicit/platform6/bpmreform/bpmbusiness/include2/common/js/jquery.dragsort-0.5.2.min.js?v=${jsversion}"></script>
+<script type="text/javascript" src="avicit/platform6/bpmreform/bpmbusiness/include2/common/js/nav.js?v=${jsversion}"></script>
+<script type="text/javascript" src="avicit/platform6/bpmreform/bpmbusiness/include2/common/js/main.js?v=${jsversion}"></script>
+<!-- 时间轴组件 timeliner.js-->
+<script type="text/javascript" src="static/h5/timeliner/js/timeliner.js?v=${jsversion}"></script>
+<!-- 流程的js -->
+<script src="avicit/platform6/bpmreform/bpmcommon/flowUtils.js?v=${jsversion}"></script>
+<script src="avicit/platform6/bpmreform/bpmbusiness/include2/src/buttons/CommonActor.js?v=${jsversion}"></script>
+<script src="avicit/platform6/bpmreform/bpmbusiness/include2/src/buttons/BpmActor.js?v=${jsversion}"></script>
+<script src="avicit/platform6/bpmreform/bpmbusiness/include2/src/FlowEditor.js?v=${jsversion}"></script>
+<script type="text/javascript" src="avicit/platform6/bpmreform/bpmbusiness/include/src/FlowListEditorBySec.js?v=${jsversion}"></script>
+<!-- 业务的js -->
+<script src="avicit/platform6/eform/formdefine/js/eformCustomDialog.js?v=${jsversion}"></script>
+<script src="static/js/platform/eform/common.js?v=${jsversion}"></script>
+<script src="avicit/platform6/autocode/js/AutoCode.js?v=${jsversion}"></script>
+<script type="text/javascript" src="static/h5/jquery-form/jquery.form.js?v=${jsversion}"></script>
+<script type="text/javascript" src="static/js/platform/eform/jqgridValidate.js?v=${jsversion}"></script>
+<script src="static/h5/select2/select2.js"></script>
+<!-- 富文本的js与css -->
+<script src="static/h5/kindeditor/kindeditor-all-min.js?v=${jsversion}"></script>
+<script src="static/h5/kindeditor/lang/zh-CN.js?v=${jsversion}"></script>
+<script src="static/js/platform/eform/eformTab.js?v=${jsversion}"></script>
+<!-- 导出功能的js -->
+<script src="static/js/platform/component/common/exportData.js?v=${jsversion}" ></script>
+<!-- 导入功能的js -->
+<script src="static/js/platform/component/common/importData.js?v=${jsversion}" ></script>
+<script src="avicit/eformmodule/form/tuorgantransferio/V1/bootstrap/bpm-layout1697504941000.js?_=1701049205914" type="text/javascript"></script>
+    <script type="text/javascript">
+    //jquery validate允许隐藏域检查
+    $.validator.setDefaults({
+        ignore: []
+    });
+
+    var id = "${comId}";
+    var idmap = "${idmap}";
+    var lrcc = "${result}";
+    var datasourceId = "${datasourceId}";
+    var entryId = '${entryId}';
+    var _taskName = '${_taskName}';
+    var tableName = "DYN_TU_TRANSFER";
+    var session = $.parseJSON("${session}");
+    var dataMap = $.parseJSON("${datamap}");
+    var customValidate = new Map();
+    var results;
+    lrcc = lrcc.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+    if (lrcc) {
+        results =$.parseJSON(lrcc);
+    }
+    var _eform_base_url = "<%=ViewUtil.getRequestPath(request)%>";
+
+    <c:if test="${empty map}">var isInsert = true;</c:if>
+    <c:if test="${!empty map}">var isInsert = false;</c:if>;
+
+    //url属性
+    var url = window.location.href;
+    var urlParam = {};
+    if (url.split("?").length>1) {
+        var paramArray = url.split("?")[1].split("&");
+
+        for (var i = 0; i < paramArray.length; i++) {
+            var arrayValue = paramArray[i].split("=");
+            urlParam[arrayValue[0]] = arrayValue[1];
+        }
+    }
+
+    var filterParams={};
+    //封装全局页面参数，供页面JS调用
+    var pageParams = {
+        dataSourceId: datasourceId,
+        tableName: tableName,
+        mainTableId: "${maintableId}",
+        id: id,
+        baseUrl:_eform_base_url,
+        isInsert: isInsert,
+        entryId: entryId,
+        formData: serializeObject($('#form'),true,'.eform-self-form'),
+        urlParam: urlParam,
+        session: session,
+        version: "${version}"
+    };
+    $.extend(pageParams,dataMap);
+    /**
+     * jquery-validate自定义校验
+     */
+    $.validator.addMethod("phone", function (value, element) {
+        var length = value.length;
+        var mobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+        return this.optional(element) || (length == 11 && mobile.test(value));
+    }, "请输入有效的手机号");
+    $.validator.addMethod("idcard", function (value, element) {
+        return this.optional(element) || isIdCard(value);
+    }, "请输入有效的身份证号");
+    $.validator.addMethod("zipcode", function (value, element) {
+        return this.optional(element) || (/^[0-9]{6}$/.test(value));
+    }, "请输入有效的邮政编码");
+    $.validator.addMethod("customset", function (value, element) {
+        var domId = element.id;
+        //var result = eval("window."+domId+"CustomSet(value)");
+        var result = customSetValidate(domId,value)
+        return this.optional(element) || result;
+    }, "请输入有效的数据");
+</script>
+</body>
+</html>

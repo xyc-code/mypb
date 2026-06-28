@@ -1,0 +1,447 @@
+{
+    "sysDeptAPI": [
+        {
+            "id": 1,
+            "methodName": "getSysDeptByDeptCode"
+        },
+        {
+            "id": 2,
+            "methodName": "getSysDeptBySysDeptId"
+        },
+        {
+            "id": 3,
+            "methodName": "getSysDeptNameBySysDeptId"
+        },
+        {
+            "id": 4,
+            "methodName": "getAllSysDeptList"
+        },
+        {
+            "id": 5,
+            "methodName": "getParentSysDeptBySysDeptId"
+        },
+        {
+            "id": 6,
+            "methodName": "getAllSubSysDeptListBySysDeptId"
+        }
+    ],
+    "sysUserDeptPositionAPI": [
+        {
+            "id": 1,
+            "methodName": "getChiefDeptBySysUserId"
+        },
+        {
+            "id": 2,
+            "methodName": "getSysDeptListBySysUserId"
+        },
+        {
+            "id": 3,
+            "methodName": "getSysUserListBySysDeptId"
+        }
+    ],
+    "sysUserAPI": [{
+        "id": 1,
+        "methodName": "getSysUserById"
+    },
+        {
+            "id": 2,
+            "methodName": "getSysUserByLoginName"
+        },
+        {
+            "id": 3,
+            "methodName": "getSysUserNameById"
+        },
+        {
+            "id": 4,
+            "methodName": "getDeptsBySysUser"
+        }
+    ],
+    "sysProfileAPI": [{
+        "id": 1,
+        "methodName": "getProfileValueByCodeByAppId"
+    }
+    ],
+    "sysLookupAPI": [{
+        "id": 1,
+        "methodName": "getLookUpListByType"
+    },
+        {
+            "id": 2,
+            "methodName": "getNameByLooupTypeCodeAndLooupCodeByAppId"
+        }
+    ],
+    "sysRoleAPI": [{
+        "id": 1,
+        "methodName": "getRolesByUserId"
+    },
+        {
+            "id": 2,
+            "methodName": "getSysRoleById"
+        },
+        {
+            "id": 3,
+            "methodName": "getSysRoleByRoleCodeAndAppId"
+        }
+    ],
+    "sysUserRoleAPI": [{
+        "id": 1,
+        "methodName": "getSysUserListBySysRoleId"
+    },
+        {
+            "id": 2,
+            "methodName": "getSysUserListBySysRoleCode"
+        }
+    ],
+    "sysAutoCodeAPI": [{
+        "id": 1,
+        "methodName": "autoGenerationCodeValue"
+    },
+        {
+            "id": 2,
+            "methodName": "deleteAutoCodeValueByBusinessId"
+        }
+    ],
+    "sysPersonalMenuAPI": [{
+        "id": 1,
+        "methodName": "getPersonalMenu"
+    },
+        {
+            "id": 2,
+            "methodName": "deleteByMenuId"
+        }
+    ],
+    "comUtil": [{
+        "id": 1,
+        "methodName": "getId"
+    },
+        {
+            "id": 2,
+            "methodName": "getHashInt"
+        },
+        {
+            "id": 3,
+            "methodName": "replaceNull2Space"
+        },
+        {
+            "id": 4,
+            "methodName": "Date2String"
+        },
+        {
+            "id": 5,
+            "methodName": "String2Date"
+        },
+        {
+            "id": 6,
+            "methodName": "getRequestPath"
+        },
+        {
+            "id": 7,
+            "methodName": "getSqlEscapeStr"
+        },
+        {
+            "id": 8,
+            "methodName": "getHtmlEscapeStr"
+        },
+        {
+            "id": 9,
+            "methodName": "byte2OutputStream"
+        }
+    ],
+    "businessService": [{
+        "id": 1,
+        "methodName": "doGettracks"
+    },
+        {
+            "id": 2,
+            "methodName": "dosubmitTransmit"
+        },
+        {
+            "id": 3,
+            "methodName": "finishreader"
+        },
+        {
+            "id": 4,
+            "methodName": "getDefineIdByEntryId"
+        },
+        {
+            "id": 5,
+            "methodName": "getFormSecuritys"
+        },
+        {
+            "id": 6,
+            "methodName": "getOperateRights"
+        },
+        {
+            "id": 7,
+            "methodName": "getProcessStartList"
+        },
+        {
+            "id": 8,
+            "methodName": "getStartResultBean"
+        },
+        {
+            "id": 9,
+            "methodName": "getSubprocess"
+        },
+        {
+            "id": 10,
+            "methodName": "getTaskRemark"
+        },
+        {
+            "id": 11,
+            "methodName": "saveGettracks"
+        },
+        {
+            "id": 12,
+            "methodName": "setVariables"
+        },
+        {
+            "id": 13,
+            "methodName": "transmit"
+        }
+    ],
+    "bpmDisplayService": [{
+            "id": 1,
+            "methodName": "getAllTaskByUserId"
+        },
+        {
+            "id": 2,
+            "methodName": "getTaskByUserId"
+        },
+        {
+            "id": 3,
+            "methodName": "getFocusedTask"
+        },
+        {
+            "id": 4,
+            "methodName": "TrackIdeaUpdate"
+        },
+        {
+            "id": 5,
+            "methodName": "finishTodo"
+        },
+        {
+            "id": 6,
+            "methodName": "getCharacterTracks"
+        },
+        {
+            "id": 7,
+            "methodName": "getTaskById"
+        }
+    ],
+    "bpmIdeaService": [{
+        "id": 1,
+        "methodName": "getIdeaListByProcessInstIdeaAndCode"
+    },
+        {
+            "id": 2,
+            "methodName": "getIdeaMapByProcessInstanceId"
+        },
+        {
+            "id": 3,
+            "methodName": "getIdeaStrByList"
+        },
+        {
+            "id": 4,
+            "methodName": "getIdeaSytleCode"
+        }
+    ],
+    "formManage": [{
+        "id": 1,
+        "methodName": "addData"
+    },
+        {
+            "id": 2,
+            "methodName": "deleteData"
+        },
+        {
+            "id": 3,
+            "methodName": "updateData"
+        },
+        {
+            "id": 4,
+            "methodName": "getData"
+        },
+        {
+            "id": 5,
+            "methodName": "getDataList"
+        }
+    ],
+    "eventListener": [
+        {
+            "id": 1,
+            "methodName": "flowEventListener",
+            "methodChineseName": "流程事件监听"
+        },
+        {
+            "id": 2,
+            "methodName": "processConditionInterface",
+            "methodChineseName": "流程启动条件"
+        },
+        {
+            "id": 3,
+            "methodName": "routeConditionInterface",
+            "methodChineseName": "流程路由条件"
+        },
+        {
+            "id": 4,
+            "methodName": "precessingInterface",
+            "methodChineseName": "流程动作监听"
+        },
+        {
+            "id": 5,
+            "methodName": "userSelect",
+            "methodChineseName": "流程自定义选人"
+        }
+    ],
+    "eformEvent": [
+        {
+            "id": 1,
+            "methodName": "bpmOpinion",
+            "methodChineseName": "流程意见"
+        },
+        {
+            "id": 2,
+            "methodName": "calculated",
+            "methodChineseName": "虚拟控件"
+        },
+        {
+            "id": 3,
+            "methodName": "dataTableCol",
+            "methodChineseName": "子表虚拟列转换"
+        },
+        {
+            "id": 4,
+            "methodName": "handleEvnet",
+            "methodChineseName": "前后处理类"
+        },
+        {
+            "id": 5,
+            "methodName": "linkAge",
+            "methodChineseName": "联动控件"
+        },
+        {
+            "id": 6,
+            "methodName": "transferCol",
+            "methodChineseName": "自定义列转换"
+        }
+    ],
+    "todoInterceptor": [{
+        "id": 1,
+        "methodName": "todoInterceptorImpl",
+        "methodChineseName": "待办拦截器接口"
+    }
+    ],
+    "attachment": [{
+        "id": 1,
+        "methodName": "eventListener"
+    }
+    ],
+    "loginCallback": [{
+        "id": 1,
+        "methodName": "preparedLoginCallback"
+    },{
+        "id": 2,
+        "methodName": "compledLoginCallback"
+    }
+    ],
+    "flowWebEvent": [
+        {
+            "id": 1,
+            "methodName": "start"
+        },{
+            "id": 2,
+            "methodName": "afterCreateButtons"
+        },{
+            "id": 3,
+            "methodName": "afterControlFormInput"
+        },{
+            "id": 4,
+            "methodName": "filterSecretLevel"
+        },{
+            "id": 5,
+            "methodName": "setAttachMagic"
+        },{
+            "id": 6,
+            "methodName": "setAttachCanAddOrDel"
+        },{
+            "id": 7,
+            "methodName": "setAttachRequired"
+        },{
+            "id": 8,
+            "methodName": "setAttachSecretLevelModify"
+        },{
+            "id": 9,
+            "methodName": "controlSelfElement"
+        },{
+            "id": 10,
+            "methodName": "controlSelfElementForAccess"
+        },{
+            "id": 11,
+            "methodName": "controlSelfElementForRequired"
+        },{
+            "id": 12,
+            "methodName": "controlSubTableButtonForAccess"
+        },{
+            "id": 13,
+            "methodName": "controlCustomSubTableForAccess"
+        },{
+            "id": 14,
+            "methodName": "controlCustomSubTableForOperability"
+        },{
+            "id": 15,
+            "methodName": "controlCustomSubTableForRequired"
+        },{
+            "id": 16,
+            "methodName": "afterInit"
+        },{
+            "id": 17,
+            "methodName": "beforeSubmit"
+        },{
+            "id": 18,
+            "methodName": "afterSubmit"
+        },{
+            "id": 19,
+            "methodName": "beforeRetreat"
+        },{
+            "id": 20,
+            "methodName": "afterRetreat"
+        },{
+            "id": 21,
+            "methodName": "beforeGlobalend"
+        },{
+            "id": 22,
+            "methodName": "afterGlobalend"
+        }
+    ],
+    "swfUploadEvent": [
+        {
+            "id": 1,
+            "methodName": "afterSaveFileByDB"
+        },{
+            "id": 2,
+            "methodName": "afterSaveFileByDisk"
+        },{
+            "id": 3,
+            "methodName": "afterSaveFileByOther"
+        },{
+            "id": 4,
+            "methodName": "afterDelFileByDB"
+        },{
+            "id": 5,
+            "methodName": "afterDelFileByDisk"
+        },{
+            "id": 6,
+            "methodName": "afterDelFileByFastDfs"
+        },{
+            "id": 7,
+            "methodName": "afterDelFileByOther"
+        },{
+            "id": 8,
+            "methodName": "downloadOneFileByOther"
+        },{
+            "id": 9,
+            "methodName": "downloadAllFileByOther"
+        }
+    ]
+}

@@ -1,0 +1,116 @@
+* {
+    font-family: 思源黑体;
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    text-decoration: none;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+}
+.titleTabel {
+    padding-left: 30px;
+    padding-top: 6px;
+}
+ .titleTabel p {
+    float: left;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 28px;
+    font-family: 优设标题黑;
+    /* background-image: -webkit-linear-gradient(left, rgb(233, 44, 13), rgb(200, 46, 42)); */
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+     margin-left:10px;
+}
+.titleTabel span {
+    color: #333333;
+    font-size: 14px;
+    float: right;
+    line-height: 34px;
+    padding: 0px;
+    height: 34px;
+    margin-right: 12px;
+}
+.titleTabel span a {
+    float: left;
+    font-size: 16px;
+    height: 40px;
+    line-height: 40px;
+    margin-right:10px;
+}
+.work_left {
+    width: 33%;
+    border: 1px #C82E2A solid;
+    border-radius: 4px;
+    float: left;
+    height: 72px;
+    margin-left: 2px;
+}
+ .work_cantre {
+    margin-left: 1.5%;
+    width: 31%;
+    border: 1px #16903C solid;
+    border-radius: 4px;
+    float: left;
+    height: 72px;
+}
+ .work_right {
+    margin-left: 1.5%;
+    width: 31%;
+    border: 1px #FEA50C solid;
+    border-radius: 4px;
+    float: left;
+    height: 72px;
+}
+.strip {
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+}
+.work_left .strip b {
+    font-size: 20px;
+    font-family: 优设标题黑;
+    color: #C82E2A;
+}
+.work_right .strip b {
+    font-size: 20px;
+    font-family: 优设标题黑;
+    color: rgb(254, 165, 12);
+}
+.work_cantre .strip b {
+    font-size: 20px;
+    font-family: 优设标题黑;
+    color: rgb(22, 144, 60);
+}
+.name {
+    height: 36px;
+    line-height: 36px;
+}
+.name p {
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+}
+.name p a{
+    color: #fff;
+    font-size: 16px;
+}
+.float-l{
+float:none;
+
+}
+.float-l a{
+	cursor:pointer;
+}
+.active{
+	color:red;
+}
+.counter1{
+	border :none;
+}
+

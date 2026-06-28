@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>统计图</title>
+		<link rel="stylesheet" href="./source/css/workbench.css" />
+		<link rel="stylesheet" href="./source/avic_icon/iconfont.css" />
+		<link href="./source/style/index.css" type="text/css" rel="stylesheet" />
+		<script src="./source/js/echarts.min.js"></script>
+	</head>
+	<style>
+		.statis_body_padding{
+			overflow: hidden;
+		}
+		.statis_date{
+			/*float: right;*/
+			overflow: hidden;
+			position: absolute;
+			right: 24px;
+		}
+		.statis_date_time{
+			float: left;
+			overflow: hidden;
+			margin-top: 4px;
+		}
+		.statis_date_time li{
+			float: left;
+			width: 48px;
+			height: 22px;
+			font-size: 12px;
+			line-height: 22px;
+			margin: 0 14px;
+			text-align: center;
+			cursor: pointer;
+		}
+		.statis_act{
+			background: #338FE5;
+			color: #FFFFFF;
+			border-radius: 2px;
+		}
+		.statis_date_calendar{
+			float: left;
+			width: 205px;
+			height: 28px;
+			border: 1px solid #D8D8D8;
+			box-sizing: border-box;
+			border-radius: 2px;
+		}
+		.statis_date_calendar p{
+			line-height: 28px;
+			font-size: 12px;
+			color: #333333;
+			margin-left: 10px;
+		}
+		.statis_picture{
+			overflow: hidden;
+			margin-top: 48px;
+		}
+		.statis_picture_left{
+			float: left;
+			width: 80%;
+		}
+		.statis_picture_right{
+			float: right;
+    		width: 15%;
+		}
+		.statis_picture_right ul li{
+			overflow: hidden;
+		}
+		.picture_num{
+			float: left;
+			font-size: 12px;
+			color: #333333;
+			width: 20px;
+			height: 20px;
+			background: #F0F2F5;
+			margin-top: 8px;
+			border-radius: 10px;
+			text-align: center;
+			line-height: 20px;
+		}
+		.picture_text{
+			float: left;
+			margin-left: 10px;
+			line-height: 36px;
+			font-size: 14px;
+			color: #333333;
+		}
+		.picture_ann{
+			float: right;
+			color: #AAAAAA;
+			font-size: 14px;
+			line-height: 36px;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<div class="box_title">
+				<h4>统计图</h4>
+				<span class="box_title_right">
+<!--				  <i class="iconfont icon-download" title="下载" onclick="downloadFile('statistical')"></i>-->
+				</span>
+			</div>
+			<div class="content_inner">
+				<div class="statis_body">
+					<div class="statis_body_padding">
+						<div class="statis_date">
+							<ul class="statis_date_time">
+								<li>本周</li>
+								<li class="statis_act">本月</li>
+								<li>本年</li>
+							</ul>
+							<div class="statis_date_calendar">
+								<p>2021-05-02  ～ 2021-05-21 </p>
+							</div>
+						</div>
+						<div class="statis_picture">
+							<div class="statis_picture_left">
+								<div id="barChart" style="width: 100%;height: 290px;"></div>
+							</div>
+							<div class="statis_picture_right">
+								<ul>
+									<li>
+										<p class="picture_num">1</p>
+										<p class="picture_text">出勤天数</p>
+										<p class="picture_ann">23</p>
+									</li>
+									<li>
+										<p class="picture_num">2</p>
+										<p class="picture_text">迟到</p>
+										<p class="picture_ann">7</p>
+									</li>
+									<li>
+										<p class="picture_num">3</p>
+										<p class="picture_text">早退</p>
+										<p class="picture_ann">3</p>
+									</li>
+									<li>
+										<p class="picture_num">4</p>
+										<p class="picture_text">缺卡</p>
+										<p class="picture_ann">12</p>
+									</li>
+									<li>
+										<p class="picture_num">5</p>
+										<p class="picture_text">旷工</p>
+										<p class="picture_ann">1</p>
+									</li>
+									<li>
+										<p class="picture_num">6</p>
+										<p class="picture_text">外勤</p>
+										<p class="picture_ann">13</p>
+									</li>
+									<li>
+										<p class="picture_num">7</p>
+										<p class="picture_text">加班</p>
+										<p class="picture_ann">17</p>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var myChart = echarts.init(document.getElementById('barChart'));
+			
+			var option = {
+				xAxis: {
+					type: 'category',
+					data: ['出勤', '迟到', '早退', '缺卡', '旷工', '外勤', '加班']
+				},
+				yAxis: {
+					type: 'value'
+				},
+				color: ['#338FE5'],
+				series: [{
+					data: [23, 7, 3, 12, 1, 13, 17],
+					type: 'bar'
+				}]
+			};
+
+			option && myChart.setOption(option);
+
+			function downloadFile(fileName) {
+				let a = document.createElement("a");
+				a.href = "/download/template8/" + fileName + ".rar";
+				a.download = fileName + ".rar";
+				a.click();
+			}
+		</script>
+	</body>
+</html>
