@@ -26,7 +26,7 @@ String importlibs = "common,table,form,fileupload,noLoading-mask";
 
     <form id='form' onkeydown="if(event.keyCode==13){return event.srcElement.tagName=='TEXTAREA'?true:false;}">
         <div class="mce-content-body">
- <h1 style="text-align: center;" id="mcetoc_1esn742ku0"><strong>东安爱心医疗审批单</strong></h1>
+ <h1 style="text-align: center;" id="mcetoc_1esn742ku0"><strong>XX爱心医疗审批单</strong></h1>
  <div id="formLeft" style="margin-left: 41.818px;margin-right: 41.818px"><label for="requireDate" id="Sxj29AmVvBirG86YVLIsB9m2HYOfHj4c"><i class="required" style="color: #ff0000;">*</i>填报日期：</label>${map["RequestDate"]}</div>
  <table style=" border: 1px solid;" id="dXd7H6by2Gi2KukTDakhr1ci5Sizi7BO" border="1" class="form_commonTable1"> 
   <tbody> 

@@ -220,7 +220,7 @@ return map;
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             StringBuffer sql=new StringBuffer();
-            if("daxw".equals(videoType)){//如果是东安新闻，就只查询东安新闻的
+            if("daxw".equals(videoType)){//如果是XX新闻，就只查询XX新闻的
                 sql.append("select * from DYN_VIDEO t where t.VIDEO_LEAB like '%"+videoType+"%'");
 
             }else{

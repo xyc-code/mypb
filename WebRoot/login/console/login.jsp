@@ -165,7 +165,7 @@
 				</svg>
 		</div>
 		<div class="content flex">
-			<p>© 2022 中国航发东安版权所有</p>
+			<p>© 2022 中国航发XX版权所有</p>
 		</div>
 		
 	</div>

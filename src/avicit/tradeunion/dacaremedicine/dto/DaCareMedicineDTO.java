@@ -13,10 +13,10 @@ import avicit.platform6.core.annotation.log.PojoRemark;
 * @作者：林博
 * @邮箱：numbery@163.com
 * @创建时间： 2021-03-28 13:08
-* @类说明：东安爱心医疗Dto
+* @类说明：XX爱心医疗Dto
 * @修改记录：
 */
-@PojoRemark(table="DA_CARE_MEDICINE", object="DaCareMedicineDTO", name="东安爱心医疗")
+@PojoRemark(table="DA_CARE_MEDICINE", object="DaCareMedicineDTO", name="XX爱心医疗")
 public class DaCareMedicineDTO extends BeanDTO{
 	private static final long serialVersionUID = 1L;
 
@@ -645,7 +645,7 @@ public class DaCareMedicineDTO extends BeanDTO{
 	@Override
 	public String getLogFormName() {
 		if (super.logFormName == null || "".equals(super.logFormName)) {
-			return "东安爱心医疗";
+			return "XX爱心医疗";
 		}else{
 			return super.logFormName;
 		}
@@ -654,7 +654,7 @@ public class DaCareMedicineDTO extends BeanDTO{
 	@Override
 	public String getLogTitle() {
 		if (super.logTitle == null || "".equals(super.logTitle)) {
-			return "东安爱心医疗";
+			return "XX爱心医疗";
 		}else{
 			return super.logTitle;
 		}

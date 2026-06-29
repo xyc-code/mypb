@@ -68,12 +68,12 @@
                 </li>
 
             </div>
-    <div id="formTitle"></br><p>东安爱心医疗审批</p></br></div>
+    <div id="formTitle"></br><p>XX爱心医疗审批</p></br></div>
 	<div id="formTab">
 		<form id='form'>
 			<input type="hidden" id="id" name="id" value="<%=formId%>">
 			<input type="hidden" id="version" name="version">
-			<h1 style="text-align: center;" id="careMedicineTitle"><strong>东安爱心医疗审批</strong></h1>	
+			<h1 style="text-align: center;" id="careMedicineTitle"><strong>XX爱心医疗审批</strong></h1>	
 			<table class="form_commonTable">
 				<tr>
 					<th width="15%">

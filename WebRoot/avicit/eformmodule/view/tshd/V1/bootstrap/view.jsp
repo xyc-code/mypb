@@ -23,11 +23,13 @@ String importlibs = "common,table,form,fileupload,tree";
 <link rel="stylesheet" type="text/css" href="static/h5/autoFixedForm/css/autofixedForm-bootstrap.css?v=${jsversion}"/>
 <link rel="stylesheet" href="static/css/platform/eform/eformTab.css?v=${jsversion}"/>
 <link rel="stylesheet" href="avicit/platform6/eform/bpmsviewdesign/css/view.css?v=${jsversion}"/>
+<link rel="stylesheet" href=""/>
 </head>
 <body>
 <div class="easyui-layout" fit="true" id="948e83e390a0fe270190a59f197d26f7"> <div data-options="region:'center',disabled:false ,width:fixwidth(1.0,e),height:fixheight(1.0,e),onResize:function(a){$('#tablee512ca20c2b78d401288181e70164a5d4af2').setGridHeight(getJgridTableHeight($('#tablee512ca20c2b78d401288181e70164a5d4af2_div')));$('#tablee512ca20c2b78d401288181e70164a5d4af2').jqGrid('resizeGrid');} " style="background: #ffffff; height: 0px; padding: 0px; overflow: hidden;" id="tablee512ca20c2b78d401288181e70164a5d4af2_div"><div style="overflow:auto"> <div id="tableToolbartablee512ca20c2b78d401288181e70164a5d4af2" class="toolbar" style="height:38px;"><div class="toolbar-left" ><sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButtonaccd10ef7df3334be0a922018f07b8bfd54f" permissionDes="添加"><a id="tableToolbarButtonaccd10ef7df3334be0a922018f07b8bfd54f" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm btn-point" role="button" title="添加"><i class="fa fa-plus"></i> 添加</a></sec:accesscontrollist>
 <sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButton28e8e04766a6654c651984bfdd753e5f8f16" permissionDes="编辑"><a id="tableToolbarButton28e8e04766a6654c651984bfdd753e5f8f16" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="编辑"><i class="fa fa-file-text-o"></i> 编辑</a></sec:accesscontrollist>
 <sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButton4649702b20267f469e29a6ab8fbf71f943f4" permissionDes="删除"><a id="tableToolbarButton4649702b20267f469e29a6ab8fbf71f943f4" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="删除"><i class="fa fa-trash-o"></i> 删除</a></sec:accesscontrollist>
+<sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButton46fb62d88794444c339855cd0e4aa942ccea" permissionDes="导出excel"><a id="tableToolbarButton46fb62d88794444c339855cd0e4aa942ccea" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="导出excel"><i class=""></i> 导出excel</a></sec:accesscontrollist>
 </div></div><div id="Pagertablee512ca20c2b78d401288181e70164a5d4af2"></div><table id="tablee512ca20c2b78d401288181e70164a5d4af2" datapermission="tablee512ca20c2b78d401288181e70164a5d4af2" class="eform_component" ></table></div></div></div></body>
 <script src="static/h5/jqGrid-5.2.0/plugins/jquery.contextmenu.js?v=${jsversion}" ></script>
 <script src="static/js/platform/component/common/exportData.js?v=${jsversion}" ></script>
@@ -56,5 +58,6 @@ var pageParams = {
 };
 var filterParams = {};
 </script>
-<script src="avicit/eformmodule/view/tshd/V1/bootstrap/view1722326007000.js?_=1722326096575"></script>
+<script src="avicit/eformmodule/view/tshd/V1/bootstrap/view.js?_=1782722552765"></script>
+<script src=""></script>
 </html> 

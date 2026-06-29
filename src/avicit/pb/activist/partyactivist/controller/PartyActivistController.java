@@ -486,7 +486,7 @@ public class PartyActivistController implements LoaderConstant {
     		dto.setEducationSector(partyActivistDTO.getAttribute02());
     		dto.setJoinParty(partyActivistDTO.getReqpartyTime());
     		dto.setEducationLevel(partyActivistDTO.getEducationLevel());
-    		dto.setJoinpartyDept("中国航发东安");
+    		dto.setJoinpartyDept("中国航发XX");
     		dto.setIntroducer(partyActivistDTO.getIntroducer());
     		dto.setWorkTime(partyActivistDTO.getWorkTime());
     		dto.setPost(partyActivistDTO.getPost());

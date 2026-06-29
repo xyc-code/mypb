@@ -7,7 +7,7 @@ $(document).ready(function () {
         yeer.val(new Date().getFullYear());
         //因为每月录制的上个月的 所以无需加1
         month.val(new Date().getMonth());
-        title.text(yeer.val() + "年" + month.val() + "月东安公司基层党组织党建工作考核打分表");
+        title.text(yeer.val() + "年" + month.val() + "月XX公司基层党组织党建工作考核打分表");
 
         function addRow(e) {
             var newRowIndex_PARTY_WORK_TABLE = 0;
@@ -110,7 +110,7 @@ $(document).ready(function () {
             var title = $("#titleHead");
             var yeer = $("#TITILE_YEER:hidden");
             var month = $("#TITLE_MONTH:hidden");
-            title.text(yeer.val() + "年" + month.val() + "月东安公司基层党组织党建工作考核打分表");
+            title.text(yeer.val() + "年" + month.val() + "月XX公司基层党组织党建工作考核打分表");
             if (_flow_editor.flowModel.activityname == 'task1') {
                 var userIds = ['948e83e37f8b8008017f8bf6290b1a9f','948e83e37f8b8008017f8bf2321e18f5','948e83e37f8b8008017f8bf2355a1972','948e83e37f8f75d0017f8b635f230e5c','948e83e37f8f75d0017f8c2ee4f33349','948e83e37f8f75d0017f8fa71eef0bf5']
                 $.ajax({

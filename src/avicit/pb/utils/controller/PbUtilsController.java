@@ -137,7 +137,7 @@ public class PbUtilsController implements LoaderConstant {
 		} catch (Exception e) {
 			map.put("list", new ArrayList<DynAchievementsDTO>());
 			e.printStackTrace();
-		}
+        }
         return map;
     }
 }

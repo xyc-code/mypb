@@ -876,7 +876,7 @@ $('#tableToolbarButtonca182f7ed694ff40c11891b19b9eb0c431e0').bind('click',functi
 	        expSearchParams.hasRowNum = false;                                       
 	        expSearchParams.sheetName = 'sheet1';                                    
 	        expSearchParams.unContainFields = blockFields.toString();                
-	        expSearchParams.fileName='东安爱心医疗';                             
+	        expSearchParams.fileName='XX爱心医疗';                             
 	        expSearchParams.viewid='2c908c528ea146fb018ea18f5e181757';                                   
 	        expSearchParams.tableid='table7b1c681cef4c974bb108d5cb7f01b46b83ef';                                 
 	        expSearchParams.isbpm='Y';                                     

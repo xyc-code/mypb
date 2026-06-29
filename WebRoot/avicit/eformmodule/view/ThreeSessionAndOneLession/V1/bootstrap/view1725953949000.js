@@ -206,6 +206,7 @@ var uniqueColtablee1b6c5024d46264e51cb95aed8c3acdced28 = [];
 var uniqueColTitletablee1b6c5024d46264e51cb95aed8c3acdced28 = [];
 var defaultValuetablee1b6c5024d46264e51cb95aed8c3acdced28 = {};
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: 'ID',key: true,hidden:true, name: 'ID',align:'left',  width: '150px'});
+tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '自动编号',hidden:false, name: 'AUTO_CODE',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({ label: '申请人',hidden:true, name: 'CREATED_BY',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({ label: '申请人', formatter:formattablee1b6c5024d46264e51cb95aed8c3acdced28Detail, hidden:false, name: 'CREATED_BYName',align:'left',  width: '150px'});
 function formattablee1b6c5024d46264e51cb95aed8c3acdced28Detail(cellvalue, options, rowObject){
@@ -224,8 +225,8 @@ function formattablee1b6c5024d46264e51cb95aed8c3acdced28Detail(cellvalue, option
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '会议名称',hidden:false, name: 'MEET_NAME',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({ label: '会议类型',hidden:true, name: 'MEET_TYPE',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({ label: '会议类型',hidden:false, name: 'MEET_TYPEName',align:'left',  width: '150px'});
-tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '会议地点',hidden:false, name: 'MEET_PLACE',align:'left',  width: '150px'});
-tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '参会组织名称',hidden:false, name: 'JOIN_MEET_ORG',align:'left',  width: '150px'});
+tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '会议地点',hidden:true, name: 'MEET_PLACE',align:'left',  width: '150px'});
+tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '参会组织名称',hidden:false, name: 'JOIN_ORG',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '会议提纲',hidden:false, name: 'MEET_OUTLINE',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({ label: '是否记录培训学时',hidden:true, name: 'HOURS_RECORD_YN',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({ label: '是否记录培训学时',hidden:false, name: 'HOURS_RECORD_YNName',align:'left',  width: '150px'});
@@ -249,6 +250,9 @@ tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '创建人部门',
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '创建人IP',hidden:true, name: 'LAST_UPDATE_IP',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '组织ID',hidden:true, name: 'ORG_IDENTITY',align:'left',  width: '150px'});
 tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '最后更新时间', formatter:format, hidden:true, name: 'LAST_UPDATE_DATE',align:'center',  width: '150px'});
+tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '申请人所在党支部',hidden:true, name: 'PARTY_NAME',align:'left',  width: '150px'});
+tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '会议关键词',hidden:true, name: 'MEET_ZJ',align:'left',  width: '150px'});
+tablecmtablee1b6c5024d46264e51cb95aed8c3acdced28.push({label: '党组织类型',hidden:true, name: 'PARTY_TYPE',align:'left',  width: '150px'});
 	var searchNamestablee1b6c5024d46264e51cb95aed8c3acdced28 = []; 
 searchNamestablee1b6c5024d46264e51cb95aed8c3acdced28.push('MEET_NAME');
 $('#keyWordtablee1b6c5024d46264e51cb95aed8c3acdced28').attr('placeholder', '请输入会议名称查询');
@@ -324,7 +328,7 @@ $("#tablee1b6c5024d46264e51cb95aed8c3acdced28").jqGrid({
 				$("#tablee1b6c5024d46264e51cb95aed8c3acdced28").jqGrid('getColumnByUserIdAndTableName');
 				var rowdata = $("#tablee1b6c5024d46264e51cb95aed8c3acdced28").jqGrid('getRowData');
 				if (rowdata != null && rowdata.length > 0) {
-					//$("#"+rowdata[0].ID).click();
+					$("#"+rowdata[0].ID).click();
 				}else{
 					if ($("#tablee1b6c5024d46264e51cb95aed8c3acdced28norecords").html() == null) {
 						$("#tablee1b6c5024d46264e51cb95aed8c3acdced28").parent().append("<div class='no_data' id='tablee1b6c5024d46264e51cb95aed8c3acdced28norecords'> <img style='width:120px;' src='static/images/platform/eform/no-data.png' /> <p>暂无记录</p> </div>");
@@ -456,8 +460,16 @@ $("#tableToolbarButton51dd5ac427e42144cd28eb7e2fc6409ccf77").bind('click',functi
 );
 $("#tableToolbarButtonf5d8c90e489ab94cd6585a2579256b884155").bind('click',function(event){var bpmsDeleteRows = $('#tablee1b6c5024d46264e51cb95aed8c3acdced28').jqGrid('getGridParam', 'selarrrow');  
 if(bpmsDeleteRows .length!=0){
-window.open('avicit/pb/print/ThreeFourPrint/view?id='+bpmsDeleteRows[0])
+window.open(_eform_base_url+"platform/eform/bpmsCRUDClient/toPrint?formInfoId=402811817f4eb25b017f63319c2c18bb&id="+bpmsDeleteRows[0]+"&type=print","_blank");
 }});
+$("#tableToolbarButton42e25b77592b1c4860c8c4c035045d7036bc").bind('click',function(event){layer.open({
+		type: 2,
+		area: ['80%', '100%'],
+		title: '三会一课统计',
+		skin: 'bs-modal',
+		maxmin: true,
+		content: 'avicit/pb/dyntaskchecklist/dynThreeFour/dynThreeFourController/toDynThreeFourManage'
+	});});
 function searchDatatablee1b6c5024d46264e51cb95aed8c3acdced28(){
  var para = serializeObjectForEform($("#searchformtablee1b6c5024d46264e51cb95aed8c3acdced28"));
 	var searchdata = {
@@ -491,7 +503,7 @@ layer.open({
 	move : false,
  area:[
 contentWidth + 'px',
-'200px'],
+'400px'],
 	offset: [top + 'px', left + 'px'],
 	closeBtn: 0,
 	shadeClose: true,
@@ -538,5 +550,13 @@ contentWidth + 'px',
  });
 $('#CREATED_BYAlias').on('focus',function(e){
 	new H5CommonSelect({type:'userSelect', idFiled:'CREATED_BY',textFiled:'CREATED_BYAlias',viewScope:'currentOrg',selectModel:'multi'});
+}); 
+$('#MEET_DATE_START_button').click(function(e){
+			$('#MEET_DATE_START').datetimepicker('show');
+			$('#MEET_DATE_START').datetimepicker().trigger('click');
+}); 
+$('#MEET_DATE_END_button').click(function(e){
+			$('#MEET_DATE_END').datetimepicker('show');
+			$('#MEET_DATE_END').datetimepicker().trigger('click');
 }); 
 ;});	 

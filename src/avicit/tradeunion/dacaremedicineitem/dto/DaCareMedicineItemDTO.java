@@ -8,7 +8,7 @@ import avicit.platform6.core.properties.PlatformConstant;
 
 import javax.persistence.Id;
 
-@PojoRemark(table="DA_CARE_MEDICINE_ITEM", object="DaCareMedicineItemDTO", name="东安爱心医疗子表")
+@PojoRemark(table="DA_CARE_MEDICINE_ITEM", object="DaCareMedicineItemDTO", name="XX爱心医疗子表")
 public class DaCareMedicineItemDTO extends BeanDTO {
         private static final long serialVersionUID = 1L;
 
@@ -394,7 +394,7 @@ public class DaCareMedicineItemDTO extends BeanDTO {
         @Override
         public String getLogFormName() {
             if (super.logFormName == null || "".equals(super.logFormName)) {
-                return "东安爱心医疗子表";
+                return "XX爱心医疗子表";
             }else{
                 return super.logFormName;
             }
@@ -403,7 +403,7 @@ public class DaCareMedicineItemDTO extends BeanDTO {
         @Override
         public String getLogTitle() {
             if (super.logTitle == null || "".equals(super.logTitle)) {
-                return "东安爱心医疗子表";
+                return "XX爱心医疗子表";
             }else{
                 return super.logTitle;
             }

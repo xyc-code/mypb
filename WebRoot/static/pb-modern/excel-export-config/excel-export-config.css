@@ -1,0 +1,115 @@
+.pb-excel-export-page {
+    padding: 8px;
+}
+
+.pb-excel-export-page .pb-excel-toolbar {
+    min-height: 42px;
+}
+
+.pb-excel-export-page .form-tool-search {
+    width: 320px;
+}
+
+.pb-excel-export-page .pb-excel-dialog {
+    padding: 12px;
+    max-height: calc(100vh - 112px);
+    overflow-y: auto;
+    padding-bottom: 72px;
+}
+
+.pb-excel-export-page .pb-excel-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap: 10px 14px;
+}
+
+.pb-excel-export-page .pb-excel-field label {
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+    font-weight: 600;
+}
+
+.pb-excel-export-page .pb-excel-wide {
+    grid-column: span 2;
+}
+
+.pb-excel-export-page .pb-excel-inline {
+    display: flex;
+    gap: 8px;
+}
+
+.pb-excel-export-page .pb-excel-inline input {
+    flex: 1 1 auto;
+}
+
+.pb-excel-export-page .pb-excel-table-result {
+    display: none;
+    margin-top: 6px;
+    height: 96px;
+}
+
+.pb-excel-export-page .pb-excel-section-title {
+    margin: 14px 0 8px;
+    padding-left: 8px;
+    border-left: 3px solid #2b7dbc;
+    color: #222;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pb-excel-export-page .pb-excel-section-title .btn {
+    margin-left: 10px;
+}
+
+.pb-excel-export-page .pb-excel-table-wrap {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid #ddd;
+}
+
+.pb-excel-export-page .pb-excel-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: #fff;
+}
+
+.pb-excel-export-page .pb-excel-table th,
+.pb-excel-export-page .pb-excel-table td {
+    border: 1px solid #e5e5e5;
+    padding: 6px;
+    vertical-align: middle;
+    word-break: break-all;
+}
+
+.pb-excel-export-page .pb-excel-table th {
+    background: #f6f7f9;
+    color: #333;
+    font-weight: 700;
+}
+
+.pb-excel-export-page .pb-excel-table input,
+.pb-excel-export-page .pb-excel-table select {
+    width: 100%;
+    height: 28px;
+    padding: 3px 6px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+}
+
+.pb-excel-export-page .pb-excel-drag {
+    cursor: move;
+    text-align: center;
+    color: #666;
+}
+
+.pb-excel-export-page .pb-excel-row-dragging {
+    opacity: 0.45;
+}
+
+@media (max-width: 900px) {
+    .pb-excel-export-page .pb-excel-form-grid {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+}

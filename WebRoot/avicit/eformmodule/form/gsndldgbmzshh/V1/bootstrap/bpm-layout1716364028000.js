@@ -152,10 +152,44 @@ layer.close(maskId);
 	}
 
     if(pageParams.isInsert) {
-        
+        var leanJoin =$("#LEAD_JOIN").val();
+var leanName = $("#LEAD_NAME").val();
+var jwJoin = $("#JW_JOIN").val();
+var jwName = $("#JW_NAME").val();
+if(leanJoin=="Y"){
+  if(leanName==""){
+  layer.msg("主管公司领导是否参加选是后，必须选择参加领导的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
+if(jwJoin=="Y"){
+  if(jwName==""){
+  layer.msg("参会人员是否参加选是后，必须选择参会人员的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
     }
     else {
-        
+        var leanJoin =$("#LEAD_JOIN").val();
+var leanName = $("#LEAD_NAME").val();
+var jwJoin = $("#JW_JOIN").val();
+var jwName = $("#JW_NAME").val();
+if(leanJoin=="Y"){
+  if(leanName==""){
+  layer.msg("主管公司领导是否参加选是后，必须选择参加领导的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
+if(jwJoin=="Y"){
+  if(jwName==""){
+  layer.msg("参会人员是否参加选是后，必须选择参会人员的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
     }
 
 	var _self = this;
@@ -342,6 +376,46 @@ EformFlow.prototype.save = function(callback) {
         return false;
     }
 
+        if(pageParams.isInsert) {
+        var leanJoin =$("#LEAD_JOIN").val();
+var leanName = $("#LEAD_NAME").val();
+var jwJoin = $("#JW_JOIN").val();
+var jwName = $("#JW_NAME").val();
+if(leanJoin=="Y"){
+  if(leanName==""){
+  layer.msg("主管公司领导是否参加选是后，必须选择参加领导的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
+if(jwJoin=="Y"){
+  if(jwName==""){
+  layer.msg("参会人员是否参加选是后，必须选择参会人员的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
+    }
+    else {
+        var leanJoin =$("#LEAD_JOIN").val();
+var leanName = $("#LEAD_NAME").val();
+var jwJoin = $("#JW_JOIN").val();
+var jwName = $("#JW_NAME").val();
+if(leanJoin=="Y"){
+  if(leanName==""){
+  layer.msg("主管公司领导是否参加选是后，必须选择参加领导的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
+if(jwJoin=="Y"){
+  if(jwName==""){
+  layer.msg("参会人员是否参加选是后，必须选择参会人员的姓名！");
+  $("#page_saveButton").removeClass('disabled');
+  return false;
+  }
+}
+    }
     
     var _self = this;
 
@@ -422,21 +496,96 @@ $("#DEMOCRACY_DEPTName").val(session.deptName);
 
 
 
+if ($("input[name='DEMOCRACY_USER']").val()==''||$("input[name='DEMOCRACY_USER']").val()==null||$("input[name='DEMOCRACY_USER']").val()==undefined ){
+	var macoValue = "";
+		$.ajax({
+		url: 'platform/eform/bpmsCRUDClient/getMarcoValue',
+		type: 'POST',
+		async:false,
+		data: {
+			exp: "@{userName}"
+		},
+		dataType: 'json',
+		success: function (backData, status) {
+			if (backData.errorInfo){
+				layer.alert(backData.errorInfo, {
+						icon: 7
+					});
+			}else{
+				macoValue = backData.value;
+			}
+		}
+	});
+	$("#DEMOCRACY_USER").val(macoValue);
+}
+
+
+
+    if(pageParams.entryId == undefined){
+var userId = pageParams.session.userId;
+$.ajax({
+ url:"avicit/pb/organize/partyOrganMember/partyOrganMemberTelController/getUser/"+userId,
+ type:"POST",
+ dataType:"JSON",
+ success:function(e){
+ if(e==null||e.rows.length==0){
+ layer.msg('未获取到对应电话');
+ }else{
+ $("#tel").val(e.rows[0].attribute10);
+ }
+ },
+ error:function(e){
+ //layer.msg('网络异常，未找到对应接口,无法带入联系电话');
+ }
+});
+}
+
+
+
+
+
+            $('#DEMOCRACY_DATE').datetimepicker({
+            oneLine:true,
+            showButtonPanel:true,
+            showSecond:false,
+            beforeShow: function(selectedDate,inst) {
+                inst.initflag = false;
+                if($('#'+selectedDate.id).val()==""){
+                    inst.initflag = true;
+                    $('#'+selectedDate.id).val(formatDateTimeNoSecond(new Date()));
+                }
+            },
+            afterShow: function(selectedDate,inst) {
+                if (inst.initflag){
+                    $('#'+selectedDate.id).val('');
+                    inst.initflag = false;
+                }
+            }
+        });
+    
+
+
+    $('#DEMOCRACY_DATE_button').click(function(event) {
+			/* Act on the event */
+	    			 $('#DEMOCRACY_DATE').datetimepicker('show');
+			 $('#DEMOCRACY_DATE').datetimepicker().trigger('click');
+	    			
+		});
+        
+
 if ($('#LEAD_JOIN').val() == null||$('#LEAD_JOIN').val()==''||$('#LEAD_JOIN').val()==undefined)$('#LEAD_JOIN').val("N");            $('#LEAD_JOIN').on('change',function(e){
             if(e.currentTarget.value ==="Y"){
- $('#LEAD_NAMEName').css('pointer-events',"")
- $("#LEAD_NAMEButton").css('pointer-events',"")
- $('#LEAD_NAMEName').parent().css('cursor',"")
+ $('#LEAD_NAMEName').parent().css('cursor',"");
+ $('#LEAD_NAMEName').removeAttr('disabled')
 }else{
-$('#LEAD_NAMEName').css('pointer-events',"none")
- $("#LEAD_NAMEButton").css('pointer-events',"none")
- $('#LEAD_NAMEName').parent().css('cursor',"not-allowed")
+ $('#LEAD_NAMEName').parent().css('cursor',"not-allowed");
+ $('#LEAD_NAMEName').attr('disabled','disabled')
 }
         });
-            $('#LEAD_NAMEName').css('pointer-events',"none")
-$("#LEAD_NAMEButton").css('pointer-events',"none")
-$('#LEAD_NAMEName').parent().css('cursor',"not-allowed")
-$('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').css('pointer-events',"none")
+            $(document).ready(function(){
+$('#LEAD_NAMEName').attr('disabled','disabled')
+$('#LEAD_NAMEName').parent().css('cursor',"not-allowed");
+})
 
 
 
@@ -452,6 +601,12 @@ var secretLevelValue = '';
 var defaultOrgId = '';
 
 
+var defaultSelectOrgIds = $("#").attr("orgidentity");
+var defaultSelectOrgId =pageParams.session.orgIndentity;
+if (defaultSelectOrgIds&&defaultSelectOrgIds.indexOf(";")){
+defaultSelectOrgId = defaultSelectOrgIds.split(";")[0];
+}
+if (defaultSelectOrgId==undefined||defaultSelectOrgId==""){defaultSelectOrgId = pageParams.session.orgIndentity;}
 
 var defaultLoadDeptId = "";
 
@@ -461,14 +616,17 @@ var defaultLoadDeptId = "";
 var defaultLoadRoleId = "";
 
 var defaultLoadGroupId = "";
-
+        if (defaultSelectOrgId == "ORG_ROOT"){
+    defaultLoadGroupId = "948e83e38e120a84018e17d7bc485f05";
+    }
+    
 var defaultLoadPositionId = "";
 
 new H5CommonSelect({secretLevel:secretLevelValue,type:'userSelect',
 defaultOrgId:defaultOrgId,
 
-idFiled:'LEAD_NAME',textFiled:'LEAD_NAMEName',viewScope:'currentOrg',selectModel:'multi'
-,hidTab:[],defaultLoadRoleId:defaultLoadRoleId,defaultLoadDeptId:defaultLoadDeptId
+idFiled:'LEAD_NAME',textFiled:'LEAD_NAMEName',viewScope:'currentOrg',selectModel:'single'
+,hidTab:['dept', 'role', 'position'],defaultLoadRoleId:defaultLoadRoleId,defaultLoadDeptId:defaultLoadDeptId
 ,defaultLoadGroupId:defaultLoadGroupId,defaultLoadPositionId:defaultLoadPositionId
 
 ,callBack:function(user){
@@ -515,130 +673,143 @@ beforeSaveEvent.addBeforeSaveEvent(function(formData){
 
 
 
+workflowControlForAccess.addcontrolFunc(function(tagId, operability){
+	if (tagId != "uIkjD57LcyQ18mIfp2zJt0K6kfUADjfd"){
+		return;
+	}
+	if(operability){
+		$("#uIkjD57LcyQ18mIfp2zJt0K6kfUADjfd").show();
+	}else{
+		$("#uIkjD57LcyQ18mIfp2zJt0K6kfUADjfd").hide();
+	}
+});
 
-            $('#DEMOCRACY_DATE').datepicker({
+    $("#uIkjD57LcyQ18mIfp2zJt0K6kfUADjfd").css('border','1px solid ')
+
+
+
+
+            $('#DEMOCRACY_END_DATE').datetimepicker({
             oneLine:true,
-            showButtonPanel:true});
-    
-
-
-    $('#DEMOCRACY_DATE_button').click(function(event) {
-			/* Act on the event */
-	    			 $('#DEMOCRACY_DATE').datepicker('show');
-			 $('#DEMOCRACY_DATE').datepicker().trigger('click');
-					
-		});
-        
-
-
-
-            $('#DEMOCRACY_END_DATE').datepicker({
-            oneLine:true,
-            showButtonPanel:true});
-    
-
-
-                
-            $('#DEMOCRACY_END_DATE').attr("readonly","readonly").attr("disabled","disabled");;
-                            $('#DEMOCRACY_END_DATE').on('change',function(e){
-            if(e.currentTarget.value !== ""){
-$('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').css('pointer-events',"");
-}
+            showButtonPanel:true,
+            showSecond:false,
+            beforeShow: function(selectedDate,inst) {
+                inst.initflag = false;
+                if($('#'+selectedDate.id).val()==""){
+                    inst.initflag = true;
+                    $('#'+selectedDate.id).val(formatDateTimeNoSecond(new Date()));
+                }
+            },
+            afterShow: function(selectedDate,inst) {
+                if (inst.initflag){
+                    $('#'+selectedDate.id).val('');
+                    inst.initflag = false;
+                }
+            }
         });
-        
+    
+
+
+                            $('#DEMOCRACY_END_DATE').attr("readonly","readonly").attr("disabled","disabled");
+                
 
 
 attachBpmId =   null  ;
 
 var fileformValue = id;
 
-
-$('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').uploaderExt({
-    eformUI: 'bootstrap',
-    formId: fileformValue,
-    tableName: '',
-    afterUpload: afterUploadEvent,
-    uploadError:uploadError,
-    elementId: 'xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t',
-    showType: 'span',
-        ready:function(){
-        var addOrDelInfo = null;
-        if(typeof attachBpmInfo != "undefined" &&  attachBpmInfo!=null && attachBpmInfo != 'undefined'){
-            addOrDelInfo = attachBpmInfo.delOrAdd['xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t'];
-        }
-        if (addOrDelInfo!=null && addOrDelInfo != 'undefined'){
-            if(addOrDelInfo.operability) {
-                if('span' == 'span'){
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').children('.uploader-panel-heading').each(function (index, element) {
-                    $(element).find(".uploader-file-picker").css("display", "");
-                    });
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('div.uploader-file-item').unbind("mouseover");
-                }else{
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('.attachment_tableDel').show();
-                }
-
-
-            }else {
-                if('span' == 'span'){
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').children('.uploader-panel-heading').each(function (index, element) {
-                    $(element).find(".uploader-file-picker").css("display", "none");
-                    });
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('div.uploader-file-item').bind('mouseover',function(){
-                    $('div.uploader-file-infos').find(".uploader-file-infos-delete").css("display", "none");
-                    });
-                }else{
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('.attachment_tableDel').hide();
-                }
-
-
+setTimeout(function(){
+    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').uploaderExt({
+        eformUI: 'bootstrap',
+        formId: fileformValue,
+        tableName: '',
+            secretLevel: 'PLATFORM_FILE_SECRET_LEVEL',
+                allowEditsecretLevel:true,
+                    afterUpload: afterUploadEvent,
+        uploadError:uploadError,
+        elementId: 'xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t',
+        showType: 'span',
+                ready:function(){
+            var addOrDelInfo = null;
+            if(typeof attachBpmInfo != "undefined" &&  attachBpmInfo!=null && attachBpmInfo != 'undefined'){
+                addOrDelInfo = attachBpmInfo.delOrAdd['xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t'];
             }
-        }else{
-            if(true == true ? false : true){
-                if('span' == 'span'){
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').children('.uploader-panel-heading').each(function (index, element) {
+            if (addOrDelInfo!=null && addOrDelInfo != 'undefined'){
+                if(addOrDelInfo.operability) {
+                    if('span' == 'span'){
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').children('.uploader-panel-heading').each(function (index, element) {
+                        $(element).find(".uploader-file-picker").css("display", "");
+                        });
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('div.uploader-file-item').unbind("mouseover");
+                    }else{
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('.attachment_tableDel').show();
+                    }
+
+
+                }else {
+                    if('span' == 'span'){
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').children('.uploader-panel-heading').each(function (index, element) {
                         $(element).find(".uploader-file-picker").css("display", "none");
-                    });
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('div.uploader-file-item').bind('mouseover',function(){
+                        });
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('div.uploader-file-item').bind('mouseover',function(){
                         $('div.uploader-file-infos').find(".uploader-file-infos-delete").css("display", "none");
-                    });
-                }else{
-                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('.attachment_tableDel').hide();
+                        });
+                    }else{
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('.attachment_tableDel').hide();
+                    }
+
+
+                }
+            }else{
+                if(true == true ? false : true){
+                    if('span' == 'span'){
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').children('.uploader-panel-heading').each(function (index, element) {
+                            $(element).find(".uploader-file-picker").css("display", "none");
+                        });
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('div.uploader-file-item').bind('mouseover',function(){
+                            $('div.uploader-file-infos').find(".uploader-file-infos-delete").css("display", "none");
+                        });
+                    }else{
+                        $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find('.attachment_tableDel').hide();
+                    }
                 }
             }
-        }
 
-        var editSecretInfo = attachBpmInfo.editSecret['xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t'];
+            var editSecretInfo = attachBpmInfo.editSecret['xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t'];
 
-        if (editSecretInfo!=null && editSecretInfo != 'undefined'){
-            if(editSecretInfo.modify){
-                $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find("[name='fileSecretLevel']").each(function(i,e){
-                    $(e).removeAttr("disabled");
-                });
-            }else{
-                $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find("[name='fileSecretLevel']").each(function(i,e){
-                    $(e).attr("disabled","disabled");
-                });
+            if (editSecretInfo!=null && editSecretInfo != 'undefined'){
+                if(editSecretInfo.modify){
+                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find("[name='fileSecretLevel']").each(function(i,e){
+                        $(e).removeAttr("disabled");
+                    });
+                }else{
+                    $('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').find("[name='fileSecretLevel']").each(function(i,e){
+                        $(e).attr("disabled","disabled");
+                    });
+                }
             }
-        }
-    },
-    
-    //设计器参数
-    saveType: 'DataBase',
-    expand: true == true ? true : false,
-    multiple: true == true ? true : false,
-    allowDownload: true == true ? true : false,
-    allowAdd: true == true ? true : false,
-    allowDelete: true == true ? true : false,
-    allowEncry: false == true ? true : false,
-        allowSameName: false == true ? true : false,
-    collapsible: true == true ? true : false,
-    fileNumLimit: 10,
-    fileSizeLimit: '0',
-    formSecret: '',
-    accept:
-                    ''
-        });
-
+        },
+        
+        //设计器参数
+        saveType: 'DataBase',
+            expand: true == true ? true : false,
+        multiple: true == true ? true : false,
+            allowDownload: true == true ? true : false,
+        allowAdd: true == true ? true : false,
+        allowDelete: true == true ? true : false,
+                allowEncry: false == true ? true : false,
+                        allowSameName: false == true ? true : false,
+        collapsible: true == true ? true : false,
+        fileNumLimit: 10,
+        fileSizeLimit: '0',
+        formSecret: 'FILE_TYPE',
+        accept:
+                            {extensions:'zip,rar,7z'}
+                });
+},100);
+beforeSaveEvent.addBeforeSaveEvent(function(formData){
+    if (!$('#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t').uploaderExt('validateSecret')){return false;}
+});
 
 workflowControlForAttachRequired.addcontrolFunc(function(tagId,required,obj){
     if (tagId != "xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t"){
@@ -688,6 +859,113 @@ workflowControlForAccess.addcontrolFunc(function(tagId, operability){
         $("#xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t").hide();
     }
 });
+
+
+    $('#JW_JOIN').attr("disabled","disabled");            $('#JW_JOIN').on('change',function(e){
+            if(e.currentTarget.value ==="Y"){
+ $('#JW_NAMEName').parent().css('cursor',"");
+ $('#JW_NAMEName').removeAttr('disabled')
+}else{
+ $('#JW_NAMEName').parent().css('cursor',"not-allowed");
+ $('#JW_NAMEName').attr('disabled',"disabled")
+}
+        });
+            $('#JW_NAMEName').parent().css('cursor',"not-allowed")
+$('#JW_NAMEName').attr('disabled',"disabled")
+
+
+
+
+$('#JW_NAMEName').on(' focus',function(e){
+
+JW_NAMEClickFun();
+this.blur();
+});
+
+function JW_NAMEClickFun(){
+var secretLevelValue = '';
+var defaultOrgId = '';
+
+
+var defaultSelectOrgIds = $("#").attr("orgidentity");
+var defaultSelectOrgId =pageParams.session.orgIndentity;
+if (defaultSelectOrgIds&&defaultSelectOrgIds.indexOf(";")){
+defaultSelectOrgId = defaultSelectOrgIds.split(";")[0];
+}
+if (defaultSelectOrgId==undefined||defaultSelectOrgId==""){defaultSelectOrgId = pageParams.session.orgIndentity;}
+
+var defaultLoadDeptId = "";
+
+        if (defaultSelectOrgId == "ORG_ROOT"){
+    defaultLoadDeptId = "40283881641bf84d01641cc2c0fd077e,40283881641bf84d01641cc2bf1a0764";
+    }
+
+    
+
+
+
+var defaultLoadRoleId = "";
+
+var defaultLoadGroupId = "";
+        if (defaultSelectOrgId == "ORG_ROOT"){
+    defaultLoadGroupId = "948e83e38e54e848018e601ad9a078df";
+    }
+    
+var defaultLoadPositionId = "";
+
+new H5CommonSelect({secretLevel:secretLevelValue,type:'userSelect',
+defaultOrgId:defaultOrgId,
+
+idFiled:'JW_NAME',textFiled:'JW_NAMEName',viewScope:'currentOrg',selectModel:'single'
+,hidTab:['dept', 'role', 'position'],defaultLoadRoleId:defaultLoadRoleId,defaultLoadDeptId:defaultLoadDeptId
+,defaultLoadGroupId:defaultLoadGroupId,defaultLoadPositionId:defaultLoadPositionId
+
+,callBack:function(user){
+
+        
+}
+
+});
+}
+    $('#JW_NAMEButton').off('click');
+
+
+
+
+beforeSaveEvent.addBeforeSaveEvent(function(formData){
+        var JW_NAME_colSecret = $('#');
+    var secretLevelValue;
+    if(JW_NAME_colSecret&&$('#').val()){
+        secretLevelValue = $('#').val();
+    }
+    var JW_NAME_selectedList = $('#JW_NAME').val();
+    var flag = true;
+    if(secretLevelValue&&JW_NAME_selectedList){
+        $.ajax({
+            async : false,
+            url : 'platform/eform/plugin/checkUserSecret',
+            data : {'secretLevelValue' : secretLevelValue,'selectedList':JW_NAME_selectedList},
+            type : 'post',
+            dataType : 'json',
+            success : function(result) {
+                if(result.msg!=""){
+                    layer.msg("选用户控件:" + "纪检/人力参会人员" + result.msg);
+                    flag = false;
+                }
+            },
+            error : function(result){
+            	alert(result);
+            }
+        });
+    }
+    return flag;
+});
+
+
+
+
+    $('#LEAD_YN').attr("disabled","disabled");if ($('#FILE_TYPE').val() == null||$('#FILE_TYPE').val()==''||$('#FILE_TYPE').val()==undefined)
+$('#FILE_TYPE').val("2");
 
 
 	setTimeout(function(){

@@ -29,6 +29,7 @@ String importlibs = "common,table,form,fileupload,tree";
 <sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButton5d45fbe8120b514bad199132e7ccd996293d" permissionDes="编辑"><a id="tableToolbarButton5d45fbe8120b514bad199132e7ccd996293d" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="编辑"><i class="fa fa-file-text-o"></i> 编辑</a></sec:accesscontrollist>
 <sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButton51dd5ac427e42144cd28eb7e2fc6409ccf77" permissionDes="删除"><a id="tableToolbarButton51dd5ac427e42144cd28eb7e2fc6409ccf77" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="删除"><i class="fa fa-trash-o"></i> 删除</a></sec:accesscontrollist>
 <sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButtonf5d8c90e489ab94cd6585a2579256b884155" permissionDes="打印"><a id="tableToolbarButtonf5d8c90e489ab94cd6585a2579256b884155" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="打印"><i class="fa fa-fw fa-download"></i> 打印</a></sec:accesscontrollist>
+<sec:accesscontrollist hasPermission="3" domainObject="tableToolbarButton42e25b77592b1c4860c8c4c035045d7036bc" permissionDes="三会一课统计"><a id="tableToolbarButton42e25b77592b1c4860c8c4c035045d7036bc" href="javascript:void(0)" style="float:left;" class="btn btn-primary form-tool-btn btn-sm " role="button" title="三会一课统计"><i class="fa fa-fw fa-bar-chart-o"></i> 三会一课统计</a></sec:accesscontrollist>
 </div><div class="toolbar-right"><div class="input-group form-tool-search"  style="width:200px;"> <input type="text" name="keyWordtablee1b6c5024d46264e51cb95aed8c3acdced28" id="keyWordtablee1b6c5024d46264e51cb95aed8c3acdced28" style="width:238px;" class="form-control input-sm" placeholder="请输入查询条件"><label id="keyWordBttablee1b6c5024d46264e51cb95aed8c3acdced28" class="icon icon-search form-tool-searchicon"></label>
 </div>
 <div class="input-group-btn form-tool-searchbtn"><a id="searchAlltablee1b6c5024d46264e51cb95aed8c3acdced28" href="javascript:void(0)" class="btn btn-defaul btn-sm" role="button" title="高级查询">高级查询 <span class="caret"></span></a>
@@ -42,6 +43,50 @@ String importlibs = "common,table,form,fileupload,tree";
   <span class="input-group-addon">
    <i class="glyphicon glyphicon-user"></i>
  </span>
+</div></div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="会议名称">会议名称</div><div class="input-group-sm col-xs-9 cellcontrol"><input type="text" value="" id="MEET_NAME" name="MEET_NAME"
+	class="form-control input-sm cellinput">
+</div></div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="会议类型">会议类型</div>
+<div class="input-group-sm col-xs-9 cellcontrol">
+ <pt6:h5select css_class="form-control input-sm cellinput" defaultValue="" id="MEET_TYPE" name="MEET_TYPE" title="会议类型" isNull="true" lookupCode="TF_MEET_TYPE" />
+</div></div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="申请人所在党支部">申请人所在党支部</div><div class="input-group-sm col-xs-9 cellcontrol"><input type="text" value="" id="PARTY_NAME" name="PARTY_NAME"
+	class="form-control input-sm cellinput">
+</div></div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="会议日期">会议日期</div>
+<div class="input-group input-group-sm col-xs-9 cellcontrol ">
+<input type="text" class="form-control cellinput-addon time-picker"  value="" id="MEET_DATE_START" name="MEET_DATE_START" >
+<span id="MEET_DATE_START_button" class="input-group-addon data-box-act">
+	<i class="glyphicon glyphicon-calendar"></i>
+</span>
+</div>
+</div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="会议日期">至</div>
+<div class="input-group input-group-sm col-xs-9 cellcontrol ">
+<input type="text" class="form-control cellinput-addon time-picker"  value="" id="MEET_DATE_END" name="MEET_DATE_END" >
+<span id="MEET_DATE_END_button" class="input-group-addon data-box-act">
+	<i class="glyphicon glyphicon-calendar"></i>
+</span>
+</div>
+</div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="会议关键词">会议关键词</div><div class="input-group-sm col-xs-9 cellcontrol"><input type="text" value="" id="MEET_ZJ" name="MEET_ZJ"
+	class="form-control input-sm cellinput">
+</div></div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="党组织类型">党组织类型</div>
+<div class="input-group-sm col-xs-9 cellcontrol">
+ <pt6:h5select css_class="form-control input-sm cellinput" defaultValue="" id="tableColumn882f4c38397b3f43b1e9d68170a548e9c347" name="tableColumn882f4c38397b3f43b1e9d68170a548e9c347" title="党组织类型" isNull="true" lookupCode="PARTY_ORG_TYPE" />
+</div></div>
+<div class="col-xs-6 formcell">
+<div class="col-xs-3 celllabel" title="参会组织名称">参会组织名称</div><div class="input-group-sm col-xs-9 cellcontrol"><input type="text" value="" id="JOIN_ORG" name="JOIN_ORG"
+	class="form-control input-sm cellinput">
 </div></div>
 </form></div>
 </blockdom>
@@ -72,5 +117,5 @@ var pageParams = {
 };
 var filterParams = {};
 </script>
-<script src="avicit/eformmodule/view/ThreeSessionAndOneLession/V1/bootstrap/view1705309919000.js?_=1705368978084"></script>
+<script src="avicit/eformmodule/view/ThreeSessionAndOneLession/V1/bootstrap/view1725953949000.js?_=1782716740442"></script>
 </html> 

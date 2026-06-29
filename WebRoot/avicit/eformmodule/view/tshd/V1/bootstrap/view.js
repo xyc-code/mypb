@@ -401,4 +401,16 @@ $("#tableToolbarButton4649702b20267f469e29a6ab8fbf71f943f4").bind('click',functi
 	}   																						
 }																								
 );
+$("#tableToolbarButton46fb62d88794444c339855cd0e4aa942ccea").bind('click',function(event){var ids = $('#tablee512ca20c2b78d401288181e70164a5d4af2').jqGrid('getGridParam', 'selarrrow');
+    if (!ids || ids.length === 0) {
+        layer.alert('请选择要导出的数据', {icon: 7, title: '提示'});
+        return;
+    }
+
+    var code = 'TEST';
+    var url = 'api/pb/excelExportConfig/export'
+        + '?code=' + encodeURIComponent(code)
+        + '&id=' + encodeURIComponent(ids.join(','));
+
+    window.open(url);});
 ;});	 

@@ -187,8 +187,8 @@ const platformData = [
         id: 'internal',
         name: '对内宣传',
         children: [
-            { id: 'eastern-news', name: '东安报' },
-            { id: 'eastern-wechat', name: '东安微信' }
+            { id: 'eastern-news', name: 'XX报' },
+            { id: 'eastern-wechat', name: 'XX微信' }
         ]
     },
     {

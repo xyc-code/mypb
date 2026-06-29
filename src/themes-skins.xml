@@ -93,7 +93,7 @@
       </skins>
    </themes-skins> 
       <themes-skins> 
-      <type-name>东安党建新</type-name>  
+      <type-name>XX党建新</type-name>  
       <type-key>dasimple</type-key>  
       <preview>avicit/platform6/portal/themes/simple/images/preview.png</preview>  
       <impl>avicit.platform6.msystem.portal.skins.def.impl.PortalThemesDaSkinsSimpleImpl</impl> 

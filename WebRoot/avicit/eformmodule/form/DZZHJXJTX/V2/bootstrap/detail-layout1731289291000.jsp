@@ -120,7 +120,7 @@ String importlibs = "common,table,form,fileupload,tree";
    </tr> 
    <tr style="height: 66px;"> 
     <td style="width:16%; text-align: right; border: 1px solid; height: 66px;"><label for="请选择" class=" " style="color:#ff0000;;" id="请选择EformLabel"> 换届选举要求： </label> </td> 
-    <td style="width:58%; border: 1px solid; height: 66px;" colspan="3"><p><span style="color: #007fcc; font-family: 宋体;">1.换届提醒通知根据公司《关于基层党组织按期换届提醒督促机制的通知》（东安党委〔2019〕41号）和《基层党组织工作细则》(第4版)提出。</span></p><p><span style="font-family: 宋体; color: #007fcc;">2.党组织任期届满前，请主动逐级与上级党组织、公司党委沟通换届情况。</span></p><p><span style="font-family: 宋体; color: #007fcc;">3.如有特殊情况不能按期换届的，应提前向公司党委提出请示，未经批准的，不得延期或提前换届。</span></p></td> 
+    <td style="width:58%; border: 1px solid; height: 66px;" colspan="3"><p><span style="color: #007fcc; font-family: 宋体;">1.换届提醒通知根据公司《关于基层党组织按期换届提醒督促机制的通知》（XX党委〔2019〕41号）和《基层党组织工作细则》(第4版)提出。</span></p><p><span style="font-family: 宋体; color: #007fcc;">2.党组织任期届满前，请主动逐级与上级党组织、公司党委沟通换届情况。</span></p><p><span style="font-family: 宋体; color: #007fcc;">3.如有特殊情况不能按期换届的，应提前向公司党委提出请示，未经批准的，不得延期或提前换届。</span></p></td> 
    </tr> 
   </tbody> 
  </table>

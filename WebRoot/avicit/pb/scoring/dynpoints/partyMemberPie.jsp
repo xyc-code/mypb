@@ -84,7 +84,7 @@ avicAjax.ajax({
 				    			  },*/
 				    		  series: [
 				    		    {
-				    		      name: '中国航发东安党委',
+				    		      name: '中国航发XX党委',
 				    		      type: 'pie',
 				    		      radius: '50%',
 				    		      data:r.records,

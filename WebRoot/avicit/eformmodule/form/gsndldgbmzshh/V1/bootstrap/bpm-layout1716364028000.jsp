@@ -47,51 +47,100 @@ String importlibs = "common,table,form,fileupload,tree";
   </div> 
   <table style="" id="kI3YIqIInwvzsGlPCP7pHxK8lKW7wdxN" class="form_commonTable1"> 
    <tbody> 
-    <tr> 
-     <td style="width:6%; text-align: right;"><label for="DEMOCRACY_DEPTName" class=" " style=";" id="QAZEtdFTOICrAT1eAOMls6RtvVJzErME"> <i class="required">*</i>单位： </label> </td> 
-     <td style="width:19%;"> 
+    <tr style="height: 30px;"> 
+     <td style="width:10%; text-align: right; height: 30px;"><label for="DEMOCRACY_DEPTName" class=" " style=";" id="QAZEtdFTOICrAT1eAOMls6RtvVJzErME"> <i class="required">*</i>单位： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
       <div class="input-group input-group-sm " style="width:100%"> 
        <input type="hidden" class="input-sm" id="DEMOCRACY_DEPT" name="DEMOCRACY_DEPT" title="单位" value="<c:out  value='${map["DEMOCRACY_DEPT"]}'/>"> 
        <input type="text" class="form-control input-sm" style=" " id="DEMOCRACY_DEPTName" name="DEMOCRACY_DEPTName" required disabled title="单位" value="<c:out  value='${map["DEMOCRACY_DEPTName"]}'/>"> 
        <span class="input-group-addon org-box-act" id="DEMOCRACY_DEPTButton"> <i class="glyphicon glyphicon-equalizer"></i> </span> 
       </div> </td> 
-     <td style="width:25%; text-align: right;"><label for="LEAD_JOIN" class=" " style=";" id="XymsSDJ163i9n1DRFqjiEfMXYxfZGYD8"> 主管公司领导是否参加： </label> </td> 
-     <td style="width:25%;"> 
+     <td style="width:21%; text-align: right; height: 30px;"><label for="DEMOCRACY_USER" class=" " style=";" id="DEMOCRACY_USEREformLabel"> <i class="required">*</i>拟稿人： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
       <div class="input-group-sm "> 
-       <select class="form-control input-sm" style="; " id="LEAD_JOIN" name="LEAD_JOIN" title="主管公司领导是否参加"> <option value="">请选择</option> <option value="N" <c:if test="${map['LEAD_JOIN'] eq 'N'}">selected</c:if> >否</option> <option value="Y" <c:if test="${map['LEAD_JOIN'] eq 'Y'}">selected</c:if> >是</option> </select> 
-      </div> </td> 
+       <input type="text" class="form-control input-sm" style=";" id="DEMOCRACY_USER" name="DEMOCRACY_USER" readonly title="拟稿人" maxlength="1000" value="<c:out  value='${map["DEMOCRACY_USER"]}'/>"> 
+      </div></td> 
     </tr> 
-    <tr> 
-     <td style="width:6%; text-align: right;"><label for="LEAD_NAMEName" class=" " style=";" id="BaZ2oEVXADiRGQa7M8wZuEenaPHRFTCN"> 公司领导姓名： </label> </td> 
-     <td style="width:19%;"> 
+    <tr style="height: 30px;"> 
+     <td style="width:10%; text-align: right; height: 30px;"><label for="请选择" class=" " style=";" id="请选择EformLabel"> <i class="required">*</i>联系电话： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
+      <div class="input-group-sm "> 
+       <input type="text" class="form-control input-sm" style=" ; " required id="tel" name="DEMOCRACY_TEL" title="联系电话" maxlength="255" value="<c:out  value='${map["DEMOCRACY_TEL"]}'/>"> 
+      </div></td> 
+     <td style="width:21%; text-align: right; height: 30px;"><label for="DEMOCRACY_DATE" class=" " style=";" id="ga4wNgL5JOzMmCeAj5NYYa6Qfgk4gSlj"> <i class="required">*</i>召开日期： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
+      <div class="input-group input-group-sm " style="width:100%"> 
+       <input type="text" title="召开日期报送" class="form-control time-picker input-sm" style=";" required id="DEMOCRACY_DATE" name="DEMOCRACY_DATE" value="${map['DEMOCRACY_DATE']}" readonly> 
+       <span id="DEMOCRACY_DATE_button" class="input-group-addon data-box-act"><i class="glyphicon glyphicon-calendar"></i></span> 
+      </div></td> 
+    </tr> 
+    <tr style="height: 47px;"> 
+     <td style="width:10%; text-align: right; height: 47px;"><label for="LEAD_JOIN" class=" " style=";" id="XymsSDJ163i9n1DRFqjiEfMXYxfZGYD8"> <i class="required">*</i>主管公司领导是否参加： </label> </td> 
+     <td style="width:21%; height: 47px;"> 
+      <div class="input-group-sm "> 
+       <select class="form-control input-sm" style="; " required id="LEAD_JOIN" name="LEAD_JOIN" title="主管公司领导是否参加"> <option value="N" <c:if test="${map['LEAD_JOIN'] eq 'N'}">selected</c:if> >否</option> <option value="Y" <c:if test="${map['LEAD_JOIN'] eq 'Y'}">selected</c:if> >是</option> </select> 
+      </div> </td> 
+     <td style="width:21%; text-align: right; height: 47px;"><label for="LEAD_NAMEName" class=" " style=";" id="BaZ2oEVXADiRGQa7M8wZuEenaPHRFTCN"> 公司领导姓名： </label> </td> 
+     <td style="width:21%; height: 47px;"> 
       <div class="input-group input-group-sm " style="width:100%;"> 
        <input type="hidden" class="input-sm" id="LEAD_NAME" name="LEAD_NAME" title="公司领导姓名" value="<c:out  value='${map["LEAD_NAME"]}'/>"> 
        <input type="text" class="form-control input-sm" style=" " id="LEAD_NAMEName" name="LEAD_NAMEName" title="公司领导姓名" value="<c:out  value='${map["LEAD_NAMEName"]}'/>"> 
        <span class="input-group-addon user-box-act" id="LEAD_NAMEButton"> <i class="glyphicon glyphicon-user"></i> </span> 
       </div> </td> 
-     <td style="width:25%; text-align: right;"><label for="DEMOCRACY_DATE" class=" " style=";" id="ga4wNgL5JOzMmCeAj5NYYa6Qfgk4gSlj"> <i class="required">*</i>召开日期报送： </label> </td> 
-     <td style="width:25%;"> 
-      <div class="input-group input-group-sm " style="width:100%"> 
-       <input type="text" title="召开日期报送" class="form-control date-picker input-sm" style=";" required id="DEMOCRACY_DATE" name="DEMOCRACY_DATE" value="${map['DEMOCRACY_DATE']}" readonly> 
-       <span id="DEMOCRACY_DATE_button" class="input-group-addon data-box-act"><i class="glyphicon glyphicon-calendar"></i></span> 
+    </tr> 
+    <tr style="height: 47px;"> 
+     <td style="width:10%; text-align: right; height: 47px;"><label for="DEMOCRACY_WZ" class=" " style=";" id="DEMOCRACY_WZEformLabel"> <i class="required">*</i>召开地点: </label> </td> 
+     <td style="width:63%; height: 47px;" colspan="3"> 
+      <div class="input-group-sm "> 
+       <input type="text" class="form-control input-sm" style=" ; " required id="DEMOCRACY_WZ" name="DEMOCRACY_WZ" title="召开地点" maxlength="255" value="<c:out  value='${map["DEMOCRACY_WZ"]}'/>"> 
+      </div>备注：需要详细填至XX工房XX室</td> 
+    </tr> 
+    <tr style="height: 47px;"> 
+     <td style="width:73%; height: 47px; text-align: center;" colspan="4"> 
+      <div id="uIkjD57LcyQ18mIfp2zJt0K6kfUADjfd" class="bpm_self_class " title=""> 
       </div></td> 
     </tr> 
-    <tr> 
-     <td style="width:6%; text-align: right;"><label for="DEMOCRACY_END_DATE" class=" " style=";" id="QilmpxTmrx64tupawfxYiN8XcVBs5RIt"> 会后材料报送： </label> </td> 
-     <td style="width:19%;"> 
+    <tr style="height: 30px;"> 
+     <td style="width:10%; text-align: right; height: 30px;"><label for="DEMOCRACY_END_DATE" class=" " style=";" id="QilmpxTmrx64tupawfxYiN8XcVBs5RIt"> 会后材料报送日期： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
       <div class="input-group input-group-sm " style="width:100%"> 
-       <input type="text" title="会后材料报送" class="form-control date-picker input-sm" style=";" readonly id="DEMOCRACY_END_DATE" name="DEMOCRACY_END_DATE" value="${map['DEMOCRACY_END_DATE']}"> 
+       <input type="text" title="会后材料报送日期" class="form-control time-picker input-sm" style=";" readonly id="DEMOCRACY_END_DATE" name="DEMOCRACY_END_DATE" value="${map['DEMOCRACY_END_DATE']}"> 
        <span id="DEMOCRACY_END_DATE_button" class="input-group-addon data-box-act"><i class="glyphicon glyphicon-calendar"></i></span> 
       </div></td> 
-     <td style="width:25%; text-align: right;">&nbsp;<label for="xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t" class=" " style=";" id="xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024tEformLabel"> 附件上传： </label> </td> 
-     <td style="width:25%;"> 
-      <div id="xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t" class="attachment_div eform_mutiattach_auth bpm_self_class" title="附件上传："> 
+     <td style="width:21%; text-align: right; height: 30px;">&nbsp;<label for="xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t" class=" " style=";" id="xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024tEformLabel"> 会后材料上传(以压缩包形式上传)： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
+      <div id="xIUBHIWNmt2B5DuvgSsyG0Yj7lP1024t" class="attachment_div eform_mutiattach_auth bpm_self_class" title="会后材料上传(以压缩包形式上传)："> 
       </div></td> 
     </tr> 
-    <tr></tr> 
+    <tr style="height: 30px;"> 
+     <td style="width:10%; text-align: right; height: 30px;"><label for="JW_JOIN" class=" " style=";" id="JW_JOINEformLabel"> 纪检/人力参会人员是否参加： </label> </td> 
+     <td style="width:21%; height: 30px;"> 
+      <div class="input-group-sm "> 
+       <select class="form-control input-sm" style="; " readonly id="JW_JOIN" name="JW_JOIN" title="纪检/人力参会人员是否参加"> <option value="">请选择</option> <option value="N" <c:if test="${map['JW_JOIN'] eq 'N'}">selected</c:if> >否</option> <option value="Y" <c:if test="${map['JW_JOIN'] eq 'Y'}">selected</c:if> >是</option> </select> 
+      </div> </td> 
+     <td style="width:21%; text-align: right; height: 30px;"><label for="JW_NAMEName" class=" " style=";" id="JW_NAMEEformLabel"> 纪检/人力参会人员: </label> </td> 
+     <td style="width:21%; height: 30px;"> 
+      <div class="input-group input-group-sm " style="width:100%;"> 
+       <input type="hidden" class="input-sm" id="JW_NAME" name="JW_NAME" title="纪检/人力参会人员" value="<c:out  value='${map["JW_NAME"]}'/>"> 
+       <input type="text" class="form-control input-sm" style=" " id="JW_NAMEName" name="JW_NAMEName" disabled title="纪检/人力参会人员" value="<c:out  value='${map["JW_NAMEName"]}'/>"> 
+       <span class="input-group-addon user-box-act" id="JW_NAMEButton"> <i class="glyphicon glyphicon-user"></i> </span> 
+      </div> </td> 
+    </tr> 
+    <tr style="height: 30px;"> 
+     <td style="width:10%; text-align: right; height: 30px;"><label for="LEAD_YN" class=" " style=";" id="LEAD_YNEformLabel"> 公司领导最终是否参会： </label> </td> 
+     <td style="width:63%; height: 30px;" colspan="3"> 
+      <div class="input-group-sm "> 
+       <select class="form-control input-sm" style="; " readonly id="LEAD_YN" name="LEAD_YN" title="公司领导最终是否参会："> <option value="">请选择</option> <option value="Y" <c:if test="${map['LEAD_YN'] eq 'Y'}">selected</c:if> >是</option> <option value="N" <c:if test="${map['LEAD_YN'] eq 'N'}">selected</c:if> >否</option> </select> 
+      </div> </td> 
+    </tr> 
    </tbody> 
   </table> 
  </div>
+ <p> </p>
+ <div class="input-group-sm "> 
+  <input type="text" class="form-control input-sm" style=" ; display:none;" id="FILE_TYPE" name="FILE_TYPE" title="文件密级" maxlength="255" value="<c:out  value='${map["FILE_TYPE"]}'/>"> 
+ </div>
+ <p></p>
  <p></p>
 </div>
     </form>
@@ -151,7 +200,7 @@ String importlibs = "common,table,form,fileupload,tree";
 <script src="static/js/platform/component/common/exportData.js?v=${jsversion}" ></script>
 <!-- 导入功能的js -->
 <script src="static/js/platform/component/common/importData.js?v=${jsversion}" ></script>
-<script src="avicit/eformmodule/form/gsndldgbmzshh/V1/bootstrap/bpm-layout1703034317000.js?_=1703034318677" type="text/javascript"></script>
+<script src="avicit/eformmodule/form/gsndldgbmzshh/V1/bootstrap/bpm-layout1716364028000.js?_=1782716753404" type="text/javascript"></script>
     <script type="text/javascript">
     //jquery validate允许隐藏域检查
     $.validator.setDefaults({
