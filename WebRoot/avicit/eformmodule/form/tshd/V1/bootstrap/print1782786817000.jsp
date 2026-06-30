@@ -47,8 +47,8 @@ String importlibs = "common,table,form,tree,fileupload,noLoading-mask";
     <td style="width:6%; text-align: right; border: 1px solid #000000;"><label for="ZZLX" class=" " style=";" id="dw6DIlDI4nb3RaHn1fS5aIvD8y5vjI5e"> 组织类型： </label> </td> 
     <td style="width:26%; border: 1px solid #000000;"> 
      <div class="input-group-sm "> 
-      <input type="text" class="form-control input-sm" style=" ; " id="ZZLX" name="ZZLX" title="组织类型" maxlength="50" value="<c:out  value='${map["ZZLX"]}'/>"> 
-     </div></td> 
+      <select class="form-control input-sm" style="; " id="ZZLX" name="ZZLX" title="组织类型" initvalue="<c:out  value='${map["ZZLX"]}'/>"> <option value="">请选择</option> </select> 
+     </div> </td> 
     <td style="width:13%; text-align: right; border: 1px solid #000000;"><label for="NOTE" class=" " style=";" id="HdelrRTn3D0pyYRIaD2vIE8S9Bq3SqhO"> 备注： </label> </td> 
     <td style="width:29%; border: 1px solid #000000;"> 
      <div class="input-group-sm "> 
@@ -231,7 +231,7 @@ String importlibs = "common,table,form,tree,fileupload,noLoading-mask";
 
 
 
-
+$.ajax({url : 'platform/eform/bpmsClient/getSysLookup.json',data: {lookupCode : "PLATFORM_POLITICAL"},type : 'post',dataType : 'json',async:false,success : function(r) {    for(var i=0;i<r.rows.length;i++){$('#ZZLX').append("<option value=\""+r.rows[i].lookupCode+"\" >"+r.rows[i].lookupName+"</option>")    }    if(pageParams.formData["ZZLX"] != null && pageParams.formData["ZZLX"] != ''){    $('#ZZLX').val(pageParams.formData["ZZLX"]);}else if($('#ZZLX').attr("initValue")!=undefined&&$.trim($('#ZZLX').attr("initValue"))!=''){    $('#ZZLX').val($('#ZZLX').attr("initValue"));    pageParams.formData["ZZLX"] = $('#ZZLX').attr("initValue");}else{    }}});
 
 
 

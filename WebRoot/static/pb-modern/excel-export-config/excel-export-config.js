@@ -51,6 +51,7 @@
         $('#excelConfigAdd').on('click', openAdd);
         $('#excelConfigEdit').on('click', openEdit);
         $('#excelConfigDelete').on('click', deleteRows);
+        $('#excelConfigCheck').on('click', checkConfig);
         $('#excelConfigSearch').on('click', reloadGrid);
         $('#excelConfigKeyWord').on('keydown', function (e) {
             if (e.keyCode === 13) {
@@ -239,8 +240,11 @@
             tr.append('<td class="column-name">' + escapeHtml(row.COLUMN_NAME || '') + '</td>');
             tr.append('<td><input class="column-label" type="text" value="' + escapeAttr(row.COLUMN_LABEL || row.COLUMN_COMMENT || row.COLUMN_NAME || '') + '"></td>');
             tr.append('<td>' + escapeHtml(row.COLUMN_TYPE || '') + '</td>');
+            tr.append('<td><select class="display-format"><option value="">默认</option><option value="DATE">日期</option><option value="DATETIME">日期时间</option><option value="NUMBER">数字</option><option value="TEXT">文本</option><option value="DICT">字典</option></select></td>');
+            tr.append('<td><input class="dict-type" type="text" value="' + escapeAttr(row.DICT_TYPE || '') + '" placeholder="LOOKUP_TYPE"></td>');
             tr.append('<td><select class="export-flag"><option value="Y">是</option><option value="N">否</option></select></td>');
             tr.append('<td><input class="column-width" type="text" value="' + escapeHtml(row.COLUMN_WIDTH || 16) + '"></td>');
+            tr.find('.display-format').val(row.DISPLAY_FORMAT || '');
             tr.find('.export-flag').val(row.EXPORT_FLAG || 'Y');
             tbody.append(tr);
         });
@@ -446,7 +450,9 @@
                 COLUMN_LENGTH: tr.attr('data-length'),
                 EXPORT_FLAG: tr.find('.export-flag').val(),
                 SORT_NO: tr.find('.sort-no').val(),
-                COLUMN_WIDTH: tr.find('.column-width').val()
+                COLUMN_WIDTH: tr.find('.column-width').val(),
+                DISPLAY_FORMAT: tr.find('.display-format').val(),
+                DICT_TYPE: tr.find('.dict-type').val()
             });
         });
         var relations = [];
@@ -490,6 +496,11 @@
         if (data.columns.length === 0) {
             return '字段配置不能为空';
         }
+        for (var j = 0; j < data.columns.length; j++) {
+            if (data.columns[j].DISPLAY_FORMAT === 'DICT' && !$.trim(data.columns[j].DICT_TYPE)) {
+                return '第' + (j + 1) + '行字典类型不能为空';
+            }
+        }
         if (data.config.CONFIG_TYPE === 'MAIN') {
             for (var i = 0; i < data.relations.length; i++) {
                 var item = data.relations[i];
@@ -499,6 +510,33 @@
             }
         }
         return '';
+    }
+
+    function checkConfig() {
+        var ids = $('#excelConfigGrid').jqGrid('getGridParam', 'selarrrow');
+        if (ids.length !== 1) {
+            layer.alert(ids.length === 0 ? '请选择要校验的数据' : '只允许选择一条数据', {icon: 7, title: '提示'});
+            return;
+        }
+        $.ajax({
+            url: apiUrl + 'check.json',
+            type: 'POST',
+            dataType: 'json',
+            data: {id: ids[0]},
+            success: function (res) {
+                if (hasError(res)) {
+                    return showError(res);
+                }
+                var messages = $.map(res.messages || [], function (item) {
+                    return escapeHtml(item);
+                });
+                layer.alert(messages.join('<br>'), {
+                    icon: res.ok ? 1 : 7,
+                    title: res.ok ? '校验通过' : '校验结果'
+                });
+            },
+            error: ajaxError
+        });
     }
 
     function deleteRows() {

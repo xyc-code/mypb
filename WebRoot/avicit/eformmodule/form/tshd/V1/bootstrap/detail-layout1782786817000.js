@@ -5,7 +5,7 @@ $(function(){
 
 
 
-
+$.ajax({url : 'platform/eform/bpmsClient/getSysLookup.json',data: {lookupCode : "PLATFORM_POLITICAL"},type : 'post',dataType : 'json',async:false,success : function(r) {    for(var i=0;i<r.rows.length;i++){$('#ZZLX').append("<option value=\""+r.rows[i].lookupCode+"\" >"+r.rows[i].lookupName+"</option>")    }    if(pageParams.formData["ZZLX"] != null && pageParams.formData["ZZLX"] != ''){    $('#ZZLX').val(pageParams.formData["ZZLX"]);}else if($('#ZZLX').attr("initValue")!=undefined&&$.trim($('#ZZLX').attr("initValue"))!=''){    $('#ZZLX').val($('#ZZLX').attr("initValue"));    pageParams.formData["ZZLX"] = $('#ZZLX').attr("initValue");}else{    }}});
 
 
 

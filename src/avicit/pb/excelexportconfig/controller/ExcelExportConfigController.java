@@ -97,6 +97,17 @@ public class ExcelExportConfigController {
         }
     }
 
+    @RequestMapping(value = "/operation/check", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> check(HttpServletRequest request) {
+        try {
+            return success(excelExportConfigService.checkConfig(ServletRequestUtils.getStringParameter(request, "id", "")));
+        } catch (Exception e) {
+            LOGGER.error("check excel export config error", e);
+            return failure(e);
+        }
+    }
+
     @RequestMapping(value = "/operation/tables", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> tables(HttpServletRequest request) {

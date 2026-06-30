@@ -135,13 +135,7 @@ public class MultiSubTableExcelExporter {
 
         List<Map<String, Object>> rows = section.getRows();
         if (rows == null || rows.isEmpty()) {
-            Row row = sheet.createRow(rowIndex);
-            row.setHeight((short) DEFAULT_ROW_HEIGHT);
-            for (int i = 0; i < columns.size(); i++) {
-                createCell(row, i, "", styles.childValue);
-            }
-            fillMergedRow(row, columns.size(), columnCount, styles.childValue);
-            return rowIndex + 1;
+            return writeEmptyRow(sheet, rowIndex, columnCount, defaultText(section.getEmptyText(), "No child data"), styles);
         }
 
         for (int i = 0; i < rows.size(); i++) {

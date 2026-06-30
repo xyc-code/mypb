@@ -11,9 +11,9 @@ String importlibs = "common,table,form,fileupload,tree";
 <!DOCTYPE html>
 <HTML style="overflow:auto;">
 <head>
-    <title>添加</title>
+    <title>详情</title>
     <base href="<%=ViewUtil.getRequestPath(request)%>"></base>
-    <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css-fixie8-fonticon.jsp">
+    <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
         <jsp:param value="<%=importlibs%>" name="importlibs"/>
     </jsp:include>
     <link rel="stylesheet" type="text/css" href="static/css/platform/eform/eformcss.min.css?v=${jsversion}" />
@@ -50,8 +50,8 @@ String importlibs = "common,table,form,fileupload,tree";
     <td style="width:6%; text-align: right; border: 1px solid #000000;"><label for="ZZLX" class=" " style=";" id="dw6DIlDI4nb3RaHn1fS5aIvD8y5vjI5e"> 组织类型： </label> </td> 
     <td style="width:26%; border: 1px solid #000000;"> 
      <div class="input-group-sm "> 
-      <input type="text" class="form-control input-sm" style=" ; " id="ZZLX" name="ZZLX" title="组织类型" maxlength="50" value="<c:out  value='${map["ZZLX"]}'/>"> 
-     </div></td> 
+      <select class="form-control input-sm" style="; " id="ZZLX" name="ZZLX" title="组织类型" initvalue="<c:out  value='${map["ZZLX"]}'/>"> <option value="">请选择</option> </select> 
+     </div> </td> 
     <td style="width:13%; text-align: right; border: 1px solid #000000;"><label for="NOTE" class=" " style=";" id="HdelrRTn3D0pyYRIaD2vIE8S9Bq3SqhO"> 备注： </label> </td> 
     <td style="width:29%; border: 1px solid #000000;"> 
      <div class="input-group-sm "> 
@@ -147,13 +147,6 @@ String importlibs = "common,table,form,fileupload,tree";
                 <tr>
                     <td width="50%" style="padding-right:4%;" align="right">
 
-                        <a id="page_saveButton" href="javascript:void(0)" style="margin-right:10px;"
-                           class="btn btn-primary form-tool-btn typeb btn-sm" role="button" title="保存"
-                           onclick="saveForm()">保存</a>
-
-                                                                                
-                                                                                
-                        
                         <a href="javascript:void(0)" class="btn btn-grey form-tool-btn btn-sm" role="button" title="返回"
                            onclick="closeDialog()">返回</a>
                     </td>
@@ -162,21 +155,6 @@ String importlibs = "common,table,form,fileupload,tree";
         </div>
     </div>
 </c:if>
-
-<div id="addUserPhotoDialog" style="overflow: auto;display: none">
-    <form action="" method="post"
-          id="uploadForm" enctype="multipart/form-data" style="margin-top: 20px;">
-        <table width="100%" border="0">
-            <tbody>
-            <tr>
-                <td width="10%" nowrap>选择本地图片文件</td>
-                <td width="90%" align="left"><input type="file" style="width:90%" id="eform_add_photo" name="eform_add_photo"></td>
-            </tr>
-            </tbody>
-        </table>
-        <input type="hidden" id="photo_eformId" name="photo_eformId" value="${comId}">
-    </form>
-</div>
 <div class="contextMenu" id="eform-tab-menu">
     <ul>
         <li id="eform-refresh">刷新</li>
@@ -196,15 +174,14 @@ String importlibs = "common,table,form,fileupload,tree";
 <script src="static/h5/select2/select2.js?v=${jsversion}"></script>
 <script type="text/javascript" src="avicit/platform6/bpmreform/bpmbusiness/include/src/FlowListEditorBySec.js?v=${jsversion}"></script>
 
+
 <!-- 富文本的js与css -->
 <script src="static/h5/kindeditor/kindeditor-all-min.js?v=${jsversion}"></script>
+
 <script src="static/h5/kindeditor/lang/zh-CN.js?v=${jsversion}"></script>
 <script src="static/js/platform/eform/eformTab.js?v=${jsversion}"></script>
-<!-- 导出功能的js -->
-<script src="static/js/platform/component/common/exportData.js?v=${jsversion}" ></script>
-<!-- 导入功能的js -->
-<script src="static/js/platform/component/common/importData.js?v=${jsversion}" ></script>
-<script src="avicit/eformmodule/form/tshd/V1/bootstrap/add-layout1782722549000.js?_=1782722550006" type="text/javascript"></script>
+
+<script src="avicit/eformmodule/form/tshd/V1/bootstrap/detail-layout1782786817000.js?_=1782786817394" type="text/javascript"></script>
     <script type="text/javascript">
     //jquery validate允许隐藏域检查
     $.validator.setDefaults({
@@ -220,13 +197,13 @@ String importlibs = "common,table,form,fileupload,tree";
     var fkcol = "${fkcol}";
     var fkvalue = "${fkvalue}";
     var tableName = "DYN_TSHD";
+    var entryId = '$${entryId}';
     var type = "${type}";
     var idmap = "${idmap}";
     var parentNodeId = "${parentNodeId}";
     var pNodeIdValue = "${pNodeIdValue}";
-    var formIsDirtyvalidateflag = "${formIsDirtyvalidateflag}";
     var _eform_base_url = "<%=ViewUtil.getRequestPath(request)%>";
-    var customValidate = new Map();
+
     <c:if test="${empty map}">var isInsert = true;</c:if>
     <c:if test="${!empty map}">var isInsert = false;</c:if>;
 
@@ -257,29 +234,8 @@ String importlibs = "common,table,form,fileupload,tree";
         session: session,
         version: "${version}"
     };
-
     $.extend(pageParams,dataMap);
 
-    /**
-     * jquery-validate自定义校验
-     */
-    $.validator.addMethod("phone", function (value, element) {
-        var length = value.length;
-        var mobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
-        return this.optional(element) || (length == 11 && mobile.test(value));
-    }, "请输入有效的手机号");
-    $.validator.addMethod("idcard", function (value, element) {
-        return this.optional(element) || isIdCard(value);
-    }, "请输入有效的身份证号");
-    $.validator.addMethod("zipcode", function (value, element) {
-        return this.optional(element) || (/^[0-9]{6}$/.test(value));
-    }, "请输入有效的邮政编码");
-    $.validator.addMethod("customset", function (value, element) {
-        var domId = element.id;
-        //var result = eval("window."+domId+"CustomSet(value)");
-        var result = customSetValidate(domId,value)
-        return this.optional(element) || result;
-    }, "请输入有效的数据");
 </script>
 </body>
 </html>

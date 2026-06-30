@@ -26,6 +26,9 @@ String importlibs = "common,table,form";
             <a id="excelConfigDelete" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm" role="button">
                 <i class="fa fa-trash-o"></i> 删除
             </a>
+            <a id="excelConfigCheck" href="javascript:void(0)" class="btn btn-primary form-tool-btn btn-sm" role="button">
+                <i class="fa fa-check-square-o"></i> 校验
+            </a>
         </div>
         <div class="toolbar-right">
             <div class="input-group form-tool-search">
@@ -97,6 +100,8 @@ String importlibs = "common,table,form";
                         <th>字段名</th>
                         <th>导出列名</th>
                         <th style="width:90px;">类型</th>
+                        <th style="width:100px;">显示格式</th>
+                        <th style="width:140px;">字典类型</th>
                         <th style="width:70px;">导出</th>
                         <th style="width:80px;">宽度</th>
                     </tr>
