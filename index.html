@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>党委工作计划管理系统</title>
+  <style>
+    /* ─── tokens — Tech/Utility base + government red accent ────────── */
+    :root {
+      --bg:      oklch(98% 0.003 260);
+      --surface: oklch(100% 0 0);
+      --fg:      oklch(20% 0.015 260);
+      --muted:   oklch(48% 0.012 260);
+      --border:  oklch(90% 0.006 260);
+      --accent:  oklch(50% 0.16 25);
+      --accent-soft: color-mix(in oklch, var(--accent) 10%, transparent);
+      --fg-soft:     color-mix(in oklch, var(--fg) 5%, transparent);
+      --success: oklch(55% 0.14 160);
+      --warn:    oklch(62% 0.16 70);
+      --danger:  oklch(48% 0.18 20);
+
+      --font-display: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+      --font-body:    -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+      --fs-h1: 28px;
+      --fs-h2: 22px;
+      --fs-h3: 17px;
+      --fs-body: 14px;
+      --fs-meta: 12px;
+
+      --gap-xs: 6px;
+      --gap-sm: 10px;
+      --gap-md: 16px;
+      --gap-lg: 24px;
+      --gap-xl: 40px;
+
+      --radius: 6px;
+      --radius-lg: 10px;
+
+      --sidebar-w: 240px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font-family: var(--font-body); font-size: var(--fs-body);
+      line-height: 1.5; display: flex; min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    h1,h2,h3,h4 { margin: 0; font-family: var(--font-display); }
+    input,select,textarea { font: inherit; }
+
+    /* ─── sidebar ────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w); min-height: 100vh; flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; position: sticky; top: 0;
+      z-index: 10;
+    }
+    .sidebar-brand {
+      padding: 20px var(--gap-lg); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-brand .brand-icon {
+      width: 32px; height: 32px; background: var(--accent); border-radius: var(--radius);
+      display: grid; place-items: center; color: var(--surface); font-size: 16px; font-weight: 700;
+    }
+    .sidebar-brand .brand-text { font-weight: 600; font-size: 15px; }
+    .sidebar-brand .brand-sub { font-size: 11px; color: var(--muted); }
+
+    .sidebar-role {
+      padding: var(--gap-md) var(--gap-lg); border-bottom: 1px solid var(--border);
+    }
+    .sidebar-role label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sidebar-role select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--bg); color: var(--fg);
+      font-size: 13px;
+    }
+
+    .sidebar-nav { flex: 1; padding: var(--gap-sm) 0; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 10px; padding: 10px var(--gap-lg);
+      font-size: 14px; color: var(--muted); transition: all 0.12s ease;
+      border-left: 3px solid transparent; margin: 1px 0;
+    }
+    .sidebar-nav a:hover { color: var(--fg); background: var(--fg-soft); }
+    .sidebar-nav a.active { color: var(--accent); background: var(--accent-soft); border-left-color: var(--accent); font-weight: 600; }
+    .sidebar-nav a .nav-icon { width: 18px; height: 18px; opacity: 0.7; }
+
+    .sidebar-foot { padding: var(--gap-md) var(--gap-lg); border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }
+
+    /* ─── main area ──────────────────────────────────────────────────── */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .main-header {
+      padding: 16px var(--gap-xl); background: var(--surface);
+      border-bottom: 1px solid var(--border); display: flex;
+      align-items: center; justify-content: space-between; gap: var(--gap-md);
+      position: sticky; top: 0; z-index: 5;
+    }
+    .main-header h1 { font-size: 20px; font-weight: 600; }
+    .main-body { flex: 1; padding: var(--gap-xl); overflow-y: auto; }
+
+    /* ─── view toggling ──────────────────────────────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── buttons ────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--radius);
+      border: 1px solid transparent; font-size: 13px; font-weight: 500;
+      transition: all 0.12s ease; white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+    .btn-primary:hover { background: color-mix(in oklch, var(--accent) 88%, black); }
+    .btn-secondary { background: transparent; color: var(--fg); border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--fg); }
+    .btn-ghost { background: transparent; color: var(--muted); border-color: transparent; }
+    .btn-ghost:hover { color: var(--fg); background: var(--fg-soft); }
+    .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: color-mix(in oklch, var(--danger) 10%, transparent); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-xs { padding: 3px 8px; font-size: 11px; }
+
+    /* ─── status badges ──────────────────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 999px; font-size: 12px; font-weight: 500;
+      white-space: nowrap;
+    }
+    .badge-pending  { background: color-mix(in oklch, var(--warn) 15%, transparent); color: var(--warn); }
+    .badge-active   { background: color-mix(in oklch, var(--accent) 15%, transparent); color: var(--accent); }
+    .badge-done     { background: color-mix(in oklch, var(--success) 15%, transparent); color: var(--success); }
+    .badge-overdue  { background: color-mix(in oklch, var(--danger) 12%, transparent); color: var(--danger); }
+    .badge-draft    { background: var(--fg-soft); color: var(--muted); }
+
+    /* ─── table ──────────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border);
+      color: var(--muted); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      background: var(--bg); position: sticky; top: 0;
+    }
+    .data-table td {
+      padding: 10px 12px; border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .data-table tbody tr:hover { background: var(--fg-soft); }
+    .data-table .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .data-table .actions { display: flex; gap: var(--gap-xs); flex-wrap: wrap; }
+
+    /* ─── card ───────────────────────────────────────────────────────── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: var(--gap-lg);
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--gap-md); padding-bottom: var(--gap-md);
+      border-bottom: 1px solid var(--border);
+    }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+
+    /* ─── stat cards ─────────────────────────────────────────────────── */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap-md); margin-bottom: var(--gap-lg); }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px;
+    }
+    .stat-card .stat-num {
+      font-family: var(--font-display); font-size: 36px; font-weight: 700;
+      line-height: 1.1; letter-spacing: -0.02em;
+    }
+    .stat-card .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-card.accent .stat-num { color: var(--accent); }
+
+    /* ─── filter bar ─────────────────────────────────────────────────── */
+    .filter-bar {
+      display: flex; align-items: center; gap: var(--gap-sm);
+      padding: var(--gap-md) 0; flex-wrap: wrap;
+    }
+    .filter-bar select, .filter-bar input {
+      padding: 7px 10px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--surface);
+      color: var(--fg); font-size: 13px;
+    }
+    .filter-bar select:focus, .filter-bar input:focus {
+      outline: 2px solid var(--accent-soft); border-color: var(--accent);
+    }
+
+    /* ─── form ───────────────────────────────────────────────────────── */
+    .form-group { margin-bottom: var(--gap-md); }
+    .form-group label {
+      display: block; font-size: 12px; color: var(--muted);
+      margin-bottom: 4px; font-weight: 500;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--surface);
+      color: var(--fg); font-size: 14px;
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: 2px solid var(--accent-soft); border-color: var(--accent);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-md); }
+
+    /* ─── tree ───────────────────────────────────────────────────────── */
+    .tree { font-size: 13px; }
+    .tree-node { margin-left: 0; }
+    .tree-children { margin-left: 24px; border-left: 1px solid var(--border); padding-left: 12px; }
+    .tree-row {
+      display: flex; align-items: center; gap: var(--gap-xs);
+      padding: 6px 10px; border-radius: var(--radius); cursor: pointer;
+      transition: background 0.1s;
+    }
+    .tree-row:hover { background: var(--fg-soft); }
+    .tree-row.selected { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .tree-check { width: 14px; height: 14px; accent-color: var(--accent); pointer-events: none; flex-shrink: 0; }
+    .tree-toggle { width: 16px; height: 16px; display: grid; place-items: center; font-size: 10px; color: var(--muted); flex-shrink: 0; }
+    .tree-toggle.collapsed { transform: rotate(-90deg); }
+    .tree-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+    .tree-label { flex: 1; }
+    .tree-meta { font-size: 11px; color: var(--muted); }
+    .tree-actions { display: none; gap: 2px; }
+    .tree-row:hover .tree-actions { display: flex; }
+    .target-selector {
+      max-height: 112px; overflow-y: auto; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 4px; background: var(--bg);
+    }
+    .target-selector .tree-row {
+      min-height: 30px; padding: 4px 8px; gap: 6px; border-radius: 6px;
+    }
+    .target-selector .tree-check { width: 13px; height: 13px; }
+    .target-selector .tree-icon { width: 14px; height: 14px; }
+    .target-selector .tree-meta { font-size: 10px; }
+
+    /* ─── modal ──────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      z-index: 100; display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.15s ease;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.15); max-width: 640px; width: 90vw;
+      max-height: 85vh; overflow-y: auto; animation: slideUp 0.2s ease;
+    }
+    .modal-header {
+      padding: var(--gap-lg); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h2 { font-size: 18px; font-weight: 600; }
+    .modal-body { padding: var(--gap-lg); }
+    .modal-footer {
+      padding: var(--gap-md) var(--gap-lg); border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: var(--gap-sm);
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ─── charts ─────────────────────────────────────────────────────── */
+    .chart-container { margin-bottom: var(--gap-lg); }
+    .chart-bars { display: flex; align-items: flex-end; gap: var(--gap-sm); height: 200px; padding-top: 8px; }
+    .chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .chart-bar {
+      width: 100%; max-width: 56px; border-radius: var(--radius) var(--radius) 0 0;
+      transition: height 0.4s ease; position: relative; min-height: 4px;
+    }
+    .chart-bar .bar-val { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 600; font-family: var(--font-mono); }
+    .chart-label { font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px; }
+
+    /* ─── upload zone ────────────────────────────────────────────────── */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius-lg);
+      padding: 24px; text-align: center; color: var(--muted);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .upload-zone:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+    .upload-zone .upload-icon { font-size: 28px; margin-bottom: 8px; }
+
+    /* ─── batch action bar ────────────────────────────────────────────── */
+    .batch-bar {
+      position: fixed; bottom: 0; left: var(--sidebar-w); right: 0; z-index: 20;
+      background: var(--surface); border-top: 2px solid var(--accent);
+      padding: 12px var(--gap-xl); display: none; align-items: center; gap: var(--gap-md);
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+    }
+    .batch-bar.visible { display: flex; }
+    .batch-bar .batch-info { font-size: 13px; color: var(--muted); flex: 1; }
+    .data-table .chk-col { width: 36px; text-align: center; }
+    .data-table .chk-col input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); }
+
+    /* ─── section divider ────────────────────────────────────────────── */
+    .section-divider {
+      border: 0; border-top: 1px solid var(--border);
+      margin: var(--gap-lg) 0;
+    }
+
+    /* ─── responsive ─────────────────────────────────────────────────── */
+    @media (max-width: 920px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%; min-height: auto; position: relative;
+        border-right: 0; border-bottom: 1px solid var(--border);
+        flex-direction: row; flex-wrap: wrap; align-items: center;
+        padding: var(--gap-sm) var(--gap-md); gap: var(--gap-sm);
+      }
+      .batch-bar { left: 0; }
+      .sidebar-brand { border-bottom: 0; padding: 0; }
+      .sidebar-role { border-bottom: 0; padding: 0; }
+      .sidebar-nav { display: flex; padding: 0; }
+      .sidebar-nav a { border-left: 0; border-bottom: 2px solid transparent; padding: 8px 12px; font-size: 12px; }
+      .sidebar-nav a.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+      .sidebar-foot { display: none; }
+      .main-header { padding: 12px var(--gap-md); }
+      .main-body { padding: var(--gap-md); }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .data-table { font-size: 12px; }
+      .data-table th, .data-table td { padding: 8px 6px; }
+    }
+
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .chart-bars { height: 140px; }
+    }
+
+    /* ─── no-print for interactive elements ──────────────────────────── */
+    @media print {
+      .sidebar, .main-header, .modal-overlay, .btn { display: none !important; }
+      .main-body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" data-od-id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">党</div>
+    <div>
+      <div class="brand-text">党委工作计划</div>
+      <div class="brand-sub">管理系统 v1.0</div>
+    </div>
+  </div>
+  <div class="sidebar-role">
+    <label>当前角色</label>
+    <select id="roleSelect" onchange="switchRole(this.value)">
+      <option value="committee">党委 — 计划下发者</option>
+      <option value="department">部长 — 组织部</option>
+      <option value="section">室主任 — 组织一科</option>
+      <option value="member">科员 — 张三</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav" data-od-id="sidebar-nav">
+    <a href="#" class="active" data-view="plan-list" onclick="switchView('plan-list', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      工作计划列表
+    </a>
+    <a href="#" data-view="personnel" onclick="switchView('personnel', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="3"/><path d="M5 19v-2a4 4 0 014-4h2"/><line x1="16" y1="8" x2="20" y2="8"/><line x1="18" y1="6" x2="18" y2="10"/><path d="M12 14h8v3a3 3 0 01-3 3H12"/></svg>
+      人员配置
+    </a>
+    <a href="#" data-view="statistics" onclick="switchView('statistics', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="4" height="10" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="17" y="3" width="4" height="17" rx="1"/></svg>
+      统计看板
+    </a>
+  </nav>
+  <div class="sidebar-foot">当前季度 · 2026 年第二季度</div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main" data-od-id="main">
+  <header class="main-header" data-od-id="main-header">
+    <h1 id="viewTitle">工作计划列表</h1>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" id="createTaskBtn" onclick="openDispatchModal()">+ 新建任务（草稿）</button>
+    </div>
+  </header>
+  <div class="main-body" data-od-id="main-body">
+
+    <!-- ═══ VIEW: 计划列表 ═══ -->
+    <section class="view active" id="view-plan-list" data-od-id="plan-list">
+      <div class="filter-bar">
+        <select id="filterQuarter" onchange="renderPlanList()">
+          <option value="all">全部季度</option>
+          <option value="2026-Q1">2026 年第一季度</option>
+          <option value="2026-Q2" selected>2026 年第二季度</option>
+          <option value="2026-Q3">2026 年第三季度</option>
+          <option value="2026-Q4">2026 年第四季度</option>
+        </select>
+        <select id="filterStatus" onchange="renderPlanList()">
+          <option value="all">全部状态</option>
+          <option value="draft">草稿</option>
+          <option value="pending">待接收</option>
+          <option value="toForward">待转发</option>
+          <option value="active">执行中</option>
+          <option value="done">已完成</option>
+          <option value="overdue">已逾期</option>
+        </select>
+        <input type="text" id="filterKeyword" placeholder="搜索任务标题…" oninput="renderPlanList()" style="width:200px;" />
+        <span style="font-size:12px;color:var(--muted);margin-left:auto;" id="taskCount"></span>
+      </div>
+      <div class="card" style="padding:0;overflow-x:auto;">
+        <table class="data-table" id="planTable">
+          <thead>
+            <tr>
+              <th class="chk-col"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" title="全选" /></th>
+              <th>任务编号</th>
+              <th>任务标题</th>
+              <th>季度</th>
+              <th>下发方</th>
+              <th>接收方</th>
+              <th>截止日期</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="planTableBody"></tbody>
+        </table>
+      </div>
+      <div style="text-align:center;padding:32px;color:var(--muted);display:none;" id="planEmpty">
+        当前筛选条件下暂无任务数据
+      </div>
+      <!-- batch action bar -->
+      <div class="batch-bar" id="batchBar">
+        <span class="batch-info" id="batchInfo">已选 0 项</span>
+        <button class="btn btn-primary btn-sm" onclick="batchDispatch()">下发选中</button>
+        <button class="btn btn-danger btn-sm" onclick="batchDelete()">删除选中</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearSelection()">取消选择</button>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: 人员配置 ═══ -->
+    <section class="view" id="view-personnel" data-od-id="personnel">
+      <div class="card">
+        <div class="card-header">
+          <h3>组织架构树</h3>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="addOrgNode('department')">+ 添加部门</button>
+            <button class="btn btn-secondary btn-sm" onclick="addOrgNode('section')">+ 添加科室</button>
+            <button class="btn btn-secondary btn-sm" onclick="addOrgNode('member')">+ 添加人员</button>
+          </div>
+        </div>
+        <div id="orgTree" class="tree"></div>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: 统计看板 ═══ -->
+    <section class="view" id="view-statistics" data-od-id="statistics">
+      <div class="stat-grid" id="statCards"></div>
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: var(--gap-lg);">
+        <div class="card chart-container">
+          <h3 style="margin-bottom:var(--gap-md);">各层级任务完成情况</h3>
+          <div class="chart-bars" id="chartByLevel"></div>
+        </div>
+        <div class="card chart-container">
+          <h3 style="margin-bottom:var(--gap-md);">各季度任务趋势</h3>
+          <div class="chart-bars" id="chartByQuarter"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:var(--gap-lg);padding:0;overflow-x:auto;">
+        <div class="card-header" style="padding:var(--gap-md) var(--gap-lg);"><h3>各部门完成率明细</h3></div>
+        <table class="data-table" id="statsDetailTable">
+          <thead><tr><th>部门</th><th>总任务数</th><th>已完成</th><th>处理中</th><th>逾期</th><th>完成率</th></tr></thead>
+          <tbody id="statsDetailBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ═══ MODAL: 任务下发 ═══ -->
+<div class="modal-overlay hidden" id="dispatchModal" data-od-id="modal-dispatch">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">新建任务下发</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('dispatchModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>任务标题 *</label><input type="text" id="modalDispTitle" placeholder="输入任务标题…" /></div>
+        <div class="form-group"><label>所属季度 *</label><select id="modalDispQuarter"><option>2026-Q1</option><option selected>2026-Q2</option><option>2026-Q3</option><option>2026-Q4</option></select></div>
+      </div>
+      <div class="form-group"><label>任务描述</label><textarea id="modalDispDesc" placeholder="详细描述任务内容和要求…"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>截止日期 *</label><input type="date" id="modalDispDeadline" /></div>
+        <div class="form-group">
+          <label>下发至</label>
+          <div id="modalTreeSelector" class="tree target-selector"></div>
+          <input type="hidden" id="modalDispTargetId" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>附件</label>
+        <div class="upload-zone" onclick="triggerUpload('modalFile')">
+          <div class="upload-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div><div>点击上传附件</div>
+        </div>
+        <input type="file" id="modalFile" style="display:none;" onchange="handleFileSelect(this, 'modalFileList')" multiple />
+        <div id="modalFileList" style="margin-top:8px;font-size:12px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('dispatchModal')">取消</button>
+      <button class="btn btn-primary" id="modalSubmitBtn" onclick="submitModalDispatch()">保存为草稿</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: 任务详情 ═══ -->
+<div class="modal-overlay hidden" id="detailModal" data-od-id="modal-detail">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h2 id="detailTitle">任务详情</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('detailModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: 任务反馈 ═══ -->
+<div class="modal-overlay hidden" id="feedbackModal" data-od-id="modal-feedback">
+  <div class="modal">
+    <div class="modal-header"><h2>任务反馈</h2><button class="btn btn-ghost btn-sm" onclick="closeModal('feedbackModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>反馈内容 *</label><textarea id="fbContent" placeholder="填写任务完成情况和反馈意见…" required></textarea></div>
+      <div class="form-group">
+        <label>附件</label>
+        <div class="upload-zone" onclick="triggerUpload('fbFile')"><div class="upload-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div><div>点击上传附件</div></div>
+        <input type="file" id="fbFile" style="display:none;" onchange="handleFileSelect(this, 'fbFileList')" multiple />
+        <div id="fbFileList" style="margin-top:8px;font-size:12px;"></div>
+      </div>
+      <input type="hidden" id="fbTaskId" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('feedbackModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitFeedback()">提交反馈</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   DATA LAYER — in-memory store for the prototype
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const ORG = [
+  { id: 'dept-zzb', name: '组织部', type: 'department', parent: null, children: [
+    { id: 'sec-zz1', name: '组织一科', type: 'section', parent: 'dept-zzb', children: [
+      { id: 'mem-001', name: '张三（科员）', type: 'member', parent: 'sec-zz1' },
+      { id: 'mem-002', name: '李四（科员）', type: 'member', parent: 'sec-zz1' },
+    ]},
+    { id: 'sec-zz2', name: '组织二科', type: 'section', parent: 'dept-zzb', children: [
+      { id: 'mem-003', name: '王五（科员）', type: 'member', parent: 'sec-zz2' },
+    ]},
+  ]},
+  { id: 'dept-xcb', name: '宣传部', type: 'department', parent: null, children: [
+    { id: 'sec-xc1', name: '宣传一科', type: 'section', parent: 'dept-xcb', children: [
+      { id: 'mem-004', name: '赵六（科员）', type: 'member', parent: 'sec-xc1' },
+      { id: 'mem-005', name: '钱七（科员）', type: 'member', parent: 'sec-xc1' },
+    ]},
+  ]},
+  { id: 'dept-jgb', name: '机关党委办公室', type: 'department', parent: null, children: [
+    { id: 'sec-jg1', name: '综合科', type: 'section', parent: 'dept-jgb', children: [
+      { id: 'mem-006', name: '孙八（科员）', type: 'member', parent: 'sec-jg1' },
+    ]},
+  ]},
+];
+
+let tasks = [
+  { id: 'T001', title: '2026年第一季度党建工作总结', quarter: '2026-Q1', desc: '汇总第一季度各部门党建工作开展情况，形成总结报告。', deadline: '2026-03-31', status: 'done', creator: 'committee', assignee: 'dept-zzb', attachments: ['Q1党建总结提纲.docx'], feedback: '已按时完成并提交党委审核。', parentId: null },
+  { id: 'T002', title: '2026年第二季度主题教育实施方案', quarter: '2026-Q2', desc: '制定第二季度"不忘初心、牢记使命"主题教育实施方案。', deadline: '2026-06-30', status: 'active', creator: 'committee', assignee: 'dept-zzb', attachments: ['主题教育方案模板.pdf'], feedback: null, parentId: null },
+  { id: 'T003', title: '2026年第二季度干部培训计划', quarter: '2026-Q2', desc: '组织中层干部赴党校开展为期一周的集中培训。', deadline: '2026-05-15', status: 'active', creator: 'committee', assignee: 'dept-zzb', attachments: [], feedback: null, parentId: null },
+  { id: 'T004', title: '宣传阵地建设与管理工作方案', quarter: '2026-Q2', desc: '规范宣传栏、网站、公众号等宣传阵地的内容审核与发布流程。', deadline: '2026-06-15', status: 'pending', creator: 'committee', assignee: 'dept-xcb', attachments: ['宣传阵地管理办法（草案）.docx'], feedback: null, parentId: null },
+  { id: 'T005', title: '2026年第二季度党员发展工作', quarter: '2026-Q2', desc: '按计划完成第二季度党员发展对象的培养考察与审批工作。', deadline: '2026-06-30', status: 'active', creator: 'committee', assignee: 'dept-jgb', attachments: [], feedback: null, parentId: null },
+  { id: 'T006', title: '主题教育学习心得汇总', quarter: '2026-Q2', desc: '汇总部门内部各科室提交的主题教育学习心得体会。', deadline: '2026-06-20', status: 'active', creator: 'dept-zzb', assignee: 'sec-zz1', attachments: [], feedback: null, parentId: 'T002' },
+  { id: 'T007', title: '干部培训参训人员统计', quarter: '2026-Q2', desc: '统计本部门符合条件的参训人员名单并上报。', deadline: '2026-04-30', status: 'done', creator: 'dept-zzb', assignee: 'sec-zz1', attachments: ['参训人员名单.xlsx'], feedback: '已统计完毕，共12人符合条件。', parentId: 'T003' },
+  { id: 'T008', title: '个人第一季度工作总结', quarter: '2026-Q1', desc: '撰写个人第一季度工作完成情况及第二季度工作计划。', deadline: '2026-04-05', status: 'done', creator: 'sec-zz1', assignee: 'mem-001', attachments: [], feedback: '已完成并提交科室审核。', parentId: 'T001' },
+  { id: 'T009', title: '宣传栏内容更新（第二季度）', quarter: '2026-Q2', desc: '更新机关大院宣传栏第二季度主题内容。', deadline: '2026-05-01', status: 'overdue', creator: 'dept-xcb', assignee: 'sec-xc1', attachments: ['宣传栏设计稿.pdf'], feedback: null, parentId: 'T004' },
+  { id: 'T010', title: '2026年第三季度党建活动策划方案', quarter: '2026-Q3', desc: '提前策划第三季度主题党日活动方案，包括学习内容和实践环节。', deadline: '2026-09-30', status: 'draft', creator: 'committee', assignee: 'dept-zzb', attachments: [], feedback: null, parentId: null },
+  { id: 'T011', title: '新党员入党宣誓仪式筹备', quarter: '2026-Q2', desc: '筹备七一前后新党员入党宣誓仪式，包括场地、流程、物料等。', deadline: '2026-06-25', status: 'draft', creator: 'committee', assignee: 'dept-jgb', attachments: ['宣誓仪式流程模板.docx'], feedback: null, parentId: null },
+];
+
+let currentRole = 'committee';
+let currentView = 'plan-list';
+let nextId = 12;
+let modalEditTaskId = null;
+let modalParentTaskId = null;
+const ROLE_IDENTITY = {
+  committee: 'committee',
+  department: 'dept-zzb',
+  section: 'sec-zz1',
+  member: 'mem-001',
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITY FUNCTIONS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function findOrg(id) {
+  function search(nodes) {
+    for (const n of nodes) {
+      if (n.id === id) return n;
+      if (n.children) { const r = search(n.children); if (r) return r; }
+    }
+    return null;
+  }
+  return search(ORG);
+}
+
+function getOrgPath(id) {
+  const parts = [];
+  function walk(nodes, path) {
+    for (const n of nodes) {
+      const p = [...path, n.name];
+      if (n.id === id) { parts.push(...p); return true; }
+      if (n.children && walk(n.children, p)) return true;
+    }
+    return false;
+  }
+  walk(ORG, []);
+  return parts.join(' → ');
+}
+
+function getRoleLabel(role) {
+  const map = { committee: '党委', department: '部长', section: '室主任', member: '科员' };
+  return findOrg(role)?.name || map[role] || role;
+}
+
+function getCurrentActorId() {
+  return ROLE_IDENTITY[currentRole] || currentRole;
+}
+
+function isDescendantOf(childId, ancestorId) {
+  if (!childId || !ancestorId || childId === ancestorId || ancestorId === 'committee') return childId === ancestorId;
+  let node = findOrg(childId);
+  while (node?.parent) {
+    if (node.parent === ancestorId) return true;
+    node = findOrg(node.parent);
+  }
+  return false;
+}
+
+function getSubtreeIds(rootId) {
+  if (rootId === 'committee') return ['committee', ...ORG.map(d => [d.id, ...(d.children || []).map(s => [s.id, ...(s.children || []).map(m => m.id)])]).flat(3)];
+  const root = findOrg(rootId);
+  if (!root) return [rootId];
+  const ids = [];
+  function walk(node) {
+    ids.push(node.id);
+    (node.children || []).forEach(walk);
+  }
+  walk(root);
+  return ids;
+}
+
+function isTaskInActorScope(t) {
+  const actorId = getCurrentActorId();
+  if (currentRole === 'committee') {
+    if (t.creator === 'committee' || t.assignee === 'committee') return true;
+    let parent = tasks.find(x => x.id === t.parentId);
+    while (parent) {
+      if (parent.creator === 'committee') return true;
+      parent = tasks.find(x => x.id === parent.parentId);
+    }
+    return false;
+  }
+  const scopeIds = getSubtreeIds(actorId);
+  return t.creator === actorId || t.assignee === actorId || scopeIds.includes(t.assignee);
+}
+
+function getAssigneeType(t) {
+  return findOrg(t.assignee)?.type || '';
+}
+
+function getMyAssignableTargets() {
+  const targets = [];
+  const actorId = getCurrentActorId();
+  if (currentRole === 'committee') {
+    ORG.forEach(d => targets.push({ id: d.id, name: d.name, type: d.type }));
+  } else if (currentRole === 'department') {
+    const dept = findOrg(actorId);
+    (dept?.children || []).forEach(s => targets.push({ id: s.id, name: s.name, type: s.type }));
+  } else if (currentRole === 'section') {
+    const section = findOrg(actorId);
+    (section?.children || []).forEach(m => targets.push({ id: m.id, name: m.name, type: m.type }));
+  }
+  return targets;
+}
+
+function statusBadge(s) {
+  const map = { pending: 'badge-pending', toForward: 'badge-active', active: 'badge-active', done: 'badge-done', overdue: 'badge-overdue', draft: 'badge-draft' };
+  const label = { pending: '待接收', toForward: '待转发', active: '执行中', done: '已完成', overdue: '已逾期', draft: '草稿' };
+  return `<span class="badge ${map[s] || 'badge-draft'}">${label[s] || s}</span>`;
+}
+
+function getVisibleTasks() {
+  return tasks.filter(t => {
+    if (t.status === 'draft') return t.creator === getCurrentActorId();
+    return isTaskInActorScope(t);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NAVIGATION & ROLE SWITCHING
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function switchView(view, el) {
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const titles = { 'plan-list': '工作计划列表', 'personnel': '人员配置', 'statistics': '统计看板' };
+  document.getElementById('viewTitle').textContent = titles[view] || view;
+
+  if (view === 'plan-list') renderPlanList();
+  if (view === 'personnel') renderOrgTree();
+  if (view === 'statistics') renderStatistics();
+}
+
+function switchRole(role) {
+  currentRole = role;
+  updateCreateTaskButton();
+  if (currentView === 'plan-list') renderPlanList();
+  if (currentView === 'statistics') renderStatistics();
+}
+
+function updateCreateTaskButton() {
+  const btn = document.getElementById('createTaskBtn');
+  if (btn) btn.style.display = currentRole === 'committee' ? 'inline-flex' : 'none';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   VIEW: 计划列表
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function renderPlanList() {
+  const q = document.getElementById('filterQuarter')?.value || 'all';
+  const s = document.getElementById('filterStatus')?.value || 'all';
+  const kw = (document.getElementById('filterKeyword')?.value || '').toLowerCase();
+
+  let list = getVisibleTasks();
+  if (q !== 'all') list = list.filter(t => t.quarter === q);
+  if (s !== 'all') list = list.filter(t => t.status === s);
+  if (kw) list = list.filter(t => t.title.toLowerCase().includes(kw) || t.id.toLowerCase().includes(kw));
+
+  document.getElementById('taskCount').textContent = `共 ${list.length} 条任务`;
+  const tbody = document.getElementById('planTableBody');
+  const empty = document.getElementById('planEmpty');
+  tbody.innerHTML = '';
+
+  if (list.length === 0) { empty.style.display = 'block'; tbody.innerHTML = ''; updateBatchBar(); return; }
+  empty.style.display = 'none';
+
+  list.forEach(t => {
+    const assigneeName = findOrg(t.assignee)?.name || t.assignee;
+    const creatorName = getRoleLabel(t.creator);
+    const isDraft = t.status === 'draft';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="chk-col"><input type="checkbox" class="task-chk" data-id="${t.id}" onchange="updateBatchBar()" /></td>
+      <td class="num">${t.id}</td>
+      <td><strong>${escHtml(t.title)}</strong>${t.parentId ? ` <span style="font-size:11px;color:var(--muted);">(子任务)</span>` : ''}</td>
+      <td>${t.quarter}</td>
+      <td>${creatorName}</td>
+      <td>${assigneeName}</td>
+      <td class="num">${t.deadline}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td class="actions">
+        ${isDraft && t.creator === getCurrentActorId() ? `<button class="btn btn-secondary btn-xs" onclick="openEditTaskModal('${t.id}')">编辑</button>` : ''}
+        ${isDraft && t.creator === getCurrentActorId() ? `<button class="btn btn-primary btn-xs" onclick="dispatchTask('${t.id}')">下发</button>` : ''}
+        ${canReceive(t) ? `<button class="btn btn-primary btn-xs" onclick="receiveTask('${t.id}')">接收</button>` : ''}
+        ${canRecall(t) ? `<button class="btn btn-secondary btn-xs" onclick="recallTask('${t.id}')">拿回</button>` : ''}
+        ${canFeedback(t) ? `<button class="btn btn-primary btn-xs" onclick="openFeedbackModal('${t.id}')">反馈</button>` : ''}
+        ${canForward(t) ? `<button class="btn btn-secondary btn-xs" onclick="openDispatchModal('${t.id}')">转发</button>` : ''}
+        ${isDraft ? `<button class="btn btn-ghost btn-xs" onclick="deleteTask('${t.id}')" style="color:var(--danger);">删除</button>` : ''}
+        ${!isDraft ? `<button class="btn btn-ghost btn-xs" onclick="viewTaskDetail('${t.id}')">详情</button>` : ''}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('selectAll').checked = false;
+  updateBatchBar();
+}
+
+function canFeedback(t) {
+  return ['active', 'overdue'].includes(t.status) && isCurrentRoleAssignee(t);
+}
+
+function canForward(t) {
+  if (currentRole === 'member') return false;
+  return t.status === 'toForward' && isCurrentRoleAssignee(t) && getMyAssignableTargets().length > 0;
+}
+
+function canReceive(t) {
+  return t.status === 'pending' && isCurrentRoleAssignee(t);
+}
+
+function canRecall(t) {
+  return t.status === 'pending' && t.creator === getCurrentActorId();
+}
+
+function isCurrentRoleAssignee(t) {
+  return t.assignee === getCurrentActorId();
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function openEditTaskModal(taskId) {
+  const t = tasks.find(x => x.id === taskId);
+  if (!t || t.status !== 'draft' || t.creator !== getCurrentActorId()) {
+    alert('只有草稿创建者可以编辑任务');
+    return;
+  }
+  modalEditTaskId = taskId;
+  modalParentTaskId = null;
+  document.getElementById('dispatchModal').classList.remove('hidden');
+  buildTreeSelector('modalTreeSelector', getMyAssignableTargets(), (id) => { document.getElementById('modalDispTargetId').value = id; });
+  document.getElementById('modalTitle').textContent = '编辑草稿：' + t.title;
+  document.getElementById('modalDispTitle').value = t.title;
+  document.getElementById('modalDispQuarter').value = t.quarter;
+  document.getElementById('modalDispDesc').value = t.desc;
+  document.getElementById('modalDispDeadline').value = t.deadline;
+  document.getElementById('modalDispTargetId').value = t.assignee;
+  document.getElementById('modalFileList').innerHTML = t.attachments.map(a => `<div style="padding:4px 0;">${escHtml(a)}</div>`).join('');
+  document.getElementById('modalSubmitBtn').textContent = '保存修改';
+  const selected = document.querySelector(`#modalTreeSelector .tree-row[data-id="${t.assignee}"]`);
+  if (selected) selectTreeNode(selected, 'modalTreeSelector', t.assignee);
+}
+
+function openDispatchModal(parentId) {
+  if (!parentId && currentRole !== 'committee') {
+    alert('只有党委计划下发角色可以创建任务');
+    return;
+  }
+  modalEditTaskId = null;
+  modalParentTaskId = parentId || null;
+  document.getElementById('dispatchModal').classList.remove('hidden');
+  buildTreeSelector('modalTreeSelector', getMyAssignableTargets(), (id) => { document.getElementById('modalDispTargetId').value = id; });
+  document.getElementById('modalDispTitle').value = '';
+  document.getElementById('modalDispQuarter').value = '2026-Q2';
+  document.getElementById('modalDispDesc').value = '';
+  document.getElementById('modalDispDeadline').value = '';
+  document.getElementById('modalDispTargetId').value = '';
+  document.getElementById('modalFileList').innerHTML = '';
+  document.getElementById('modalSubmitBtn').textContent = parentId ? '确认转发' : '保存为草稿';
+  if (parentId) {
+    const pt = tasks.find(t => t.id === parentId);
+    if (pt) {
+      document.getElementById('modalTitle').textContent = '转发任务：' + pt.title;
+      document.getElementById('modalDispTitle').value = pt.title + '（转发）';
+      document.getElementById('modalDispDesc').value = pt.desc;
+    }
+  } else {
+    document.getElementById('modalTitle').textContent = '新建任务（保存为草稿）';
+  }
+}
+
+function submitModalDispatch() {
+  const targetId = document.getElementById('modalDispTargetId').value;
+  if (!targetId) { alert('请选择下发目标'); return; }
+  const title = document.getElementById('modalDispTitle').value.trim();
+  if (!title) { alert('请填写任务标题'); return; }
+  if (modalEditTaskId) {
+    const t = tasks.find(x => x.id === modalEditTaskId);
+    if (!t || t.status !== 'draft' || t.creator !== getCurrentActorId()) { alert('只有草稿创建者可以编辑任务'); return; }
+    t.title = title;
+    t.quarter = document.getElementById('modalDispQuarter').value;
+    t.desc = document.getElementById('modalDispDesc').value;
+    t.deadline = document.getElementById('modalDispDeadline').value;
+    t.assignee = targetId;
+    closeModal('dispatchModal');
+    renderPlanList();
+    return;
+  }
+  if (!modalParentTaskId && currentRole !== 'committee') {
+    alert('只有党委计划下发角色可以创建任务');
+    return;
+  }
+  const t = {
+    id: 'T' + String(nextId++).padStart(3, '0'),
+    title,
+    quarter: document.getElementById('modalDispQuarter').value,
+    desc: document.getElementById('modalDispDesc').value,
+    deadline: document.getElementById('modalDispDeadline').value,
+    status: modalParentTaskId ? 'pending' : 'draft', creator: getCurrentActorId(), assignee: targetId,
+    attachments: [], feedback: null, parentId: modalParentTaskId,
+  };
+  tasks.unshift(t);
+  closeModal('dispatchModal');
+  renderPlanList();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FEEDBACK
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function openFeedbackModal(taskId) {
+  document.getElementById('feedbackModal').classList.remove('hidden');
+  document.getElementById('fbTaskId').value = taskId;
+  document.getElementById('fbContent').value = '';
+  document.getElementById('fbFileList').innerHTML = '';
+}
+
+function submitFeedback() {
+  const taskId = document.getElementById('fbTaskId').value;
+  const content = document.getElementById('fbContent').value.trim();
+  if (!content) { alert('请填写反馈内容'); return; }
+  const t = tasks.find(x => x.id === taskId);
+  if (t && canFeedback(t)) {
+    t.feedback = content;
+    t.status = 'done';
+    refreshParentAfterChildDone(t.parentId);
+  }
+  closeModal('feedbackModal');
+  renderPlanList();
+}
+
+function refreshParentAfterChildDone(parentId) {
+  if (!parentId) return;
+  const parent = tasks.find(x => x.id === parentId);
+  if (!parent || parent.status === 'done') return;
+  const children = tasks.filter(x => x.parentId === parentId);
+  if (children.length && children.every(x => x.status === 'done')) {
+    parent.status = 'active';
+    if (!parent.feedback) parent.feedback = '下级任务已全部完成，可汇总后向上反馈。';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   VIEW: 人员配置 (ORG TREE)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function renderOrgTree() {
+  const container = document.getElementById('orgTree');
+  container.innerHTML = buildOrgTreeHTML(ORG);
+  document.querySelectorAll('#orgTree .tree-toggle').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const children = el.closest('.tree-node').querySelector(':scope > .tree-children');
+      if (children) { children.classList.toggle('hidden'); el.classList.toggle('collapsed'); }
+    });
+  });
+}
+
+function buildOrgTreeHTML(nodes) {
+  return nodes.map(n => `
+    <div class="tree-node">
+      <div class="tree-row" data-id="${n.id}">
+        ${n.children && n.children.length ? `<span class="tree-toggle">▼</span>` : `<span class="tree-toggle" style="visibility:hidden;">▼</span>`}
+        <svg class="tree-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          ${n.type === 'department' ? '<rect x="3" y="3" width="18" height="18" rx="3"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/>' :
+            n.type === 'section' ? '<rect x="3" y="5" width="18" height="15" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/>' :
+            '<circle cx="12" cy="9" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>'}
+        </svg>
+        <span class="tree-label">${n.name}</span>
+        <span class="tree-meta">${{department:'部门',section:'科室',member:'科员'}[n.type]}</span>
+        <span class="tree-actions">
+          ${n.type !== 'member' ? `<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();addOrgChild('${n.id}')" title="添加子节点">+</button>` : ''}
+          <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();removeOrgNode('${n.id}')" title="删除">✕</button>
+        </span>
+      </div>
+      ${n.children && n.children.length ? `<div class="tree-children">${buildOrgTreeHTML(n.children)}</div>` : ''}
+    </div>`).join('');
+}
+
+function addOrgNode(type) {
+  const name = prompt(`请输入${type==='department'?'部门':type==='section'?'科室':'人员'}名称：`);
+  if (!name) return;
+  const id = type + '-' + Date.now();
+  if (type === 'department') {
+    ORG.push({ id, name, type, parent: null, children: [] });
+  } else {
+    alert('请在已有部门/科室的「+」按钮上添加子节点。');
+  }
+  renderOrgTree();
+}
+
+function addOrgChild(parentId) {
+  const parent = findOrg(parentId);
+  if (!parent) return;
+  const childType = parent.type === 'department' ? 'section' : 'member';
+  if (parent.type === 'member') { alert('科员下不能再添加子节点'); return; }
+  const name = prompt(`在「${parent.name}」下添加${childType==='section'?'科室':'人员'}：`);
+  if (!name) return;
+  if (!parent.children) parent.children = [];
+  parent.children.push({ id: childType + '-' + Date.now(), name, type: childType, parent: parentId });
+  renderOrgTree();
+}
+
+function removeOrgNode(id) {
+  const node = findOrg(id);
+  if (!node) return;
+  if (!confirm(`确定删除「${node.name}」吗？${node.children?.length ? '其下所有子节点也将被删除。' : ''}`)) return;
+  function removeFrom(nodes) {
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].id === id) { nodes.splice(i, 1); return true; }
+      if (nodes[i].children && removeFrom(nodes[i].children)) return true;
+    }
+    return false;
+  }
+  removeFrom(ORG);
+  renderOrgTree();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   VIEW: 统计看板
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function renderStatistics() {
+  const all = getVisibleTasks();
+  const done = all.filter(t => t.status === 'done').length;
+  const active = all.filter(t => ['pending', 'toForward', 'active'].includes(t.status)).length;
+  const overdue = all.filter(t => t.status === 'overdue').length;
+  const rate = all.length ? Math.round(done / all.length * 100) : 0;
+
+  document.getElementById('statCards').innerHTML = `
+    <div class="stat-card"><div class="stat-num num">${all.length}</div><div class="stat-label">任务总数</div></div>
+    <div class="stat-card accent"><div class="stat-num num">${done}</div><div class="stat-label">已完成</div></div>
+    <div class="stat-card"><div class="stat-num num">${rate}%</div><div class="stat-label">完成率</div></div>
+    <div class="stat-card"><div class="stat-num num" style="color:var(--accent);">${active}</div><div class="stat-label">处理中</div></div>`;
+
+  /* chart: by level */
+  const levels = [
+    { label: '党委', key: 'committee', color: 'var(--accent)' },
+    { label: '部门', key: 'department', color: 'var(--muted)' },
+    { label: '科室', key: 'section', color: 'var(--muted)' },
+    { label: '科员', key: 'member', color: 'var(--muted)' },
+  ];
+  const maxTotal = Math.max(1, ...levels.map(l => {
+    const ts = tasks.filter(t => {
+      if (l.key === 'committee') return t.creator === 'committee';
+      if (l.key === 'department') return ['dept-zzb','dept-xcb','dept-jgb'].includes(t.assignee);
+      if (l.key === 'section') return ['sec-zz1','sec-zz2','sec-xc1','sec-jg1'].includes(t.assignee);
+      return t.assignee.startsWith('mem-');
+    });
+    return ts.length;
+  }));
+
+  document.getElementById('chartByLevel').innerHTML = levels.map(l => {
+    const ts = tasks.filter(t => {
+      if (l.key === 'committee') return t.creator === 'committee';
+      if (l.key === 'department') return ['dept-zzb','dept-xcb','dept-jgb'].includes(t.assignee);
+      if (l.key === 'section') return ['sec-zz1','sec-zz2','sec-xc1','sec-jg1'].includes(t.assignee);
+      return t.assignee.startsWith('mem-');
+    });
+    const total = ts.length;
+    const d = ts.filter(t => t.status === 'done').length;
+    const h = total ? Math.max(8, (total / maxTotal) * 180) : 8;
+    const dh = total ? Math.max(4, (d / Math.max(1, maxTotal)) * 180) : 4;
+    return `<div class="chart-bar-group">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+        <div class="chart-bar" style="height:${h}px;background:var(--border);width:44px;"><span class="bar-val">${total}</span></div>
+        <div class="chart-bar" style="height:${dh}px;background:var(--accent);width:44px;margin-top:2px;"><span class="bar-val" style="color:var(--accent);">${d}</span></div>
+      </div>
+      <div class="chart-label">${l.label}<br><span style="font-size:10px;">（浅=总数 深=已完成）</span></div>
+    </div>`;
+  }).join('');
+
+  /* chart: by quarter */
+  const quarters = ['2026-Q1','2026-Q2','2026-Q3','2026-Q4'];
+  const qMax = Math.max(1, ...quarters.map(q => tasks.filter(t => t.quarter === q).length));
+  document.getElementById('chartByQuarter').innerHTML = quarters.map(q => {
+    const ts = tasks.filter(t => t.quarter === q);
+    const total = ts.length;
+    const d = ts.filter(t => t.status === 'done').length;
+    const h = total ? Math.max(8, (total / qMax) * 180) : 8;
+    const dh = total ? Math.max(4, (d / Math.max(1, qMax)) * 180) : 4;
+    return `<div class="chart-bar-group">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+        <div class="chart-bar" style="height:${h}px;background:var(--border);width:52px;"><span class="bar-val">${total}</span></div>
+        <div class="chart-bar" style="height:${dh}px;background:var(--accent);width:52px;margin-top:2px;"><span class="bar-val" style="color:var(--accent);">${d}</span></div>
+      </div>
+      <div class="chart-label">${q.replace('2026-','Q')}</div>
+    </div>`;
+  }).join('');
+
+  /* detail table */
+  document.getElementById('statsDetailBody').innerHTML = ORG.map(d => {
+    const dt = tasks.filter(t => t.assignee === d.id || (d.children || []).some(s => t.assignee === s.id || (s.children || []).some(m => t.assignee === m.id)));
+    const dd = dt.filter(t => t.status === 'done').length;
+    const da = dt.filter(t => ['pending', 'toForward', 'active'].includes(t.status)).length;
+    const dov = dt.filter(t => t.status === 'overdue').length;
+    const dr = dt.length ? Math.round(dd / dt.length * 100) : 0;
+    return `<tr>
+      <td><strong>${d.name}</strong></td>
+      <td class="num">${dt.length}</td>
+      <td class="num">${dd}</td>
+      <td class="num">${da}</td>
+      <td class="num" style="color:${dov>0?'var(--danger)':'var(--muted)'};">${dov}</td>
+      <td class="num"><strong>${dr}%</strong></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TREE SELECTOR (shared component for dispatch modals)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function buildTreeSelector(containerId, targets, onSelect) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = targets.map(t => `
+    <div class="tree-row" data-id="${t.id}" onclick="selectTreeNode(this, '${containerId}', '${t.id}')">
+      <input type="checkbox" class="tree-check" aria-label="选择${t.name}" />
+      <svg class="tree-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        ${t.type === 'department' ? '<rect x="3" y="3" width="18" height="18" rx="3"/><line x1="8" y1="8" x2="16" y2="8"/>' : t.type === 'section' ? '<rect x="3" y="5" width="18" height="15" rx="2"/>' : '<circle cx="12" cy="9" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>'}
+      </svg>
+      <span class="tree-label">${t.name}</span>
+      <span class="tree-meta">${{department:'部门',section:'科室',member:'科员'}[t.type]}</span>
+    </div>`).join('');
+}
+
+function selectTreeNode(el, containerId, id) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.tree-row').forEach(r => {
+    r.classList.remove('selected');
+    const check = r.querySelector('.tree-check');
+    if (check) check.checked = false;
+  });
+  el.classList.add('selected');
+  const selectedCheck = el.querySelector('.tree-check');
+  if (selectedCheck) selectedCheck.checked = true;
+  if (containerId === 'modalTreeSelector') document.getElementById('modalDispTargetId').value = id;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODAL & UPLOAD HELPERS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+function triggerUpload(inputId) {
+  document.getElementById(inputId).click();
+}
+
+function handleFileSelect(input, listId) {
+  const list = document.getElementById(listId);
+  list.innerHTML = Array.from(input.files).map(f =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;">
+      <span style="font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:inline;vertical-align:-2px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> ${f.name}</span>
+      <span style="font-size:11px;color:var(--muted);">(${(f.size/1024).toFixed(1)} KB)</span>
+    </div>`
+  ).join('');
+}
+
+function viewTaskDetail(taskId) {
+  const t = tasks.find(x => x.id === taskId);
+  if (!t) return;
+  const path = getOrgPath(t.assignee);
+  const creatorLabel = getRoleLabel(t.creator);
+  const assigneeName = findOrg(t.assignee)?.name || t.assignee;
+  const statusLabel = { draft: '草稿', pending: '待接收', toForward: '待转发', active: '执行中', done: '已完成', overdue: '已逾期' }[t.status] || t.status;
+  document.getElementById('detailTitle').textContent = '任务详情 · ' + t.id;
+  document.getElementById('detailBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-md);font-size:13px;">
+      <div><span style="color:var(--muted);">任务编号</span><div style="margin-top:2px;"><strong>${t.id}</strong></div></div>
+      <div><span style="color:var(--muted);">状态</span><div style="margin-top:2px;">${statusBadge(t.status)}</div></div>
+      <div style="grid-column:1/-1;"><span style="color:var(--muted);">任务标题</span><div style="margin-top:2px;font-size:17px;font-weight:600;">${escHtml(t.title)}</div></div>
+      ${t.parentId ? `<div style="grid-column:1/-1;"><span style="color:var(--muted);">父任务</span><div style="margin-top:2px;">${escHtml(tasks.find(p => p.id === t.parentId)?.title || t.parentId)}</div></div>` : ''}
+      <div><span style="color:var(--muted);">季度</span><div style="margin-top:2px;">${t.quarter}</div></div>
+      <div><span style="color:var(--muted);">截止日期</span><div style="margin-top:2px;" class="num">${t.deadline}</div></div>
+      <div><span style="color:var(--muted);">下发方</span><div style="margin-top:2px;">${creatorLabel}</div></div>
+      <div><span style="color:var(--muted);">接收方</span><div style="margin-top:2px;">${assigneeName}</div></div>
+      <div style="grid-column:1/-1;"><span style="color:var(--muted);">下发路径</span><div style="margin-top:2px;font-size:12px;">${path}</div></div>
+    </div>
+    <hr class="section-divider" />
+    <div style="font-size:13px;">
+      <span style="color:var(--muted);">任务描述</span>
+      <div style="margin-top:6px;line-height:1.6;">${t.desc || '<span style="color:var(--muted);">暂无描述</span>'}</div>
+    </div>
+    ${t.feedback ? `<hr class="section-divider" /><div style="font-size:13px;"><span style="color:var(--muted);">反馈内容</span><div style="margin-top:6px;line-height:1.6;padding:10px;background:var(--bg);border-radius:var(--radius);">${escHtml(t.feedback)}</div></div>` : ''}
+    ${t.attachments.length ? `<hr class="section-divider" /><div style="font-size:13px;"><span style="color:var(--muted);">附件</span><div style="margin-top:6px;">${t.attachments.map(a => `<div style="padding:4px 0;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:inline;vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> ${escHtml(a)}</div>`).join('')}</div></div>` : ''}
+  `;
+  document.getElementById('detailModal').classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BATCH SELECT / DISPATCH / DELETE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll('.task-chk:checked')).map(cb => cb.dataset.id);
+}
+
+function updateBatchBar() {
+  const ids = getSelectedIds();
+  const bar = document.getElementById('batchBar');
+  const info = document.getElementById('batchInfo');
+  if (ids.length > 0) {
+    bar.classList.add('visible');
+    const drafts = ids.filter(id => { const t = tasks.find(x => x.id === id); return t && t.status === 'draft' && t.creator === getCurrentActorId(); });
+    info.textContent = `已选 ${ids.length} 项（其中 ${drafts.length} 项为草稿，可下发）`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.task-chk').forEach(chk => { chk.checked = cb.checked; });
+  updateBatchBar();
+}
+
+function clearSelection() {
+  document.querySelectorAll('.task-chk').forEach(chk => { chk.checked = false; });
+  document.getElementById('selectAll').checked = false;
+  updateBatchBar();
+}
+
+function dispatchTask(taskId) {
+  const t = tasks.find(x => x.id === taskId);
+  if (!t || t.status !== 'draft') { alert('只有草稿状态的任务才能下发'); return; }
+  if (t.creator !== getCurrentActorId()) { alert('只有草稿创建者可以下发任务'); return; }
+  if (!confirm(`确定下发任务「${t.title}」吗？下发后将通知接收方。`)) return;
+  t.status = 'pending';
+  renderPlanList();
+}
+
+function receiveTask(taskId) {
+  const t = tasks.find(x => x.id === taskId);
+  if (!t || !canReceive(t)) { alert('只有待接收且分配给当前角色的任务才能接收'); return; }
+  t.status = getAssigneeType(t) === 'member' ? 'active' : 'toForward';
+  renderPlanList();
+}
+
+function recallTask(taskId) {
+  const t = tasks.find(x => x.id === taskId);
+  if (!t || !canRecall(t)) { alert('只有尚未被接收的任务可以由下发方拿回'); return; }
+  if (!confirm(`确定拿回任务「${t.title}」吗？拿回后将恢复为草稿。`)) return;
+  t.status = 'draft';
+  renderPlanList();
+}
+
+function deleteTask(taskId) {
+  const t = tasks.find(x => x.id === taskId);
+  if (!t) return;
+  if (t.status !== 'draft' || t.creator !== getCurrentActorId()) { alert('只能删除自己创建的草稿任务'); return; }
+  if (!confirm(`确定删除任务「${t.title}」吗？此操作不可恢复。`)) return;
+  tasks = tasks.filter(x => x.id !== taskId);
+  renderPlanList();
+}
+
+function batchDispatch() {
+  const ids = getSelectedIds();
+  const drafts = ids.filter(id => { const t = tasks.find(x => x.id === id); return t && t.status === 'draft' && t.creator === getCurrentActorId(); });
+  if (drafts.length === 0) { alert('所选任务中没有草稿状态的任务。只有草稿才能下发。'); return; }
+  if (!confirm(`确定下发选中的 ${drafts.length} 项草稿任务吗？`)) return;
+  drafts.forEach(id => { const t = tasks.find(x => x.id === id); if (t) t.status = 'pending'; });
+  clearSelection();
+  renderPlanList();
+}
+
+function batchDelete() {
+  const ids = getSelectedIds();
+  if (ids.length === 0) return;
+  const deletable = ids.filter(id => { const t = tasks.find(x => x.id === id); return t && t.status === 'draft' && t.creator === getCurrentActorId(); });
+  if (deletable.length === 0) { alert('只能删除自己创建的草稿任务。'); return; }
+  if (!confirm(`确定删除选中的 ${deletable.length} 项草稿任务吗？此操作不可恢复。`)) return;
+  tasks = tasks.filter(t => !deletable.includes(t.id));
+  clearSelection();
+  renderPlanList();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════════════ */
+
+updateCreateTaskButton();
+renderPlanList();
+</script>
+</body>
+</html>

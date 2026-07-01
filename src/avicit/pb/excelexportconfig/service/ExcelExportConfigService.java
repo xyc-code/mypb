@@ -34,6 +34,10 @@ public class ExcelExportConfigService {
     private static final String FORMAT_DATETIME = "DATETIME";
     private static final String FORMAT_TEXT = "TEXT";
     private static final String FORMAT_DICT = "DICT";
+    private static final String FORMAT_USER = "USER";
+    private static final String FORMAT_DEPT = "DEPT";
+    private static final String CACHE_USER = "__USER__";
+    private static final String CACHE_DEPT = "__DEPT__";
     private static final int MAX_EXPORT_MASTER_ROWS = 500;
     private static final int MAX_EXPORT_CHILD_ROWS = 10000;
 
@@ -470,7 +474,7 @@ public class ExcelExportConfigService {
             String exportFlag = EXPORT_YES.equalsIgnoreCase(trim(col.getString("EXPORT_FLAG"))) ? EXPORT_YES : "N";
             int width = parseInt(col.getString("COLUMN_WIDTH"), 16);
             String displayFormat = upper(col.getString("DISPLAY_FORMAT"));
-            String dictType = upper(col.getString("DICT_TYPE"));
+            String dictType = trim(col.getString("DICT_TYPE"));
             jdbcTemplate.update("insert into PB_EXCEL_EXPORT_COLUMN (" +
                             "ID, CREATED_BY, CREATION_DATE, LAST_UPDATED_BY, LAST_UPDATE_DATE, LAST_UPDATE_IP, VERSION, ORG_IDENTITY, " +
                             "CONFIG_ID, TABLE_NAME, COLUMN_NAME, COLUMN_LABEL, COLUMN_TYPE, COLUMN_LENGTH, EXPORT_FLAG, SORT_NO, COLUMN_WIDTH, DISPLAY_FORMAT, DICT_TYPE) " +
@@ -584,6 +588,14 @@ public class ExcelExportConfigService {
             String text = lookupDictName(value(column, "DICT_TYPE"), rawValue, dictCache);
             return StringUtils.defaultIfBlank(text, String.valueOf(rawValue));
         }
+        if (FORMAT_USER.equals(format)) {
+            String text = lookupUserName(rawValue, dictCache);
+            return StringUtils.defaultIfBlank(text, String.valueOf(rawValue));
+        }
+        if (FORMAT_DEPT.equals(format)) {
+            String text = lookupDeptName(rawValue, dictCache);
+            return StringUtils.defaultIfBlank(text, String.valueOf(rawValue));
+        }
         if (FORMAT_DATETIME.equals(format) && rawValue instanceof Date) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format((Date) rawValue);
         }
@@ -597,22 +609,85 @@ public class ExcelExportConfigService {
     }
 
     private String lookupDictName(String dictType, Object rawValue, Map<String, Map<String, String>> dictCache) {
-        dictType = upper(dictType);
+        dictType = trim(dictType);
         if (StringUtils.isBlank(dictType) || rawValue == null || !viewExists("SYS_LOOKUP_V")) {
             return "";
         }
-        Map<String, String> dict = dictCache.get(dictType);
+        String cacheKey = FORMAT_DICT + ":" + upper(dictType);
+        Map<String, String> dict = dictCache.get(cacheKey);
         if (dict == null) {
             dict = new HashMap<String, String>();
             List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                    "select LOOKUP_CODE, LOOKUP_NAME from SYS_LOOKUP_V where LOOKUP_TYPE = ?",
+                    "select LOOKUP_CODE, LOOKUP_NAME from SYS_LOOKUP_V where upper(LOOKUP_TYPE) = upper(?)",
                     dictType);
             for (int i = 0; i < rows.size(); i++) {
-                dict.put(value(rows.get(i), "LOOKUP_CODE"), value(rows.get(i), "LOOKUP_NAME"));
+                String lookupCode = value(rows.get(i), "LOOKUP_CODE");
+                String lookupName = value(rows.get(i), "LOOKUP_NAME");
+                dict.put(lookupCode, lookupName);
+                dict.put(upper(lookupCode), lookupName);
             }
-            dictCache.put(dictType, dict);
+            dictCache.put(cacheKey, dict);
         }
-        return dict.get(String.valueOf(rawValue));
+        String key = String.valueOf(rawValue);
+        String text = dict.get(key);
+        return StringUtils.defaultIfBlank(text, dict.get(upper(key)));
+    }
+
+    private String lookupUserName(Object rawValue, Map<String, Map<String, String>> formatCache) {
+        if (rawValue == null || !tableExists("SYS_USER")) {
+            return "";
+        }
+        return lookupCachedValue(formatCache, CACHE_USER, String.valueOf(rawValue),
+                "select case when NAME is null or NAME = '' then LOGIN_NAME else NAME end NAME from SYS_USER where ID = ?");
+    }
+
+    private String lookupDeptName(Object rawValue, Map<String, Map<String, String>> formatCache) {
+        if (rawValue == null) {
+            return "";
+        }
+        String id = String.valueOf(rawValue);
+        Map<String, String> cache = formatCache.get(CACHE_DEPT);
+        if (cache != null && cache.containsKey(id)) {
+            return cache.get(id);
+        }
+        if (cache == null) {
+            cache = new HashMap<String, String>();
+            formatCache.put(CACHE_DEPT, cache);
+        }
+        String text = "";
+        if (viewExists("SYS_DEPT_V")) {
+            text = queryName("select DEPT_NAME from SYS_DEPT_V where ID = ?", id);
+        }
+        if (StringUtils.isBlank(text) && tableExists("SYS_DEPT")) {
+            if (hasColumn("SYS_DEPT", "DEPT_NAME")) {
+                text = queryName("select DEPT_NAME from SYS_DEPT where ID = ?", id);
+            } else if (hasColumn("SYS_DEPT", "DEPT_ALIAS")) {
+                text = queryName("select DEPT_ALIAS from SYS_DEPT where ID = ?", id);
+            }
+        }
+        cache.put(id, text);
+        return text;
+    }
+
+    private String lookupCachedValue(Map<String, Map<String, String>> formatCache, String cacheKey, String id, String sql) {
+        Map<String, String> cache = formatCache.get(cacheKey);
+        if (cache == null) {
+            cache = new HashMap<String, String>();
+            formatCache.put(cacheKey, cache);
+        }
+        if (!cache.containsKey(id)) {
+            cache.put(id, queryName(sql, id));
+        }
+        return cache.get(id);
+    }
+
+    private String queryName(String sql, String id) {
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, id);
+        if (rows.isEmpty() || rows.get(0).isEmpty()) {
+            return "";
+        }
+        Object value = rows.get(0).values().iterator().next();
+        return value == null ? "" : String.valueOf(value);
     }
 
     private void validateColumns(String tableName, JSONArray columns) {

@@ -4,6 +4,7 @@ import avicit.platform6.api.session.SessionHelper;
 import avicit.platform6.api.sysuser.SysUserAPI;
 import avicit.platform6.api.sysuser.dto.SysUser;
 import avicit.platform6.commons.utils.ComUtil;
+import avicit.platform6.modules.system.sysfileupload.service.SwfUploadService;
 import avicit.pb.dwworkplan3.dto.DwWorkPlan3Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,14 @@ public class DwWorkPlan3Service {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private SysUserAPI sysUserAPI;
+    @Autowired
+    private SwfUploadService swfUploadService;
+    @Autowired
+    private DwWorkPlan3PortalTodoService portalTodoService;
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String TASK_ATTACHMENT_ELEMENT_ID = "dwTaskAttachment";
+    private static final String FEEDBACK_ATTACHMENT_ELEMENT_ID = "dwFeedbackAttachment";
 
     public Map<String, Object> currentUser(HttpServletRequest request) {
         ensureBootstrapRoot(request);
@@ -38,9 +45,29 @@ public class DwWorkPlan3Service {
         result.put("userId", userId);
         result.put("userName", userName(userId));
         result.put("roles", jdbcTemplate.queryForList(
-                "select * from DYN_DW_PLAN3_PERSON_TREE where USER_ID=? and ENABLED='Y' order by SORT_NO, CREATION_DATE",
+                "select * from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y' order by SORT_NO, CREATION_DATE",
                 userId));
         return result;
+    }
+
+    public List<Map<String, Object>> listPersonTree(HttpServletRequest request) {
+        ensureBootstrapRoot(request);
+        Map<String, Object> topNode = topUserNode(loginUser(request));
+        if (topNode == null || DwWorkPlan3Constants.ROLE_STAFF.equals(string(topNode.get("ROLE_CODE")))) {
+            return Collections.emptyList();
+        }
+        if (DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")))) {
+            return jdbcTemplate.queryForList(
+                    "select * from DYN_DW_PLAN3_PERSON_TREE where nvl(ENABLED,'Y')='Y' order by SORT_NO, CREATION_DATE");
+        }
+        List<String> subtreeIds = subtreeNodeIds(string(topNode.get("ID")));
+        if (subtreeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        StringBuilder sql = new StringBuilder("select * from DYN_DW_PLAN3_PERSON_TREE where nvl(ENABLED,'Y')='Y' and ID in (");
+        appendPlaceholders(sql, subtreeIds.size());
+        sql.append(") order by SORT_NO, CREATION_DATE");
+        return jdbcTemplate.queryForList(sql.toString(), subtreeIds.toArray());
     }
 
     public List<Map<String, Object>> listPersonTree() {
@@ -49,11 +76,25 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> savePerson(Map<String, String> p, HttpServletRequest request) {
+        ensurePersonUserColumnLength();
         String id = value(p, "id");
-        String userId = value(p, "userId");
-        String userName = value(p, "userName");
+        String userId = normalizePersonList(value(p, "userId"));
+        String userName = normalizePersonList(value(p, "userName"));
+        String parentId = value(p, "parentId");
+        String roleCode = value(p, "roleCode");
+        String hierarchyError = validatePersonHierarchy(id, parentId, roleCode);
+        if (StringUtils.isNotBlank(hierarchyError)) {
+            return failure(hierarchyError);
+        }
+        if (!allowsMultiPerson(roleCode) && splitPersonList(userId).size() > 1) {
+            return failure("\u515a\u59d4\u548c\u79d1\u5458\u8282\u70b9\u53ea\u80fd\u5173\u8054\u4e00\u4e2a\u7528\u6237\uff0c\u90e8\u95e8\u548c\u79d1\u5ba4\u8282\u70b9\u53ef\u4ee5\u5173\u8054\u591a\u4e2a\u7528\u6237");
+        }
         if (StringUtils.isBlank(userName) && StringUtils.isNotBlank(userId)) {
-            userName = userName(userId);
+            userName = userNamesForIds(userId);
+        }
+        String duplicateError = validateNoCrossLevelDuplicateUsers(id, roleCode, userId, userName);
+        if (StringUtils.isNotBlank(duplicateError)) {
+            return failure(duplicateError);
         }
         if (StringUtils.isBlank(id)) {
             id = ComUtil.getId();
@@ -62,14 +103,14 @@ public class DwWorkPlan3Service {
                             "PARENT_ID,NODE_NAME,USER_ID,USER_NAME,ROLE_CODE,SORT_NO,ENABLED,REMARK) " +
                             "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?)",
                     id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
-                    emptyToNull(value(p, "parentId")), value(p, "nodeName"), emptyToNull(userId), emptyToNull(userName),
-                    value(p, "roleCode"), number(value(p, "sortNo")), defaultValue(value(p, "enabled"), "Y"),
+                    emptyToNull(parentId), value(p, "nodeName"), emptyToNull(userId), emptyToNull(userName),
+                    roleCode, number(value(p, "sortNo")), defaultValue(value(p, "enabled"), "Y"),
                     emptyToNull(value(p, "remark")));
         } else {
             jdbcTemplate.update("update DYN_DW_PLAN3_PERSON_TREE set LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=?," +
                             "PARENT_ID=?,NODE_NAME=?,USER_ID=?,USER_NAME=?,ROLE_CODE=?,SORT_NO=?,ENABLED=?,REMARK=? where ID=?",
-                    loginUser(request), request.getRemoteAddr(), emptyToNull(value(p, "parentId")), value(p, "nodeName"),
-                    emptyToNull(userId), emptyToNull(userName), value(p, "roleCode"), number(value(p, "sortNo")),
+                    loginUser(request), request.getRemoteAddr(), emptyToNull(parentId), value(p, "nodeName"),
+                    emptyToNull(userId), emptyToNull(userName), roleCode, number(value(p, "sortNo")),
                     defaultValue(value(p, "enabled"), "Y"), emptyToNull(value(p, "remark")), id);
         }
         Map<String, Object> result = success();
@@ -78,8 +119,23 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> disablePerson(String id, HttpServletRequest request) {
-        jdbcTemplate.update("update DYN_DW_PLAN3_PERSON_TREE set ENABLED='N',LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                loginUser(request), request.getRemoteAddr(), id);
+        if (StringUtils.isBlank(id)) {
+            return failure("\u8bf7\u9009\u62e9\u8981\u5220\u9664\u7684\u8282\u70b9");
+        }
+        Integer childCount = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where PARENT_ID=? and nvl(ENABLED,'Y')='Y'",
+                Integer.class, id);
+        if (childCount != null && childCount > 0) {
+            return failure("\u8be5\u8282\u70b9\u4e0b\u8fd8\u6709\u5b50\u8282\u70b9\uff0c\u8bf7\u5148\u5220\u9664\u5b50\u8282\u70b9");
+        }
+        Integer taskCount = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where PERSON_NODE_ID=? or DRAFT_DEPT_NODE_ID=?",
+                Integer.class, id, id);
+        if (taskCount != null && taskCount > 0) {
+            return failure("\u8be5\u8282\u70b9\u5df2\u88ab\u4efb\u52a1\u5f15\u7528\uff0c\u4e0d\u80fd\u5220\u9664");
+        }
+        int deleted = jdbcTemplate.update("delete from DYN_DW_PLAN3_PERSON_TREE where ID=?", id);
+        if (deleted == 0) {
+            return failure("\u8282\u70b9\u5df2\u5220\u9664\u6216\u4e0d\u5b58\u5728\uff0c\u8bf7\u5237\u65b0\u5217\u8868");
+        }
         return success();
     }
 
@@ -110,8 +166,22 @@ public class DwWorkPlan3Service {
         return result;
     }
 
-    public List<Map<String, Object>> listBatches() {
-        return jdbcTemplate.queryForList("select * from DYN_DW_PLAN3_BATCH order by PLAN_YEAR desc, QUARTER desc, CREATION_DATE desc");
+    public List<Map<String, Object>> listBatches(HttpServletRequest request) {
+        ensureBootstrapRoot(request);
+        Map<String, Object> topNode = topUserNode(loginUser(request));
+        StringBuilder countScope = new StringBuilder();
+        List<Object> countArgs = new ArrayList<Object>();
+        appendVisibleTaskScope(countScope, "t", topNode, countArgs);
+        StringBuilder existsScope = new StringBuilder();
+        List<Object> existsArgs = new ArrayList<Object>();
+        appendVisibleTaskScope(existsScope, "t", topNode, existsArgs);
+        String sql = "select b.*,(select count(1) from DYN_DW_PLAN3_TASK t where t.BATCH_ID=b.ID" + countScope +
+                ") TASK_COUNT from DYN_DW_PLAN3_BATCH b where exists(select 1 from DYN_DW_PLAN3_TASK t where t.BATCH_ID=b.ID" + existsScope +
+                ") order by b.PLAN_YEAR desc, b.QUARTER desc, b.CREATION_DATE desc";
+        List<Object> args = new ArrayList<Object>();
+        args.addAll(countArgs);
+        args.addAll(existsArgs);
+        return jdbcTemplate.queryForList(sql, args.toArray());
     }
 
     public Map<String, Object> deleteBatch(String id, HttpServletRequest request) {
@@ -126,6 +196,7 @@ public class DwWorkPlan3Service {
                 id);
         List<Map<String, Object>> taskIds = jdbcTemplate.queryForList(
                 "select ID,ATTACHMENT_ID from DYN_DW_PLAN3_TASK where BATCH_ID=?", id);
+        closePortalTodos(taskIdsFromRows(taskIds), request, "批次删除");
         jdbcTemplate.update("delete from DYN_DW_PLAN3_FEEDBACK where TASK_ID in (select ID from DYN_DW_PLAN3_TASK where BATCH_ID=?)", id);
         jdbcTemplate.update("delete from DYN_DW_PLAN3_TASK where BATCH_ID=?", id);
         for (Map<String, Object> row : feedbackIds) {
@@ -139,31 +210,45 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> saveRootTask(Map<String, String> p, HttpServletRequest request) {
+        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u65b0\u5efa\u4efb\u52a1");
+        }
         String id = value(p, "id");
         String attachmentId = emptyToNull(value(p, "attachmentId"));
+        Map<String, String> draftDept = draftDeptParams(p, request);
         if (StringUtils.isBlank(id)) {
             id = ComUtil.getId();
             jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
                             "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
                             "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
-                            "SENDER_ID,SENDER_NAME,RECEIVER_ID,RECEIVER_NAME,PERSON_NODE_ID,ATTACHMENT_ID,DISPATCH_TIME) " +
-                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
+                            "SENDER_ID,SENDER_NAME,RECEIVER_ID,RECEIVER_NAME,PERSON_NODE_ID,DRAFT_DEPT_NODE_ID,DRAFT_DEPT_USER_ID,DRAFT_DEPT_NAME,ATTACHMENT_ID,DISPATCH_TIME) " +
+                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
                     id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
                     value(p, "batchId"), null, id, DwWorkPlan3Constants.LEVEL_PARTY, value(p, "title"),
                     emptyToNull(value(p, "content")), emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")),
-                    DwWorkPlan3Constants.STATUS_TODO, loginUser(request), userName(loginUser(request)), loginUser(request),
-                    userName(loginUser(request)), null, attachmentId);
+                    DwWorkPlan3Constants.STATUS_DRAFT, loginUser(request), userName(loginUser(request)), loginUser(request),
+                    userName(loginUser(request)), null, draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId);
         } else {
             jdbcTemplate.update("update DYN_DW_PLAN3_TASK set LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=?," +
-                            "TITLE=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,ATTACHMENT_ID=? where ID=? and TASK_LEVEL=?",
-                    loginUser(request), request.getRemoteAddr(), value(p, "title"), emptyToNull(value(p, "content")),
-                    emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")), attachmentId,
-                    id, DwWorkPlan3Constants.LEVEL_PARTY);
+                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
+                            "where ID=? and TASK_LEVEL=? and STATUS=? and SENDER_ID=?",
+                    loginUser(request), request.getRemoteAddr(), value(p, "batchId"), value(p, "title"), emptyToNull(value(p, "content")),
+                    emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")), draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId,
+                    id, DwWorkPlan3Constants.LEVEL_PARTY, DwWorkPlan3Constants.STATUS_DRAFT, loginUser(request));
         }
         bindAttachment(attachmentId, id, "ROOT_TASK", request);
         Map<String, Object> result = success();
         result.put("id", id);
         return result;
+    }
+
+    public Map<String, Object> directDispatchRoot(Map<String, String> p, HttpServletRequest request) {
+        Map<String, Object> saved = saveRootTask(p, request);
+        if (!"success".equals(saved.get("flag"))) {
+            return saved;
+        }
+        p.put("parentId", string(saved.get("id")));
+        return dispatchChild(p, request);
     }
 
     public Map<String, Object> dispatchChild(Map<String, String> p, HttpServletRequest request) {
@@ -190,10 +275,17 @@ public class DwWorkPlan3Service {
         String receiverId = value(p, "receiverId");
         String personNodeId = value(p, "personNodeId");
         Map<String, Object> receiverNode = validateDirectChildReceiver(userId, personNodeId, receiverId);
+        Integer duplicateCount = jdbcTemplate.queryForObject(
+                "select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=? and RECEIVER_ID=?",
+                Integer.class, parentId, receiverId);
+        if (duplicateCount != null && duplicateCount > 0) {
+            return failure("\u540c\u4e00\u4efb\u52a1\u4e0d\u80fd\u91cd\u590d\u4e0b\u53d1\u7ed9\u540c\u4e00\u4e2a\u4eba");
+        }
         String expectedRole = DwWorkPlan3Constants.nextRole(string(receiverNode.get("PARENT_ROLE_CODE")));
         if (StringUtils.isNotBlank(expectedRole) && !expectedRole.equals(string(receiverNode.get("ROLE_CODE")))) {
             return failure("\u53ea\u80fd\u4e0b\u53d1\u7ed9\u5f53\u524d\u4eba\u5458\u6811\u8282\u70b9\u7684\u76f4\u5c5e\u4e0b\u4e00\u7ea7");
         }
+        String receiverName = userNameFromPersonNode(receiverNode, receiverId);
         String attachmentId = emptyToNull(value(p, "attachmentId"));
         String id = ComUtil.getId();
         jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
@@ -208,12 +300,14 @@ public class DwWorkPlan3Service {
                 emptyToNull(defaultValue(value(p, "targetDesc"), string(parent.get("TARGET_DESC")))),
                 date(defaultValue(value(p, "planDeadline"), dateString(parent.get("PLAN_DEADLINE")))),
                 DwWorkPlan3Constants.STATUS_TODO, loginUser(request), userName(loginUser(request)), receiverId,
-                userName(receiverId), personNodeId, attachmentId);
+                receiverName, personNodeId, attachmentId);
         bindAttachment(attachmentId, id, "DISPATCH_TASK", request);
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate where ID=?",
                 DwWorkPlan3Constants.STATUS_WAIT_CHILD, loginUser(request), parentId);
         sendMessage(receiverId, "\u5de5\u4f5c\u8ba1\u5212\u65b0\u4efb\u52a1",
                 "\u60a8\u6536\u5230\u65b0\u7684\u5de5\u4f5c\u8ba1\u5212\u4efb\u52a1\uff1a" + defaultValue(value(p, "title"), string(parent.get("TITLE"))));
+        syncPortalTodo(parentId, request);
+        syncPortalTodo(id, request);
         Map<String, Object> result = success();
         result.put("id", id);
         return result;
@@ -223,7 +317,11 @@ public class DwWorkPlan3Service {
         if (StringUtils.isBlank(id)) {
             return failure("\u8bf7\u9009\u62e9\u8981\u62ff\u56de\u7684\u4efb\u52a1");
         }
-        Map<String, Object> task = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", id);
+        List<Map<String, Object>> taskRows = jdbcTemplate.queryForList("select * from DYN_DW_PLAN3_TASK where ID=?", id);
+        if (taskRows.isEmpty()) {
+            return failure("\u4efb\u52a1\u5df2\u5220\u9664\u6216\u4e0d\u5b58\u5728\uff0c\u8bf7\u5237\u65b0\u5217\u8868");
+        }
+        Map<String, Object> task = taskRows.get(0);
         if (!loginUser(request).equals(string(task.get("SENDER_ID")))) {
             return failure("\u53ea\u6709\u4efb\u52a1\u4e0b\u53d1\u4eba\u53ef\u4ee5\u62ff\u56de\u8be5\u4efb\u52a1");
         }
@@ -237,8 +335,9 @@ public class DwWorkPlan3Service {
         deleteAttachment(string(task.get("ATTACHMENT_ID")));
         jdbcTemplate.update("delete from DYN_DW_PLAN3_TASK where ID=? and SENDER_ID=? and STATUS=?",
                 id, loginUser(request), DwWorkPlan3Constants.STATUS_TODO);
-        jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                DwWorkPlan3Constants.STATUS_DOING, loginUser(request), request.getRemoteAddr(), parentId);
+        refreshParentStatusAfterChildRemoval(parentId, loginUser(request), request.getRemoteAddr());
+        closePortalTodo(id, request, "任务拿回");
+        syncPortalTodo(parentId, request);
         Map<String, Object> result = success();
         result.put("parentId", parentId);
         return result;
@@ -248,30 +347,40 @@ public class DwWorkPlan3Service {
         if (StringUtils.isBlank(id)) {
             return failure("\u8bf7\u9009\u62e9\u8981\u5220\u9664\u7684\u4efb\u52a1");
         }
-        Map<String, Object> task = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", id);
+        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u5220\u9664\u4efb\u52a1");
+        }
+        List<Map<String, Object>> taskRows = jdbcTemplate.queryForList("select * from DYN_DW_PLAN3_TASK where ID=?", id);
+        if (taskRows.isEmpty()) {
+            return failure("\u4efb\u52a1\u5df2\u5220\u9664\u6216\u4e0d\u5b58\u5728\uff0c\u8bf7\u5237\u65b0\u5217\u8868");
+        }
+        Map<String, Object> task = taskRows.get(0);
         String userId = loginUser(request);
-        String status = string(task.get("STATUS"));
-        if (!userId.equals(string(task.get("SENDER_ID"))) && !userId.equals(string(task.get("CREATED_BY")))) {
-            return failure("\u53ea\u6709\u4efb\u52a1\u4e0b\u53d1\u4eba\u53ef\u4ee5\u5220\u9664\u8be5\u4efb\u52a1");
+        List<String> taskIds = taskSubtreeIds(id);
+        if (taskIds.isEmpty()) {
+            return failure("\u4efb\u52a1\u5df2\u5220\u9664\u6216\u4e0d\u5b58\u5728\uff0c\u8bf7\u5237\u65b0\u5217\u8868");
         }
-        if (!DwWorkPlan3Constants.STATUS_DRAFT.equals(status) && !DwWorkPlan3Constants.STATUS_TODO.equals(status)) {
-            return failure("\u53ea\u80fd\u5220\u9664\u8349\u7a3f\u6216\u672a\u63a5\u6536\u7684\u4efb\u52a1");
-        }
-        Integer childCount = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=?", Integer.class, id);
-        if (childCount != null && childCount > 0) {
-            return failure("\u8be5\u4efb\u52a1\u5df2\u7ecf\u4e0b\u53d1\u7ed9\u4e0b\u7ea7\uff0c\u4e0d\u80fd\u76f4\u63a5\u5220\u9664");
-        }
-        List<Map<String, Object>> feedbackRows = jdbcTemplate.queryForList("select ATTACHMENT_ID from DYN_DW_PLAN3_FEEDBACK where TASK_ID=?", id);
+        StringBuilder placeholders = new StringBuilder();
+        appendPlaceholders(placeholders, taskIds.size());
+        List<Map<String, Object>> feedbackRows = jdbcTemplate.queryForList(
+                "select ATTACHMENT_ID from DYN_DW_PLAN3_FEEDBACK where TASK_ID in (" + placeholders + ")",
+                taskIds.toArray());
+        List<Map<String, Object>> taskAttachmentRows = jdbcTemplate.queryForList(
+                "select ATTACHMENT_ID from DYN_DW_PLAN3_TASK where ID in (" + placeholders + ")",
+                taskIds.toArray());
+        jdbcTemplate.update("delete from DYN_DW_PLAN3_FEEDBACK where TASK_ID in (" + placeholders + ")", taskIds.toArray());
+        jdbcTemplate.update("delete from DYN_DW_PLAN3_TASK where ID in (" + placeholders + ")", taskIds.toArray());
+        closePortalTodos(taskIds, request, "任务删除");
         for (Map<String, Object> row : feedbackRows) {
             deleteAttachment(string(row.get("ATTACHMENT_ID")));
         }
-        deleteAttachment(string(task.get("ATTACHMENT_ID")));
-        jdbcTemplate.update("delete from DYN_DW_PLAN3_FEEDBACK where TASK_ID=?", id);
-        jdbcTemplate.update("delete from DYN_DW_PLAN3_TASK where ID=?", id);
+        for (Map<String, Object> row : taskAttachmentRows) {
+            deleteAttachment(string(row.get("ATTACHMENT_ID")));
+        }
         String parentId = string(task.get("PARENT_ID"));
         if (StringUtils.isNotBlank(parentId)) {
-            jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=? and STATUS=?",
-                    DwWorkPlan3Constants.STATUS_DOING, userId, request.getRemoteAddr(), parentId, DwWorkPlan3Constants.STATUS_WAIT_CHILD);
+            refreshParentStatusAfterChildRemoval(parentId, userId, request.getRemoteAddr());
+            syncPortalTodo(parentId, request);
         }
         return success();
     }
@@ -286,6 +395,7 @@ public class DwWorkPlan3Service {
         if (updated == 0) {
             return failure("\u8be5\u4efb\u52a1\u5df2\u63a5\u6536\u6216\u5f53\u524d\u7528\u6237\u65e0\u6743\u63a5\u6536");
         }
+        syncPortalTodo(id, request);
         return success();
     }
 
@@ -315,7 +425,13 @@ public class DwWorkPlan3Service {
         if (StringUtils.isBlank(attachmentId) && draft != null) {
             attachmentId = emptyToNull(string(draft.get("ATTACHMENT_ID")));
         }
-        if (draft == null) {
+        if (draft != null && !hasFeedbackHistory(taskId)) {
+            jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set FEEDBACK_USER_ID=?,FEEDBACK_USER_NAME=?,FEEDBACK_CONTENT=?,FEEDBACK_TIME=sysdate,ATTACHMENT_ID=?,CONFIRM_RESULT=?," +
+                            "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                    loginUser(request), userName(loginUser(request)), emptyToNull(feedbackContent), attachmentId,
+                    DwWorkPlan3Constants.FEEDBACK_PENDING, loginUser(request), request.getRemoteAddr(), id);
+        } else {
+            id = ComUtil.getId();
             jdbcTemplate.update("insert into DYN_DW_PLAN3_FEEDBACK(" +
                             "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
                             "TASK_ID,FEEDBACK_USER_ID,FEEDBACK_USER_NAME,FEEDBACK_CONTENT,FEEDBACK_TIME,ATTACHMENT_ID,CONFIRM_RESULT) " +
@@ -323,16 +439,12 @@ public class DwWorkPlan3Service {
                     id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request), taskId,
                     loginUser(request), userName(loginUser(request)), emptyToNull(feedbackContent),
                     attachmentId, DwWorkPlan3Constants.FEEDBACK_PENDING);
-        } else {
-            jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set FEEDBACK_USER_ID=?,FEEDBACK_USER_NAME=?,FEEDBACK_CONTENT=?,FEEDBACK_TIME=sysdate,ATTACHMENT_ID=?,CONFIRM_RESULT=?," +
-                            "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                    loginUser(request), userName(loginUser(request)), emptyToNull(feedbackContent), attachmentId,
-                    DwWorkPlan3Constants.FEEDBACK_PENDING, loginUser(request), request.getRemoteAddr(), id);
         }
         bindAttachment(attachmentId, id, "FEEDBACK");
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                 DwWorkPlan3Constants.STATUS_PENDING_CONFIRM, loginUser(request), request.getRemoteAddr(), taskId);
         notifyParent(taskId, "\u5de5\u4f5c\u8ba1\u5212\u53cd\u9988\u5f85\u786e\u8ba4", "\u4e0b\u7ea7\u5df2\u63d0\u4ea4\u53cd\u9988\uff0c\u8bf7\u53ca\u65f6\u786e\u8ba4\u3002");
+        syncPortalTodo(taskId, request);
         Map<String, Object> result = success();
         result.put("id", id);
         return result;
@@ -355,6 +467,8 @@ public class DwWorkPlan3Service {
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,COMPLETE_TIME=sysdate,COMPLETE_DETAIL=?,RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                 DwWorkPlan3Constants.STATUS_COMPLETED, emptyToNull(completeDetail), loginUser(request), request.getRemoteAddr(), taskId);
         syncParentAfterChildDone(taskId, emptyToNull(completeDetail), string(feedback.get("ATTACHMENT_ID")), request);
+        syncPortalTodo(taskId, request);
+        syncPortalTodo(string(feedback.get("PARENT_ID")), request);
         return success();
     }
 
@@ -379,31 +493,47 @@ public class DwWorkPlan3Service {
         syncParentAfterChildReturned(taskId, request);
         sendMessage(string(feedback.get("FEEDBACK_USER_ID")), "\u5de5\u4f5c\u8ba1\u5212\u53cd\u9988\u672a\u901a\u8fc7",
                 defaultValue(reason, "\u53cd\u9988\u672a\u901a\u8fc7\uff0c\u8bf7\u4fee\u6539\u540e\u91cd\u65b0\u63d0\u4ea4\u3002"));
+        syncPortalTodo(taskId, request);
+        syncPortalTodo(string(feedback.get("PARENT_ID")), request);
         return success();
     }
 
     public List<Map<String, Object>> listTasks(HttpServletRequest request, String batchId, String status) {
+        return listTasks(request, batchId, null, null, status);
+    }
+
+    public List<Map<String, Object>> listTasks(HttpServletRequest request, String batchId, String year, String quarter, String status) {
         ensureBootstrapRoot(request);
         String userId = loginUser(request);
         StringBuilder sql = new StringBuilder("select t.*," +
                 "(select dbms_lob.substr(f.FEEDBACK_CONTENT,4000,1) from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and rownum=1) FEEDBACK_DRAFT_CONTENT," +
                 "(select f.ATTACHMENT_ID from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and rownum=1) FEEDBACK_DRAFT_ATTACHMENT_ID," +
+                "(select p.ID from DYN_DW_PLAN3_TASK p where p.ID=t.PARENT_ID) PARENT_TASK_ID," +
+                "(select p.ATTACHMENT_ID from DYN_DW_PLAN3_TASK p where p.ID=t.PARENT_ID) PARENT_ATTACHMENT_ID," +
+                "case when exists(select 1 from DYN_DW_PLAN3_TASK p where p.ID=t.PARENT_ID and p.ATTACHMENT_ID is not null) then 'Y' else 'N' end HAS_PARENT_ATTACHMENT," +
                 "(select count(1) from DYN_DW_PLAN3_TASK c where c.PARENT_ID=t.ID) CHILD_COUNT," +
+                "(select count(1) from DYN_DW_PLAN3_TASK c where c.PARENT_ID=t.ID and c.STATUS<>?) CHILD_OPEN_COUNT," +
                 "case when t.PLAN_DEADLINE<sysdate and t.STATUS<>? then 'Y' else 'N' end OVERDUE," +
-                "case when t.RECEIVER_ID=? and t.STATUS in (?,?) then 'Y' when t.SENDER_ID=? and t.STATUS=? then 'Y' else 'N' end NOTICE_FLAG " +
+                "case when t.RECEIVER_ID=? and t.STATUS in (?,?,?) then 'Y' when t.SENDER_ID=? and t.STATUS=? then 'Y' else 'N' end NOTICE_FLAG " +
                 "from DYN_DW_PLAN3_TASK t where 1=1");
         List<Object> args = new ArrayList<Object>();
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         args.add(DwWorkPlan3Constants.STATUS_COMPLETED);
+        args.add(DwWorkPlan3Constants.STATUS_COMPLETED);
         args.add(userId);
         args.add(DwWorkPlan3Constants.STATUS_TODO);
+        args.add(DwWorkPlan3Constants.STATUS_DOING);
         args.add(DwWorkPlan3Constants.STATUS_RETURNED);
         args.add(userId);
         args.add(DwWorkPlan3Constants.STATUS_PENDING_CONFIRM);
         if (StringUtils.isNotBlank(batchId)) {
             sql.append(" and t.BATCH_ID=?");
             args.add(batchId);
+        } else if (StringUtils.isNotBlank(year) && StringUtils.isNotBlank(quarter)) {
+            sql.append(" and t.BATCH_ID in (select b.ID from DYN_DW_PLAN3_BATCH b where b.PLAN_YEAR=? and b.QUARTER=?)");
+            args.add(number(year));
+            args.add(quarter);
         }
         if (StringUtils.isNotBlank(status)) {
             sql.append(" and t.STATUS=?");
@@ -430,20 +560,38 @@ public class DwWorkPlan3Service {
         args.add(DwWorkPlan3Constants.LEVEL_DEPT);
         args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
         args.add(DwWorkPlan3Constants.LEVEL_STAFF);
-        return jdbcTemplate.queryForList(sql.toString(), args.toArray());
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), args.toArray());
+        enrichTaskAttachmentInfo(rows);
+        return rows;
     }
 
     public List<Map<String, Object>> listFeedback(String taskId, HttpServletRequest request) {
         if (StringUtils.isBlank(taskId)) {
             return Collections.emptyList();
         }
-        return jdbcTemplate.queryForList(
-                "select f.*,t.TITLE TASK_TITLE,t.SENDER_ID TASK_SENDER_ID,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
+        List<String> taskIds = taskSubtreeIds(taskId);
+        if (taskIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        StringBuilder placeholders = new StringBuilder();
+        appendPlaceholders(placeholders, taskIds.size());
+        List<Object> args = new ArrayList<Object>();
+        args.add(loginUser(request));
+        args.addAll(taskIds);
+        args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
+        args.add(DwWorkPlan3Constants.LEVEL_PARTY);
+        args.add(DwWorkPlan3Constants.LEVEL_DEPT);
+        args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
+        args.add(DwWorkPlan3Constants.LEVEL_STAFF);
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "select f.*,t.TITLE TASK_TITLE,t.TASK_LEVEL TASK_LEVEL,t.SENDER_ID TASK_SENDER_ID,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
                         "case when t.SENDER_ID=? then 'Y' else 'N' end CAN_CONFIRM " +
                         "from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID " +
-                        "where (f.TASK_ID=? or f.TASK_ID in (select ID from DYN_DW_PLAN3_TASK where PARENT_ID=?)) and nvl(f.CONFIRM_RESULT,'PENDING')<>? " +
-                        "order by f.FEEDBACK_TIME desc",
-                loginUser(request), taskId, taskId, DwWorkPlan3Constants.FEEDBACK_DRAFT);
+                        "where f.TASK_ID in (" + placeholders + ") and nvl(f.CONFIRM_RESULT,'PENDING')<>? " +
+                        "order by case t.TASK_LEVEL when ? then 1 when ? then 2 when ? then 3 when ? then 4 else 9 end, f.FEEDBACK_TIME, f.CREATION_DATE",
+                args.toArray());
+        enrichFeedbackAttachmentInfo(rows);
+        return rows;
     }
 
     public Map<String, Object> uploadAttachment(MultipartFile file, String businessType, HttpServletRequest request) throws IOException {
@@ -488,16 +636,26 @@ public class DwWorkPlan3Service {
         StringBuilder where = new StringBuilder();
         List<Object> args = new ArrayList<Object>();
         String userId = loginUser(request);
-        boolean party = hasRole(userId, DwWorkPlan3Constants.ROLE_PARTY);
+        Map<String, Object> topNode = topUserNode(userId);
+        boolean party = topNode != null && DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")));
         if (StringUtils.isNotBlank(batchId)) {
             where.append(" where BATCH_ID=?");
             args.add(batchId);
         }
-        if (!party) {
+        if (topNode == null) {
             where.append(where.length() == 0 ? " where " : " and ");
-            where.append("(RECEIVER_ID=? or SENDER_ID=?)");
-            args.add(userId);
-            args.add(userId);
+            where.append("1=0");
+        } else if (!party) {
+            List<String> subtreeIds = subtreeNodeIds(string(topNode.get("ID")));
+            where.append(where.length() == 0 ? " where " : " and ");
+            if (subtreeIds.isEmpty()) {
+                where.append("1=0");
+            } else {
+                where.append("PERSON_NODE_ID in (");
+                appendPlaceholders(where, subtreeIds.size());
+                where.append(")");
+                args.addAll(subtreeIds);
+            }
         }
         result.put("byStatus", jdbcTemplate.queryForList("select STATUS,count(1) CNT from DYN_DW_PLAN3_TASK" + where + " group by STATUS", args.toArray()));
         result.put("byLevel", jdbcTemplate.queryForList("select TASK_LEVEL,STATUS,count(1) CNT from DYN_DW_PLAN3_TASK" + where + " group by TASK_LEVEL,STATUS", args.toArray()));
@@ -509,16 +667,22 @@ public class DwWorkPlan3Service {
     }
 
     private void ensureBootstrapRoot(HttpServletRequest request) {
-        Integer count = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE", Integer.class);
+        String userId = loginUser(request);
+        if (StringUtils.isBlank(userId)) {
+            return;
+        }
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(1) from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y'",
+                Integer.class, userId);
         if (count != null && count == 0) {
             String id = ComUtil.getId();
-            String userId = loginUser(request);
+            String name = userName(userId);
             jdbcTemplate.update("insert into DYN_DW_PLAN3_PERSON_TREE(" +
                             "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
                             "PARENT_ID,NODE_NAME,USER_ID,USER_NAME,ROLE_CODE,SORT_NO,ENABLED,REMARK) values(" +
                             "?,?,sysdate,?,sysdate,?,0,?,null,?,?,?,?,1,'Y',?)",
-                    id, userId, userId, request.getRemoteAddr(), orgIdentity(request), "Party plan dispatcher", userId,
-                    userName(userId), DwWorkPlan3Constants.ROLE_PARTY, "Bootstrap root node");
+                    id, userId, userId, request.getRemoteAddr(), orgIdentity(request), name + "\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005", userId,
+                    name, DwWorkPlan3Constants.ROLE_PARTY, "\u5f53\u524d\u7528\u6237\u9996\u6b21\u8bbf\u95ee 3.0 \u81ea\u52a8\u521d\u59cb\u5316\u6839\u8282\u70b9");
         }
     }
 
@@ -568,6 +732,24 @@ public class DwWorkPlan3Service {
                 DwWorkPlan3Constants.STATUS_WAIT_CHILD, loginUser(request), request.getRemoteAddr(), parentId);
     }
 
+    private void refreshParentStatusAfterChildRemoval(String parentId, String userId, String remoteAddr) {
+        if (StringUtils.isBlank(parentId)) {
+            return;
+        }
+        Map<String, Object> parent = queryOne("select TASK_LEVEL from DYN_DW_PLAN3_TASK where ID=?", parentId);
+        Integer childCount = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=?", Integer.class, parentId);
+        String nextStatus;
+        if (childCount != null && childCount > 0) {
+            nextStatus = DwWorkPlan3Constants.STATUS_WAIT_CHILD;
+        } else if (DwWorkPlan3Constants.LEVEL_PARTY.equals(string(parent.get("TASK_LEVEL")))) {
+            nextStatus = DwWorkPlan3Constants.STATUS_DRAFT;
+        } else {
+            nextStatus = DwWorkPlan3Constants.STATUS_DOING;
+        }
+        jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=? and STATUS=?",
+                nextStatus, userId, remoteAddr, parentId, DwWorkPlan3Constants.STATUS_WAIT_CHILD);
+    }
+
     private String aggregateChildFeedbackContent(String parentId) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
                 "select t.TITLE,t.RECEIVER_NAME,f.FEEDBACK_CONTENT from DYN_DW_PLAN3_TASK t join DYN_DW_PLAN3_FEEDBACK f on f.TASK_ID=t.ID " +
@@ -588,15 +770,76 @@ public class DwWorkPlan3Service {
         return detail.toString();
     }
 
+    private String validatePersonHierarchy(String id, String parentId, String roleCode) {
+        if (StringUtils.isBlank(roleCode)) {
+            return "\u8bf7\u9009\u62e9\u4eba\u5458\u89d2\u8272";
+        }
+        if (DwWorkPlan3Constants.ROLE_PARTY.equals(roleCode)) {
+            return StringUtils.isBlank(parentId) ? "" : "\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u5fc5\u987b\u662f\u6839\u8282\u70b9";
+        }
+        if (StringUtils.isBlank(parentId)) {
+            return "\u8bf7\u9009\u62e9\u4e0a\u7ea7\u8282\u70b9";
+        }
+        if (StringUtils.isNotBlank(id) && id.equals(parentId)) {
+            return "\u4e0a\u7ea7\u8282\u70b9\u4e0d\u80fd\u662f\u81ea\u8eab";
+        }
+        if (StringUtils.isNotBlank(id) && subtreeNodeIds(id).contains(parentId)) {
+            return "\u4e0a\u7ea7\u8282\u70b9\u4e0d\u80fd\u662f\u5f53\u524d\u8282\u70b9\u7684\u4e0b\u7ea7";
+        }
+        List<Map<String, Object>> parents = jdbcTemplate.queryForList(
+                "select ROLE_CODE from DYN_DW_PLAN3_PERSON_TREE where ID=? and ENABLED='Y'", parentId);
+        if (parents.isEmpty()) {
+            return "\u4e0a\u7ea7\u8282\u70b9\u4e0d\u5b58\u5728\u6216\u5df2\u7981\u7528";
+        }
+        String expectedParentRole = expectedParentRole(roleCode);
+        if (StringUtils.isBlank(expectedParentRole) || !expectedParentRole.equals(string(parents.get(0).get("ROLE_CODE")))) {
+            return "\u4eba\u5458\u8282\u70b9\u5fc5\u987b\u6309\u201c\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005-\u90e8\u957f-\u5ba4\u4e3b\u4efb-\u79d1\u5458\u201d\u7684\u5c42\u7ea7\u7ef4\u62a4";
+        }
+        return "";
+    }
+
+    private Map<String, String> draftDeptParams(Map<String, String> p, HttpServletRequest request) {
+        Map<String, String> result = new HashMap<String, String>();
+        String nodeId = defaultValue(value(p, "draftDeptNodeId"), value(p, "personNodeId"));
+        String userId = defaultValue(value(p, "draftDeptUserId"), value(p, "receiverId"));
+        if (StringUtils.isBlank(nodeId) && StringUtils.isBlank(userId)) {
+            result.put("nodeId", null);
+            result.put("userId", null);
+            result.put("name", null);
+            return result;
+        }
+        Map<String, Object> receiverNode = validateDirectChildReceiver(loginUser(request), nodeId, userId);
+        if (!DwWorkPlan3Constants.ROLE_DEPT.equals(string(receiverNode.get("ROLE_CODE")))) {
+            throw new IllegalArgumentException("\u65b0\u5efa\u4efb\u52a1\u53ea\u80fd\u9009\u62e9\u90e8\u95e8\u63a5\u6536\u4eba");
+        }
+        result.put("nodeId", string(receiverNode.get("ID")));
+        result.put("userId", userId);
+        result.put("name", defaultValue(value(p, "draftDeptName"), string(receiverNode.get("NODE_NAME"))));
+        return result;
+    }
+
+    private String expectedParentRole(String roleCode) {
+        if (DwWorkPlan3Constants.ROLE_DEPT.equals(roleCode)) {
+            return DwWorkPlan3Constants.ROLE_PARTY;
+        }
+        if (DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode)) {
+            return DwWorkPlan3Constants.ROLE_DEPT;
+        }
+        if (DwWorkPlan3Constants.ROLE_STAFF.equals(roleCode)) {
+            return DwWorkPlan3Constants.ROLE_OFFICE;
+        }
+        return "";
+    }
+
     private boolean hasRole(String userId, String role) {
-        Integer count = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where USER_ID=? and ROLE_CODE=? and ENABLED='Y'",
+        Integer count = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ROLE_CODE=? and ENABLED='Y'",
                 Integer.class, userId, role);
         return count != null && count > 0;
     }
 
     private Map<String, Object> topUserNode(String userId) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "select * from DYN_DW_PLAN3_PERSON_TREE where USER_ID=? and ENABLED='Y' order by SORT_NO, CREATION_DATE",
+                "select * from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y' order by SORT_NO, CREATION_DATE",
                 userId);
         if (rows.isEmpty()) {
             return null;
@@ -638,6 +881,29 @@ public class DwWorkPlan3Service {
         return result;
     }
 
+    private List<String> taskSubtreeIds(String rootTaskId) {
+        List<String> result = new ArrayList<String>();
+        collectTaskSubtreeIds(rootTaskId, result);
+        return result;
+    }
+
+    private void collectTaskSubtreeIds(String taskId, List<String> result) {
+        if (StringUtils.isBlank(taskId) || result.contains(taskId)) {
+            return;
+        }
+        List<Map<String, Object>> exists = jdbcTemplate.queryForList("select ID from DYN_DW_PLAN3_TASK where ID=?", taskId);
+        if (exists.isEmpty()) {
+            return;
+        }
+        result.add(taskId);
+        List<Map<String, Object>> children = jdbcTemplate.queryForList(
+                "select ID from DYN_DW_PLAN3_TASK where PARENT_ID=? order by CREATION_DATE",
+                taskId);
+        for (Map<String, Object> child : children) {
+            collectTaskSubtreeIds(string(child.get("ID")), result);
+        }
+    }
+
     private void collectSubtreeNodeIds(String nodeId, List<String> result) {
         if (StringUtils.isBlank(nodeId) || result.contains(nodeId)) {
             return;
@@ -651,6 +917,25 @@ public class DwWorkPlan3Service {
         }
     }
 
+    private void appendVisibleTaskScope(StringBuilder sql, String alias, Map<String, Object> topNode, List<Object> args) {
+        if (topNode == null) {
+            sql.append(" and 1=0");
+            return;
+        }
+        if (DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")))) {
+            return;
+        }
+        List<String> subtreeIds = subtreeNodeIds(string(topNode.get("ID")));
+        if (subtreeIds.isEmpty()) {
+            sql.append(" and 1=0");
+            return;
+        }
+        sql.append(" and ").append(alias).append(".PERSON_NODE_ID in (");
+        appendPlaceholders(sql, subtreeIds.size());
+        sql.append(")");
+        args.addAll(subtreeIds);
+    }
+
     private Map<String, Object> validateDirectChildReceiver(String userId, String personNodeId, String receiverId) {
         if (StringUtils.isBlank(personNodeId) || StringUtils.isBlank(receiverId)) {
             throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u63a5\u6536\u4eba");
@@ -660,8 +945,8 @@ public class DwWorkPlan3Service {
             throw new IllegalArgumentException("\u5f53\u524d\u7528\u6237\u672a\u5728\u4eba\u5458\u6811\u4e2d\u914d\u7f6e");
         }
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "select c.*,p.ROLE_CODE PARENT_ROLE_CODE from DYN_DW_PLAN3_PERSON_TREE c left join DYN_DW_PLAN3_PERSON_TREE p on c.PARENT_ID=p.ID where c.ID=? and c.USER_ID=? and c.PARENT_ID=? and c.ENABLED='Y'",
-                personNodeId, receiverId, topNode.get("ID"));
+                "select c.*,p.ROLE_CODE PARENT_ROLE_CODE from DYN_DW_PLAN3_PERSON_TREE c left join DYN_DW_PLAN3_PERSON_TREE p on c.PARENT_ID=p.ID where c.ID=? and c.PARENT_ID=? and c.ENABLED='Y' and " + userMatchSql("c.USER_ID"),
+                personNodeId, topNode.get("ID"), receiverId);
         if (rows.isEmpty()) {
             throw new IllegalArgumentException("\u53ea\u80fd\u4e0b\u53d1\u7ed9\u5f53\u524d\u8282\u70b9\u7684\u76f4\u5c5e\u4e0b\u4e00\u7ea7");
         }
@@ -680,6 +965,39 @@ public class DwWorkPlan3Service {
             }
             sql.append("?");
         }
+    }
+
+    private void enrichTaskAttachmentInfo(List<Map<String, Object>> rows) {
+        for (Map<String, Object> row : rows) {
+            int taskAttachmentCount = attachmentCount(string(row.get("ID")), TASK_ATTACHMENT_ELEMENT_ID, row.get("ATTACHMENT_ID"));
+            int parentAttachmentCount = attachmentCount(string(row.get("PARENT_TASK_ID")), TASK_ATTACHMENT_ELEMENT_ID, row.get("PARENT_ATTACHMENT_ID"));
+            row.put("TASK_ATTACHMENT_COUNT", Integer.valueOf(taskAttachmentCount));
+            row.put("PARENT_ATTACHMENT_COUNT", Integer.valueOf(parentAttachmentCount));
+            row.put("HAS_PARENT_ATTACHMENT", parentAttachmentCount > 0 ? "Y" : "N");
+        }
+    }
+
+    private void enrichFeedbackAttachmentInfo(List<Map<String, Object>> rows) {
+        for (Map<String, Object> row : rows) {
+            int feedbackAttachmentCount = attachmentCount(string(row.get("ID")), FEEDBACK_ATTACHMENT_ELEMENT_ID, row.get("ATTACHMENT_ID"));
+            row.put("FEEDBACK_ATTACHMENT_COUNT", Integer.valueOf(feedbackAttachmentCount));
+            row.put("HAS_ATTACHMENT", feedbackAttachmentCount > 0 ? "Y" : "N");
+        }
+    }
+
+    private int attachmentCount(String businessId, String elementId, Object legacyAttachmentId) {
+        int count = StringUtils.isBlank(string(legacyAttachmentId)) ? 0 : 1;
+        if (StringUtils.isBlank(businessId) || swfUploadService == null) {
+            return count;
+        }
+        try {
+            List<?> files = swfUploadService.getFileListByFormId(businessId, elementId);
+            if (files != null) {
+                count += files.size();
+            }
+        } catch (Exception ignored) {
+        }
+        return count;
     }
 
     private void bindAttachment(String attachmentId, String businessId, String businessType, HttpServletRequest request) {
@@ -726,6 +1044,13 @@ public class DwWorkPlan3Service {
                 "select * from DYN_DW_PLAN3_FEEDBACK where TASK_ID=? and CONFIRM_RESULT=? order by LAST_UPDATE_DATE desc, CREATION_DATE desc",
                 taskId, DwWorkPlan3Constants.FEEDBACK_DRAFT);
         return rows.isEmpty() ? null : rows.get(0);
+    }
+
+    private boolean hasFeedbackHistory(String taskId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(1) from DYN_DW_PLAN3_FEEDBACK where TASK_ID=? and nvl(CONFIRM_RESULT,?)<>?",
+                Integer.class, taskId, DwWorkPlan3Constants.FEEDBACK_PENDING, DwWorkPlan3Constants.FEEDBACK_DRAFT);
+        return count != null && count > 0;
     }
 
     private void upsertFeedbackDraft(String taskId, String content, String attachmentId, HttpServletRequest request) {
@@ -788,6 +1113,38 @@ public class DwWorkPlan3Service {
         }
     }
 
+    private void syncPortalTodo(String taskId, HttpServletRequest request) {
+        if (portalTodoService != null) {
+            portalTodoService.syncTaskTodo(taskId, request);
+        }
+    }
+
+    private void closePortalTodo(String taskId, HttpServletRequest request, String reason) {
+        if (portalTodoService != null) {
+            portalTodoService.closeTaskTodo(taskId, request, reason);
+        }
+    }
+
+    private void closePortalTodos(List<String> taskIds, HttpServletRequest request, String reason) {
+        if (portalTodoService != null) {
+            portalTodoService.closeTaskTodos(taskIds, request, reason);
+        }
+    }
+
+    private List<String> taskIdsFromRows(List<Map<String, Object>> rows) {
+        List<String> ids = new ArrayList<String>();
+        if (rows == null) {
+            return ids;
+        }
+        for (Map<String, Object> row : rows) {
+            String id = string(row.get("ID"));
+            if (StringUtils.isNotBlank(id)) {
+                ids.add(id);
+            }
+        }
+        return ids;
+    }
+
     private Map<String, Object> queryOne(String sql, Object... args) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, args);
         if (rows.isEmpty()) {
@@ -830,6 +1187,133 @@ public class DwWorkPlan3Service {
         } catch (Exception ignored) {
         }
         return userId;
+    }
+
+    private String userNamesForIds(String userIds) {
+        List<String> ids = splitPersonList(userIds);
+        List<String> names = new ArrayList<String>();
+        for (String id : ids) {
+            names.add(userName(id));
+        }
+        return joinPersonList(names);
+    }
+
+    private String userNameFromPersonNode(Map<String, Object> node, String userId) {
+        List<String> ids = splitPersonList(string(node.get("USER_ID")));
+        List<String> names = splitPersonList(string(node.get("USER_NAME")));
+        for (int i = 0; i < ids.size(); i++) {
+            if (userId.equals(ids.get(i))) {
+                if (i < names.size() && StringUtils.isNotBlank(names.get(i))) {
+                    return names.get(i);
+                }
+                return userName(userId);
+            }
+        }
+        return userName(userId);
+    }
+
+    private boolean allowsMultiPerson(String roleCode) {
+        return DwWorkPlan3Constants.ROLE_DEPT.equals(roleCode) || DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode);
+    }
+
+    private String validateNoCrossLevelDuplicateUsers(String currentId, String currentRoleCode, String userIds, String userNames) {
+        List<String> ids = splitPersonList(userIds);
+        List<String> names = splitPersonList(userNames);
+        for (int i = 0; i < ids.size(); i++) {
+            String userId = ids.get(i);
+            List<Object> args = new ArrayList<Object>();
+            StringBuilder sql = new StringBuilder("select ROLE_CODE,NODE_NAME from DYN_DW_PLAN3_PERSON_TREE where nvl(ENABLED,'Y')='Y' and ROLE_CODE<>?");
+            args.add(currentRoleCode);
+            if (StringUtils.isNotBlank(currentId)) {
+                sql.append(" and ID<>?");
+                args.add(currentId);
+            }
+            sql.append(" and ").append(userMatchSql("USER_ID"));
+            args.add(userId);
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), args.toArray());
+            if (!rows.isEmpty()) {
+                String name = i < names.size() && StringUtils.isNotBlank(names.get(i)) ? names.get(i) : userName(userId);
+                Map<String, Object> row = rows.get(0);
+                return "\u7528\u6237\u201c" + name + "\u201d\u5df2\u7ed1\u5b9a\u4e3a\u3010" +
+                        roleLevelLabel(string(row.get("ROLE_CODE"))) + "\u3011\u8282\u70b9\u201c" +
+                        string(row.get("NODE_NAME")) + "\u201d\uff0c\u4e0d\u80fd\u8de8\u5c42\u7ea7\u91cd\u590d\u7ed1\u5b9a";
+            }
+        }
+        return "";
+    }
+
+    private String roleLevelLabel(String roleCode) {
+        if (DwWorkPlan3Constants.ROLE_PARTY.equals(roleCode)) {
+            return "\u515a\u59d4";
+        }
+        if (DwWorkPlan3Constants.ROLE_DEPT.equals(roleCode)) {
+            return "\u90e8\u95e8";
+        }
+        if (DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode)) {
+            return "\u79d1\u5ba4";
+        }
+        if (DwWorkPlan3Constants.ROLE_STAFF.equals(roleCode)) {
+            return "\u79d1\u5458";
+        }
+        return roleCode;
+    }
+
+    private String normalizePersonList(String value) {
+        return joinPersonList(splitPersonList(value));
+    }
+
+    private List<String> splitPersonList(String value) {
+        List<String> result = new ArrayList<String>();
+        if (StringUtils.isBlank(value)) {
+            return result;
+        }
+        String[] parts = value.split("[,，;；]");
+        for (String part : parts) {
+            String item = part == null ? "" : part.trim();
+            if (StringUtils.isNotBlank(item) && !result.contains(item)) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    private String joinPersonList(List<String> values) {
+        StringBuilder result = new StringBuilder();
+        for (String value : values) {
+            if (StringUtils.isBlank(value)) {
+                continue;
+            }
+            if (result.length() > 0) {
+                result.append(",");
+            }
+            result.append(value.trim());
+        }
+        return result.toString();
+    }
+
+    private String userMatchSql(String column) {
+        return "instr(','||replace(replace(replace(replace(nvl(" + column + ",''),' ',''),'\uff0c',','),'\uff1b',','),';',',')||',', ','||?||',')>0";
+    }
+
+    private void ensurePersonUserColumnLength() {
+        ensureColumnLength("DYN_DW_PLAN3_PERSON_TREE", "USER_ID", 1000);
+        ensureColumnLength("DYN_DW_PLAN3_PERSON_TREE", "USER_NAME", 1000);
+    }
+
+    private void ensureColumnLength(String tableName, String columnName, int minLength) {
+        try {
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                    "select DATA_LENGTH from USER_TAB_COLUMNS where TABLE_NAME=? and COLUMN_NAME=?",
+                    tableName, columnName);
+            if (rows.isEmpty()) {
+                return;
+            }
+            int length = Integer.parseInt(string(rows.get(0).get("DATA_LENGTH")));
+            if (length < minLength) {
+                jdbcTemplate.execute("ALTER TABLE " + tableName + " MODIFY " + columnName + " VARCHAR2(" + minLength + ")");
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private String value(Map<String, String> p, String key) {

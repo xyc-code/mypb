@@ -133,7 +133,7 @@
         dialogIndex = layer.open({
             type: 1,
             title: title,
-            area: ['1080px', '720px'],
+            area: ['1080px', '620px'],
             skin: 'bs-modal',
             maxmin: false,
             content: $('#excelConfigDialog'),
@@ -240,7 +240,7 @@
             tr.append('<td class="column-name">' + escapeHtml(row.COLUMN_NAME || '') + '</td>');
             tr.append('<td><input class="column-label" type="text" value="' + escapeAttr(row.COLUMN_LABEL || row.COLUMN_COMMENT || row.COLUMN_NAME || '') + '"></td>');
             tr.append('<td>' + escapeHtml(row.COLUMN_TYPE || '') + '</td>');
-            tr.append('<td><select class="display-format"><option value="">默认</option><option value="DATE">日期</option><option value="DATETIME">日期时间</option><option value="NUMBER">数字</option><option value="TEXT">文本</option><option value="DICT">字典</option></select></td>');
+            tr.append('<td><select class="display-format"><option value="">默认</option><option value="DATE">日期</option><option value="DATETIME">日期时间</option><option value="NUMBER">数字</option><option value="TEXT">文本</option><option value="DICT">字典</option><option value="USER">用户</option><option value="DEPT">部门</option></select></td>');
             tr.append('<td><input class="dict-type" type="text" value="' + escapeAttr(row.DICT_TYPE || '') + '" placeholder="LOOKUP_TYPE"></td>');
             tr.append('<td><select class="export-flag"><option value="Y">是</option><option value="N">否</option></select></td>');
             tr.append('<td><input class="column-width" type="text" value="' + escapeHtml(row.COLUMN_WIDTH || 16) + '"></td>');

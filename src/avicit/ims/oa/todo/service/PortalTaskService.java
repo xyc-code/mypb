@@ -21,6 +21,8 @@ public class PortalTaskService  implements Serializable {
 
     @Autowired
     PortalTaskDao portalTaskDao;
+    @Autowired
+    PortalBusinessTodoService portalBusinessTodoService;
 
     public Page<Map<String,Object>> searchPortalTaskByPage(
             String userId,String taskType, String startTime,String endTime,String title,
@@ -31,8 +33,9 @@ public class PortalTaskService  implements Serializable {
             pageParameter.setPage(currentPage);
             pageParameter.setRows(pageSize);
             PageHelper.startPage(pageParameter);
+            boolean businessTodoEnabled = portalBusinessTodoService != null && portalBusinessTodoService.isEnabled();
             Page<Map<String,Object>> dataList = portalTaskDao.searchPortalTaskByPage(userId,taskType,
-                    startTime,endTime,title);
+                    startTime,endTime,title,businessTodoEnabled);
             return dataList;
         } catch (Exception e) {
             LOGGER.error("searchPortalTaskByPage出错：", e);

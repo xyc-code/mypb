@@ -12,7 +12,7 @@
 
 .pb-excel-export-page .pb-excel-dialog {
     padding: 12px;
-    max-height: calc(100vh - 112px);
+    max-height: 520px;
     overflow-y: auto;
     padding-bottom: 72px;
 }

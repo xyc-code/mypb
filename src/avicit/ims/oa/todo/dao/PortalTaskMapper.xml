@@ -2,87 +2,130 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="avicit.ims.oa.todo.dao.PortalTaskDao">
 
-
     <select id="getReceiveDealDate" parameterType="java.lang.String" resultType="java.lang.String">
-            select to_char(t.DEAL_TIME, 'yyyy-mm-dd') deal_time from dyn_receive_file t
-            where t.id=#{id}
+        select to_char(t.DEAL_TIME, 'yyyy-mm-dd') deal_time from dyn_receive_file t
+        where t.id=#{id}
     </select>
 
-    <!-- 分页查询 OA_CALENDAR -->
     <select id="searchPortalTaskByPage" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT t.DBID_,
-        t.DBVERSION_,
-        t.EXECUTION_,
-        t.OUTCOME_,
-        t.ASSIGNEE_,
-        t.PRIORITY_,
-        t.STATE_,
-        t.CREATE_,
-        to_char(t.CREATE_,'yyyy-MM-dd hh24:mi:ss') as SEND_TIME,
-        t.END_,
-        t.DURATION_,
-        t.NEXTIDX_,
-        t.SUPERTASK_,
-        t.TASK_ORDER_,
-        t.OPEN_,
-        t.TAKE_STATE_,
-        t.PROCINST_,
-        t.SUSPHISTSTATE_,
-        t.TASK_TYPE_,
-        t.TASK_B_ID_,
-        t.TASK_TITLE_,
-        t.TASK_SENDUSER_,
-        t.TASK_SENDDEPT_,
-        t.FORM_,
-        t.PROCESS_DEF_NAME_,
-        t.TASK_FINISHED_,
-        t.TASK_STATE_,
-        t.TASK_NAME_,
-        t.HISACTINST_,
-        t.WORKHAND_TYPE_,
-        t.WORKHAND_USER_,
-        u.NAME WORKHAND_USER_NAME,
-        t.APP_ID_,
-        t.IS_READTODO_,
-        t.MOBILE_APPROVAL_,
-        t.FORM_URL_MOBILE_,
-        t.FORM_CODE_,
-        t.ASSIGNEE_DEPT_,
-        t.REASONABLE_FINISH_TIME_,
-        t.WARNING_FINISH_TIME_,
-        t.DESCR_
-        FROM BPM_HIST_TASK_V t
-
-        left join sys_user u on t.WORKHAND_USER_=u.id
-        where t.TASK_STATE_ = '1'
-        and t.ASSIGNEE_ = #{userId}
-        and t.TASK_FINISHED_ = '0'
-        <!--待办
-        <if test=" taskType=='0'.toString()">
-            and t.TASK_TYPE_ = '0'
-            and (
-            t.IS_READTODO_ is NULL
-            or t.IS_READTODO_ &lt;&gt; '1'
-            )
-        </if>
-        -->
-        <!--待阅
-        <if test=" taskType=='1'.toString()">
-            and (t.TASK_TYPE_ = '1' or t.IS_READTODO_ = '1')
-        </if>
-        -->
-        <if test="startTime != null and startTime != ''">
-            and t.CREATE_ &gt; to_date(#{startTime},'yyyy-MM-dd hh24:mi:ss')
-        </if>
-        <if test="endTime != null and endTime != ''">
-            and t.CREATE_  &lt; to_date(#{endTime},'yyyy-MM-dd hh24:mi:ss')
-        </if>
-        <if test="title != null and title != ''">
-            and t.TASK_TITLE_ like concat(concat('%',#{title}),'%')
-        </if>
-
-        order by t.PRIORITY_ desc, t.CREATE_ desc
-
+        SELECT q.* FROM (
+            SELECT cast(t.DBID_ as varchar2(50)) DBID_,
+            t.DBVERSION_,
+            t.EXECUTION_,
+            t.OUTCOME_,
+            t.ASSIGNEE_,
+            t.PRIORITY_,
+            t.STATE_,
+            t.CREATE_,
+            to_char(t.CREATE_,'yyyy-MM-dd hh24:mi:ss') as SEND_TIME,
+            t.END_,
+            t.DURATION_,
+            t.NEXTIDX_,
+            t.SUPERTASK_,
+            t.TASK_ORDER_,
+            t.OPEN_,
+            t.TAKE_STATE_,
+            t.PROCINST_,
+            t.SUSPHISTSTATE_,
+            t.TASK_TYPE_,
+            cast(t.TASK_B_ID_ as varchar2(50)) TASK_B_ID_,
+            t.TASK_TITLE_,
+            t.TASK_SENDUSER_,
+            t.TASK_SENDDEPT_,
+            t.FORM_,
+            t.PROCESS_DEF_NAME_,
+            t.TASK_FINISHED_,
+            t.TASK_STATE_,
+            t.TASK_NAME_,
+            t.HISACTINST_,
+            t.WORKHAND_TYPE_,
+            t.WORKHAND_USER_,
+            u.NAME WORKHAND_USER_NAME,
+            t.APP_ID_,
+            t.IS_READTODO_,
+            t.MOBILE_APPROVAL_,
+            t.FORM_URL_MOBILE_,
+            t.FORM_CODE_,
+            t.ASSIGNEE_DEPT_,
+            t.REASONABLE_FINISH_TIME_,
+            t.WARNING_FINISH_TIME_,
+            t.DESCR_,
+            'BPM' TASK_SOURCE,
+            null SECRET_LEVEL
+            FROM BPM_HIST_TASK_V t
+            left join sys_user u on t.WORKHAND_USER_=u.id
+            where t.TASK_STATE_ = '1'
+            and t.ASSIGNEE_ = #{userId}
+            and t.TASK_FINISHED_ = '0'
+            <if test="startTime != null and startTime != ''">
+                and t.CREATE_ &gt; to_date(#{startTime},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and t.CREATE_ &lt; to_date(#{endTime},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="title != null and title != ''">
+                and t.TASK_TITLE_ like concat(concat('%',#{title}),'%')
+            </if>
+            <if test="businessTodoEnabled">
+            UNION ALL
+            SELECT bt.ID DBID_,
+            0 DBVERSION_,
+            null EXECUTION_,
+            null OUTCOME_,
+            bt.RECEIVER_ID ASSIGNEE_,
+            to_number(nvl(bt.PRIORITY,'1')) PRIORITY_,
+            null STATE_,
+            nvl(bt.SEND_TIME, cast(bt.CREATION_DATE as timestamp)) CREATE_,
+            to_char(nvl(bt.SEND_TIME, cast(bt.CREATION_DATE as timestamp)),'yyyy-MM-dd hh24:mi:ss') as SEND_TIME,
+            null END_,
+            null DURATION_,
+            null NEXTIDX_,
+            null SUPERTASK_,
+            null TASK_ORDER_,
+            null OPEN_,
+            null TAKE_STATE_,
+            null PROCINST_,
+            null SUSPHISTSTATE_,
+            '0' TASK_TYPE_,
+            bt.BUSINESS_ID TASK_B_ID_,
+            bt.TITLE TASK_TITLE_,
+            bt.SEND_USER_NAME TASK_SENDUSER_,
+            null TASK_SENDDEPT_,
+            bt.TARGET_URL FORM_,
+            bt.TASK_TYPE PROCESS_DEF_NAME_,
+            '0' TASK_FINISHED_,
+            '1' TASK_STATE_,
+            bt.TITLE TASK_NAME_,
+            null HISACTINST_,
+            null WORKHAND_TYPE_,
+            null WORKHAND_USER_,
+            null WORKHAND_USER_NAME,
+            'PB' APP_ID_,
+            null IS_READTODO_,
+            null MOBILE_APPROVAL_,
+            null FORM_URL_MOBILE_,
+            null FORM_CODE_,
+            null ASSIGNEE_DEPT_,
+            null REASONABLE_FINISH_TIME_,
+            null WARNING_FINISH_TIME_,
+            bt.TASK_DESC DESCR_,
+            'BUSINESS' TASK_SOURCE,
+            null SECRET_LEVEL
+            FROM PB_PORTAL_BUSINESS_TODO bt
+            where bt.TODO_STATUS = 'ACTIVE'
+            and bt.RECEIVER_ID = #{userId}
+            <if test="startTime != null and startTime != ''">
+                and nvl(bt.SEND_TIME, cast(bt.CREATION_DATE as timestamp)) &gt; to_timestamp(#{startTime},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and nvl(bt.SEND_TIME, cast(bt.CREATION_DATE as timestamp)) &lt; to_timestamp(#{endTime},'yyyy-MM-dd hh24:mi:ss')
+            </if>
+            <if test="title != null and title != ''">
+                and bt.TITLE like concat(concat('%',#{title}),'%')
+            </if>
+            </if>
+        ) q
+        order by q.PRIORITY_ desc, q.CREATE_ desc
     </select>
 
 </mapper>

@@ -10,7 +10,7 @@ public interface PortalTaskDao {
     public Page<Map<String,Object>> searchPortalTaskByPage(
             @Param("userId") String userId,@Param("taskType") String taskType,
             @Param("startTime") String startTime,@Param("endTime") String endTime,
-            @Param("title") String title
+            @Param("title") String title,@Param("businessTodoEnabled") boolean businessTodoEnabled
             );
 
     public String getReceiveDealDate(@Param("id") String id);

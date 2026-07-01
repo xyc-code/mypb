@@ -1,617 +1,467 @@
-(function (window, $) {
+(function ($, echarts) {
+  "use strict";
+
   if (!$) {
     return;
   }
 
-  var baseUrl = 'platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/';
+  var API_BASE = "platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/";
+  var TASK_ATTACHMENT_ELEMENT_ID = "dwTaskAttachment";
+  var FEEDBACK_ATTACHMENT_ELEMENT_ID = "dwFeedbackAttachment";
+  var TASK_ATTACHMENT_TABLE = "DYN_DW_PLAN3_TASK";
+  var FEEDBACK_ATTACHMENT_TABLE = "DYN_DW_PLAN3_FEEDBACK";
+  var taskSearchTimer = null;
+
+  var ROLE_LABEL = {
+    PARTY_SENDER: "党委计划下发者",
+    DEPT_MINISTER: "部长",
+    OFFICE_DIRECTOR: "室主任",
+    STAFF: "科员"
+  };
+
+  var LEVEL_LABEL = {
+    PARTY: "党委",
+    DEPT: "部门",
+    OFFICE: "科室",
+    STAFF: "科员"
+  };
+
+  var STATUS_LABEL = {
+    DRAFT: "草稿",
+    TODO: "待接收",
+    DOING: "执行中",
+    WAIT_CHILD: "待下级完成",
+    PENDING_CONFIRM: "待确认",
+    COMPLETED: "已完成",
+    RETURNED: "已退回"
+  };
+
+  var STATUS_BADGE = {
+    DRAFT: "dw-badge-draft",
+    TODO: "dw-badge-todo",
+    DOING: "dw-badge-doing",
+    WAIT_CHILD: "dw-badge-wait",
+    PENDING_CONFIRM: "dw-badge-pending",
+    COMPLETED: "dw-badge-done",
+    RETURNED: "dw-badge-returned"
+  };
+
+  var NEXT_ROLE = {
+    PARTY_SENDER: "DEPT_MINISTER",
+    DEPT_MINISTER: "OFFICE_DIRECTOR",
+    OFFICE_DIRECTOR: "STAFF"
+  };
+
   var state = {
     user: null,
-    batches: [],
-    tasks: [],
-    taskExpanded: {},
-    receivers: [],
+    roles: [],
+    currentNodeId: "",
     persons: [],
-    personExpanded: {},
-    selectedTask: null,
-    selectedPerson: null
+    personById: {},
+    expandedPersonIds: {},
+    selectedPersonId: "",
+    batches: [],
+    batchById: {},
+    receivers: [],
+    tasks: [],
+    selectedTaskIds: {},
+    expandedTaskIds: {},
+    currentView: "plans",
+    charts: {}
   };
 
-  var text = {
-    allBatches: '\u5168\u90e8\u6279\u6b21',
-    noReceiver: '\u4eba\u5458\u6811\u672a\u914d\u7f6e\u4e0b\u7ea7',
-    noTask: '\u6682\u65e0\u4efb\u52a1',
-    noFeedback: '\u6682\u65e0\u53cd\u9988',
-    selectTask: '\u8bf7\u5148\u9009\u62e9\u4efb\u52a1',
-    selectReceiver: '\u8bf7\u9009\u62e9\u63a5\u6536\u4eba',
-    chooseReceiver: '\u8bf7\u9009\u62e9\u63a5\u6536\u4eba',
-    selectNode: '\u8bf7\u5148\u9009\u62e9\u8282\u70b9',
-    selectOneTask: '\u8bf7\u4ece\u4efb\u52a1\u6c60\u9009\u62e9\u4e00\u6761\u4efb\u52a1',
-    chooseBatch: '\u8bf7\u5148\u9009\u62e9\u6216\u521b\u5efa\u6279\u6b21',
-    fillTitle: '\u8bf7\u586b\u5199\u4efb\u52a1\u6807\u9898',
-    cannotDispatch: '\u8be5\u4efb\u52a1\u4e0d\u80fd\u518d\u4e0b\u53d1',
-    fillNodeName: '\u8bf7\u586b\u5199\u8282\u70b9\u540d\u79f0',
-    rootNodeCannotDelete: '\u6839\u8282\u70b9\u4e0d\u80fd\u505c\u7528',
-    expandAll: '\u5c55\u5f00\u5168\u90e8',
-    collapseAll: '\u6536\u8d77\u5168\u90e8',
-    batchExisting: '\u6279\u6b21\u5df2\u5b58\u5728\uff0c\u5df2\u9009\u4e2d',
-    batchCreated: '\u6279\u6b21\u5df2\u521b\u5efa',
-    batchDeleted: '\u6279\u6b21\u5df2\u5220\u9664',
-    confirmDeleteBatch: '\u786e\u5b9a\u5220\u9664\u5f53\u524d\u6279\u6b21\u5417\uff1f\u8be5\u6279\u6b21\u4e0b\u7684\u4efb\u52a1\u3001\u53cd\u9988\u548c\u9644\u4ef6\u4e5f\u4f1a\u4e00\u8d77\u5220\u9664\u3002',
-    onlyPartyBatch: '\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u7ef4\u62a4\u6279\u6b21',
-    rootSaved: '\u515a\u59d4\u4efb\u52a1\u5df2\u4fdd\u5b58',
-    accepted: '\u4efb\u52a1\u5df2\u63a5\u6536',
-    dispatched: '\u4efb\u52a1\u5df2\u4e0b\u53d1',
-    takenBack: '\u4efb\u52a1\u5df2\u62ff\u56de',
-    confirmTakeBack: '\u786e\u5b9a\u62ff\u56de\u8be5\u4efb\u52a1\u5417\uff1f\u62ff\u56de\u540e\u53ef\u4ee5\u91cd\u65b0\u7f16\u8f91\u5e76\u518d\u6b21\u4e0b\u53d1\u3002',
-    feedbackSubmitted: '\u53cd\u9988\u5df2\u63d0\u4ea4',
-    feedbackConfirmed: '\u53cd\u9988\u5df2\u786e\u8ba4',
-    feedbackReturned: '\u53cd\u9988\u5df2\u9000\u56de',
-    newNotice: '\u65b0',
-    newTaskNotice: '\u6709\u65b0\u4efb\u52a1',
-    processing: '\u5904\u7406\u4e2d...',
-    noFeedbackPermission: '\u5f53\u524d\u4efb\u52a1\u4e0d\u80fd\u63d0\u4ea4\u53cd\u9988',
-    noDispatchPermission: '\u5f53\u524d\u4efb\u52a1\u65e0\u4e0b\u53d1\u6743\u9650',
-    dispatchAfterAccept: '\u8bf7\u5148\u63a5\u6536\u4efb\u52a1\uff0c\u518d\u4e0b\u53d1',
-    confirmPending: '\u5f85\u786e\u8ba4',
-    confirmPassed: '\u5df2\u901a\u8fc7',
-    confirmRejected: '\u5df2\u9000\u56de',
-    nodeSaved: '\u8282\u70b9\u5df2\u4fdd\u5b58',
-    nodeDisabled: '\u8282\u70b9\u5df2\u505c\u7528',
-    confirmDisable: '\u786e\u5b9a\u505c\u7528\u8be5\u8282\u70b9\u5417\uff1f',
-    returnReason: '\u8bf7\u8f93\u5165\u9000\u56de\u539f\u56e0',
-    requestFailed: '\u8bf7\u6c42\u5931\u8d25\uff1a',
-    actionFailed: '\u64cd\u4f5c\u5931\u8d25',
-    userSelectMissing: '\u5e73\u53f0\u9009\u4eba\u7ec4\u4ef6\u672a\u52a0\u8f7d',
-    uploading: '\u9644\u4ef6\u4e0a\u4f20\u4e2d...',
-    uploadFailed: '\u9644\u4ef6\u4e0a\u4f20\u5931\u8d25',
-    noAttachment: '\u672a\u9009\u62e9\u9644\u4ef6',
-    selectedAttachment: '\u5df2\u9009\u62e9\uff1a',
-    uploadedAttachment: '\u5df2\u4e0a\u4f20\uff1a',
-    attachment: '\u9644\u4ef6',
-    download: '\u4e0b\u8f7d',
-    confirmTitle: '\u786e\u8ba4',
-    countItem: ' \u6761',
-    countNode: ' \u4e2a\u8282\u70b9',
-    noneParent: '\u65e0\u7236\u8282\u70b9',
-    overdue: '\u903e\u671f ',
-    echartsMissing: 'ECharts \u672a\u52a0\u8f7d'
-  };
+  $(init);
 
-  var statusText = {
-    DRAFT: '\u8349\u7a3f',
-    TODO: '\u5f85\u63a5\u6536',
-    DOING: '\u6267\u884c\u4e2d',
-    WAIT_CHILD: '\u5f85\u4e0b\u7ea7\u5b8c\u6210',
-    PENDING_CONFIRM: '\u5f85\u786e\u8ba4',
-    COMPLETED: '\u5df2\u5b8c\u6210',
-    RETURNED: '\u5df2\u9000\u56de'
-  };
-
-  var levelText = {
-    PARTY: '\u515a\u59d4',
-    DEPT: '\u90e8\u95e8',
-    OFFICE: '\u79d1\u5ba4',
-    STAFF: '\u79d1\u5458'
-  };
-
-  var roleText = {
-    PARTY_SENDER: '\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005',
-    DEPT_MINISTER: '\u90e8\u957f',
-    OFFICE_DIRECTOR: '\u5ba4\u4e3b\u4efb',
-    STAFF: '\u79d1\u5458'
-  };
-
-  var nextPersonRole = {
-    PARTY_SENDER: 'DEPT_MINISTER',
-    DEPT_MINISTER: 'OFFICE_DIRECTOR',
-    OFFICE_DIRECTOR: 'STAFF',
-    STAFF: 'STAFF'
-  };
-
-  function api(path, data, done, always) {
-    $.ajax({
-      url: baseUrl + path,
-      type: 'post',
-      dataType: 'json',
-      data: data || {},
-      success: function (res) {
-        if (res && res.flag === 'failure') {
-          toast(res.errorMsg || text.actionFailed);
-          always && always(false, res || {});
-          return;
-        }
-        done && done(res || {});
-        always && always(true, res || {});
-      },
-      error: function (xhr) {
-        toast(text.requestFailed + (xhr.status || 'network'));
-        always && always(false, xhr);
-      }
-    });
+  function init() {
+    prepareDynamicDom();
+    bindEvents();
+    setDefaultTaskDate();
+    loadAll();
   }
 
-  function uploadFile(inputSelector, hiddenSelector, statusSelector, businessType, done, fail) {
-    var input = $(inputSelector)[0];
-    var existingId = $(hiddenSelector).val();
-    if (!input || !input.files || !input.files.length) {
-      done(existingId || '');
+  function prepareDynamicDom() {
+    if (!$("#dwFilterPeriod").length) {
+      $("#dwFilterYear,#dwFilterQuarter").hide();
+      $("#dwFilterYear").before('<select id="dwFilterPeriod" class="dw-input dw-period-select"></select>');
+    }
+    if (!$("#dwPlanNoticeBadge").length) {
+      $('.dw-tab[data-view="plans"]').append(' <span id="dwPlanNoticeBadge" class="dw-tab-badge">0</span>');
+    }
+    $("#dwBatchDeleteBtn").text("\u5220\u9664");
+    $("#dwPersonTable thead tr").html("<th>\u8282\u70b9\u540d\u79f0</th>");
+    replaceFileInput("dwTaskFile", "dwTaskAttachment");
+    replaceFileInput("dwFeedbackFile", "dwFeedbackAttachment");
+    if (!$("#dwTaskParentAttachment").length) {
+      $("#dwTaskAttachment").before('<div id="dwTaskParentAttachmentWrap" class="dw-attachment-section" style="display:none"><div class="dw-section-title">\u4e0a\u7ea7\u4e0b\u53d1\u9644\u4ef6</div><div id="dwTaskParentAttachment" class="dw-platform-attachment dw-platform-attachment-readonly"></div></div>');
+    }
+    if (!$("#dwFeedbackTaskSummary").length) {
+      $("#dwFeedbackTaskId").after('<div id="dwFeedbackTaskSummary" class="dw-feedback-task-summary"></div><div id="dwFeedbackUpperAttachmentWrap" class="dw-attachment-section" style="display:none"><div class="dw-section-title">\u4e0a\u7ea7\u4e0b\u53d1\u9644\u4ef6</div><div id="dwFeedbackUpperAttachmentLegacy"></div><div id="dwFeedbackUpperAttachment" class="dw-platform-attachment dw-platform-attachment-readonly"></div></div><div id="dwFeedbackTaskAttachmentWrap" class="dw-attachment-section"><div class="dw-section-title">\u4efb\u52a1\u9644\u4ef6</div><div id="dwFeedbackTaskAttachment" class="dw-platform-attachment dw-platform-attachment-readonly"></div></div>');
+      $("#dwFeedbackAttachment").before('<div id="dwFeedbackHistory" class="dw-feedback-history"></div><div class="dw-section-title">\u53cd\u9988\u9644\u4ef6</div>');
+    }
+  }
+
+  function replaceFileInput(inputId, attachmentId) {
+    var $input = $("#" + inputId);
+    if (!$input.length || $("#" + attachmentId).length) {
       return;
     }
-    var formData = new FormData();
-    formData.append('file', input.files[0]);
-    formData.append('businessType', businessType);
-    $(statusSelector).text(text.uploading);
-    $.ajax({
-      url: baseUrl + 'api/attachment/upload',
-      type: 'post',
-      dataType: 'json',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function (res) {
-        if (res && res.flag === 'failure') {
-          toast(res.errorMsg || text.uploadFailed);
-          $(statusSelector).text(text.uploadFailed);
-          fail && fail();
-          return;
-        }
-        $(hiddenSelector).val(res.id || '');
-        $(statusSelector).text(text.uploadedAttachment + (res.fileName || input.files[0].name || ''));
-        done(res.id || '');
-      },
-      error: function (xhr) {
-        toast(text.requestFailed + (xhr.status || 'network'));
-        $(statusSelector).text(text.uploadFailed);
-        fail && fail();
-      }
+    $input.replaceWith('<div id="' + attachmentId + '" class="dw-platform-attachment"></div>');
+  }
+
+  function bindEvents() {
+    $(".pb-dwworkplan3-page").on("click", ".dw-tab", function () {
+      switchView($(this).attr("data-view"));
     });
-  }
-
-  function bindFileStatus(inputSelector, hiddenSelector, statusSelector) {
-    $(inputSelector).on('change', function () {
-      $(hiddenSelector).val('');
-      var fileName = this.files && this.files.length ? this.files[0].name : '';
-      $(statusSelector).text(fileName ? text.selectedAttachment + fileName : text.noAttachment);
+    $("#dwRefreshBtn").on("click", loadAll);
+    $("#dwRoleSelect").on("change", function () {
+      state.currentNodeId = this.value;
+      renderCurrentRole();
+      updateCreateButton();
+      loadReceivers(renderTaskTable);
     });
-  }
-
-  function clearFile(inputSelector, hiddenSelector, statusSelector) {
-    $(inputSelector).val('');
-    $(hiddenSelector).val('');
-    $(statusSelector).text(text.noAttachment);
-  }
-
-  function attachmentLink(id, fileName) {
-    if (!id) {
-      return '';
-    }
-    var label = fileName || text.download;
-    return '<a class="dw-attach-link" target="_blank" href="' + baseUrl + 'api/attachment/download?id=' + encodeURIComponent(id) + '">' +
-      html(label) + '</a>';
-  }
-
-  function toast(msg) {
-    if (window.layer && layer.msg) {
-      layer.msg(msg, {time: 1800, offset: '80px', skin: 'dw-layer-msg'});
-    } else {
-      window.alert(msg);
-    }
-  }
-
-  function confirmBox(msg, yes) {
-    if (window.layer && layer.confirm) {
-      layer.confirm(msg, {icon: 3, title: text.confirmTitle, skin: 'dw-layer-dialog'}, function (index) {
-        layer.close(index);
-        yes();
+    $("#dwCreateTaskBtn").on("click", openCreateTask);
+    $("#dwFilterPeriod,#dwFilterStatus").on("change", function () {
+      triggerTaskSearch(0);
+    });
+    $("#dwFilterKeyword").on("input", function () {
+      triggerTaskSearch(300);
+    });
+    $("#dwSelectAll").on("change", function () {
+      var checked = this.checked;
+      $("#dwTaskTableBody .dw-row-check").each(function () {
+        this.checked = checked;
+        setSelectedTask(this.value, checked);
       });
-    } else if (window.confirm(msg)) {
-      yes();
-    }
-  }
-
-  function promptBox(msg, yes) {
-    if (window.layer && layer.prompt) {
-      layer.prompt({title: msg, formType: 2, area: ['360px', '120px'], skin: 'dw-layer-dialog'}, function (value, index) {
-        layer.close(index);
-        yes(value || '');
-      });
-      return;
-    }
-    var value = window.prompt(msg, '');
-    if (value !== null) {
-      yes(value || '');
-    }
-  }
-
-  function setButtonBusy($btn, busy) {
-    $btn.data('busy', !!busy)
-      .prop('disabled', !!busy)
-      .toggleClass('is-disabled is-busy', !!busy);
-  }
-
-  function isButtonBusy($btn) {
-    return $btn.data('busy') === true;
-  }
-
-  function html(value) {
-    return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function rowValue(row, key) {
-    if (!row) {
-      return '';
-    }
-    return row[key] == null ? row[key.toLowerCase()] : row[key];
-  }
-
-  function dateOnly(value) {
-    if (!value) {
-      return '';
-    }
-    if (typeof value === 'number') {
-      return new Date(value).toISOString().slice(0, 10);
-    }
-    return String(value).slice(0, 10);
-  }
-
-  function currentYear() {
-    return new Date().getFullYear();
-  }
-
-  function selectedBatchId(selector) {
-    return $(selector).val() || '';
-  }
-
-  function batchLabel(batch) {
-    var year = rowValue(batch, 'PLAN_YEAR') || '';
-    var quarter = rowValue(batch, 'QUARTER') || '';
-    var quarterNo = String(quarter).replace(/[^0-9]/g, '');
-    if (year && quarterNo) {
-      return year + '/' + quarterNo + '\u5b63\u5ea6';
-    }
-    return rowValue(batch, 'BATCH_NAME') || (year + ' ' + quarter);
-  }
-
-  function fillBatches(selector, includeAll) {
-    var $select = $(selector);
-    var current = $select.val();
-    var hadOptions = $select.children().length > 0;
-    $select.empty();
-    if (includeAll) {
-      $select.append('<option value="">' + text.allBatches + '</option>');
-    }
-    $.each(state.batches, function (_, batch) {
-      var id = rowValue(batch, 'ID');
-      var name = batchLabel(batch);
-      $select.append('<option value="' + html(id) + '">' + html(name) + '</option>');
+      renderTaskTableSelection();
     });
-    if (current && $select.find('option[value="' + current + '"]').length) {
-      $select.val(current);
-    } else if ((!includeAll || !hadOptions) && state.batches.length) {
-      $select.val(rowValue(state.batches[0], 'ID'));
-    }
-  }
-
-  function loadBatches(done) {
-    api('api/batch/list', {}, function (res) {
-      state.batches = res.rows || [];
-      done && done();
-    });
-  }
-
-  function loadUser(done) {
-    api('api/currentUser', {}, function (res) {
-      state.user = res;
-      var roles = $.map(res.roles || [], function (role) {
-        return roleText[rowValue(role, 'ROLE_CODE')] || rowValue(role, 'ROLE_CODE');
-      }).join('\u3001');
-      $('#dwUserText').text((res.userName || res.userId || '') + (roles ? ' | ' + roles : ''));
-      toggleRootBox();
-      done && done();
-    });
-  }
-
-  function userHasRole(roleCode) {
-    var roles = (state.user && state.user.roles) || [];
-    for (var i = 0; i < roles.length; i++) {
-      if (rowValue(roles[i], 'ROLE_CODE') === roleCode) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function toggleRootBox() {
-    var party = userHasRole('PARTY_SENDER');
-    $('#dwRootTaskBox').toggle(party);
-    $('.dw-party-only').toggle(party);
-  }
-
-  function setBoxEnabled(selector, enabled) {
-    $(selector).toggleClass('is-disabled', !enabled);
-    $(selector).find('input,select,textarea,button').prop('disabled', !enabled);
-  }
-
-  function setProcessEnabled(enabled) {
-    setBoxEnabled('#dwDispatchProcessBox', enabled);
-    setBoxEnabled('#dwFeedbackProcessBox', enabled);
-  }
-
-  function statusBadge(status, overdue) {
-    var cls = '';
-    if (status === 'COMPLETED') {
-      cls = ' is-done';
-    } else if (status === 'RETURNED' || overdue === 'Y') {
-      cls = ' is-danger';
-    } else if (status === 'PENDING_CONFIRM' || status === 'WAIT_CHILD') {
-      cls = ' is-warn';
-    }
-    return '<span class="dw-badge' + cls + '">' + html((overdue === 'Y' ? text.overdue : '') + (statusText[status] || status || '')) + '</span>';
-  }
-
-  function initWorkbench() {
-    $('#dwYear').val(currentYear());
-    setProcessEnabled(false);
-    bindWorkbench();
-    loadUser(function () {
-      loadBatches(function () {
-        fillBatches('#dwBatchSelect', false);
-        loadReceivers();
-        loadTasks();
-      });
-    });
-  }
-
-  function bindWorkbench() {
-    $('#dwRefreshBtn').on('click', function () {
-      loadTasks();
-    });
-    $('#dwReceiverSelect').on('change', function () {
-      updateDispatchButton(state.selectedTask);
-    });
-    $('#dwBatchSelect,#dwStatusFilter').on('change', function () {
-      state.selectedTask = null;
-      renderSelectedTask();
-      $('#dwFeedbackList').empty();
-      loadTasks();
-    });
-    $('.dw-workbench-tabs .dw-flow-step').on('click', function () {
-      showWorkbenchTab($(this).data('tab'));
-    });
-    bindFileStatus('#dwRootFile', '#dwRootAttachment', '#dwRootAttachStatus');
-    bindFileStatus('#dwChildFile', '#dwChildAttachment', '#dwChildAttachStatus');
-    bindFileStatus('#dwFeedbackFile', '#dwFeedbackAttachment', '#dwFeedbackAttachStatus');
-    $('#dwCreateBatchBtn').on('click', function () {
-      if (!userHasRole('PARTY_SENDER')) {
-        toast(text.onlyPartyBatch);
+    $("#dwTaskTableBody").on("click", "tr[data-task-id]", function (event) {
+      if ($(event.target).closest("button,a,input").length) {
         return;
       }
-      api('api/batch/create', {
-        year: $('#dwYear').val(),
-        quarter: $('#dwQuarter').val()
-      }, function (res) {
-        toast(res.existing ? text.batchExisting : text.batchCreated);
-        loadBatches(function () {
-          fillBatches('#dwBatchSelect', false);
-          $('#dwBatchSelect').val(res.id);
-          loadTasks();
-        });
-      });
+      var id = $(this).attr("data-task-id");
+      var checked = !state.selectedTaskIds[id];
+      setSelectedTask(id, checked);
+      renderTaskTableSelection();
     });
-    $('#dwDeleteBatchBtn').on('click', function () {
-      if (!userHasRole('PARTY_SENDER')) {
-        toast(text.onlyPartyBatch);
-        return;
-      }
-      var batchId = selectedBatchId('#dwBatchSelect');
-      if (!batchId) {
-        toast(text.chooseBatch);
-        return;
-      }
-      confirmBox(text.confirmDeleteBatch, function () {
-        api('api/batch/delete', {id: batchId}, function () {
-          toast(text.batchDeleted);
-          state.selectedTask = null;
-          renderSelectedTask();
-          $('#dwFeedbackList').empty();
-          loadBatches(function () {
-            fillBatches('#dwBatchSelect', false);
-            loadTasks();
-          });
-        });
-      });
-    });
-    $('#dwSaveRootBtn').on('click', function () {
-      var $btn = $(this);
-      if (isButtonBusy($btn)) {
-        return;
-      }
-      if (!selectedBatchId('#dwBatchSelect')) {
-        toast(text.chooseBatch);
-        return;
-      }
-      if (!$('#dwRootTitle').val()) {
-        toast(text.fillTitle);
-        return;
-      }
-      setButtonBusy($btn, true);
-      uploadFile('#dwRootFile', '#dwRootAttachment', '#dwRootAttachStatus', 'ROOT_TASK', function (attachmentId) {
-        api('api/task/saveRoot', {
-          batchId: selectedBatchId('#dwBatchSelect'),
-          title: $('#dwRootTitle').val(),
-          content: $('#dwRootContent').val(),
-          targetDesc: $('#dwRootTarget').val(),
-          planDeadline: $('#dwRootDeadline').val(),
-          attachmentId: attachmentId
-        }, function () {
-          toast(text.rootSaved);
-          clearFile('#dwRootFile', '#dwRootAttachment', '#dwRootAttachStatus');
-          loadTasks();
-        }, function () {
-          setButtonBusy($btn, false);
-        });
-      }, function () {
-        setButtonBusy($btn, false);
-      });
-    });
-    $('#dwDispatchBtn').on('click', dispatchSelectedTask);
-    $('#dwAcceptBtn,#dwDispatchAcceptBtn').on('click', acceptSelectedTask);
-    $('#dwSubmitFeedbackBtn').on('click', submitSelectedFeedback);
-  }
-
-  function loadReceivers() {
-    api('api/person/receivers', {}, function (res) {
-      state.receivers = res.rows || [];
-      var $select = $('#dwReceiverSelect');
-      var current = $select.val();
-      $select.empty();
-      $select.append('<option value="">' + text.chooseReceiver + '</option>');
-      if (!state.receivers.length) {
-        $select.append('<option value="" disabled>' + text.noReceiver + '</option>');
-      }
-      $.each(state.receivers, function (_, node) {
-        var nodeName = rowValue(node, 'NODE_NAME') || '';
-        var userName = rowValue(node, 'USER_NAME') || rowValue(node, 'USER_ID') || '';
-        var label = nodeName && userName && nodeName !== userName ? nodeName + ' - ' + userName : (nodeName || userName);
-        $select.append('<option value="' + html(rowValue(node, 'USER_ID')) + '" data-node="' + html(rowValue(node, 'ID')) + '">' +
-          html(label) + '</option>');
-      });
-      if (current && $select.find('option[value="' + current + '"]').length) {
-        $select.val(current);
-      } else {
-        $select.val('');
-      }
-      updateDispatchButton(state.selectedTask);
-    });
-  }
-
-  function loadTasks(done) {
-    api('api/task/list', {
-      batchId: selectedBatchId('#dwBatchSelect'),
-      status: $('#dwStatusFilter').val() || ''
-    }, function (res) {
-      state.tasks = res.rows || [];
-      if (state.selectedTask) {
-        var selectedId = rowValue(state.selectedTask, 'ID');
-        var matchedTask = null;
-        $.each(state.tasks, function (_, task) {
-          if (rowValue(task, 'ID') === selectedId) {
-            matchedTask = task;
-            return false;
-          }
-        });
-        state.selectedTask = matchedTask;
-      }
-      renderTasks();
-      renderSelectedTask();
-      if (state.selectedTask) {
-        loadFeedback();
-      }
-      done && done();
-    });
-  }
-
-  function renderTaskNotice(count) {
-    var label = count > 0 ? count : '';
-    $('#dwTaskNoticeBadge').text(label).toggle(count > 0);
-    $('#dwTaskPanelNotice').text(count > 0 ? text.newTaskNotice + ' ' + count + text.countItem : '').toggle(count > 0);
-  }
-
-  function renderTasks() {
-    var $body = $('#dwTaskTable tbody');
-    $body.empty();
-    $('#dwTaskCount').text(state.tasks.length + text.countItem);
-    var noticeCount = 0;
-    $.each(state.tasks, function (_, task) {
-      if (rowValue(task, 'NOTICE_FLAG') === 'Y') {
-        noticeCount++;
-      }
-    });
-    renderTaskNotice(noticeCount);
-    if (!state.tasks.length) {
-      $body.append('<tr><td colspan="7" class="dw-empty">' + text.noTask + '</td></tr>');
-      return;
-    }
-    var tree = buildTaskTree();
-    ensureTaskExpanded(tree);
-    var visibleTasks = flattenTaskTree(tree);
-    $.each(visibleTasks, function (_, item) {
-      var task = item.task;
-      var id = rowValue(task, 'ID');
-      var tr = $('<tr class="dw-task-tree-row" data-id="' + html(id) + '"></tr>');
-      tr.toggleClass('is-collapsed', item.hasChildren && !item.expanded);
-      tr.append('<td>' + taskLevelHtml(task, item.depth, item.hasChildren, item.expanded, item.childCount) + '</td>');
-      tr.append('<td>' + (rowValue(task, 'NOTICE_FLAG') === 'Y' ? '<span class="dw-row-notice">' + text.newNotice + '</span>' : '') + html(rowValue(task, 'TITLE')) + '</td>');
-      tr.append('<td>' + html(rowValue(task, 'SENDER_NAME')) + '</td>');
-      tr.append('<td>' + html(rowValue(task, 'RECEIVER_NAME')) + '</td>');
-      tr.append('<td>' + html(dateOnly(rowValue(task, 'PLAN_DEADLINE'))) + '</td>');
-      tr.append('<td>' + statusBadge(rowValue(task, 'STATUS'), rowValue(task, 'OVERDUE')) + '</td>');
-      tr.append('<td>' + taskActionsHtml(task) + '</td>');
-      tr.data('task', task);
-      $body.append(tr);
-      if (state.selectedTask && rowValue(state.selectedTask, 'ID') === id) {
-        tr.addClass('is-selected');
-      }
-    });
-    $('.dw-task-toggle').off('click').on('click', function (event) {
-      event.preventDefault();
+    $("#dwTaskTableBody").on("change", ".dw-row-check", function (event) {
       event.stopPropagation();
-      var id = $(this).attr('data-id');
-      state.taskExpanded[id] = state.taskExpanded[id] === false;
-      renderTasks();
+      setSelectedTask(this.value, this.checked);
+      renderTaskTableSelection();
     });
-    $('.dw-pick-task').off('click').on('click', function () {
-      var $tr = $(this).closest('tr');
-      state.selectedTask = $tr.data('task');
-      $('#dwTaskTable tr').removeClass('is-selected');
-      $tr.addClass('is-selected');
-      renderSelectedTask();
-      loadFeedback();
-      showWorkbenchTab(defaultTaskTab(state.selectedTask));
+    $("#dwTaskTableBody").on("click", "[data-task-action]", function (event) {
+      event.stopPropagation();
+      handleTaskAction($(this).attr("data-task-action"), $(this).attr("data-task-id"));
     });
-    $('.dw-takeback-task').off('click').on('click', function () {
-      var $btn = $(this);
-      var $tr = $btn.closest('tr');
-      var task = $tr.data('task');
-      if (isButtonBusy($btn)) {
+    $("#dwTaskTableBody").on("click", ".dw-task-toggle", function (event) {
+      event.stopPropagation();
+      var id = $(this).attr("data-task-id");
+      state.expandedTaskIds[id] = state.expandedTaskIds[id] === false;
+      renderTaskTable();
+    });
+    $("#dwClearSelectionBtn").on("click", function () {
+      state.selectedTaskIds = {};
+      renderTaskTableSelection();
+    });
+    $("#dwBatchDeleteBtn").on("click", batchDeleteTasks);
+    $("[data-close-modal]").on("click", function () {
+      closeModal($(this).attr("data-close-modal"));
+    });
+    $(".dw-modal-mask").on("click", function (event) {
+      if (event.target === this) {
+        closeModal(this.id);
+      }
+    });
+    $("#dwTaskSaveDraftBtn").on("click", saveTaskDraft);
+    $("#dwTaskDirectDispatchBtn").on("click", directDispatchRoot);
+    $("#dwTaskDispatchBtn").on("click", dispatchChildTask);
+    $("#dwFeedbackSubmitBtn").on("click", submitFeedback);
+    $("#dwPersonToggleAllBtn").on("click", toggleAllPersons);
+    $("#dwPersonTable").on("click", "tr[data-person-id]", function (event) {
+      if ($(event.target).closest("button").length) {
         return;
       }
-      confirmBox(text.confirmTakeBack, function () {
-        setButtonBusy($btn, true);
-        api('api/task/takeBack', {id: rowValue(task, 'ID')}, function (res) {
-          toast(text.takenBack);
-          if (state.selectedTask && rowValue(state.selectedTask, 'ID') === rowValue(task, 'ID')) {
-            state.selectedTask = null;
-          }
-          loadTasks(function () {
-            if (res.parentId) {
-              selectTaskById(res.parentId, 'dispatch');
-            }
-          });
-        }, function () {
-          setButtonBusy($btn, false);
-        });
+      selectPerson($(this).attr("data-person-id"));
+    });
+    $("#dwPersonTable").on("click", ".dw-tree-toggle", function (event) {
+      event.stopPropagation();
+      var id = $(this).attr("data-person-id");
+      state.expandedPersonIds[id] = !state.expandedPersonIds[id];
+      renderPersons();
+    });
+    $("#dwPersonTable").on("click", "[data-person-action]", function (event) {
+      event.stopPropagation();
+      handlePersonAction($(this).attr("data-person-action"), $(this).attr("data-person-id"));
+    });
+    $("#dwPersonUserPickBtn").on("click", openPersonUserSelect);
+    $("#dwPersonSaveBtn").on("click", savePerson);
+    $("#dwPersonDeleteBtn").on("click", deleteCurrentPerson);
+    $("#dwStatsBatchSelect").on("change", loadStats);
+    $("#dwStatsRefreshBtn").on("click", loadStats);
+    $("#dwTaskDetailBody").off("click", "[data-feedback-action]").on("click", "[data-feedback-action]", function () {
+      handleFeedbackAction($(this).attr("data-feedback-action"), $(this).attr("data-feedback-id"));
+    });
+    $(".pb-dwworkplan3-page").on("click", "[data-attachment-action='view']", function (event) {
+      event.preventDefault();
+      openAttachmentViewer({
+        title: $(this).attr("data-attachment-title"),
+        businessId: $(this).attr("data-attachment-business-id"),
+        tableName: $(this).attr("data-attachment-table"),
+        elementId: $(this).attr("data-attachment-element-id"),
+        legacyAttachmentId: $(this).attr("data-legacy-attachment-id")
       });
+    });
+    $(window).on("resize", resizeCharts);
+  }
+
+  function api(path, data) {
+    return $.ajax({
+      url: API_BASE + path,
+      type: "POST",
+      dataType: "json",
+      data: data || {}
+    }).then(function (res) {
+      if (!res || res.flag !== "success") {
+        return $.Deferred().reject(res && res.errorMsg ? res.errorMsg : "操作失败").promise();
+      }
+      return res;
+    }, function () {
+      return $.Deferred().reject("网络请求失败").promise();
     });
   }
 
-  function buildTaskTree() {
+  function loadAll() {
+    api("api/currentUser").done(function (res) {
+      state.user = res;
+      state.roles = res.roles || [];
+      state.currentNodeId = state.currentNodeId || (state.roles[0] && text(state.roles[0].ID));
+      renderRoleSelect();
+      renderCurrentRole();
+      updateCreateButton();
+      $.when(loadBatches(), loadPersons()).always(function () {
+        loadReceivers(function () {
+          loadTasks();
+          if (state.currentView === "stats") {
+            loadStats();
+          }
+        });
+      });
+    }).fail(showError);
+  }
+
+  function loadBatches() {
+    return api("api/batch/list").done(function (res) {
+      state.batches = res.rows || [];
+      state.batchById = {};
+      $.each(state.batches, function (_, row) {
+        state.batchById[text(row.ID)] = row;
+      });
+      renderBatchSelects();
+    }).fail(showError);
+  }
+
+  function loadPersons() {
+    return api("api/person/list").done(function (res) {
+      state.persons = res.rows || [];
+      state.personById = {};
+      $.each(state.persons, function (_, row) {
+        state.personById[text(row.ID)] = row;
+        if (!state.expandedPersonIds.hasOwnProperty(text(row.ID))) {
+          state.expandedPersonIds[text(row.ID)] = true;
+        }
+      });
+      renderPersons();
+    }).fail(showError);
+  }
+
+  function loadReceivers(done) {
+    api("api/person/receivers").done(function (res) {
+      state.receivers = res.rows || [];
+      renderReceiverSelect();
+      if ($.isFunction(done)) {
+        done();
+      }
+    }).fail(showError);
+  }
+
+  function loadTasks() {
+    var period = selectedPeriod();
+    if (!period.year || !period.quarter) {
+      state.tasks = [];
+      renderTaskTable();
+      renderPlanKpis();
+      return;
+    }
+    api("api/task/list", {
+      year: period.year,
+      quarter: period.quarter,
+      status: $("#dwFilterStatus").val()
+    }).done(function (res) {
+      state.tasks = res.rows || [];
+      renderTaskTable();
+      renderPlanKpis();
+    }).fail(showError);
+  }
+
+  function triggerTaskSearch(delay) {
+    if (taskSearchTimer) {
+      window.clearTimeout(taskSearchTimer);
+    }
+    taskSearchTimer = window.setTimeout(function () {
+      state.selectedTaskIds = {};
+      loadTasks();
+    }, delay || 0);
+  }
+
+  function switchView(view) {
+    if ((view === "persons" || view === "stats") && isStaff()) {
+      message("\u79d1\u5458\u53ea\u9700\u67e5\u770b\u5de5\u4f5c\u8ba1\u5212");
+      view = "plans";
+    }
+    state.currentView = view;
+    $(".dw-tab").removeClass("active");
+    $('.dw-tab[data-view="' + view + '"]').addClass("active");
+    $(".dw-view").removeClass("active");
+    $("#dwView" + upperFirst(view)).addClass("active");
+    updateCreateButton();
+    if (view === "stats") {
+      loadStats();
+    }
+    if (view === "persons") {
+      renderPersons();
+    }
+  }
+
+  function renderRoleSelect() {
+    var html = "";
+    if (!state.roles.length) {
+      html = '<option value="">未配置人员节点</option>';
+    } else {
+      $.each(state.roles, function (_, row) {
+        var id = text(row.ID);
+        html += '<option value="' + esc(id) + '"' + (id === state.currentNodeId ? " selected" : "") + ">" +
+          esc(text(row.NODE_NAME) + " - " + roleLabel(text(row.ROLE_CODE))) + "</option>";
+      });
+    }
+    $("#dwRoleSelect").html(html);
+  }
+
+  function renderCurrentRole() {
+    var node = currentNode();
+    $("#dwCurrentRoleText").text(node ? roleLabel(text(node.ROLE_CODE)) + " / " + text(node.NODE_NAME) : "当前用户未配置 3.0 人员节点");
+  }
+
+  function updateCreateButton() {
+    $("#dwCreateTaskBtn").toggle(isParty() && state.currentView === "plans");
+    $("#dwBatchDeleteBtn").toggle(isParty() && state.currentView === "plans");
+    $('.dw-tab[data-view="persons"]').toggle(!isStaff());
+    $('.dw-tab[data-view="stats"]').toggle(!isStaff());
+  }
+
+  function renderBatchSelects() {
+    var years = {};
+    var yearOptions = "";
+    var periodOptions = "";
+    var visibleBatches = $.grep(state.batches, function (row) {
+      return number(row.TASK_COUNT) > 0;
+    });
+    $.each(visibleBatches, function (_, row) {
+      years[text(row.PLAN_YEAR)] = true;
+      periodOptions += '<option value="' + esc(text(row.PLAN_YEAR) + "|" + text(row.QUARTER)) + '">' + esc(periodName(row)) + "</option>";
+    });
+    $.each(Object.keys(years).sort().reverse(), function (_, year) {
+      yearOptions += '<option value="' + esc(year) + '">' + esc(year) + "年</option>";
+    });
+    if (!yearOptions) {
+      var currentYear = String(new Date().getFullYear());
+      yearOptions = '<option value="' + currentYear + '">' + currentYear + "年</option>";
+    }
+    if (!periodOptions) {
+      periodOptions = '<option value="">\u6682\u65e0\u4efb\u52a1\u6279\u6b21</option>';
+    }
+    $("#dwFilterYear").html(yearOptions);
+    $("#dwFilterPeriod").html(periodOptions);
+    if (visibleBatches.length) {
+      var latest = visibleBatches[0];
+      $("#dwFilterYear").val(text(latest.PLAN_YEAR));
+      $("#dwFilterQuarter").val(text(latest.QUARTER));
+      $("#dwFilterPeriod").val(text(latest.PLAN_YEAR) + "|" + text(latest.QUARTER));
+    } else {
+      $("#dwFilterPeriod").val("");
+    }
+
+    var batchOptions = "";
+    $.each(visibleBatches, function (_, row) {
+      batchOptions += '<option value="' + esc(text(row.ID)) + '">' + esc(batchName(row)) + "</option>";
+    });
+    if (!batchOptions) {
+      batchOptions = '<option value="">全部批次</option>';
+    }
+    $("#dwStatsBatchSelect").html(batchOptions);
+    if (!visibleBatches.length) {
+      $("#dwStatsBatchSelect").html('<option value="">\u6682\u65e0\u4efb\u52a1\u6279\u6b21</option>');
+    }
+    if (visibleBatches.length) {
+      $("#dwStatsBatchSelect").val(text(visibleBatches[0].ID));
+    }
+  }
+
+  function renderReceiverSelect(selectedId, selectedUserId) {
+    var options = '<option value="">请选择接收对象</option>';
+    var selectedDone = false;
+    $.each(state.receivers, function (_, row) {
+      var userIds = splitPersonList(row.USER_ID);
+      var userNames = splitPersonList(row.USER_NAME);
+      if (!userIds.length) {
+        options += '<option value="' + esc(text(row.ID)) + '"' + (text(row.ID) === text(selectedId) && !selectedDone ? " selected" : "") +
+          ' data-user-id="">' + esc(text(row.NODE_NAME) + " - " + (text(row.USER_NAME) || "-")) + "</option>";
+        selectedDone = selectedDone || text(row.ID) === text(selectedId);
+        return;
+      }
+      $.each(userIds, function (index, userId) {
+        var userName = userNames[index] || userId;
+        var selected = text(row.ID) === text(selectedId) && (!selectedUserId || text(userId) === text(selectedUserId)) && !selectedDone;
+        if (selected) {
+          selectedDone = true;
+        }
+        options += '<option value="' + esc(text(row.ID)) + '"' + (selected ? " selected" : "") +
+          ' data-user-id="' + esc(text(userId)) + '">' + esc(text(row.NODE_NAME) + " - " + text(userName)) + "</option>";
+      });
+    });
+    $("#dwTaskReceiver").html(options);
+  }
+
+  function renderTaskTable() {
+    var keyword = $.trim($("#dwFilterKeyword").val()).toLowerCase();
+    var rows = filterTasks(keyword);
+    var tree = buildTaskTree(rows);
+    var html = "";
+    if (!rows.length) {
+      html = '<tr><td colspan="8"><div class="dw-empty">暂无任务</div></td></tr>';
+    } else {
+      $.each(tree.roots, function (_, task) {
+        html += renderTaskNode(task, 0, tree);
+      });
+    }
+    $("#dwTaskTableBody").html(html);
+    renderTaskTableSelection();
+    renderPlanKpis();
+  }
+
+  function buildTaskTree(rows) {
     var byId = {};
     var children = {};
     var roots = [];
-    $.each(state.tasks, function (_, task) {
-      var id = rowValue(task, 'ID');
+    $.each(rows, function (_, task) {
+      var id = text(task.ID);
       byId[id] = task;
       children[id] = children[id] || [];
+      if (!state.expandedTaskIds.hasOwnProperty(id)) {
+        state.expandedTaskIds[id] = true;
+      }
     });
-    $.each(state.tasks, function (_, task) {
-      var id = rowValue(task, 'ID');
-      var parentId = rowValue(task, 'PARENT_ID');
+    $.each(rows, function (_, task) {
+      var id = text(task.ID);
+      var parentId = text(task.PARENT_ID);
       if (parentId && byId[parentId]) {
         children[parentId].push(task);
       } else {
@@ -619,930 +469,1586 @@
       }
       children[id] = children[id] || [];
     });
-    return {
-      byId: byId,
-      children: children,
-      roots: roots
-    };
+    return { byId: byId, children: children, roots: roots };
   }
 
-  function ensureTaskExpanded(tree) {
-    var current = {};
-    $.each(state.tasks, function (_, task) {
-      var id = rowValue(task, 'ID');
-      current[id] = true;
-      if (typeof state.taskExpanded[id] === 'undefined') {
-        state.taskExpanded[id] = true;
-      }
-    });
-    $.each(state.taskExpanded, function (id) {
-      if (!current[id]) {
-        delete state.taskExpanded[id];
-      }
-    });
-  }
-
-  function flattenTaskTree(tree) {
-    var rows = [];
-    function visit(task, depth) {
-      var id = rowValue(task, 'ID');
-      var childRows = tree.children[id] || [];
-      var expanded = state.taskExpanded[id] !== false;
-      rows.push({
-        task: task,
-        depth: depth,
-        hasChildren: childRows.length > 0,
-        childCount: childRows.length,
-        expanded: expanded
+  function renderTaskNode(task, depth, tree) {
+    var id = text(task.ID);
+    var children = tree.children[id] || [];
+    var expanded = state.expandedTaskIds[id] !== false;
+    var overdue = isOverdue(task);
+    var notice = text(task.NOTICE_FLAG) === "Y";
+    var rowClass = (state.selectedTaskIds[id] ? " selected" : "") + (notice ? " dw-task-notice-row" : "") + (overdue ? " dw-task-overdue-row" : "");
+    var html = '<tr data-task-id="' + esc(id) + '" class="' + $.trim(rowClass) + '">';
+    html += '<td><input class="dw-row-check" type="checkbox" value="' + esc(id) + '"' + (state.selectedTaskIds[id] ? " checked" : "") + "></td>";
+    html += '<td>' + taskTreeCell(task, depth, children.length, expanded, notice) + "</td>";
+    html += "<td>" + esc(levelLabel(text(task.TASK_LEVEL))) + "</td>";
+    html += "<td>" + esc(text(task.SENDER_NAME) || "-") + "</td>";
+    html += "<td>" + esc(text(task.RECEIVER_NAME) || "-") + "</td>";
+    html += '<td>' + statusBadge(text(task.STATUS)) + (overdue ? ' <span class="dw-badge dw-badge-overdue">逾期</span>' : "") + "</td>";
+    html += "<td>" + esc(dateOnly(task.PLAN_DEADLINE) || "-") + "</td>";
+    html += '<td><div class="dw-actions">' + taskActions(task) + "</div></td>";
+    html += "</tr>";
+    if (expanded) {
+      $.each(children, function (_, child) {
+        html += renderTaskNode(child, depth + 1, tree);
       });
-      if (childRows.length && expanded) {
-        $.each(childRows, function (_, child) {
-          visit(child, depth + 1);
-        });
-      }
     }
-    $.each(tree.roots, function (_, task) {
-      visit(task, 0);
-    });
-    return rows;
+    return html;
   }
 
-  function taskLevelHtml(task, depth, hasChildren, expanded, childCount) {
-    var level = rowValue(task, 'TASK_LEVEL');
-    var id = rowValue(task, 'ID');
-    var icon = hasChildren ? (expanded ? '\u25be' : '\u25b8') : '\u2022';
-    var toggleClass = hasChildren ? 'dw-tree-toggle dw-task-toggle' : 'dw-tree-toggle is-leaf';
-    var childText = hasChildren ? '<span class="dw-tree-count">' + childCount + '</span>' : '';
-    return '<div class="dw-tree-cell dw-task-level-cell" style="padding-left:' + (depth * 22) + 'px">' +
-      '<button type="button" class="' + toggleClass + '" data-id="' + html(id) + '" aria-expanded="' + (expanded ? 'true' : 'false') + '">' + icon + '</button>' +
-      '<span class="dw-task-level-dot is-' + html(String(level || '').toLowerCase()) + '"></span>' +
-      '<span class="dw-task-level-name">' + html(levelText[level] || level) + '</span>' +
-      childText +
-      '</div>';
+  function taskTreeCell(task, depth, childCount, expanded, notice) {
+    var id = text(task.ID);
+    var icon = childCount ? (expanded ? "▾" : "▸") : "•";
+    var toggleClass = childCount ? "dw-task-toggle" : "dw-task-toggle is-leaf";
+    var html = '<div class="dw-task-cell" style="padding-left:' + (depth * 22) + 'px">';
+    html += '<button type="button" class="' + toggleClass + '" data-task-id="' + esc(id) + '">' + icon + "</button>";
+    html += '<div><div class="dw-task-title">' + esc(text(task.TITLE));
+    if (notice) {
+      html += ' <span class="dw-task-notice">待处理</span>';
+    }
+    html += "</div>";
+    if (childCount) {
+      html += '<div class="dw-muted">' + childCount + " 个下级任务</div>";
+    }
+    html += "</div></div>";
+    return html;
   }
 
-  function selectTaskById(id, tab) {
-    var found = null;
-    $.each(state.tasks, function (_, task) {
-      if (rowValue(task, 'ID') === id) {
-        found = task;
+  function filterTasks(keyword) {
+    var status = $("#dwFilterStatus").val();
+    return $.grep(state.tasks, function (task) {
+      if (status && text(task.STATUS) !== status) {
         return false;
       }
-    });
-    if (!found) {
-      return;
-    }
-    state.selectedTask = found;
-    $('#dwTaskTable tr').removeClass('is-selected');
-    $('#dwTaskTable tr[data-id="' + id + '"]').addClass('is-selected');
-    renderSelectedTask();
-    loadFeedback();
-    showWorkbenchTab(tab || defaultTaskTab(found));
-  }
-
-  function taskActionsHtml(task) {
-    var htmlText = '<div class="dw-table-actions"><button type="button" class="dw-btn dw-btn-ghost dw-pick-task">\u5904\u7406</button>';
-    if (canTakeBackTask(task)) {
-      htmlText += '<button type="button" class="dw-btn dw-btn-danger dw-takeback-task">\u62ff\u56de</button>';
-    }
-    htmlText += '</div>';
-    return htmlText;
-  }
-
-  function defaultTaskTab(task) {
-    return DwNextLevel(task && rowValue(task, 'TASK_LEVEL')) ? 'dispatch' : 'process';
-  }
-
-  function showWorkbenchTab(tab) {
-    $('.dw-workbench-tabs .dw-flow-step').removeClass('is-active');
-    $('.dw-workbench-tabs .dw-flow-step[data-tab="' + tab + '"]').addClass('is-active');
-    $('.dw-workbench-section').removeClass('is-active');
-    $('.dw-workbench-section[data-tab-panel="' + tab + '"]').addClass('is-active');
-  }
-
-  function renderSelectedTask() {
-    var task = state.selectedTask;
-    if (!task) {
-      $('#dwSelectedInfo').html(text.selectOneTask);
-      $('#dwFeedbackSelectedInfo').html(text.selectOneTask);
-      setProcessEnabled(false);
-      updateActionButtons();
-      return;
-    }
-    setProcessEnabled(true);
-    var htmlText =
-      '<strong>' + html(rowValue(task, 'TITLE')) + '</strong>' +
-      '<p>\u5c42\u7ea7\uff1a' + html(levelText[rowValue(task, 'TASK_LEVEL')] || rowValue(task, 'TASK_LEVEL')) + '</p>' +
-      '<p>\u4e0b\u53d1\u4eba\uff1a' + html(rowValue(task, 'SENDER_NAME')) + '</p>' +
-      '<p>\u63a5\u6536\u4eba\uff1a' + html(rowValue(task, 'RECEIVER_NAME')) + '</p>' +
-      '<p>\u671f\u9650\uff1a' + html(dateOnly(rowValue(task, 'PLAN_DEADLINE'))) + '</p>' +
-      '<p>\u72b6\u6001\uff1a' + html(statusText[rowValue(task, 'STATUS')] || rowValue(task, 'STATUS')) + '</p>' +
-      (rowValue(task, 'TARGET_DESC') ? '<p>\u76ee\u6807\uff1a' + html(rowValue(task, 'TARGET_DESC')) + '</p>' : '') +
-      (rowValue(task, 'CONTENT') ? '<p>\u5185\u5bb9\uff1a' + html(rowValue(task, 'CONTENT')) + '</p>' : '') +
-      (rowValue(task, 'COMPLETE_DETAIL') ? '<p>\u5b8c\u6210\u8be6\u60c5\uff1a' + html(rowValue(task, 'COMPLETE_DETAIL')) + '</p>' : '') +
-      (rowValue(task, 'COMPLETE_TIME') ? '<p>\u5b8c\u6210\u65f6\u95f4\uff1a' + html(dateOnly(rowValue(task, 'COMPLETE_TIME'))) + '</p>' : '') +
-      (rowValue(task, 'RETURN_REASON') ? '<p>\u9000\u56de\u539f\u56e0\uff1a' + html(rowValue(task, 'RETURN_REASON')) + '</p>' : '') +
-      (rowValue(task, 'ATTACHMENT_ID') ? '<p>' + text.attachment + '\uff1a' + attachmentLink(rowValue(task, 'ATTACHMENT_ID')) + '</p>' : '');
-    $('#dwSelectedInfo').html(htmlText);
-    $('#dwFeedbackSelectedInfo').html(htmlText);
-    $('#dwChildTitle').val(rowValue(task, 'TITLE'));
-    $('#dwChildDeadline').val(dateOnly(rowValue(task, 'PLAN_DEADLINE')));
-    $('#dwChildTarget').val(rowValue(task, 'TARGET_DESC') || '');
-    $('#dwChildContent').val(rowValue(task, 'CONTENT') || '');
-    $('#dwFeedbackContent').val(rowValue(task, 'FEEDBACK_DRAFT_CONTENT') || '');
-    if (rowValue(task, 'FEEDBACK_DRAFT_ATTACHMENT_ID')) {
-      $('#dwFeedbackAttachment').val(rowValue(task, 'FEEDBACK_DRAFT_ATTACHMENT_ID'));
-      $('#dwFeedbackAttachStatus').text(text.uploadedAttachment + (rowValue(task, 'ATTACHMENT_NAME') || text.attachment));
-    } else {
-      clearFile('#dwFeedbackFile', '#dwFeedbackAttachment', '#dwFeedbackAttachStatus');
-    }
-    updateActionButtons();
-  }
-
-  function currentUserId() {
-    return String((state.user && state.user.userId) || '');
-  }
-
-  function sameUserId(value) {
-    return String(value || '') === currentUserId();
-  }
-
-  function canDispatchTask(task) {
-    if (!task) {
-      return false;
-    }
-    if (!sameUserId(rowValue(task, 'RECEIVER_ID'))) {
-      return false;
-    }
-    if (Number(rowValue(task, 'CHILD_COUNT') || 0) > 0) {
-      return false;
-    }
-    return canDispatchWithoutStatusBlock(task) && !!$('#dwReceiverSelect').val();
-  }
-
-  function canDispatchWithoutStatusBlock(task) {
-    var level = rowValue(task, 'TASK_LEVEL');
-    var status = rowValue(task, 'STATUS');
-    if (!DwNextLevel(level)) {
-      return false;
-    }
-    if (level === 'PARTY') {
-      return status === 'DRAFT' || status === 'TODO' || status === 'DOING' || status === 'RETURNED';
-    }
-    return status === 'DOING' || status === 'RETURNED';
-  }
-
-  function canTakeBackTask(task) {
-    return !!task && sameUserId(rowValue(task, 'SENDER_ID')) && rowValue(task, 'STATUS') === 'TODO' &&
-      !!rowValue(task, 'PARENT_ID');
-  }
-
-  function canAcceptTask(task) {
-    return !!task && sameUserId(rowValue(task, 'RECEIVER_ID')) && rowValue(task, 'STATUS') === 'TODO';
-  }
-
-  function canSubmitFeedback(task) {
-    var status = rowValue(task, 'STATUS');
-    return !!task && sameUserId(rowValue(task, 'RECEIVER_ID')) && (status === 'DOING' || status === 'RETURNED');
-  }
-
-  function DwNextLevel(level) {
-    if (level === 'PARTY') {
-      return 'DEPT';
-    }
-    if (level === 'DEPT') {
-      return 'OFFICE';
-    }
-    if (level === 'OFFICE') {
-      return 'STAFF';
-    }
-    return '';
-  }
-
-  function updateDispatchButton(task) {
-    var enabled = canDispatchTask(task);
-    var hasNextLevel = !!DwNextLevel(task && rowValue(task, 'TASK_LEVEL'));
-    var mustAcceptFirst = !!task && hasNextLevel && rowValue(task, 'TASK_LEVEL') !== 'PARTY' && rowValue(task, 'STATUS') === 'TODO';
-    var missingReceiver = !!task && hasNextLevel && !mustAcceptFirst && canDispatchWithoutStatusBlock(task) && !$('#dwReceiverSelect').val();
-    $('#dwDispatchBox').toggle(hasNextLevel && !mustAcceptFirst);
-    $('#dwDispatchUnavailable').toggle(!hasNextLevel || mustAcceptFirst || missingReceiver);
-    $('#dwDispatchAcceptBtn').toggle(mustAcceptFirst && canAcceptTask(task));
-    $('#dwDispatchBtn')
-      .prop('disabled', !enabled)
-      .toggleClass('is-disabled', !enabled)
-      .attr('title', enabled ? '' : text.cannotDispatch);
-    $('#dwDispatchUnavailableText').text(task ? text.noDispatchPermission : text.selectOneTask);
-    if (mustAcceptFirst) {
-      $('#dwDispatchUnavailableText').text(text.dispatchAfterAccept);
-      $('#dwDispatchUnavailable').show();
-    } else if (missingReceiver) {
-      $('#dwDispatchUnavailableText').text(text.chooseReceiver);
-      $('#dwDispatchUnavailable').show();
-    }
-  }
-
-  function updateActionButtons() {
-    var task = state.selectedTask;
-    updateDispatchButton(task);
-    $('#dwAcceptBtn')
-      .toggle(canAcceptTask(task))
-      .prop('disabled', !canAcceptTask(task))
-      .toggleClass('is-disabled', !canAcceptTask(task));
-    $('#dwSubmitFeedbackBtn')
-      .prop('disabled', !canSubmitFeedback(task))
-      .toggleClass('is-disabled', !canSubmitFeedback(task))
-      .attr('title', canSubmitFeedback(task) ? '' : text.noFeedbackPermission);
-  }
-
-  function acceptSelectedTask() {
-    var $btn = $(this);
-    if (isButtonBusy($btn)) {
-      return;
-    }
-    if (!state.selectedTask) {
-      toast(text.selectTask);
-      return;
-    }
-    if (!canAcceptTask(state.selectedTask)) {
-      toast(text.actionFailed);
-      updateActionButtons();
-      return;
-    }
-    var taskId = rowValue(state.selectedTask, 'ID');
-    setButtonBusy($('#dwAcceptBtn,#dwDispatchAcceptBtn'), true);
-    api('api/task/accept', {id: taskId}, function () {
-      toast(text.accepted);
-      setButtonBusy($('#dwAcceptBtn,#dwDispatchAcceptBtn'), false);
-      loadTasks(function () {
-        selectTaskById(taskId, defaultTaskTab(state.selectedTask));
-      });
-    }, function () {
-      setButtonBusy($('#dwAcceptBtn,#dwDispatchAcceptBtn'), false);
-      updateActionButtons();
-    });
-  }
-
-  function dispatchSelectedTask() {
-    var $btn = $('#dwDispatchBtn');
-    if (isButtonBusy($btn)) {
-      return;
-    }
-    if (!state.selectedTask) {
-      toast(text.selectTask);
-      return;
-    }
-    if (!canDispatchTask(state.selectedTask)) {
-      toast(text.cannotDispatch);
-      updateActionButtons();
-      return;
-    }
-    var $option = $('#dwReceiverSelect option:selected');
-    if (!$('#dwReceiverSelect').val()) {
-      toast(text.selectReceiver);
-      return;
-    }
-    setButtonBusy($btn, true);
-    uploadFile('#dwChildFile', '#dwChildAttachment', '#dwChildAttachStatus', 'DISPATCH_TASK', function (attachmentId) {
-      api('api/task/dispatch', {
-        parentId: rowValue(state.selectedTask, 'ID'),
-        receiverId: $('#dwReceiverSelect').val(),
-        personNodeId: $option.data('node') || '',
-        title: $('#dwChildTitle').val(),
-        content: $('#dwChildContent').val(),
-        targetDesc: $('#dwChildTarget').val(),
-        planDeadline: $('#dwChildDeadline').val(),
-        attachmentId: attachmentId
-      }, function () {
-        toast(text.dispatched);
-        clearFile('#dwChildFile', '#dwChildAttachment', '#dwChildAttachStatus');
-        loadTasks();
-      }, function () {
-        setButtonBusy($btn, false);
-        updateActionButtons();
-      });
-    }, function () {
-      setButtonBusy($btn, false);
-      updateActionButtons();
-    });
-  }
-
-  function submitSelectedFeedback() {
-    var $btn = $('#dwSubmitFeedbackBtn');
-    if (isButtonBusy($btn)) {
-      return;
-    }
-    if (!state.selectedTask) {
-      toast(text.selectTask);
-      return;
-    }
-    if (!canSubmitFeedback(state.selectedTask)) {
-      toast(text.noFeedbackPermission);
-      updateActionButtons();
-      return;
-    }
-    setButtonBusy($btn, true);
-    uploadFile('#dwFeedbackFile', '#dwFeedbackAttachment', '#dwFeedbackAttachStatus', 'FEEDBACK', function (attachmentId) {
-      api('api/feedback/submit', {
-        taskId: rowValue(state.selectedTask, 'ID'),
-        content: $('#dwFeedbackContent').val(),
-        attachmentId: attachmentId
-      }, function () {
-        toast(text.feedbackSubmitted);
-        $('#dwFeedbackContent').val('');
-        clearFile('#dwFeedbackFile', '#dwFeedbackAttachment', '#dwFeedbackAttachStatus');
-        loadTasks();
-        loadFeedback();
-      }, function () {
-        setButtonBusy($btn, false);
-        updateActionButtons();
-      });
-    }, function () {
-      setButtonBusy($btn, false);
-      updateActionButtons();
-    });
-  }
-
-  function loadFeedback() {
-    if (!state.selectedTask) {
-      $('#dwFeedbackList').empty();
-      return;
-    }
-    api('api/feedback/list', {taskId: rowValue(state.selectedTask, 'ID')}, function (res) {
-      var rows = res.rows || [];
-      var $box = $('#dwFeedbackList');
-      $box.empty();
-      if (!rows.length) {
-        $box.append('<div class="dw-empty">' + text.noFeedback + '</div>');
-        return;
+      if (!keyword) {
+        return true;
       }
-      $.each(rows, function (_, fb) {
-        var item = $('<div class="dw-feedback-item"></div>');
-        var result = rowValue(fb, 'CONFIRM_RESULT') || 'PENDING';
-        var resultText = result === 'CONFIRMED' ? text.confirmPassed : (result === 'RETURNED' ? text.confirmRejected : text.confirmPending);
-        item.append('<div class="dw-feedback-head"><strong>' + html(rowValue(fb, 'TASK_TITLE') || rowValue(fb, 'FEEDBACK_USER_NAME')) + '</strong><span class="dw-badge' + (result === 'CONFIRMED' ? ' is-done' : (result === 'RETURNED' ? ' is-danger' : ' is-warn')) + '">' + html(resultText) + '</span></div>');
-        item.append('<div class="dw-feedback-meta">' +
-          '<span>\u53cd\u9988\u4eba\uff1a' + html(rowValue(fb, 'FEEDBACK_USER_NAME')) + '</span>' +
-          '<span>\u53cd\u9988\u65f6\u95f4\uff1a' + html(dateOnly(rowValue(fb, 'FEEDBACK_TIME'))) + '</span>' +
-          (rowValue(fb, 'COMPLETE_TIME') ? '<span>\u5b8c\u6210\u65f6\u95f4\uff1a' + html(dateOnly(rowValue(fb, 'COMPLETE_TIME'))) + '</span>' : '') +
-          '</div>');
-        item.append('<p class="dw-complete-detail">' + html(rowValue(fb, 'FEEDBACK_CONTENT') || '') + '</p>');
-        if (rowValue(fb, 'ATTACHMENT_ID')) {
-          item.append('<p>' + text.attachment + '\uff1a' + attachmentLink(rowValue(fb, 'ATTACHMENT_ID')) + '</p>');
-        }
-        if (rowValue(fb, 'RETURN_REASON')) {
-          item.append('<p class="dw-muted">\u9000\u56de\u539f\u56e0\uff1a' + html(rowValue(fb, 'RETURN_REASON')) + '</p>');
-        }
-        if (rowValue(fb, 'CAN_CONFIRM') === 'Y' && result === 'PENDING') {
-          var actions = $('<div class="dw-button-row"></div>');
-          actions.append('<button type="button" class="dw-btn dw-btn-primary">\u901a\u8fc7</button>');
-          actions.append('<button type="button" class="dw-btn dw-btn-danger">\u9000\u56de</button>');
-          actions.find('.dw-btn-primary').on('click', function () {
-            var $btn = $(this);
-            if (isButtonBusy($btn)) {
-              return;
-            }
-            setButtonBusy($btn, true);
-            api('api/feedback/confirm', {feedbackId: rowValue(fb, 'ID')}, function () {
-              toast(text.feedbackConfirmed);
-              loadTasks();
-              loadFeedback();
-            }, function () {
-              setButtonBusy($btn, false);
-            });
+      return (text(task.TITLE) + " " + text(task.RECEIVER_NAME) + " " + text(task.SENDER_NAME)).toLowerCase().indexOf(keyword) >= 0;
+    });
+  }
+
+  function taskActions(task) {
+    var id = esc(text(task.ID));
+    var html = actionBtn("view", id, "查看");
+    if (canEditRoot(task)) {
+      html += actionBtn("edit", id, "编辑");
+    }
+    if (canDispatch(task)) {
+      html += actionBtn("dispatch", id, "下发");
+    }
+    if (canAccept(task)) {
+      html += actionBtn("accept", id, "接收");
+    }
+    if (canTakeBack(task)) {
+      html += actionBtn("takeBack", id, "拿回");
+    }
+    if (canFeedback(task)) {
+      html += actionBtn("feedback", id, text(task.TASK_LEVEL) === "STAFF" ? "完成" : "完成/反馈");
+    }
+    return html;
+  }
+
+  function actionBtn(action, id, label, cls) {
+    return '<button type="button" class="dw-btn dw-btn-ghost ' + esc(cls || "") + '" data-task-action="' + esc(action) +
+      '" data-task-id="' + id + '">' + esc(label) + "</button>";
+  }
+
+  function renderTaskTableSelection() {
+    $("#dwTaskTableBody tr[data-task-id]").each(function () {
+      var id = $(this).attr("data-task-id");
+      $(this).toggleClass("selected", !!state.selectedTaskIds[id]);
+      $(this).find(".dw-row-check").prop("checked", !!state.selectedTaskIds[id]);
+    });
+    var count = Object.keys(state.selectedTaskIds).length;
+    $("#dwSelectedCount").text(count ? "已选择 " + count + " 项任务" : "未选择任务");
+  }
+
+  function renderPlanKpis() {
+    var total = state.tasks.length;
+    var done = 0;
+    var open = 0;
+    var overdue = 0;
+    var notices = 0;
+    $.each(state.tasks, function (_, task) {
+      if (text(task.STATUS) === "COMPLETED") {
+        done++;
+      } else {
+        open++;
+      }
+      if (text(task.NOTICE_FLAG) === "Y") {
+        notices++;
+      }
+      if (isOverdue(task)) {
+        overdue++;
+      }
+    });
+    $("#dwPlanTotal").text(total);
+    $("#dwPlanOpen").text(open);
+    $("#dwPlanDone").text(done);
+    $("#dwPlanOverdue").text(overdue);
+    $("#dwPlanNoticeBadge").text(notices).toggle(notices > 0);
+  }
+
+  function handleTaskAction(action, id) {
+    if (action === "view") {
+      showTaskDetail(id);
+    } else if (action === "edit") {
+      openEditTask(id);
+    } else if (action === "dispatch") {
+      openDispatchTask(id);
+    } else if (action === "accept") {
+      api("api/task/accept", { id: id }).done(afterTaskChanged).fail(showError);
+    } else if (action === "takeBack") {
+      confirmBox("确定拿回该任务吗？", function () {
+        api("api/task/takeBack", { id: id }).done(afterTaskChanged).fail(showError);
+      });
+    } else if (action === "feedback") {
+      openFeedback(id);
+    } else if (action === "delete") {
+      confirmBox("确定删除该任务吗？此操作不可恢复。", function () {
+        api("api/task/delete", { id: id }).done(afterTaskChanged).fail(showError);
+      });
+    }
+  }
+
+  function openCreateTask() {
+    if (!isParty()) {
+      message("只有党委计划下发者可以新建任务");
+      return;
+    }
+    resetTaskModal();
+    $("#dwTaskModalTitle").text("新建任务");
+    $("#dwTaskReceiverWrap").show().find("label").text("接收部门");
+    $("#dwTaskSaveDraftBtn,#dwTaskDirectDispatchBtn").show();
+    $("#dwTaskDispatchBtn").hide();
+    renderReceiverSelect();
+    initTaskUploader("");
+    openModal("dwTaskModal");
+  }
+
+  function openEditTask(id) {
+    var task = findTask(id);
+    if (!task || !canEditRoot(task)) {
+      message("只有党委草稿任务可以编辑");
+      return;
+    }
+    resetTaskModal();
+    fillTaskModal(task);
+    $("#dwTaskModalTitle").text("编辑草稿");
+    $("#dwTaskSaveDraftBtn").show();
+    $("#dwTaskDirectDispatchBtn").show();
+    $("#dwTaskDispatchBtn").hide();
+    renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
+    initTaskUploader(text(task.ID));
+    openModal("dwTaskModal");
+  }
+
+  function legacyOpenDispatchTaskUnused(id) {
+    var task = findTask(id);
+    if (!task || !canDispatch(task)) {
+      message("当前状态不能下发");
+      return;
+    }
+    resetTaskModal();
+    fillTaskModal(task);
+    $("#dwTaskParentId").val(id);
+    $("#dwTaskModalTitle").text("下发任务");
+    $("#dwTaskReceiverWrap").show();
+    $("#dwTaskSaveDraftBtn,#dwTaskDirectDispatchBtn").hide();
+    $("#dwTaskDispatchBtn").show();
+    renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
+    initTaskUploader("");
+    openModal("dwTaskModal");
+  }
+
+  function fillTaskModal(task) {
+    $("#dwTaskId").val(text(task.ID));
+    $("#dwTaskTitle").val(text(task.TITLE));
+    $("#dwTaskContent").val(text(task.CONTENT));
+    $("#dwTaskTarget").val(text(task.TARGET_DESC));
+    $("#dwTaskDeadline").val(dateOnly(task.PLAN_DEADLINE));
+    $("#dwTaskAttachmentId").val(text(task.ATTACHMENT_ID));
+    if (task.BATCH_ID && state.batchById[text(task.BATCH_ID)]) {
+      var batch = state.batchById[text(task.BATCH_ID)];
+      $("#dwTaskYear").val(text(batch.PLAN_YEAR));
+      $("#dwTaskQuarter").val(text(batch.QUARTER));
+    }
+  }
+
+  function legacyResetTaskModalUnused() {
+    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
+    resetPlatformUploader("dwTaskAttachment");
+    setDefaultTaskDate();
+  }
+
+  function setDefaultTaskDate() {
+    var now = new Date();
+    $("#dwTaskYear").val(now.getFullYear());
+    var month = now.getMonth() + 1;
+    $("#dwTaskQuarter").val(month <= 3 ? "Q1" : month <= 6 ? "Q2" : month <= 9 ? "Q3" : "Q4");
+  }
+
+  function saveTaskDraft() {
+    var payload = taskPayload();
+    if (!payload) {
+      return;
+    }
+    api("api/batch/create", { year: payload.year, quarter: payload.quarter }).done(function (res) {
+      payload.batchId = res.id;
+      api("api/task/saveRoot", payload).done(function (saved) {
+        uploadPlatformFiles("dwTaskAttachment", text(saved.id), TASK_ATTACHMENT_ELEMENT_ID, function () {
+          closeModal("dwTaskModal");
+          afterTaskChanged();
+        });
+      }).fail(showError);
+    }).fail(showError);
+  }
+
+  function directDispatchRoot() {
+    var payload = taskPayload();
+    if (!payload) {
+      return;
+    }
+    if (!payload.personNodeId) {
+      message("请选择接收部门");
+      return;
+    }
+    api("api/batch/create", { year: payload.year, quarter: payload.quarter }).done(function (res) {
+      payload.batchId = res.id;
+      confirmBox("确定直接下发给选中部门吗？", function () {
+        api("api/task/directDispatchRoot", payload).done(function (saved) {
+          uploadPlatformFiles("dwTaskAttachment", text(saved.id), TASK_ATTACHMENT_ELEMENT_ID, function () {
+            closeModal("dwTaskModal");
+            afterTaskChanged();
           });
-          actions.find('.dw-btn-danger').on('click', function () {
-            var $btn = $(this);
-            if (isButtonBusy($btn)) {
-              return;
-            }
-            promptBox(text.returnReason, function (reason) {
-              if (!reason) {
-                toast(text.returnReason);
-                return;
-              }
-              setButtonBusy($btn, true);
-              api('api/feedback/return', {feedbackId: rowValue(fb, 'ID'), reason: reason}, function () {
-                toast(text.feedbackReturned);
-                loadTasks();
-                loadFeedback();
-              }, function () {
-                setButtonBusy($btn, false);
-              });
-            });
-          });
-          item.append(actions);
-        }
-        $box.append(item);
+        }).fail(showError);
       });
+    }).fail(showError);
+  }
+
+  function dispatchChildTask() {
+    var payload = taskPayload();
+    if (!payload) {
+      return;
+    }
+    payload.parentId = $("#dwTaskParentId").val();
+    if (!payload.parentId || !payload.personNodeId) {
+      message("请选择接收对象");
+      return;
+    }
+    confirmBox("确定下发该任务吗？", function () {
+      api("api/task/dispatch", payload).done(function (saved) {
+        uploadPlatformFiles("dwTaskAttachment", text(saved.id), TASK_ATTACHMENT_ELEMENT_ID, function () {
+          closeModal("dwTaskModal");
+          afterTaskChanged();
+        });
+      }).fail(showError);
     });
   }
 
-  function initPersonTree() {
-    bindPersonTree();
-    loadPersons();
+  function taskPayload() {
+    var receiverId = $("#dwTaskReceiver option:selected").attr("data-user-id") || "";
+    var payload = {
+      id: $("#dwTaskId").val(),
+      year: $.trim($("#dwTaskYear").val()),
+      quarter: $("#dwTaskQuarter").val(),
+      title: $.trim($("#dwTaskTitle").val()),
+      content: $.trim($("#dwTaskContent").val()),
+      targetDesc: $.trim($("#dwTaskTarget").val()),
+      planDeadline: $("#dwTaskDeadline").val(),
+      attachmentId: $("#dwTaskAttachmentId").val(),
+      personNodeId: $("#dwTaskReceiver").val(),
+      receiverId: receiverId,
+      draftDeptNodeId: $("#dwTaskReceiver").val(),
+      draftDeptUserId: receiverId,
+      draftDeptName: $("#dwTaskReceiver option:selected").text()
+    };
+    if (!payload.year || !payload.quarter || !payload.title || !payload.planDeadline) {
+      message("请填写年度、季度、任务标题和截止时间");
+      return null;
+    }
+    return payload;
   }
 
-  function bindPersonTree() {
-    $('#dwPersonDeleteBtn').prop('disabled', true).addClass('is-disabled');
-    $('#dwPersonRefreshBtn').on('click', function () {
-      loadPersons();
+  function batchDeleteTasks() {
+    var ids = Object.keys(state.selectedTaskIds);
+    if (!ids.length) {
+      message("请先选择任务");
+      return;
+    }
+    var deletableIds = $.grep(ids, function (id) {
+      var task = findTask(id);
+      return task && canDelete(task);
     });
-    $('#dwPersonToggleAllBtn').on('click', function () {
-      var tree = buildPersonTree();
-      if (!personTreeHasExpandableNode(tree)) {
-        return;
-      }
-      setAllPersonExpanded(!allPersonsExpanded(tree));
-    });
-    $('#dwPersonUserName').on('focus', openPersonUserSelect);
-    $('#dwPersonUserPickBtn').on('click', function (e) {
-      openPersonUserSelect(e);
-    });
-    $('#dwPersonSaveBtn').on('click', savePerson);
-    $('#dwPersonDeleteBtn').on('click', function () {
-      if (!$('#dwPersonId').val()) {
-        toast(text.selectNode);
-        return;
-      }
-      if (selectedPersonIsRoot()) {
-        toast(text.rootNodeCannotDelete);
-        return;
-      }
-      confirmBox(text.confirmDisable, function () {
-        api('api/person/delete', {id: $('#dwPersonId').val()}, function () {
-          toast(text.nodeDisabled);
-          clearPersonForm();
-          loadPersons();
+    if (!deletableIds.length) {
+      message("选中的任务当前都不能删除");
+      return;
+    }
+    deletableIds = topSelectedTaskIds(deletableIds);
+    confirmBox("确定删除选中的任务吗？只能删除有权限删除的任务。", function () {
+      var chain = $.Deferred().resolve().promise();
+      $.each(deletableIds, function (_, id) {
+        chain = chain.then(function () {
+          return api("api/task/delete", { id: id });
         });
       });
+      chain.done(function () {
+        state.selectedTaskIds = {};
+        afterTaskChanged();
+      }).fail(showError);
     });
   }
 
-  function openPersonUserSelect(e) {
-    if (typeof window.H5CommonSelect !== 'function') {
-      toast(text.userSelectMissing);
+  function topSelectedTaskIds(ids) {
+    var selected = {};
+    var result = [];
+    $.each(ids, function (_, id) {
+      selected[id] = true;
+    });
+    $.each(ids, function (_, id) {
+      var task = findTask(id);
+      var parentId = text(task && task.PARENT_ID);
+      var coveredByParent = false;
+      while (parentId) {
+        if (selected[parentId]) {
+          coveredByParent = true;
+          break;
+        }
+        var parent = findTask(parentId);
+        parentId = text(parent && parent.PARENT_ID);
+      }
+      if (!coveredByParent) {
+        result.push(id);
+      }
+    });
+    return result;
+  }
+
+  function legacyOpenFeedbackUnused(id) {
+    var task = findTask(id);
+    $("#dwFeedbackTaskId").val(id);
+    $("#dwFeedbackContent,#dwFeedbackAttachmentId,#dwFeedbackPreparedId,#dwFeedbackFileName").val("");
+    if (task) {
+      $("#dwFeedbackContent").val(text(task.FEEDBACK_DRAFT_CONTENT));
+      $("#dwFeedbackAttachmentId").val(text(task.FEEDBACK_DRAFT_ATTACHMENT_ID));
+    }
+    resetPlatformUploader("dwFeedbackAttachment");
+    initFeedbackUploader("");
+    openModal("dwFeedbackModal");
+  }
+
+  function submitFeedback() {
+    var content = $.trim($("#dwFeedbackContent").val());
+    if (!content) {
+      message("请填写反馈内容");
       return;
     }
-    new window.H5CommonSelect({
-      type: 'userSelect',
-      idFiled: 'dwPersonUserId',
-      textFiled: 'dwPersonUserName',
-      selectModel: 'single'
+    confirmBox("确定提交反馈给上级确认吗？", function () {
+      api("api/feedback/submit", {
+        taskId: $("#dwFeedbackTaskId").val(),
+        content: content,
+        attachmentId: $("#dwFeedbackAttachmentId").val()
+      }).done(function (saved) {
+        uploadPlatformFiles("dwFeedbackAttachment", text(saved.id), FEEDBACK_ATTACHMENT_ELEMENT_ID, function () {
+          closeModal("dwFeedbackModal");
+          message("反馈已提交，请等待上级确认");
+          afterTaskChanged();
+        });
+      }).fail(showError);
     });
-    $('#dwPersonUserName').blur();
-    if (typeof window.nullInput === 'function') {
-      window.nullInput(e || window.event);
-    }
   }
 
-  function loadPersons() {
-    api('api/person/list', {}, function (res) {
-      state.persons = res.rows || [];
-      renderPersons();
-      renderPersonParents();
-    });
+  function legacyShowTaskDetailUnused(id) {
+    var task = findTask(id);
+    if (!task) {
+      message("任务不存在");
+      return;
+    }
+    api("api/feedback/list", { taskId: id }).done(function (res) {
+      var html = '<div class="dw-detail-grid">';
+      html += detailItem("任务标题", text(task.TITLE));
+      html += detailItem("层级", levelLabel(text(task.TASK_LEVEL)));
+      html += detailItem("状态", statusLabel(text(task.STATUS)));
+      html += detailItem("截止时间", dateOnly(task.PLAN_DEADLINE) || "-");
+      html += detailItem("下发人", text(task.SENDER_NAME) || "-");
+      html += detailItem("接收人", text(task.RECEIVER_NAME) || "-");
+      html += detailItem("任务内容", text(task.CONTENT) || "-");
+      html += detailItem("目标要求", text(task.TARGET_DESC) || "-");
+      html += "</div><h2 style=\"margin:18px 0 10px\">反馈记录</h2>";
+      html += feedbackHtml(res.rows || []);
+      $("#dwTaskDetailBody").html(html);
+      openModal("dwDetailModal");
+    }).fail(showError);
   }
+
+  function renderUpperAttachmentForFeedback(task) {
+    var parentTaskId = text(task.PARENT_TASK_ID) || text(task.PARENT_ID);
+    var hasParentAttachment = number(task.PARENT_ATTACHMENT_COUNT) > 0 || text(task.HAS_PARENT_ATTACHMENT) === "Y" || !!text(task.PARENT_ATTACHMENT_ID);
+    if (!parentTaskId || !hasParentAttachment) {
+      $("#dwFeedbackUpperAttachmentWrap").hide();
+      resetPlatformUploader("dwFeedbackUpperAttachment");
+      $("#dwFeedbackUpperAttachmentLegacy").empty();
+      return;
+    }
+    $("#dwFeedbackUpperAttachmentWrap").show();
+    $("#dwFeedbackUpperAttachmentLegacy").html(legacyAttachmentLink(task.PARENT_ATTACHMENT_ID, "\u70b9\u51fb\u4e0b\u8f7d\u9644\u4ef6"));
+    initReadOnlyUploader("dwFeedbackUpperAttachment", parentTaskId, TASK_ATTACHMENT_TABLE, TASK_ATTACHMENT_ELEMENT_ID);
+  }
+
+  function legacyFeedbackHtmlUnused(rows) {
+    if (!rows.length) {
+      return '<div class="dw-empty">暂无反馈</div>';
+    }
+    var html = '<div class="dw-table-wrap"><table class="dw-table"><thead><tr><th>反馈人</th><th>内容</th><th>结果</th><th>操作</th></tr></thead><tbody>';
+    $.each(rows, function (_, row) {
+      html += "<tr><td>" + esc(text(row.FEEDBACK_USER_NAME)) + "</td><td>" + esc(text(row.FEEDBACK_CONTENT)) + "</td><td>" +
+        esc(feedbackResult(text(row.CONFIRM_RESULT))) + '</td><td><div class="dw-actions">';
+      if (text(row.CONFIRM_RESULT) === "PENDING" && text(row.CAN_CONFIRM) === "Y") {
+        html += '<button type="button" class="dw-btn dw-btn-primary" data-feedback-action="confirm" data-feedback-id="' + esc(text(row.ID)) + '">确认</button>';
+        html += '<button type="button" class="dw-btn dw-btn-danger" data-feedback-action="return" data-feedback-id="' + esc(text(row.ID)) + '">退回</button>';
+      }
+      html += "</div></td></tr>";
+    });
+    return html + "</tbody></table></div>";
+  }
+
+  $("#dwTaskDetailBody").on("click", "[data-feedback-action]", function () {
+    var action = $(this).attr("data-feedback-action");
+    var id = $(this).attr("data-feedback-id");
+    if (action === "confirm") {
+      confirmBox("确定确认该反馈吗？确认后将回填到上级反馈内容。", function () {
+        api("api/feedback/confirm", { feedbackId: id }).done(function () {
+          closeModal("dwDetailModal");
+          message("反馈已确认");
+          afterTaskChanged();
+        }).fail(showError);
+      });
+    } else if (action === "return") {
+      promptBox("请输入退回意见", function (reason) {
+        if (!$.trim(reason)) {
+          message("退回意见不能为空");
+          return;
+        }
+        confirmBox("确定退回该反馈吗？", function () {
+          api("api/feedback/return", { feedbackId: id, reason: reason }).done(function () {
+            closeModal("dwDetailModal");
+            message("反馈已退回");
+            afterTaskChanged();
+          }).fail(showError);
+        });
+      });
+    }
+  });
 
   function renderPersons() {
-    var $body = $('#dwPersonTable tbody');
-    $body.empty();
-    $('#dwPersonCount').text(state.persons.length + text.countNode);
     var tree = buildPersonTree();
-    if (!state.persons.length) {
-      $body.append('<tr><td colspan="6" class="dw-empty">\u6682\u65e0\u4eba\u5458\u8282\u70b9</td></tr>');
-      updatePersonToggleAllButton(tree);
-      return;
+    if (state.selectedPersonId && !state.personById[state.selectedPersonId]) {
+      state.selectedPersonId = "";
     }
-    ensurePersonExpanded(tree);
+    if (!state.selectedPersonId && state.persons.length) {
+      state.selectedPersonId = text(state.persons[0].ID);
+    }
+    var html = "";
     $.each(tree.roots, function (_, node) {
-      renderPersonNode($body, node, 0, tree);
+      html += renderPersonNode(node, 0);
     });
-    updatePersonToggleAllButton(tree);
+    $("#dwPersonTable tbody").html(html || '<tr><td><div class="dw-empty">暂无人员树</div></td></tr>');
+    $("#dwPersonCount").text(state.persons.length + " 个节点");
+    renderPersonParentOptions();
+    if (state.selectedPersonId) {
+      fillPersonForm(state.selectedPersonId);
+    }
   }
 
   function buildPersonTree() {
-    var byId = {};
-    var children = {};
-    var roots = [];
-    $.each(state.persons, function (_, node) {
-      var id = rowValue(node, 'ID');
-      byId[id] = node;
-      children[id] = children[id] || [];
-    });
-    $.each(state.persons, function (_, node) {
-      var parentId = rowValue(node, 'PARENT_ID');
-      var id = rowValue(node, 'ID');
-      if (parentId && byId[parentId]) {
-        children[parentId].push(node);
-      } else {
-        roots.push(node);
+    var byParent = {};
+    $.each(state.persons, function (_, row) {
+      var pid = text(row.PARENT_ID);
+      if (!byParent[pid]) {
+        byParent[pid] = [];
       }
-      children[id] = children[id] || [];
+      byParent[pid].push(row);
     });
     return {
-      byId: byId,
-      children: children,
-      roots: roots
+      roots: $.grep(state.persons, function (row) {
+        var pid = text(row.PARENT_ID);
+        return !pid || !state.personById[pid];
+      }),
+      children: byParent
     };
   }
 
-  function ensurePersonExpanded(tree) {
-    var current = {};
-    $.each(state.persons, function (_, node) {
-      var id = rowValue(node, 'ID');
-      current[id] = true;
-      if (typeof state.personExpanded[id] === 'undefined') {
-        state.personExpanded[id] = false;
-      }
+  function renderPersonNode(node, depth) {
+    var id = text(node.ID);
+    var children = $.grep(state.persons, function (row) {
+      return text(row.PARENT_ID) === id;
     });
-    $.each(state.personExpanded, function (id) {
-      if (!current[id]) {
-        delete state.personExpanded[id];
-      }
-    });
-  }
-
-  function renderPersonNode($body, node, depth, tree) {
-    var id = rowValue(node, 'ID');
-    var children = tree.children[id] || [];
-    var hasChildren = children.length > 0;
-    var expanded = state.personExpanded[id] !== false;
-    var selected = state.selectedPerson && rowValue(state.selectedPerson, 'ID') === id;
-    var tr = $('<tr class="dw-tree-row"></tr>');
-    tr.toggleClass('is-collapsed', hasChildren && !expanded);
-    tr.toggleClass('is-selected', !!selected);
-    tr.data('node', node);
-    tr.append('<td>' + personTreeCell(node, depth, hasChildren, expanded, children.length) + '</td>');
-    tr.append('<td>' + html(rowValue(node, 'USER_NAME') || rowValue(node, 'USER_ID')) + '</td>');
-    tr.append('<td>' + html(roleText[rowValue(node, 'ROLE_CODE')] || rowValue(node, 'ROLE_CODE')) + '</td>');
-    tr.append('<td>' + html(parentName(rowValue(node, 'PARENT_ID'))) + '</td>');
-    tr.append('<td>' + html(rowValue(node, 'SORT_NO') || '') + '</td>');
-    tr.append('<td>' + personRowAction(node, selected) + '</td>');
-    tr.on('click', function () {
-      fillPersonForm($(this).data('node'));
-      renderPersons();
-    });
-    $body.append(tr);
-    tr.find('.dw-tree-toggle').on('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      state.personExpanded[id] = !expanded;
-      renderPersons();
-    });
-    tr.find('.dw-add-child-btn').on('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      prepareChildPersonForm(node);
-      renderPersons();
-    });
-    if (hasChildren && expanded) {
+    var expanded = state.expandedPersonIds[id] !== false;
+    var parent = state.personById[text(node.PARENT_ID)];
+    var selected = state.selectedPersonId === id;
+    var html = '<tr class="dw-tree-row' + (children.length && !expanded ? " is-collapsed" : "") + (selected ? " selected is-selected" : "") + '" data-person-id="' + esc(id) + '">';
+    html += '<td>' + personTreeCell(node, depth, children.length, expanded) + "</td>";
+    html += "</tr>";
+    if (expanded) {
       $.each(children, function (_, child) {
-        renderPersonNode($body, child, depth + 1, tree);
+        html += renderPersonNode(child, depth + 1);
       });
     }
+    return html;
   }
 
-  function personTreeCell(node, depth, hasChildren, expanded, childCount) {
+  function personTreeCell(node, depth, childCount, expanded) {
     var indent = depth * 22;
-    var icon = hasChildren ? (expanded ? '\u25be' : '\u25b8') : '\u2022';
-    var toggleClass = hasChildren ? 'dw-tree-toggle' : 'dw-tree-toggle is-leaf';
-    var childText = hasChildren ? '<span class="dw-tree-count">' + childCount + '</span>' : '';
-    return '<span class="dw-tree-cell" style="padding-left:' + indent + 'px">' +
-      '<button type="button" class="' + toggleClass + '">' + icon + '</button>' +
-      '<span class="dw-tree-title">' + html(rowValue(node, 'NODE_NAME')) + '</span>' +
-      childText +
-      '</span>';
-  }
-
-  function personRowAction(node, selected) {
-    if (!selected) {
-      return '';
+    var icon = childCount ? (expanded ? "▾" : "▸") : "•";
+    var toggleClass = childCount ? "dw-tree-toggle" : "dw-tree-toggle is-leaf";
+    var html = '<span class="dw-tree-cell" style="padding-left:' + indent + 'px">';
+    if (childCount) {
+      html += '<button type="button" class="' + toggleClass + '" data-person-id="' + esc(text(node.ID)) + '">' + icon + "</button>";
+    } else {
+      html += '<button type="button" class="' + toggleClass + '" tabindex="-1">' + icon + "</button>";
     }
-    return '<button type="button" class="dw-inline-add-btn dw-add-child-btn"><span class="dw-inline-add-icon"></span>\u6dfb\u52a0\u5b50\u8282\u70b9</button>';
+    html += '<span class="dw-tree-title">' + esc(text(node.NODE_NAME)) + "</span>";
+    if (childCount) {
+      html += '<span class="dw-tree-count">' + childCount + "</span>";
+    }
+    return html + "</span>";
   }
 
-  function setAllPersonExpanded(expanded) {
-    $.each(state.persons, function (_, node) {
-      var id = rowValue(node, 'ID');
-      state.personExpanded[id] = expanded;
+  function renderPersonParentOptions() {
+    var selected = $("#dwPersonParent").val();
+    var html = '<option value="">无</option>';
+    $.each(state.persons, function (_, row) {
+      html += '<option value="' + esc(text(row.ID)) + '"' + (text(row.ID) === selected ? " selected" : "") + ">" + esc(text(row.NODE_NAME)) + "</option>";
     });
+    $("#dwPersonParent").html(html);
+  }
+
+  function fillPersonForm(id) {
+    var node = state.personById[id];
+    if (!node) {
+      return;
+    }
+    state.selectedPersonId = id;
+    $("#dwPersonId").val(id);
+    $("#dwPersonParent").val(text(node.PARENT_ID));
+    $("#dwPersonNodeName").val(text(node.NODE_NAME));
+    $("#dwPersonUserId").val(text(node.USER_ID));
+    $("#dwPersonUserName").val(text(node.USER_NAME));
+    $("#dwPersonRole").val(text(node.ROLE_CODE));
+    $("#dwPersonSort").val(text(node.SORT_NO));
+    $("#dwPersonRemark").val(text(node.REMARK));
+    $("#dwPersonTable tr").removeClass("selected");
+    $('#dwPersonTable tr[data-person-id="' + id + '"]').addClass("selected");
+  }
+
+  function selectPerson(id) {
+    if (!id || !state.personById[id]) {
+      return;
+    }
+    state.selectedPersonId = id;
     renderPersons();
   }
 
-  function allPersonsExpanded(tree) {
-    tree = tree || buildPersonTree();
-    var hasExpandable = false;
-    for (var i = 0; i < state.persons.length; i++) {
-      var id = rowValue(state.persons[i], 'ID');
-      if ((tree.children[id] || []).length) {
-        hasExpandable = true;
-      }
-      if ((tree.children[id] || []).length && state.personExpanded[id] === false) {
-        return false;
-      }
+  function handlePersonAction(action, id) {
+    if (action === "addChild") {
+      var parent = state.personById[id];
+      $("#dwPersonId").val("");
+      $("#dwPersonParent").val(id);
+      $("#dwPersonNodeName,#dwPersonUserId,#dwPersonUserName,#dwPersonSort,#dwPersonRemark").val("");
+      $("#dwPersonRole").val(NEXT_ROLE[text(parent.ROLE_CODE)] || "STAFF");
+    } else if (action === "delete") {
+      deletePerson(id);
     }
-    return hasExpandable;
   }
 
-  function personTreeHasExpandableNode(tree) {
-    tree = tree || buildPersonTree();
-    for (var i = 0; i < state.persons.length; i++) {
-      var id = rowValue(state.persons[i], 'ID');
-      if ((tree.children[id] || []).length) {
-        return true;
-      }
+  function openPersonUserSelect() {
+    if (typeof H5CommonSelect === "function") {
+      var roleCode = $("#dwPersonRole").val();
+      new H5CommonSelect({
+        type: "userSelect",
+        idFiled: "dwPersonUserId",
+        textFiled: "dwPersonUserName",
+        selectModel: personRoleAllowsMulti(roleCode) ? "multi" : "single"
+      });
+    } else {
+      message("平台用户选择器未加载");
     }
-    return false;
-  }
-
-  function updatePersonToggleAllButton(tree) {
-    tree = tree || buildPersonTree();
-    var hasExpandable = personTreeHasExpandableNode(tree);
-    var expanded = hasExpandable && allPersonsExpanded(tree);
-    var $button = $('#dwPersonToggleAllBtn');
-    $button
-      .prop('disabled', !hasExpandable)
-      .toggleClass('is-disabled', !hasExpandable)
-      .toggleClass('is-expanded', expanded)
-      .attr('title', expanded ? text.collapseAll : text.expandAll);
-    $button.find('.dw-tree-all-text').text(expanded ? text.collapseAll : text.expandAll);
-  }
-
-  function findPerson(id) {
-    for (var i = 0; i < state.persons.length; i++) {
-      if (rowValue(state.persons[i], 'ID') === id) {
-        return state.persons[i];
-      }
-    }
-    return null;
-  }
-
-  function parentName(id) {
-    var parent = findPerson(id);
-    return parent ? rowValue(parent, 'NODE_NAME') : '';
-  }
-
-  function renderPersonParents() {
-    var currentId = $('#dwPersonId').val();
-    var $select = $('#dwPersonParent');
-    $select.empty().append('<option value="">' + text.noneParent + '</option>');
-    $.each(state.persons, function (_, node) {
-      if (rowValue(node, 'ID') !== currentId && !isPersonDescendant(rowValue(node, 'ID'), currentId)) {
-        $select.append('<option value="' + html(rowValue(node, 'ID')) + '">' + html(rowValue(node, 'NODE_NAME')) + '</option>');
-      }
-    });
-  }
-
-  function isPersonDescendant(candidateId, parentId) {
-    if (!candidateId || !parentId) {
-      return false;
-    }
-    var guard = 0;
-    var node = findPerson(candidateId);
-    while (node && guard < 50) {
-      if (rowValue(node, 'PARENT_ID') === parentId) {
-        return true;
-      }
-      node = findPerson(rowValue(node, 'PARENT_ID'));
-      guard++;
-    }
-    return false;
-  }
-
-  function fillPersonForm(node) {
-    state.selectedPerson = node;
-    $('#dwPersonId').val(rowValue(node, 'ID'));
-    renderPersonParents();
-    $('#dwPersonParent').val(rowValue(node, 'PARENT_ID') || '');
-    $('#dwPersonNodeName').val(rowValue(node, 'NODE_NAME') || '');
-    $('#dwPersonUserId').val(rowValue(node, 'USER_ID') || '');
-    $('#dwPersonUserName').val(rowValue(node, 'USER_NAME') || '');
-    $('#dwPersonRole').val(rowValue(node, 'ROLE_CODE') || 'STAFF');
-    $('#dwPersonSort').val(rowValue(node, 'SORT_NO') || '');
-    $('#dwPersonRemark').val(rowValue(node, 'REMARK') || '');
-    $('#dwPersonDeleteBtn').prop('disabled', selectedPersonIsRoot()).toggleClass('is-disabled', selectedPersonIsRoot());
-  }
-
-  function clearPersonForm() {
-    state.selectedPerson = null;
-    $('#dwPersonId,#dwPersonNodeName,#dwPersonUserId,#dwPersonUserName,#dwPersonSort,#dwPersonRemark').val('');
-    $('#dwPersonRole').val('STAFF');
-    $('#dwPersonTable tr').removeClass('is-selected');
-    renderPersonParents();
-    $('#dwPersonDeleteBtn').prop('disabled', true).addClass('is-disabled');
-  }
-
-  function prepareChildPersonForm(parentNode) {
-    state.selectedPerson = parentNode;
-    $('#dwPersonId,#dwPersonNodeName,#dwPersonUserId,#dwPersonUserName,#dwPersonSort,#dwPersonRemark').val('');
-    renderPersonParents();
-    $('#dwPersonParent').val(rowValue(parentNode, 'ID'));
-    $('#dwPersonRole').val(nextPersonRole[rowValue(parentNode, 'ROLE_CODE')] || 'STAFF');
-    $('#dwPersonDeleteBtn').prop('disabled', true).addClass('is-disabled');
-    state.personExpanded[rowValue(parentNode, 'ID')] = true;
-  }
-
-  function selectedPersonIsRoot() {
-    if (!state.selectedPerson) {
-      return false;
-    }
-    return !rowValue(state.selectedPerson, 'PARENT_ID');
   }
 
   function savePerson() {
-    if (!$('#dwPersonNodeName').val()) {
-      toast(text.fillNodeName);
+    var roleCode = $("#dwPersonRole").val();
+    if (!personRoleAllowsMulti(roleCode) && splitPersonList($("#dwPersonUserId").val()).length > 1) {
+      message("\u515a\u59d4\u548c\u79d1\u5458\u8282\u70b9\u53ea\u80fd\u5173\u8054\u4e00\u4e2a\u7528\u6237\uff0c\u90e8\u95e8\u548c\u79d1\u5ba4\u8282\u70b9\u53ef\u4ee5\u5173\u8054\u591a\u4e2a\u7528\u6237");
       return;
     }
-    api('api/person/save', {
-      id: $('#dwPersonId').val(),
-      parentId: $('#dwPersonParent').val(),
-      nodeName: $('#dwPersonNodeName').val(),
-      userId: $('#dwPersonUserId').val(),
-      userName: $('#dwPersonUserName').val(),
-      roleCode: $('#dwPersonRole').val(),
-      sortNo: $('#dwPersonSort').val(),
-      enabled: 'Y',
-      remark: $('#dwPersonRemark').val()
-    }, function () {
-      toast(text.nodeSaved);
-      state.personExpanded[$('#dwPersonParent').val()] = true;
+    api("api/person/save", {
+      id: $("#dwPersonId").val(),
+      parentId: $("#dwPersonParent").val(),
+      nodeName: $.trim($("#dwPersonNodeName").val()),
+      userId: $.trim($("#dwPersonUserId").val()),
+      userName: $.trim($("#dwPersonUserName").val()),
+      roleCode: roleCode,
+      sortNo: $("#dwPersonSort").val(),
+      remark: $.trim($("#dwPersonRemark").val()),
+      enabled: "Y"
+    }).done(function () {
+      message("保存成功");
       loadPersons();
+    }).fail(showError);
+  }
+
+  function deleteCurrentPerson() {
+    var id = $("#dwPersonId").val();
+    if (!id) {
+      message("请选择节点");
+      return;
+    }
+    deletePerson(id);
+  }
+
+  function deletePerson(id) {
+    confirmBox("确定删除该节点吗？删除后不可恢复。", function () {
+      api("api/person/delete", { id: id }).done(function () {
+        state.selectedPersonId = "";
+        loadPersons();
+      }).fail(showError);
     });
   }
 
-  function initStats() {
-    loadBatches(function () {
-      fillBatches('#dwStatsBatchSelect', true);
-      loadStats();
+  function toggleAllPersons() {
+    var collapse = $("#dwPersonToggleAllBtn").data("collapse") === true;
+    $.each(state.persons, function (_, row) {
+      state.expandedPersonIds[text(row.ID)] = !collapse;
     });
-    $('#dwStatsRefreshBtn,#dwStatsBatchSelect').on('click change', loadStats);
-    $(window).on('resize', resizeCharts);
-  }
-
-  function initIndex() {
-    bindMainTabs();
-    initWorkbench();
-    initPersonTree();
-    initStats();
-  }
-
-  function bindMainTabs() {
-    $('.dw-main-nav-btn').on('click', function () {
-      var tab = $(this).data('main-tab');
-      $('.dw-main-nav-btn').removeClass('is-active');
-      $(this).addClass('is-active');
-      $('.dw-main-section').removeClass('is-active');
-      $('.dw-main-section[data-main-panel="' + tab + '"]').addClass('is-active');
-      if (tab === 'statistics') {
-        setTimeout(resizeCharts, 50);
-      }
-    });
+    $("#dwPersonToggleAllBtn").data("collapse", !collapse).find(".dw-tree-all-text").text(collapse ? "展开全部" : "收起全部");
+    renderPersons();
   }
 
   function loadStats() {
-    api('api/stats', {batchId: selectedBatchId('#dwStatsBatchSelect')}, function (res) {
-      renderKpis(res);
-      renderStatusChart(res.byStatus || []);
-      renderLevelChart(res.byLevel || []);
-      renderOverdueChart(res.overdue || []);
-      renderRecent(res.recent || []);
-    });
+    var batchId = $("#dwStatsBatchSelect").val();
+    if (!batchId) {
+      renderStats({});
+      return;
+    }
+    api("api/stats", { batchId: batchId }).done(function (res) {
+      renderStats(res);
+    }).fail(showError);
   }
 
-  function renderKpis(res) {
+  function renderStats(data) {
+    var statusRows = data.byStatus || [];
+    var levelRows = data.byLevel || [];
+    var overdueRows = data.overdue || [];
+    var recentRows = data.recent || [];
     var total = 0;
     var done = 0;
     var pending = 0;
-    $.each(res.byStatus || [], function (_, item) {
-      var status = rowValue(item, 'STATUS');
-      var cnt = Number(rowValue(item, 'CNT') || 0);
+    var overdue = 0;
+    $.each(statusRows, function (_, row) {
+      var cnt = number(row.CNT);
       total += cnt;
-      if (status === 'COMPLETED') {
+      if (text(row.STATUS) === "COMPLETED") {
         done += cnt;
       }
-      if (status === 'PENDING_CONFIRM') {
+      if (text(row.STATUS) === "PENDING_CONFIRM") {
         pending += cnt;
       }
     });
-    var overdue = 0;
-    $.each(res.overdue || [], function (_, item) {
-      overdue += Number(rowValue(item, 'CNT') || 0);
+    $.each(overdueRows, function (_, row) {
+      overdue += number(row.CNT);
     });
-    $('#dwKpiTotal').text(total);
-    $('#dwKpiDone').text(done);
-    $('#dwKpiPending').text(pending);
-    $('#dwKpiOverdue').text(overdue);
+    $("#dwKpiTotal").text(total);
+    $("#dwKpiDone").text(done);
+    $("#dwKpiPending").text(pending);
+    $("#dwKpiOverdue").text(overdue);
+    renderStatusChart(statusRows);
+    renderLevelChart(levelRows);
+    renderOverdueChart(overdueRows);
+    renderRecent(recentRows);
   }
 
   function chart(id) {
-    if (!window.echarts) {
-      $('#' + id).html('<div class="dw-empty">' + text.echartsMissing + '</div>');
+    if (!echarts) {
+      $("#" + id).html('<div class="dw-empty">ECharts 未加载</div>');
       return null;
     }
-    var dom = document.getElementById(id);
-    return echarts.getInstanceByDom(dom) || echarts.init(dom);
+    if (!state.charts[id]) {
+      state.charts[id] = echarts.init(document.getElementById(id));
+    }
+    return state.charts[id];
   }
 
   function renderStatusChart(rows) {
-    var c = chart('dwStatusChart');
-    if (!c) {
+    var instance = chart("dwStatusChart");
+    if (!instance) {
       return;
     }
-    c.setOption({
-      tooltip: {trigger: 'item'},
+    instance.setOption({
+      tooltip: { trigger: "item" },
+      color: ["#b91c1c", "#dc2626", "#f97316", "#15803d", "#64748b", "#991b1b"],
       series: [{
-        type: 'pie',
-        radius: ['42%', '70%'],
-        data: $.map(rows, function (item) {
-          return {name: statusText[rowValue(item, 'STATUS')] || rowValue(item, 'STATUS'), value: rowValue(item, 'CNT')};
+        type: "pie",
+        radius: ["42%", "68%"],
+        data: $.map(rows, function (row) {
+          return { name: statusLabel(text(row.STATUS)), value: number(row.CNT) };
         })
       }]
     });
   }
 
   function renderLevelChart(rows) {
-    var c = chart('dwLevelChart');
-    if (!c) {
+    var instance = chart("dwLevelChart");
+    if (!instance) {
       return;
     }
-    var levels = ['PARTY', 'DEPT', 'OFFICE', 'STAFF'];
-    var seriesMap = {};
-    $.each(rows, function (_, item) {
-      var status = rowValue(item, 'STATUS');
-      if (!seriesMap[status]) {
-        seriesMap[status] = {};
-      }
-      seriesMap[status][rowValue(item, 'TASK_LEVEL')] = rowValue(item, 'CNT');
+    var levels = ["PARTY", "DEPT", "OFFICE", "STAFF"];
+    var statuses = ["TODO", "DOING", "WAIT_CHILD", "PENDING_CONFIRM", "COMPLETED", "RETURNED"];
+    var data = {};
+    $.each(rows, function (_, row) {
+      data[text(row.TASK_LEVEL) + "_" + text(row.STATUS)] = number(row.CNT);
     });
-    c.setOption({
-      tooltip: {trigger: 'axis'},
-      legend: {top: 0},
-      grid: {left: 40, right: 20, bottom: 30, top: 48},
-      xAxis: {type: 'category', data: $.map(levels, function (level) { return levelText[level]; })},
-      yAxis: {type: 'value', minInterval: 1},
-      series: $.map(seriesMap, function (byLevel, status) {
+    instance.setOption({
+      tooltip: { trigger: "axis" },
+      legend: { top: 0 },
+      grid: { left: 42, right: 20, bottom: 28, top: 44 },
+      xAxis: { type: "category", data: $.map(levels, levelLabel) },
+      yAxis: { type: "value", minInterval: 1 },
+      series: $.map(statuses, function (status) {
         return {
-          name: statusText[status] || status,
-          type: 'bar',
-          stack: 'total',
-          data: $.map(levels, function (level) { return byLevel[level] || 0; })
+          name: statusLabel(status),
+          type: "bar",
+          stack: "total",
+          data: $.map(levels, function (level) {
+            return data[level + "_" + status] || 0;
+          })
         };
       })
     });
   }
 
   function renderOverdueChart(rows) {
-    var c = chart('dwOverdueChart');
-    if (!c) {
+    var instance = chart("dwOverdueChart");
+    if (!instance) {
       return;
     }
-    c.setOption({
-      tooltip: {trigger: 'axis'},
-      grid: {left: 40, right: 20, bottom: 30, top: 20},
-      xAxis: {type: 'category', data: $.map(rows, function (item) { return levelText[rowValue(item, 'TASK_LEVEL')] || rowValue(item, 'TASK_LEVEL'); })},
-      yAxis: {type: 'value', minInterval: 1},
-      series: [{type: 'bar', data: $.map(rows, function (item) { return rowValue(item, 'CNT'); }), itemStyle: {color: '#b91c1c'}}]
+    instance.setOption({
+      tooltip: { trigger: "axis" },
+      grid: { left: 42, right: 20, bottom: 28, top: 24 },
+      xAxis: { type: "category", data: $.map(rows, function (row) { return levelLabel(text(row.TASK_LEVEL)); }) },
+      yAxis: { type: "value", minInterval: 1 },
+      series: [{ type: "bar", itemStyle: { color: "#b91c1c" }, data: $.map(rows, function (row) { return number(row.CNT); }) }]
     });
   }
 
   function renderRecent(rows) {
-    var $body = $('#dwRecentTable tbody');
-    $body.empty();
+    var html = "";
     if (!rows.length) {
-      $body.append('<tr><td colspan="5" class="dw-empty">' + text.noTask + '</td></tr>');
+      html = '<tr><td colspan="5"><div class="dw-empty">暂无任务</div></td></tr>';
+    } else {
+      $.each(rows.slice(0, 8), function (_, row) {
+        html += "<tr><td>" + esc(levelLabel(text(row.TASK_LEVEL))) + "</td><td>" + esc(text(row.TITLE)) + "</td><td>" +
+          esc(text(row.RECEIVER_NAME) || "-") + "</td><td>" + statusBadge(text(row.STATUS)) + "</td><td>" +
+          esc(dateOnly(row.PLAN_DEADLINE) || "-") + "</td></tr>";
+      });
+    }
+    $("#dwRecentTable tbody").html(html);
+  }
+
+  function initTaskUploader(businessId) {
+    initPlatformUploader("dwTaskAttachment", businessId, TASK_ATTACHMENT_TABLE, true, TASK_ATTACHMENT_ELEMENT_ID);
+  }
+
+  function initFeedbackUploader(businessId) {
+    initPlatformUploader("dwFeedbackAttachment", businessId, FEEDBACK_ATTACHMENT_TABLE, true, FEEDBACK_ATTACHMENT_ELEMENT_ID);
+  }
+
+  function legacyInitPlatformUploaderUnused(elementId, businessId, tableName) {
+    var $el = $("#" + elementId);
+    if (!$el.length) {
       return;
     }
-    $.each(rows, function (_, task) {
-      $body.append('<tr><td>' + html(levelText[rowValue(task, 'TASK_LEVEL')] || rowValue(task, 'TASK_LEVEL')) + '</td>' +
-        '<td>' + html(rowValue(task, 'TITLE')) + '</td>' +
-        '<td>' + html(rowValue(task, 'RECEIVER_NAME')) + '</td>' +
-        '<td>' + statusBadge(rowValue(task, 'STATUS'), rowValue(task, 'OVERDUE')) + '</td>' +
-        '<td>' + html(dateOnly(rowValue(task, 'PLAN_DEADLINE'))) + '</td></tr>');
+    if (!$.fn.uploaderExt) {
+      $el.html('<div class="dw-empty">平台附件控件未加载</div>');
+      return;
+    }
+    resetPlatformUploader(elementId);
+    $el.uploaderExt({
+      formId: businessId || "",
+      tableName: tableName,
+      secretLevel: "PLATFORM_FILE_SECRET_LEVEL",
+      fileCategory: "DW_WORK_PLAN3",
+      multiple: true,
+      allowPreview: true,
+      allowSaveOnlineDisk: true,
+      allowUpload: false,
+      allowAdd: true,
+      allowDelete: true
     });
   }
 
-  function resizeCharts() {
-    $('.dw-chart').each(function () {
-      var instance = window.echarts && echarts.getInstanceByDom(this);
-      if (instance) {
-        instance.resize();
+  function resetPlatformUploader(elementId) {
+    var $el = $("#" + elementId);
+    if (!$el.length) {
+      return;
+    }
+    $el.removeData("uploaderExt").empty();
+  }
+
+  function uploadPlatformFiles(elementId, businessId, logicalElementId, done) {
+    var $el = $("#" + elementId);
+    if (!$el.length || !businessId || !$.fn.uploaderExt) {
+      if ($.isFunction(done)) {
+        done();
+      }
+      return;
+    }
+    logicalElementId = logicalElementId || elementId;
+    done = $.isFunction(done) ? done : function () {};
+    var files = [];
+    try {
+      files = $el.uploaderExt("getUploadFiles") || [];
+    } catch (ex) {
+      showError("平台附件上传失败：" + ex.message);
+      return;
+    }
+    if (!files.length) {
+      done();
+      return;
+    }
+    var finished = false;
+    var maskIndex = window.layer && layer.load ? layer.load(2, { shade: [0.12, "#000"] }) : null;
+    function closeMask() {
+      if (maskIndex !== null && window.layer && layer.close) {
+        layer.close(maskIndex);
+        maskIndex = null;
+      }
+    }
+    try {
+      $el.uploaderExt({
+        afterUpload: function () {
+          if (finished) {
+            return;
+          }
+          finished = true;
+          closeMask();
+          done();
+        },
+        uploadError: function () {
+          closeMask();
+          showError("平台附件上传失败，请重试");
+        }
+      });
+      $el.uploaderExt("doUpload", businessId, logicalElementId);
+    } catch (ex2) {
+      closeMask();
+      showError("平台附件上传失败：" + ex2.message);
+    }
+  }
+
+  function uploadFile(input, idField, nameField, businessType) {
+    if (!input.files || !input.files.length) {
+      return;
+    }
+    var form = new FormData();
+    form.append("file", input.files[0]);
+    form.append("businessType", businessType);
+    $.ajax({
+      url: API_BASE + "api/attachment/upload",
+      type: "POST",
+      dataType: "json",
+      data: form,
+      processData: false,
+      contentType: false
+    }).done(function (res) {
+      if (res.flag === "success") {
+        $("#" + idField).val(res.id);
+        $("#" + nameField).text(input.files[0].name);
+      } else {
+        showError(res.errorMsg || "附件上传失败");
+      }
+    }).fail(function () {
+      showError("附件上传失败");
+    });
+  }
+
+  function afterTaskChanged() {
+    loadBatches().always(loadTasks);
+    if (state.currentView === "stats") {
+      loadStats();
+    }
+  }
+
+  function openModal(id) {
+    $("#" + id).addClass("open").attr("aria-hidden", "false");
+  }
+
+  function closeModal(id) {
+    $("#" + id).removeClass("open").attr("aria-hidden", "true");
+  }
+
+  function message(msg) {
+    if (window.layer && layer.msg) {
+      layer.msg(msg, { skin: "dw-layer-msg" });
+    } else if (window.console) {
+      window.console.log(msg);
+    }
+  }
+
+  function showError(msg) {
+    message(msg || "操作失败");
+  }
+
+  function confirmBox(msg, yes) {
+    if (window.layer && layer.confirm) {
+      layer.confirm(msg, { icon: 3, title: "确认操作", skin: "dw-layer-dialog" }, function (index) {
+        layer.close(index);
+        yes();
+      });
+    } else {
+      message("平台确认框未加载，请刷新页面后重试");
+    }
+  }
+
+  function promptBox(msg, yes) {
+    if (window.layer && layer.prompt) {
+      layer.prompt({ title: msg, formType: 2, area: ["360px", "120px"], skin: "dw-layer-dialog" }, function (value, index) {
+        layer.close(index);
+        yes(value);
+      });
+    } else {
+      message("平台输入框未加载，请刷新页面后重试");
+    }
+  }
+
+  function setSelectedTask(id, checked) {
+    if (checked) {
+      state.selectedTaskIds[id] = true;
+    } else {
+      delete state.selectedTaskIds[id];
+    }
+  }
+
+  function currentNode() {
+    return state.personById[state.currentNodeId] || state.roles[0] || null;
+  }
+
+  function isParty() {
+    var node = currentNode();
+    return node && text(node.ROLE_CODE) === "PARTY_SENDER";
+  }
+
+  function isStaff() {
+    var node = currentNode();
+    return node && text(node.ROLE_CODE) === "STAFF";
+  }
+
+  function currentUserId() {
+    return state.user ? text(state.user.userId) : "";
+  }
+
+  function personRoleAllowsMulti(roleCode) {
+    return text(roleCode) === "DEPT_MINISTER" || text(roleCode) === "OFFICE_DIRECTOR";
+  }
+
+  function splitPersonList(value) {
+    var result = [];
+    $.each(text(value).split(/[,，;；]/), function (_, item) {
+      item = $.trim(item);
+      if (item && $.inArray(item, result) === -1) {
+        result.push(item);
+      }
+    });
+    return result;
+  }
+
+  function canEditRoot(task) {
+    return text(task.TASK_LEVEL) === "PARTY" && text(task.STATUS) === "DRAFT" && text(task.SENDER_ID) === currentUserId();
+  }
+
+  function canDispatch(task) {
+    if (text(task.RECEIVER_ID) !== currentUserId()) {
+      return false;
+    }
+    if (text(task.TASK_LEVEL) === "STAFF") {
+      return false;
+    }
+    if (number(task.CHILD_COUNT) > 0) {
+      return false;
+    }
+    if (text(task.TASK_LEVEL) === "PARTY") {
+      return text(task.STATUS) === "DRAFT";
+    }
+    return text(task.STATUS) === "DOING" || text(task.STATUS) === "RETURNED";
+  }
+
+  function canAccept(task) {
+    return text(task.RECEIVER_ID) === currentUserId() && text(task.STATUS) === "TODO";
+  }
+
+  function canTakeBack(task) {
+    return text(task.SENDER_ID) === currentUserId() && text(task.STATUS) === "TODO" && !!text(task.PARENT_ID);
+  }
+
+  function canFeedback(task) {
+    if (text(task.RECEIVER_ID) !== currentUserId()) {
+      return false;
+    }
+    if (text(task.STATUS) !== "DOING" && text(task.STATUS) !== "RETURNED") {
+      return false;
+    }
+    return number(task.CHILD_COUNT) === 0 || number(task.CHILD_OPEN_COUNT) === 0;
+  }
+
+  function canDelete(task) {
+    return isParty();
+  }
+
+  function findTask(id) {
+    for (var i = 0; i < state.tasks.length; i++) {
+      if (text(state.tasks[i].ID) === text(id)) {
+        return state.tasks[i];
+      }
+    }
+    return null;
+  }
+
+  function isOverdue(task) {
+    var deadline = dateOnly(task.PLAN_DEADLINE);
+    return deadline && text(task.STATUS) !== "COMPLETED" && deadline < today();
+  }
+
+  function detailItem(label, value, cls) {
+    return '<div class="dw-detail-item ' + esc(cls || "") + '"><span>' + esc(label) + "</span><strong>" + esc(value) + "</strong></div>";
+  }
+
+  function statusBadge(status) {
+    return '<span class="dw-badge ' + esc(STATUS_BADGE[status] || "dw-badge-draft") + '">' + esc(statusLabel(status)) + "</span>";
+  }
+
+  function roleLabel(role) {
+    return ROLE_LABEL[role] || role || "-";
+  }
+
+  function levelLabel(level) {
+    return LEVEL_LABEL[level] || level || "-";
+  }
+
+  function statusLabel(status) {
+    return STATUS_LABEL[status] || status || "-";
+  }
+
+  function feedbackResult(value) {
+    if (value === "CONFIRMED") {
+      return "已确认";
+    }
+    if (value === "RETURNED") {
+      return "已退回";
+    }
+    if (value === "DRAFT") {
+      return "草稿";
+    }
+    return "待确认";
+  }
+
+  function batchName(row) {
+    if (!row) {
+      return "";
+    }
+    return text(row.BATCH_NAME) || (text(row.PLAN_YEAR) + "年" + text(row.QUARTER));
+  }
+
+  function periodName(row) {
+    return text(row.PLAN_YEAR) + "/" + quarterLabel(text(row.QUARTER));
+  }
+
+  function quarterLabel(value) {
+    if (value === "Q1") {
+      return "一季度";
+    }
+    if (value === "Q2") {
+      return "二季度";
+    }
+    if (value === "Q3") {
+      return "三季度";
+    }
+    if (value === "Q4") {
+      return "四季度";
+    }
+    return value || "";
+  }
+
+  function currentQuarter() {
+    var month = new Date().getMonth() + 1;
+    return month <= 3 ? "Q1" : month <= 6 ? "Q2" : month <= 9 ? "Q3" : "Q4";
+  }
+
+  function selectedPeriod() {
+    var value = $("#dwFilterPeriod").val();
+    if (!value) {
+      return { year: "", quarter: "" };
+    }
+    var parts = value.split("|");
+    return { year: parts[0] || "", quarter: parts[1] || "" };
+  }
+
+  function openDispatchTask(id) {
+    var task = findTask(id);
+    if (!task || !canDispatch(task)) {
+      message("\u5f53\u524d\u72b6\u6001\u4e0d\u80fd\u4e0b\u53d1");
+      return;
+    }
+    resetTaskModal();
+    fillTaskModal(task);
+    $("#dwTaskParentId").val(id);
+    $("#dwTaskModalTitle").text("\u4e0b\u53d1\u4efb\u52a1");
+    $("#dwTaskReceiverWrap").show();
+    $("#dwTaskSaveDraftBtn,#dwTaskDirectDispatchBtn").hide();
+    $("#dwTaskDispatchBtn").show();
+    renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
+    if (number(task.TASK_ATTACHMENT_COUNT) > 0 || !!text(task.ATTACHMENT_ID)) {
+      $("#dwTaskParentAttachmentWrap").show();
+      initReadOnlyUploader("dwTaskParentAttachment", text(task.ID), TASK_ATTACHMENT_TABLE, TASK_ATTACHMENT_ELEMENT_ID);
+    } else {
+      $("#dwTaskParentAttachmentWrap").hide();
+      resetPlatformUploader("dwTaskParentAttachment");
+    }
+    initTaskUploader("");
+    openModal("dwTaskModal");
+  }
+
+  function resetTaskModal() {
+    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
+    $("#dwTaskParentAttachmentWrap").hide();
+    resetPlatformUploader("dwTaskParentAttachment");
+    resetPlatformUploader("dwTaskAttachment");
+    setDefaultTaskDate();
+  }
+
+  function openFeedback(id) {
+    var task = findTask(id);
+    if (!task) {
+      message("\u4efb\u52a1\u4e0d\u5b58\u5728");
+      return;
+    }
+    $("#dwFeedbackTaskId").val(id);
+    $("#dwFeedbackContent,#dwFeedbackAttachmentId,#dwFeedbackPreparedId,#dwFeedbackFileName").val("");
+    $("#dwFeedbackContent").val(text(task.FEEDBACK_DRAFT_CONTENT));
+    $("#dwFeedbackAttachmentId").val("");
+    $("#dwFeedbackTaskSummary").html(taskSummaryHtml(task));
+    renderUpperAttachmentForFeedback(task);
+    if (number(task.TASK_ATTACHMENT_COUNT) > 0 || !!text(task.ATTACHMENT_ID)) {
+      $("#dwFeedbackTaskAttachmentWrap").show();
+      initReadOnlyUploader("dwFeedbackTaskAttachment", text(task.ID), TASK_ATTACHMENT_TABLE, TASK_ATTACHMENT_ELEMENT_ID);
+    } else {
+      $("#dwFeedbackTaskAttachmentWrap").hide();
+      resetPlatformUploader("dwFeedbackTaskAttachment");
+    }
+    resetPlatformUploader("dwFeedbackAttachment");
+    initFeedbackUploader("");
+    api("api/feedback/list", { taskId: id }).done(function (res) {
+      var rows = res.rows || [];
+      $("#dwFeedbackHistory").html('<div class="dw-section-title">\u53cd\u9988\u94fe\u8def</div>' + feedbackHtml(rows, "feedbackModal"));
+      initFeedbackAttachmentViews(rows, "feedbackModal");
+      openModal("dwFeedbackModal");
+    }).fail(showError);
+  }
+
+  function showTaskDetail(id) {
+    var task = findTask(id);
+    if (!task) {
+      message("\u4efb\u52a1\u4e0d\u5b58\u5728");
+      return;
+    }
+    api("api/feedback/list", { taskId: id }).done(function (res) {
+      var rows = res.rows || [];
+      var html = taskSummaryHtml(task);
+      var parentTaskId = text(task.PARENT_TASK_ID) || text(task.PARENT_ID);
+      var hasParentAttachment = parentTaskId && (number(task.PARENT_ATTACHMENT_COUNT) > 0 || text(task.HAS_PARENT_ATTACHMENT) === "Y" || !!text(task.PARENT_ATTACHMENT_ID));
+      var hasTaskAttachment = number(task.TASK_ATTACHMENT_COUNT) > 0 || !!text(task.ATTACHMENT_ID);
+      if (hasParentAttachment) {
+        html += '<div class="dw-section-title">\u4e0a\u7ea7\u4e0b\u53d1\u9644\u4ef6</div><div id="dwDetailUpperAttachmentLegacy">' +
+          legacyAttachmentLink(task.PARENT_ATTACHMENT_ID, "\u70b9\u51fb\u4e0b\u8f7d\u9644\u4ef6") +
+          '</div><div id="dwDetailUpperAttachment" class="dw-platform-attachment dw-platform-attachment-readonly"></div>';
+      }
+      if (hasTaskAttachment) {
+        html += '<div class="dw-section-title">\u4efb\u52a1\u9644\u4ef6</div><div id="dwDetailTaskAttachment" class="dw-platform-attachment dw-platform-attachment-readonly"></div>';
+      }
+      html += '<div class="dw-section-title">\u53cd\u9988\u94fe\u8def</div>';
+      html += feedbackHtml(rows, "detail");
+      $("#dwTaskDetailBody").html(html);
+      if (hasParentAttachment) {
+        initReadOnlyUploader("dwDetailUpperAttachment", parentTaskId, TASK_ATTACHMENT_TABLE, TASK_ATTACHMENT_ELEMENT_ID);
+      }
+      if (hasTaskAttachment) {
+        initReadOnlyUploader("dwDetailTaskAttachment", text(task.ID), TASK_ATTACHMENT_TABLE, TASK_ATTACHMENT_ELEMENT_ID);
+      }
+      initFeedbackAttachmentViews(rows, "detail");
+      openModal("dwDetailModal");
+    }).fail(showError);
+  }
+
+  function taskSummaryHtml(task) {
+    var html = '<div class="dw-detail-grid dw-task-summary-grid">';
+    html += detailItem("\u4efb\u52a1\u6807\u9898", text(task.TITLE), "dw-detail-title-item");
+    html += detailItem("\u5c42\u7ea7", levelLabel(text(task.TASK_LEVEL)));
+    html += detailItem("\u72b6\u6001", statusLabel(text(task.STATUS)));
+    html += detailItem("\u622a\u6b62\u65f6\u95f4", dateOnly(task.PLAN_DEADLINE) || "-", "dw-detail-deadline-item");
+    html += detailItem("\u4e0b\u53d1\u4eba", text(task.SENDER_NAME) || "-");
+    html += detailItem("\u63a5\u6536\u4eba", text(task.RECEIVER_NAME) || "-");
+    html += detailItem("\u4efb\u52a1\u5185\u5bb9", text(task.CONTENT) || "-", "dw-detail-wide");
+    html += detailItem("\u76ee\u6807\u8981\u6c42", text(task.TARGET_DESC) || "-", "dw-detail-wide");
+    return html + "</div>";
+  }
+
+  function feedbackHtml(rows, prefix) {
+    if (!rows.length) {
+      return '<div class="dw-empty">\u6682\u65e0\u53cd\u9988</div>';
+    }
+    var html = '<div class="dw-table-wrap dw-feedback-table-wrap"><table class="dw-table dw-feedback-table">' +
+      '<colgroup><col class="dw-feedback-col-level"><col class="dw-feedback-col-user"><col class="dw-feedback-col-time">' +
+      '<col class="dw-feedback-col-attachment"><col class="dw-feedback-col-status">' +
+      '<col class="dw-feedback-col-return"><col class="dw-feedback-col-actions"></colgroup>' +
+      '<thead><tr><th>\u5c42\u7ea7</th><th>\u53cd\u9988\u4eba</th><th>\u53cd\u9988\u65f6\u95f4</th><th>\u9644\u4ef6</th><th>\u72b6\u6001</th><th>\u9000\u56de\u539f\u56e0</th><th>\u64cd\u4f5c</th></tr></thead><tbody>';
+    $.each(rows, function (_, row) {
+      html += "<tr><td>" + esc(levelLabel(text(row.TASK_LEVEL))) + "</td><td>" + esc(text(row.FEEDBACK_USER_NAME)) + "</td><td>" +
+        esc(dateTime(row.FEEDBACK_TIME) || "-") + "</td><td>" +
+        feedbackAttachmentButton(row) + "</td><td>" +
+        feedbackResultBadge(text(row.CONFIRM_RESULT)) + '</td><td><div class="dw-feedback-cell-text">' + esc(text(row.RETURN_REASON) || "-") + '</div></td><td><div class="dw-actions">';
+      if (text(row.CONFIRM_RESULT) === "PENDING" && text(row.CAN_CONFIRM) === "Y") {
+        html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-pass" data-feedback-action="confirm" data-feedback-id="' + esc(text(row.ID)) + '">\u901a\u8fc7</button>';
+        html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-return" data-feedback-action="return" data-feedback-id="' + esc(text(row.ID)) + '">\u9000\u56de</button>';
+      }
+      html += '</div></td></tr><tr class="dw-feedback-content-row"><td colspan="7"><div class="dw-feedback-content-block">' +
+        '<span class="dw-feedback-content-label">\u53cd\u9988\u5185\u5bb9</span><div class="dw-feedback-cell-text">' +
+        esc(text(row.FEEDBACK_CONTENT) || "-") + "</div></div></td></tr>";
+    });
+    return html + "</tbody></table></div>";
+  }
+
+  function initFeedbackAttachmentViews(rows, prefix) {
+    return rows && prefix;
+  }
+
+  function feedbackAttachmentButton(row) {
+    var hasAttachment = number(row.FEEDBACK_ATTACHMENT_COUNT) > 0 || text(row.HAS_ATTACHMENT) === "Y" || !!text(row.ATTACHMENT_ID);
+    if (!hasAttachment) {
+      return "";
+    }
+    return attachmentViewButton({
+      title: "\u53cd\u9988\u9644\u4ef6",
+      businessId: text(row.ID),
+      tableName: FEEDBACK_ATTACHMENT_TABLE,
+      elementId: FEEDBACK_ATTACHMENT_ELEMENT_ID,
+      legacyAttachmentId: text(row.ATTACHMENT_ID),
+      label: "\u67e5\u770b\u9644\u4ef6"
+    });
+  }
+
+  function attachmentViewButton(options) {
+    return '<button type="button" class="dw-attachment-view-btn" data-attachment-action="view"' +
+      ' data-attachment-title="' + esc(options.title || "\u9644\u4ef6") + '"' +
+      ' data-attachment-business-id="' + esc(options.businessId || "") + '"' +
+      ' data-attachment-table="' + esc(options.tableName || "") + '"' +
+      ' data-attachment-element-id="' + esc(options.elementId || "") + '"' +
+      ' data-legacy-attachment-id="' + esc(options.legacyAttachmentId || "") + '">' +
+      esc(options.label || "\u67e5\u770b\u9644\u4ef6") + "</button>";
+  }
+
+  function openAttachmentViewer(options) {
+    options = options || {};
+    var businessId = text(options.businessId);
+    var legacyAttachmentId = text(options.legacyAttachmentId);
+    if (!businessId && !legacyAttachmentId) {
+      message("\u6682\u65e0\u9644\u4ef6");
+      return;
+    }
+    if (!(window.layer && layer.open)) {
+      message("\u5e73\u53f0\u5f39\u7a97\u672a\u52a0\u8f7d");
+      return;
+    }
+    var viewerId = "dwAttachmentViewer" + new Date().getTime();
+    var legacyHtml = legacyAttachmentLink(legacyAttachmentId, "\u70b9\u51fb\u4e0b\u8f7d\u9644\u4ef6");
+    var html = '<div class="dw-attachment-viewer">';
+    if (legacyHtml) {
+      html += '<div class="dw-attachment-legacy">' + legacyHtml + "</div>";
+    }
+    if (businessId) {
+      html += '<div id="' + viewerId + '" class="dw-platform-attachment dw-platform-attachment-readonly"></div>';
+    }
+    html += "</div>";
+    layer.open({
+      type: 1,
+      title: options.title || "\u9644\u4ef6",
+      area: ["640px", "420px"],
+      skin: "dw-layer-dialog",
+      content: html,
+      success: function () {
+        if (businessId) {
+          initReadOnlyUploader(viewerId, businessId, options.tableName, options.elementId, {
+            showType: "table",
+            collapsible: false,
+            expand: true,
+            allowDownload: true,
+            allowAdd: false,
+            allowDelete: false,
+            allowPreview: false,
+            allowSaveOnlineDisk: false
+          });
+        }
       }
     });
   }
 
-  $(function () {
-    var page = $('.pb-dwworkplan3-page').data('page');
-    if (page === 'index') {
-      initIndex();
-    } else if (page === 'workbench') {
-      initWorkbench();
-    } else if (page === 'personTree') {
-      initPersonTree();
-    } else if (page === 'stats') {
-      initStats();
+  function handleFeedbackAction(action, id) {
+    if (action === "confirm") {
+      confirmBox("\u786e\u5b9a\u901a\u8fc7\u8be5\u53cd\u9988\u5417\uff1f\u901a\u8fc7\u540e\u5c06\u56de\u586b\u5230\u4e0a\u7ea7\u53cd\u9988\u5185\u5bb9\u3002", function () {
+        api("api/feedback/confirm", { feedbackId: id }).done(function () {
+          closeModal("dwDetailModal");
+          closeModal("dwFeedbackModal");
+          message("\u53cd\u9988\u5df2\u901a\u8fc7");
+          afterTaskChanged();
+        }).fail(showError);
+      });
+    } else if (action === "return") {
+      returnFeedbackBox(id);
     }
-  });
-})(window, jQuery);
+  }
 
+  function returnFeedbackBox(id) {
+    if (!(window.layer && layer.open)) {
+      message("\u5e73\u53f0\u5f39\u7a97\u672a\u52a0\u8f7d");
+      return;
+    }
+    var html = '<div class="dw-return-box"><textarea id="dwReturnReasonInput" class="dw-textarea dw-return-textarea" placeholder="\u8bf7\u586b\u5199\u9000\u56de\u539f\u56e0"></textarea></div>';
+    layer.open({
+      type: 1,
+      title: "\u9000\u56de\u53cd\u9988",
+      area: ["520px", "320px"],
+      skin: "dw-layer-dialog",
+      content: html,
+      btn: ["\u9000\u56de", "\u53d6\u6d88"],
+      yes: function (index) {
+        var reason = $.trim($("#dwReturnReasonInput").val());
+        if (!reason) {
+          message("\u9000\u56de\u539f\u56e0\u4e0d\u80fd\u4e3a\u7a7a");
+          return;
+        }
+        api("api/feedback/return", { feedbackId: id, reason: reason }).done(function () {
+          layer.close(index);
+          closeModal("dwDetailModal");
+          closeModal("dwFeedbackModal");
+          message("\u53cd\u9988\u5df2\u9000\u56de");
+          afterTaskChanged();
+        }).fail(showError);
+      }
+    });
+  }
 
+  function initReadOnlyUploader(elementId, businessId, tableName, logicalElementId, options) {
+    initPlatformUploader(elementId, businessId, tableName, false, logicalElementId, options);
+  }
+
+  function initPlatformUploader(elementId, businessId, tableName, editable, logicalElementId, options) {
+    var $el = $("#" + elementId);
+    if (!$el.length) {
+      return;
+    }
+    if (!$.fn.uploaderExt) {
+      $el.html('<div class="dw-empty">\u5e73\u53f0\u9644\u4ef6\u63a7\u4ef6\u672a\u52a0\u8f7d</div>');
+      return;
+    }
+    resetPlatformUploader(elementId);
+    editable = editable !== false;
+    $el.uploaderExt($.extend({
+      formId: businessId || "",
+      elementId: logicalElementId || elementId,
+      tableName: tableName,
+      secretLevel: "PLATFORM_FILE_SECRET_LEVEL",
+      fileCategory: "DW_WORK_PLAN3",
+      multiple: true,
+      allowPreview: false,
+      allowSaveOnlineDisk: false,
+      allowUpload: false,
+      allowAdd: editable,
+      allowDelete: editable
+    }, options || {}));
+  }
+
+  function legacyAttachmentLink(id, label) {
+    id = text(id);
+    if (!id) {
+      return "";
+    }
+    return '<a class="dw-attachment-link" href="' + API_BASE + 'api/attachment/download?id=' + encodeURIComponent(id) + '" target="_blank">' + esc(label || "\u4e0b\u8f7d") + "</a>";
+  }
+
+  function feedbackResultBadge(value) {
+    var cls = "dw-feedback-pending";
+    var label = "\u5f85\u786e\u8ba4";
+    if (value === "CONFIRMED") {
+      cls = "dw-feedback-confirmed";
+      label = "\u5df2\u786e\u8ba4";
+    } else if (value === "RETURNED") {
+      cls = "dw-feedback-returned";
+      label = "\u5df2\u9000\u56de";
+    } else if (value === "DRAFT") {
+      cls = "dw-feedback-draft";
+      label = "\u8349\u7a3f";
+    }
+    return '<span class="dw-feedback-status ' + cls + '">' + label + "</span>";
+  }
+
+  function feedbackActionLabel(task) {
+    if (text(task.TASK_LEVEL) === "STAFF") {
+      return "\u53bb\u5b8c\u6210";
+    }
+    if (number(task.CHILD_COUNT) > 0 && number(task.CHILD_OPEN_COUNT) === 0) {
+      return "\u5411\u4e0a\u7ea7\u53cd\u9988";
+    }
+    return "\u53bb\u5b8c\u6210";
+  }
+
+  function taskActions(task) {
+    var id = esc(text(task.ID));
+    var html = actionBtn("view", id, "\u67e5\u770b", "dw-action-view");
+    if (canEditRoot(task)) {
+      html += actionBtn("edit", id, "\u7f16\u8f91", "dw-action-edit");
+    }
+    if (canDispatch(task)) {
+      html += actionBtn("dispatch", id, "\u4e0b\u53d1", "dw-action-dispatch");
+    }
+    if (canAccept(task)) {
+      html += actionBtn("accept", id, "\u63a5\u6536", "dw-action-accept");
+    }
+    if (canTakeBack(task)) {
+      html += actionBtn("takeBack", id, "\u62ff\u56de", "dw-action-takeback");
+    }
+    if (canFeedback(task)) {
+      html += actionBtn("feedback", id, feedbackActionLabel(task), "dw-action-feedback");
+    }
+    return html;
+  }
+
+  function actionBtn(action, id, label, cls) {
+    return '<button type="button" class="dw-btn dw-task-action-btn ' + esc(cls || "") + '" data-task-action="' + esc(action) +
+      '" data-task-id="' + id + '">' + esc(label) + "</button>";
+  }
+
+  function taskTreeCell(task, depth, childCount, expanded, notice) {
+    var id = text(task.ID);
+    var icon = childCount ? (expanded ? "\u25be" : "\u25b8") : "\u2022";
+    var toggleClass = childCount ? "dw-task-toggle" : "dw-task-toggle is-leaf";
+    var html = '<div class="dw-task-cell" style="padding-left:' + (depth * 20) + 'px">';
+    html += '<button type="button" class="' + toggleClass + '" data-task-id="' + esc(id) + '">' + icon + "</button>";
+    html += '<div><div class="dw-task-title">' + esc(text(task.TITLE));
+    if (notice) {
+      html += ' <span class="dw-task-notice">\u5f85\u5904\u7406</span>';
+    }
+    html += "</div>";
+    if (childCount) {
+      html += '<div class="dw-muted dw-task-child-count">' + childCount + " \u4e2a\u4e0b\u7ea7\u4efb\u52a1</div>";
+    }
+    html += "</div></div>";
+    return html;
+  }
+
+  function personTreeCell(node, depth, childCount, expanded) {
+    var indent = depth * 20;
+    var icon = childCount ? (expanded ? "\u25be" : "\u25b8") : "\u2022";
+    var toggleClass = childCount ? "dw-tree-toggle" : "dw-tree-toggle is-leaf";
+    var html = '<span class="dw-tree-cell" style="padding-left:' + indent + 'px">';
+    html += '<button type="button" class="' + toggleClass + '" data-person-id="' + esc(text(node.ID)) + '"' + (childCount ? "" : ' tabindex="-1"') + ">" + icon + "</button>";
+    html += '<span class="dw-person-level dw-person-level-' + esc(personLevelClass(text(node.ROLE_CODE))) + '">' + esc(personLevelLabel(text(node.ROLE_CODE))) + "</span>";
+    html += '<span class="dw-tree-title">' + esc(text(node.NODE_NAME)) + "</span>";
+    if (childCount) {
+      html += '<span class="dw-tree-count">' + childCount + "</span>";
+    }
+    return html + "</span>";
+  }
+
+  function personLevelLabel(role) {
+    if (role === "PARTY_SENDER") {
+      return "\u515a\u59d4";
+    }
+    if (role === "DEPT_MINISTER") {
+      return "\u90e8\u95e8";
+    }
+    if (role === "OFFICE_DIRECTOR") {
+      return "\u79d1\u5ba4";
+    }
+    if (role === "STAFF") {
+      return "\u79d1\u5458";
+    }
+    return role || "-";
+  }
+
+  function personLevelClass(role) {
+    if (role === "PARTY_SENDER") {
+      return "party";
+    }
+    if (role === "DEPT_MINISTER") {
+      return "dept";
+    }
+    if (role === "OFFICE_DIRECTOR") {
+      return "office";
+    }
+    if (role === "STAFF") {
+      return "staff";
+    }
+    return "other";
+  }
+
+  function resizeCharts() {
+    $.each(state.charts, function (_, item) {
+      if (item && item.resize) {
+        item.resize();
+      }
+    });
+  }
+
+  function upperFirst(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  function esc(value) {
+    return text(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function text(value) {
+    return value == null ? "" : String(value);
+  }
+
+  function number(value) {
+    var parsed = parseInt(value, 10);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  function dateOnly(value) {
+    var raw = text(value);
+    if (!raw) {
+      return "";
+    }
+    return raw.length >= 10 ? raw.substring(0, 10) : raw;
+  }
+
+  function dateTime(value) {
+    var raw = text(value);
+    if (!raw) {
+      return "";
+    }
+    return raw.replace("T", " ").substring(0, Math.min(raw.length, 19));
+  }
+
+  function today() {
+    var now = new Date();
+    var month = now.getMonth() + 1;
+    var day = now.getDate();
+    return now.getFullYear() + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
+  }
+})(jQuery, echarts);

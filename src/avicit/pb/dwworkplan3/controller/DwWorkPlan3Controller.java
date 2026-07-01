@@ -46,8 +46,8 @@ public class DwWorkPlan3Controller {
 
     @RequestMapping(value = "api/person/list", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> listPerson() {
-        return rows(dwWorkPlanService.listPersonTree());
+    public Map<String, Object> listPerson(final HttpServletRequest request) {
+        return rows(dwWorkPlanService.listPersonTree(request));
     }
 
     @RequestMapping(value = "api/person/save", method = RequestMethod.POST)
@@ -78,8 +78,8 @@ public class DwWorkPlan3Controller {
 
     @RequestMapping(value = "api/batch/list", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> listBatch() {
-        return rows(dwWorkPlanService.listBatches());
+    public Map<String, Object> listBatch(final HttpServletRequest request) {
+        return rows(dwWorkPlanService.listBatches(request));
     }
 
     @RequestMapping(value = "api/batch/create", method = RequestMethod.POST)
@@ -108,9 +108,11 @@ public class DwWorkPlan3Controller {
     @RequestMapping(value = "api/task/list", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> listTask(@RequestParam(value = "batchId", required = false) final String batchId,
+                                        @RequestParam(value = "year", required = false) final String year,
+                                        @RequestParam(value = "quarter", required = false) final String quarter,
                                         @RequestParam(value = "status", required = false) final String status,
                                         final HttpServletRequest request) {
-        return rows(dwWorkPlanService.listTasks(request, batchId, status));
+        return rows(dwWorkPlanService.listTasks(request, batchId, year, quarter, status));
     }
 
     @RequestMapping(value = "api/task/saveRoot", method = RequestMethod.POST)
@@ -119,6 +121,16 @@ public class DwWorkPlan3Controller {
         return call(new Action() {
             public Object run() {
                 return dwWorkPlanService.saveRootTask(params(request), request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/task/directDispatchRoot", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> directDispatchRoot(final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.directDispatchRoot(params(request), request);
             }
         });
     }

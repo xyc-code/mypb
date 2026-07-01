@@ -225,6 +225,9 @@ public class PortalUnionTaskController implements LoaderConstant {
                     String url = "";
                     /*20240624 张国庆  增加 由原来的拼接改为一下地址*/
                     String formUrlWithParam="platform/bpm/business/detail?id=" + item.get("TASK_B_ID_")+ "&extType=0";
+                    if ("BUSINESS".equals(String.valueOf(item.get("TASK_SOURCE")))) {
+                        formUrlWithParam = String.valueOf(item.get("FORM_"));
+                    }
                    /* if(StringUtils.isNotEmpty(formUrl)){
                     	formUrl = formUrl.replace("?", "&sourceQueryString=").replace("&",";;;;").replaceFirst(";;;;","&");
 
