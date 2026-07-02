@@ -76,6 +76,50 @@ public class DwWorkPlan3Controller {
         return rows(dwWorkPlanService.listReceivers(request));
     }
 
+    @RequestMapping(value = "api/import/template", method = RequestMethod.GET)
+    public void downloadImportTemplate(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        dwWorkPlanService.downloadImportTemplate(response, request);
+    }
+
+    @RequestMapping(value = "api/import/preview", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> previewImport(@RequestParam("file") final MultipartFile file,
+                                             @RequestParam(value = "year", required = false) final String year,
+                                             @RequestParam(value = "quarter", required = false) final String quarter,
+                                             final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() throws Exception {
+                return dwWorkPlanService.previewImport(file, year, quarter, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/import/saveDrafts", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveImportDrafts(@RequestParam(value = "rows", required = false) final String rows,
+                                                @RequestParam(value = "year", required = false) final String year,
+                                                @RequestParam(value = "quarter", required = false) final String quarter,
+                                                final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.saveImportDrafts(rows, year, quarter, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/import/directDispatch", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> directDispatchImport(@RequestParam(value = "rows", required = false) final String rows,
+                                                    @RequestParam(value = "year", required = false) final String year,
+                                                    @RequestParam(value = "quarter", required = false) final String quarter,
+                                                    final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.directDispatchImport(rows, year, quarter, request);
+            }
+        });
+    }
+
     @RequestMapping(value = "api/batch/list", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> listBatch(final HttpServletRequest request) {
@@ -131,6 +175,17 @@ public class DwWorkPlan3Controller {
         return call(new Action() {
             public Object run() {
                 return dwWorkPlanService.directDispatchRoot(params(request), request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/task/batchDirectDispatch", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> batchDirectDispatch(@RequestParam(value = "ids", required = false) final String ids,
+                                                   final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.batchDirectDispatch(ids, request);
             }
         });
     }

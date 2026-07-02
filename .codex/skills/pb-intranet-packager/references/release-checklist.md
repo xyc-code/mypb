@@ -24,12 +24,13 @@ The baseline represents the last known intranet-synced state. Do not update it u
 
 ## Include By Default
 
-These changed files can be copied into `files/` with their original relative paths:
+These changed files can be copied into `按模块分开\<中文模块名>\` with their original relative paths inside each module folder:
 
 - `WebRoot/**/*.jsp`
 - `WebRoot/**/*.js`
 - `WebRoot/**/*.css`
-- `WebRoot/WEB-INF/classes/**/*.class`
+- `src/**/*.java`
+- `src/**/*.xml`
 - `WebRoot/WEB-INF/classes/**/*Mapper.xml`
 - changed SQL files, copied under `db/` for review
 
@@ -39,7 +40,7 @@ These files may be needed, but must be reviewed before copying to intranet:
 
 - `WebRoot/WEB-INF/classes/**/*.properties`
 - `WebRoot/WEB-INF/lib/*.jar`
-- `src/**/*`
+- `src/**/*` except Java/XML source files
 - any environment configuration
 - any DB dump or generated runtime artifact
 
@@ -56,13 +57,26 @@ Never include these unless the user explicitly asks and confirms the intranet va
 - `WebRoot/WEB-INF/classes/service/application-service.xml`
 - `WebRoot/static/js/platform/sysmessage/js/messageDialog.js` (local-only system-message popup suppression; do not deploy to intranet)
 - `db/imp_exp.dmp`
+- `WebRoot/WEB-INF/classes/**/*.class`
 - Tomcat, DM, Redis, local logs, temp files, generated release packages
 
 ## Java Rules
 
-- Intranet runtime uses `.class` files under `WebRoot\WEB-INF\classes`, not `src` files.
-- If a `.java` file changed but no likely matching `.class` changed, mark it as blocking.
-- Mapper changes usually need both runtime XML and compiled Java classes or DTOs.
+- The user does not want `.class` files in deployment packages.
+- Deliver Java changes through `src\...` and let the intranet test environment compile them.
+- Do not mark changed `.java` without matching changed `.class` as blocking.
+- Mapper changes may need source XML and/or runtime `WebRoot\WEB-INF\classes\**\*Mapper.xml`; include the XML, but do not include classes.
+
+## Multi-Module Folder Rules
+
+When more than one module is included, separate files under Chinese folder names:
+
+- `党委计划3.0`
+- `Excel多子表导出`
+- `门户待办推送`
+- `其他变更`
+
+Each Chinese module folder must preserve PB project-relative paths inside it, so copying that folder's contents to the PB project root keeps files in the right location.
 
 ## Database Rules
 
@@ -85,8 +99,10 @@ If such changes are suspected and no SQL or migration note is present, mark the 
 After packaging, report:
 
 - release package path,
+- Chinese module folders included,
 - copied files count,
 - excluded/risk files count,
 - blocking warnings,
 - whether SQL/manual DB migration is needed,
 - exact next step for intranet copying.
+

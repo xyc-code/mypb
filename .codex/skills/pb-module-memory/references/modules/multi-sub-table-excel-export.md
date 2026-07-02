@@ -121,3 +121,22 @@
   - `node --check WebRoot/static/pb-modern/excel-export-config/excel-export-config.js` passed.
   - JDK 8 `javac` temp compile passed for exporter, service, and controllers.
   - PB frontend guardrails check passed for the changed JS and CSS, 0 warnings.
+
+## 2026-07-02 Three-Module Intranet Package
+
+- User is deploying Excel multi-sub-table export together with 党委计划 3.0 and portal business todos.
+- Official baseline release script could not run because `D:\pb-release\baseline\pb-baseline.json` does not exist. Baseline was not updated.
+- Superseded class-based focused package:
+  - Directory: `D:\pb-release\内网部署-三模块-20260702-105726`
+  - Zip: `D:\pb-release\内网部署-三模块-20260702-105726\pb-three-modules-release.zip`
+  - Manifest: `manifest.md`
+  - Manual steps: `manual-steps.md`
+  - Warnings: `warnings.md`
+- User clarified they do not need `.class` files. Created replacement source-only package split by Chinese module folders:
+  - Directory: `D:\pb-release\内网部署-三模块-源码版-分模块-20260702-110455`
+  - Zip: `D:\pb-release\内网部署-三模块-源码版-分模块-20260702-110455\pb-three-modules-source-by-module.zip`
+  - Module folders: `按模块分开\Excel多子表导出`, `按模块分开\党委计划3.0`, `按模块分开\门户待办推送`
+  - `.class` count verified as 0.
+- Replacement Excel export package contents include JSP/JS/CSS, Java source files for `ExcelExport*` controllers/service and `MultiSubTableExcelExporter`, and SQL `sql/pb_excel_export_config.sql`; it does not include `.class` files.
+- Verification before packaging: Excel JS `node --check` passed; all related Java sources compiled into `WebRoot/WEB-INF/classes`; `sql/pb_excel_export_config.sql` passed PB audit-field check; frontend guardrail scan for `WebRoot/static/pb-modern/excel-export-config` returned 0 warnings.
+- Intranet manual steps remain: execute or confirm `PB_EXCEL_EXPORT_*` tables from `sql/pb_excel_export_config.sql`, configure menu URL `platform/avicit/pb/excelexportconfig/excelExportConfigController/toExcelExportConfigManage`, then restart Tomcat after copying files or compiling source.

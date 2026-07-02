@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260701_tree_filter_kpi_10">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260702_batch_dispatch_16">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -57,6 +57,9 @@ String importlibs = "common,form,fileupload";
         </select>
         <input id="dwFilterKeyword" class="dw-input dw-keyword" type="text" placeholder="搜索标题、接收人、下发人">
         <button type="button" class="dw-btn dw-btn-ghost" id="dwClearSelectionBtn">清空选中</button>
+        <button type="button" class="dw-btn dw-btn-ghost dw-page-action dw-action-plans" id="dwDownloadImportTemplateBtn">下载导入模板</button>
+        <button type="button" class="dw-btn dw-btn-ghost dw-page-action dw-action-plans" id="dwImportBtn">批量导入</button>
+        <button type="button" class="dw-btn dw-btn-primary dw-page-action dw-action-plans" id="dwBatchDispatchBtn">批量下发</button>
         <button type="button" class="dw-btn dw-btn-danger" id="dwBatchDeleteBtn">批量删除</button>
       </div>
       <div class="dw-kpis" id="dwPlanKpis">
@@ -76,6 +79,7 @@ String importlibs = "common,form,fileupload";
             <tr>
               <th class="dw-check-col"><input type="checkbox" id="dwSelectAll"></th>
               <th>任务标题</th>
+              <th>工作分类</th>
               <th>层级</th>
               <th>下发人</th>
               <th>接收人</th>
@@ -181,6 +185,7 @@ String importlibs = "common,form,fileupload";
               <tr>
                 <th>层级</th>
                 <th>标题</th>
+                <th>工作分类</th>
                 <th>接收人</th>
                 <th>状态</th>
                 <th>期限</th>
@@ -218,16 +223,19 @@ String importlibs = "common,form,fileupload";
         <label class="dw-span-2">任务标题
           <input id="dwTaskTitle" class="dw-input" type="text">
         </label>
+        <label>工作分类
+          <input id="dwTaskWorkCategory" class="dw-input" type="text">
+        </label>
         <label>截止时间
           <input id="dwTaskDeadline" class="dw-input" type="date">
         </label>
         <label id="dwTaskReceiverWrap">接收部门
           <select id="dwTaskReceiver" class="dw-input"></select>
         </label>
-        <label class="dw-span-2">任务内容
+        <label class="dw-span-2">工作内容
           <textarea id="dwTaskContent" class="dw-textarea"></textarea>
         </label>
-        <label class="dw-span-2">目标要求
+        <label class="dw-span-2">工作目标
           <textarea id="dwTaskTarget" class="dw-textarea"></textarea>
         </label>
         <label class="dw-span-2">附件
@@ -240,6 +248,65 @@ String importlibs = "common,form,fileupload";
         <button type="button" class="dw-btn dw-btn-ghost" id="dwTaskSaveDraftBtn">保存草稿</button>
         <button type="button" class="dw-btn dw-btn-primary" id="dwTaskDirectDispatchBtn">直接下发</button>
         <button type="button" class="dw-btn dw-btn-primary" id="dwTaskDispatchBtn">确认下发</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="dw-modal-mask" id="dwImportModal" aria-hidden="true">
+    <section class="dw-modal dw-modal-xl">
+      <div class="dw-modal-head">
+        <h2>批量导入任务</h2>
+        <button type="button" class="dw-icon-btn" data-close-modal="dwImportModal">×</button>
+      </div>
+      <div class="dw-import-body">
+        <div class="dw-import-toolbar">
+          <label>年度
+            <input id="dwImportYear" class="dw-input" type="number">
+          </label>
+          <label>季度
+            <select id="dwImportQuarter" class="dw-input">
+              <option value="Q1">第一季度</option>
+              <option value="Q2">第二季度</option>
+              <option value="Q3">第三季度</option>
+              <option value="Q4">第四季度</option>
+            </select>
+          </label>
+          <label class="dw-import-file">Excel 文件
+            <input id="dwImportFile" class="dw-input" type="file" accept=".xls,.xlsx">
+          </label>
+          <button type="button" class="dw-btn dw-btn-primary" id="dwImportPreviewBtn">上传校验</button>
+        </div>
+        <div class="dw-import-summary" id="dwImportSummary">
+          <span>总数：0</span>
+          <span>可导入：0</span>
+          <span>错误：0</span>
+          <span>警告：0</span>
+        </div>
+        <div class="dw-table-wrap dw-import-table-wrap">
+          <table class="dw-table dw-import-table">
+            <thead>
+            <tr>
+              <th>行号</th>
+              <th>状态</th>
+              <th>任务标题</th>
+              <th>工作分类</th>
+              <th>截止日期</th>
+              <th>接收部门</th>
+              <th>接收人姓名</th>
+              <th>接收人登录名</th>
+              <th>校验信息</th>
+            </tr>
+            </thead>
+            <tbody id="dwImportPreviewBody">
+            <tr><td colspan="9"><div class="dw-empty">请选择 Excel 后上传校验</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="dw-modal-foot">
+        <button type="button" class="dw-btn dw-btn-ghost" data-close-modal="dwImportModal">取消</button>
+        <button type="button" class="dw-btn dw-btn-ghost" id="dwImportSaveDraftsBtn" disabled>保存为草稿</button>
+        <button type="button" class="dw-btn dw-btn-primary" id="dwImportDispatchBtn" disabled>批量下发</button>
       </div>
     </section>
   </div>
@@ -281,6 +348,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260701_tree_filter_kpi_10"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260702_batch_dispatch_16"></script>
 </body>
 </html>

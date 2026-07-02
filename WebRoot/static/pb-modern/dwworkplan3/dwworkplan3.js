@@ -64,6 +64,7 @@
     batchById: {},
     receivers: [],
     tasks: [],
+    importRows: [],
     selectedTaskIds: {},
     expandedTaskIds: {},
     currentView: "plans",
@@ -118,6 +119,16 @@
       renderCurrentRole();
       updateCreateButton();
       loadReceivers(renderTaskTable);
+    });
+    $("#dwDownloadImportTemplateBtn").on("click", downloadImportTemplate);
+    $("#dwImportBtn").on("click", openImportModal);
+    $("#dwBatchDispatchBtn").on("click", batchDispatchTasks);
+    $("#dwImportPreviewBtn").on("click", previewImport);
+    $("#dwImportSaveDraftsBtn").on("click", function () {
+      persistImportRows("api/import/saveDrafts", "确定将校验通过的行保存为草稿吗？", "已保存草稿");
+    });
+    $("#dwImportDispatchBtn").on("click", function () {
+      persistImportRows("api/import/directDispatch", "确定批量下发校验通过的任务吗？", "已批量下发");
     });
     $("#dwCreateTaskBtn").on("click", openCreateTask);
     $("#dwFilterPeriod,#dwFilterStatus").on("change", function () {
@@ -351,7 +362,7 @@
   }
 
   function updateCreateButton() {
-    $("#dwCreateTaskBtn").toggle(isParty() && state.currentView === "plans");
+    $("#dwCreateTaskBtn,#dwDownloadImportTemplateBtn,#dwImportBtn,#dwBatchDispatchBtn").toggle(isParty() && state.currentView === "plans");
     $("#dwBatchDeleteBtn").toggle(isParty() && state.currentView === "plans");
     $('.dw-tab[data-view="persons"]').toggle(!isStaff());
     $('.dw-tab[data-view="stats"]').toggle(!isStaff());
@@ -436,7 +447,7 @@
     var tree = buildTaskTree(rows);
     var html = "";
     if (!rows.length) {
-      html = '<tr><td colspan="8"><div class="dw-empty">暂无任务</div></td></tr>';
+      html = '<tr><td colspan="9"><div class="dw-empty">暂无任务</div></td></tr>';
     } else {
       $.each(tree.roots, function (_, task) {
         html += renderTaskNode(task, 0, tree);
@@ -482,6 +493,7 @@
     var html = '<tr data-task-id="' + esc(id) + '" class="' + $.trim(rowClass) + '">';
     html += '<td><input class="dw-row-check" type="checkbox" value="' + esc(id) + '"' + (state.selectedTaskIds[id] ? " checked" : "") + "></td>";
     html += '<td>' + taskTreeCell(task, depth, children.length, expanded, notice) + "</td>";
+    html += "<td>" + esc(text(task.WORK_CATEGORY) || "-") + "</td>";
     html += "<td>" + esc(levelLabel(text(task.TASK_LEVEL))) + "</td>";
     html += "<td>" + esc(text(task.SENDER_NAME) || "-") + "</td>";
     html += "<td>" + esc(text(task.RECEIVER_NAME) || "-") + "</td>";
@@ -524,7 +536,7 @@
       if (!keyword) {
         return true;
       }
-      return (text(task.TITLE) + " " + text(task.RECEIVER_NAME) + " " + text(task.SENDER_NAME)).toLowerCase().indexOf(keyword) >= 0;
+      return (text(task.TITLE) + " " + text(task.WORK_CATEGORY) + " " + text(task.RECEIVER_NAME) + " " + text(task.SENDER_NAME)).toLowerCase().indexOf(keyword) >= 0;
     });
   }
 
@@ -665,6 +677,7 @@
   function fillTaskModal(task) {
     $("#dwTaskId").val(text(task.ID));
     $("#dwTaskTitle").val(text(task.TITLE));
+    $("#dwTaskWorkCategory").val(text(task.WORK_CATEGORY));
     $("#dwTaskContent").val(text(task.CONTENT));
     $("#dwTaskTarget").val(text(task.TARGET_DESC));
     $("#dwTaskDeadline").val(dateOnly(task.PLAN_DEADLINE));
@@ -677,7 +690,7 @@
   }
 
   function legacyResetTaskModalUnused() {
-    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
+    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskWorkCategory,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
     resetPlatformUploader("dwTaskAttachment");
     setDefaultTaskDate();
   }
@@ -727,6 +740,200 @@
     }).fail(showError);
   }
 
+  function downloadImportTemplate() {
+    if (!isParty()) {
+      message("只有党委计划下发者可以下载导入模板");
+      return;
+    }
+    var period = defaultImportPeriod();
+    window.location.href = API_BASE + "api/import/template?year=" + encodeURIComponent(period.year) +
+      "&quarter=" + encodeURIComponent(period.quarter);
+  }
+
+  function openImportModal() {
+    if (!isParty()) {
+      message("只有党委计划下发者可以批量导入");
+      return;
+    }
+    resetImportModal();
+    openModal("dwImportModal");
+  }
+
+  function resetImportModal() {
+    var period = defaultImportPeriod();
+    $("#dwImportYear").val(period.year);
+    $("#dwImportQuarter").val(period.quarter);
+    $("#dwImportFile").val("");
+    state.importRows = [];
+    renderImportPreview({ rows: [], total: 0, importableCount: 0, errorCount: 0, warningCount: 0 });
+  }
+
+  function defaultImportPeriod() {
+    var period = selectedPeriod();
+    if (period.year && period.quarter) {
+      return period;
+    }
+    return { year: String(new Date().getFullYear()), quarter: currentQuarter() };
+  }
+
+  function importPeriod() {
+    return {
+      year: $.trim($("#dwImportYear").val()),
+      quarter: $("#dwImportQuarter").val()
+    };
+  }
+
+  function previewImport() {
+    var period = importPeriod();
+    var input = document.getElementById("dwImportFile");
+    if (!period.year || !period.quarter) {
+      message("请选择导入年度和季度");
+      return;
+    }
+    if (!input || !input.files || !input.files.length) {
+      message("请选择 Excel 文件");
+      return;
+    }
+    setImportBusy(true);
+    var form = new FormData();
+    form.append("year", period.year);
+    form.append("quarter", period.quarter);
+    form.append("file", input.files[0]);
+    $.ajax({
+      url: API_BASE + "api/import/preview",
+      type: "POST",
+      dataType: "json",
+      data: form,
+      processData: false,
+      contentType: false
+    }).done(function (res) {
+      if (!res || res.flag !== "success") {
+        showError(res && res.errorMsg ? res.errorMsg : "导入校验失败");
+        return;
+      }
+      state.importRows = res.rows || [];
+      renderImportPreview(res);
+    }).fail(function () {
+      showError("导入校验失败");
+    }).always(function () {
+      setImportBusy(false);
+    });
+  }
+
+  function persistImportRows(path, confirmMessage, successMessage) {
+    var period = importPeriod();
+    var rows = importableImportRows();
+    if (!period.year || !period.quarter) {
+      message("请选择导入年度和季度");
+      return;
+    }
+    if (!rows.length) {
+      message("没有可导入的行");
+      return;
+    }
+    confirmBox(confirmMessage, function () {
+      setImportBusy(true);
+      api(path, {
+        year: period.year,
+        quarter: period.quarter,
+        rows: JSON.stringify(rows)
+      }).done(function (res) {
+        message(successMessage + "：" + number(res.count) + " 条");
+        closeModal("dwImportModal");
+        afterTaskChanged();
+      }).fail(showError).always(function () {
+        setImportBusy(false);
+      });
+    });
+  }
+
+  function importableImportRows() {
+    return $.grep(state.importRows || [], function (row) {
+      return text(row.importable) === "Y";
+    });
+  }
+
+  function setImportBusy(busy) {
+    $("#dwImportPreviewBtn,#dwImportSaveDraftsBtn,#dwImportDispatchBtn").prop("disabled", !!busy);
+    if (!busy) {
+      updateImportActionButtons();
+    }
+  }
+
+  function updateImportActionButtons() {
+    var hasImportable = importableImportRows().length > 0;
+    $("#dwImportSaveDraftsBtn,#dwImportDispatchBtn").prop("disabled", !hasImportable);
+  }
+
+  function renderImportPreview(data) {
+    var rows = data.rows || [];
+    var total = number(data.total);
+    var importable = number(data.importableCount || data.validCount);
+    var errorCount = number(data.errorCount);
+    var warningCount = number(data.warningCount);
+    $("#dwImportSummary").html(
+      "<span>总数：" + total + "</span>" +
+      "<span>可导入：" + importable + "</span>" +
+      "<span>错误：" + errorCount + "</span>" +
+      "<span>警告：" + warningCount + "</span>"
+    );
+    var html = "";
+    if (!rows.length) {
+      html = '<tr><td colspan="9"><div class="dw-empty">请选择 Excel 后上传校验</div></td></tr>';
+    } else {
+      $.each(rows, function (_, row) {
+        var rowClass = text(row.status) === "ERROR" ? "dw-import-row-error" : text(row.status) === "WARN" ? "dw-import-row-warn" : "";
+        html += '<tr class="' + rowClass + '">';
+        html += "<td>" + esc(text(row.rowNumber)) + "</td>";
+        html += "<td>" + importStatusBadge(row) + "</td>";
+        html += "<td>" + esc(text(row.title) || "-") + "</td>";
+        html += "<td>" + esc(text(row.workCategory) || "-") + "</td>";
+        html += "<td>" + esc(text(row.planDeadline) || "-") + "</td>";
+        html += "<td>" + esc(text(row.deptName) || "-") + "</td>";
+        html += "<td>" + esc(text(row.receiverName) || "-") + "</td>";
+        html += "<td>" + esc(text(row.receiverLogin) || "-") + "</td>";
+        html += "<td>" + importMessages(row) + "</td>";
+        html += "</tr>";
+      });
+    }
+    $("#dwImportPreviewBody").html(html);
+    updateImportActionButtons();
+  }
+
+  function importStatusBadge(row) {
+    var status = text(row.status);
+    if (status === "ERROR") {
+      return '<span class="dw-badge dw-import-error">错误</span>';
+    }
+    if (status === "WARN") {
+      return '<span class="dw-badge dw-import-warn">警告</span>';
+    }
+    return '<span class="dw-badge dw-import-ok">通过</span>';
+  }
+
+  function importMessages(row) {
+    var messages = normalizeArray(row.messages);
+    var warnings = normalizeArray(row.warnings);
+    var html = "";
+    $.each(messages, function (_, item) {
+      html += '<div class="dw-import-msg is-error">' + esc(item) + "</div>";
+    });
+    $.each(warnings, function (_, item) {
+      html += '<div class="dw-import-msg is-warn">' + esc(item) + "</div>";
+    });
+    return html || '<span class="dw-muted">可导入</span>';
+  }
+
+  function normalizeArray(value) {
+    if (!value) {
+      return [];
+    }
+    if ($.isArray(value)) {
+      return value;
+    }
+    return [value];
+  }
+
   function dispatchChildTask() {
     var payload = taskPayload();
     if (!payload) {
@@ -754,6 +961,7 @@
       year: $.trim($("#dwTaskYear").val()),
       quarter: $("#dwTaskQuarter").val(),
       title: $.trim($("#dwTaskTitle").val()),
+      workCategory: $.trim($("#dwTaskWorkCategory").val()),
       content: $.trim($("#dwTaskContent").val()),
       targetDesc: $.trim($("#dwTaskTarget").val()),
       planDeadline: $("#dwTaskDeadline").val(),
@@ -795,6 +1003,38 @@
       });
       chain.done(function () {
         state.selectedTaskIds = {};
+        afterTaskChanged();
+      }).fail(showError);
+    });
+  }
+
+  function batchDispatchTasks() {
+    if (!isParty()) {
+      message("只有党委计划下发者可以批量下发");
+      return;
+    }
+    var ids = Object.keys(state.selectedTaskIds);
+    if (!ids.length) {
+      message("请先选择要下发的草稿任务");
+      return;
+    }
+    var dispatchableIds = $.grep(ids, function (id) {
+      var task = findTask(id);
+      return task && canBatchDispatch(task);
+    });
+    if (!dispatchableIds.length) {
+      message("选中的任务没有可批量下发的草稿");
+      return;
+    }
+    var skipped = ids.length - dispatchableIds.length;
+    var confirmMessage = "确定批量下发选中的 " + dispatchableIds.length + " 项草稿任务吗？";
+    if (skipped > 0) {
+      confirmMessage += " 将自动跳过 " + skipped + " 项不可下发任务。";
+    }
+    confirmBox(confirmMessage, function () {
+      api("api/task/batchDirectDispatch", { ids: dispatchableIds.join(",") }).done(function (res) {
+        state.selectedTaskIds = {};
+        message("已批量下发 " + (number(res.count) || dispatchableIds.length) + " 项任务");
         afterTaskChanged();
       }).fail(showError);
     });
@@ -873,8 +1113,9 @@
       html += detailItem("截止时间", dateOnly(task.PLAN_DEADLINE) || "-");
       html += detailItem("下发人", text(task.SENDER_NAME) || "-");
       html += detailItem("接收人", text(task.RECEIVER_NAME) || "-");
-      html += detailItem("任务内容", text(task.CONTENT) || "-");
-      html += detailItem("目标要求", text(task.TARGET_DESC) || "-");
+      html += detailItem("工作分类", text(task.WORK_CATEGORY) || "-");
+      html += detailItem("工作内容", text(task.CONTENT) || "-");
+      html += detailItem("工作目标", text(task.TARGET_DESC) || "-");
       html += "</div><h2 style=\"margin:18px 0 10px\">反馈记录</h2>";
       html += feedbackHtml(res.rows || []);
       $("#dwTaskDetailBody").html(html);
@@ -1244,11 +1485,11 @@
   function renderRecent(rows) {
     var html = "";
     if (!rows.length) {
-      html = '<tr><td colspan="5"><div class="dw-empty">暂无任务</div></td></tr>';
+      html = '<tr><td colspan="6"><div class="dw-empty">暂无任务</div></td></tr>';
     } else {
       $.each(rows.slice(0, 8), function (_, row) {
         html += "<tr><td>" + esc(levelLabel(text(row.TASK_LEVEL))) + "</td><td>" + esc(text(row.TITLE)) + "</td><td>" +
-          esc(text(row.RECEIVER_NAME) || "-") + "</td><td>" + statusBadge(text(row.STATUS)) + "</td><td>" +
+          esc(text(row.WORK_CATEGORY) || "-") + "</td><td>" + esc(text(row.RECEIVER_NAME) || "-") + "</td><td>" + statusBadge(text(row.STATUS)) + "</td><td>" +
           esc(dateOnly(row.PLAN_DEADLINE) || "-") + "</td></tr>";
       });
     }
@@ -1482,6 +1723,16 @@
     return text(task.STATUS) === "DOING" || text(task.STATUS) === "RETURNED";
   }
 
+  function canBatchDispatch(task) {
+    return isParty() &&
+      text(task.TASK_LEVEL) === "PARTY" &&
+      text(task.STATUS) === "DRAFT" &&
+      text(task.RECEIVER_ID) === currentUserId() &&
+      number(task.CHILD_COUNT) === 0 &&
+      !!text(task.DRAFT_DEPT_NODE_ID) &&
+      !!text(task.DRAFT_DEPT_USER_ID);
+  }
+
   function canAccept(task) {
     return text(task.RECEIVER_ID) === currentUserId() && text(task.STATUS) === "TODO";
   }
@@ -1618,7 +1869,7 @@
   }
 
   function resetTaskModal() {
-    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
+    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskWorkCategory,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
     $("#dwTaskParentAttachmentWrap").hide();
     resetPlatformUploader("dwTaskParentAttachment");
     resetPlatformUploader("dwTaskAttachment");
@@ -1689,41 +1940,72 @@
   }
 
   function taskSummaryHtml(task) {
-    var html = '<div class="dw-detail-grid dw-task-summary-grid">';
+    var html = '<div class="dw-detail-layout dw-task-summary-grid">';
     html += detailItem("\u4efb\u52a1\u6807\u9898", text(task.TITLE), "dw-detail-title-item");
-    html += detailItem("\u5c42\u7ea7", levelLabel(text(task.TASK_LEVEL)));
-    html += detailItem("\u72b6\u6001", statusLabel(text(task.STATUS)));
-    html += detailItem("\u622a\u6b62\u65f6\u95f4", dateOnly(task.PLAN_DEADLINE) || "-", "dw-detail-deadline-item");
-    html += detailItem("\u4e0b\u53d1\u4eba", text(task.SENDER_NAME) || "-");
-    html += detailItem("\u63a5\u6536\u4eba", text(task.RECEIVER_NAME) || "-");
-    html += detailItem("\u4efb\u52a1\u5185\u5bb9", text(task.CONTENT) || "-", "dw-detail-wide");
-    html += detailItem("\u76ee\u6807\u8981\u6c42", text(task.TARGET_DESC) || "-", "dw-detail-wide");
-    return html + "</div>";
+    html += '<div class="dw-detail-meta-row">';
+    html += detailItem("\u5c42\u7ea7", levelLabel(text(task.TASK_LEVEL)), "dw-detail-compact-item dw-detail-level-item");
+    html += detailItem("\u72b6\u6001", statusLabel(text(task.STATUS)), "dw-detail-compact-item dw-detail-status-item");
+    html += detailItem("\u5de5\u4f5c\u5206\u7c7b", text(task.WORK_CATEGORY) || "-", "dw-detail-compact-item dw-detail-category-item");
+    html += detailItem("\u622a\u6b62\u65f6\u95f4", dateOnly(task.PLAN_DEADLINE) || "-", "dw-detail-compact-item dw-detail-deadline-item");
+    html += detailItem("\u4e0b\u53d1\u4eba", text(task.SENDER_NAME) || "-", "dw-detail-compact-item dw-detail-person-item");
+    html += detailItem("\u63a5\u6536\u4eba", text(task.RECEIVER_NAME) || "-", "dw-detail-compact-item dw-detail-person-item");
+    html += "</div>";
+    html += '<div class="dw-detail-text-grid">';
+    html += detailItem("\u5de5\u4f5c\u5185\u5bb9", text(task.CONTENT) || "-", "dw-detail-wide");
+    html += detailItem("\u5de5\u4f5c\u76ee\u6807", text(task.TARGET_DESC) || "-", "dw-detail-wide");
+    return html + "</div></div>";
   }
 
   function feedbackHtml(rows, prefix) {
     if (!rows.length) {
       return '<div class="dw-empty">\u6682\u65e0\u53cd\u9988</div>';
     }
-    var html = '<div class="dw-table-wrap dw-feedback-table-wrap"><table class="dw-table dw-feedback-table">' +
-      '<colgroup><col class="dw-feedback-col-level"><col class="dw-feedback-col-user"><col class="dw-feedback-col-time">' +
-      '<col class="dw-feedback-col-attachment"><col class="dw-feedback-col-status">' +
-      '<col class="dw-feedback-col-return"><col class="dw-feedback-col-actions"></colgroup>' +
-      '<thead><tr><th>\u5c42\u7ea7</th><th>\u53cd\u9988\u4eba</th><th>\u53cd\u9988\u65f6\u95f4</th><th>\u9644\u4ef6</th><th>\u72b6\u6001</th><th>\u9000\u56de\u539f\u56e0</th><th>\u64cd\u4f5c</th></tr></thead><tbody>';
-    $.each(rows, function (_, row) {
-      html += "<tr><td>" + esc(levelLabel(text(row.TASK_LEVEL))) + "</td><td>" + esc(text(row.FEEDBACK_USER_NAME)) + "</td><td>" +
-        esc(dateTime(row.FEEDBACK_TIME) || "-") + "</td><td>" +
-        feedbackAttachmentButton(row) + "</td><td>" +
-        feedbackResultBadge(text(row.CONFIRM_RESULT)) + '</td><td><div class="dw-feedback-cell-text">' + esc(text(row.RETURN_REASON) || "-") + '</div></td><td><div class="dw-actions">';
+    var html = '<div class="dw-feedback-chain">';
+    var displayRows = rows.slice().reverse();
+    $.each(displayRows, function (index, row) {
+      var result = text(row.CONFIRM_RESULT);
+      var returnReason = text(row.RETURN_REASON);
+      var attachment = feedbackAttachmentButton(row);
+      html += '<article class="dw-feedback-card ' + feedbackCardClass(result) + '">';
+      html += '<div class="dw-feedback-rail"><span class="dw-feedback-index">' + (index + 1) + "</span></div>";
+      html += '<div class="dw-feedback-card-main">';
+      html += '<div class="dw-feedback-card-head"><div class="dw-feedback-card-title">' +
+        '<span class="dw-feedback-level-tag">' + esc(levelLabel(text(row.TASK_LEVEL))) + "</span>" +
+        "<strong>" + esc(text(row.FEEDBACK_USER_NAME) || "-") + "</strong></div>" +
+        '<div class="dw-feedback-card-state">' + feedbackResultBadge(result) + "</div></div>";
+      html += '<div class="dw-feedback-meta-list"><span><b>\u53cd\u9988\u65f6\u95f4</b>' +
+        esc(dateTime(row.FEEDBACK_TIME) || "-") + "</span>";
+      if (attachment) {
+        html += '<span class="dw-feedback-meta-attachment"><b>\u9644\u4ef6</b>' + attachment + "</span>";
+      }
+      html += "</div>";
+      html += '<div class="dw-feedback-content-block"><span class="dw-feedback-content-label">\u53cd\u9988\u5185\u5bb9</span>' +
+        '<div class="dw-feedback-cell-text">' + esc(text(row.FEEDBACK_CONTENT) || "-") + "</div></div>";
+      if (returnReason) {
+        html += '<div class="dw-feedback-return-block"><span class="dw-feedback-content-label">\u9000\u56de\u539f\u56e0</span>' +
+          '<div class="dw-feedback-cell-text">' + esc(returnReason) + "</div></div>";
+      }
+      html += '<div class="dw-feedback-card-actions">';
       if (text(row.CONFIRM_RESULT) === "PENDING" && text(row.CAN_CONFIRM) === "Y") {
         html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-pass" data-feedback-action="confirm" data-feedback-id="' + esc(text(row.ID)) + '">\u901a\u8fc7</button>';
         html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-return" data-feedback-action="return" data-feedback-id="' + esc(text(row.ID)) + '">\u9000\u56de</button>';
       }
-      html += '</div></td></tr><tr class="dw-feedback-content-row"><td colspan="7"><div class="dw-feedback-content-block">' +
-        '<span class="dw-feedback-content-label">\u53cd\u9988\u5185\u5bb9</span><div class="dw-feedback-cell-text">' +
-        esc(text(row.FEEDBACK_CONTENT) || "-") + "</div></div></td></tr>";
+      html += "</div></div></article>";
     });
-    return html + "</tbody></table></div>";
+    return html + "</div>";
+  }
+
+  function feedbackCardClass(value) {
+    if (value === "CONFIRMED") {
+      return "dw-feedback-card-confirmed";
+    }
+    if (value === "RETURNED") {
+      return "dw-feedback-card-returned";
+    }
+    if (value === "DRAFT") {
+      return "dw-feedback-card-draft";
+    }
+    return "dw-feedback-card-pending";
   }
 
   function initFeedbackAttachmentViews(rows, prefix) {

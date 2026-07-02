@@ -243,3 +243,85 @@
 - 3.0 integration points: dispatch creates child todo and closes parent todo; accept refreshes receiver handle todo; submit feedback switches to sender confirm todo; return switches back to receiver handle todo; confirm, take-back, task delete, and batch delete close related business todos.
 - Local verification on 2026-07-01: JDK 8 compile passed; `db/portal_business_todo.sql` passed PB audit-field check; lifecycle verifier passed dispatch -> accept -> submit -> return -> resubmit -> confirm; Tomcat restarted with current C-workspace `pb.xml`; HTTP POST to `/pb/ims/oa/todo/uniontask/pendingWork` for user `cs` returned `success=true`, `totalnumber=1`, task type `党委计划3.0`, URL to the 3.0 `toIndex?taskId=...`, and `sendTime` with seconds (`2026-07-01 16:57:35` in the local run). DW3 Portal Todo/Lifecycle test rows were cleaned back to zero.
 - Intranet note: when the user explicitly asks to deploy/package, include the new SQL/table migration, Java classes, and `PortalTaskMapper.xml`. Do not package this automatically unless the user says to deploy to the intranet.
+
+## 2026-07-01 Detail Layout Compact Polish
+
+- User screenshot showed task detail and feedback detail task-summary fields using oversized two-column cards. Short fields such as level, status, deadline, sender, and receiver should not occupy half the modal width.
+- Frontend-only change: `taskSummaryHtml` now renders title as a full-width row, short fields in a compact wrapping metadata row, and task content/target requirement as full-width text blocks.
+- This shared summary is used by both the task detail modal and feedback modal, so both pages get the compact layout.
+- Resource cache busting updated to `?v=20260701_detail_compact_11`.
+- No backend, SQL, workflow, permission, or attachment behavior changed.
+
+## 2026-07-01 Feedback Chain Timeline Polish
+
+- User asked for the feedback chain to be clear at first glance.
+- Frontend-only change: `feedbackHtml` no longer renders the chain as a dense table. It now renders a vertical card timeline with sequence number, level, feedback user, feedback time, status badge, attachment button, feedback content, optional return reason, and approval actions.
+- Return reasons are highlighted in a light red block; feedback content remains the main visible body text.
+- Added narrow-screen wrapping rules so metadata, status, attachment, and approval buttons do not overlap in smaller modals.
+- Resource cache busting updated to `?v=20260701_feedback_chain_cards_12`.
+- No backend, SQL, workflow, permission, portal todo, or attachment behavior changed.
+- Follow-up: user clarified the chain numbering direction was reversed because feedback flows upward from staff. The frontend now reverses the displayed feedback rows before numbering, so the first visible node is the lowest-level feedback and numbering proceeds upward. Resource cache busting updated to `?v=20260701_feedback_chain_order_13`.
+
+## 2026-07-01 Real User Acceptance
+
+- Real personnel-tree acceptance was run with these login users and password `cape`: party `admin`, department `69700327`, office `zhangsan`, and staff `28000185`.
+- Initial blocker: staff user `28000185` could log in to PB but was redirected to `loginFailed.jsp` when opening the 3.0 URL. The cause was platform resource authorization, not 3.0 business logic. The 3.0 resource existed in `SYS_RESOURCE` as `8af444529f1797c6019f179c4a4f0cd3`, but `SYS_ACCESSCONTROL` had no grant for non-platform-manager users.
+- Local acceptance configuration added one platform authorization row: `SYS_ACCESSCONTROL`, `TARGET_TYPE='R'`, `TARGET_ID='402809815822d545015822d9d0dc0072'` (`comm_user`), `RESOURE_ID='8af444529f1797c6019f179c4a4f0cd3'`, `ACCESSIBILITY=1`, `OPERABILITY=1`. Tomcat restart was required before staff access worked. A failed exploratory `SYS_PERMISSION_ACCESS` row was removed.
+- End-to-end flow passed with test title `DW3UX-FLOW-20260701-REAL-1782923057894`: party direct dispatch -> department accept -> department dispatch -> office accept -> office dispatch -> staff accept -> staff feedback -> office return -> staff resubmit -> office confirm -> office feedback -> department confirm -> department feedback -> party final confirm.
+- Final statuses before cleanup were all `COMPLETED`: PARTY root, DEPT child, OFFICE child, and STAFF child. Feedback history preserved the returned staff feedback row with return reason and the later confirmed staff feedback row.
+- Cleanup was verified in local DM: exact test title had `DYN_DW_PLAN3_TASK=0`, related `DYN_DW_PLAN3_FEEDBACK=0`, related `PB_PORTAL_BUSINESS_TODO=0`, and legacy `DYN_DW_PLAN3_ATTACHMENT=0`. Redis `_SESSION` keys were also cleared after testing to avoid the platform online-user limit.
+- UX/platform issues observed during acceptance: stale Redis `_SESSION` keys can cause the platform online-user-limit error across browser-close and Tomcat restart; every 3.0 page load requested `/pb/azure` and returned 404; the login page emits a browser warning about multiple forms; current local data still has cross-level duplicate binding risk around `muzi`, so the non-duplicate chain `admin -> 69700327 -> zhangsan -> 28000185` was used.
+
+## 2026-07-02 Excel Batch Import
+
+- Scope: added Party-side Excel batch import for 党委计划 3.0 only. Runtime code remains under `dwworkplan3`, data remains in `DYN_DW_PLAN3_*`, and no old `avicit/pb/dwworkplan` controller or old `DYN_DW_PLAN_*` table is used.
+- UI: `index.jsp` now exposes `下载导入模板` and `批量导入` only for the party sender on the work-plan tab. The import modal carries its own year/quarter fields so an empty quarter can be imported before any batch appears in the period selector.
+- Template: `api/import/template` generates an `.xlsx` workbook with `任务填写` and `接收部门参考` sheets. The reference sheet lists the current party sender's direct department nodes, node IDs, bound users, and login names.
+- Preview: `api/import/preview` parses Excel through existing Apache POI dependencies, validates rows without writing to the database, and returns row-level OK/WARN/ERROR status plus total/importable/error/warning counts.
+- Validation rules implemented: title, deadline, and department are required; deadline is normalized to `yyyy-MM-dd`; department must match the current party sender's direct department node by name or node ID; single-user departments auto-fill receiver login with a warning; multi-user departments require receiver login; receiver login must belong to that department node.
+- Persistence: `api/import/saveDrafts` creates validated root tasks as `DRAFT`; `api/import/directDispatch` reuses `directDispatchRoot`, so root status, department child status, messages, and portal business todo generation follow the existing 3.0 rules. Import preview data is not stored in a new table; valid normalized rows are posted back for the final action and revalidated before insert.
+- Data decision: no new table or column was added. The optional Excel `备注` value is appended into task content as `备注：...` when saving/importing because `DYN_DW_PLAN3_TASK` has no remark column.
+- Verification: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK compile passed for `DwWorkPlan3Constants`, `DwWorkPlan3PortalTodoService`, `DwWorkPlan3Service`, and `DwWorkPlan3Controller`; `scripts/verify-dwworkplan3.ps1` passed; scan of 3.0 files found no old-module runtime reference.
+
+## 2026-07-02 Import Template And Work Category
+
+- Scope remains 党委计划 3.0 only: runtime code stays under `dwworkplan3`, runtime data stays in `DYN_DW_PLAN3_*`, and old module code/tables remain non-runtime references only.
+- Import template changed from login-name-only receiver clarity to include `接收人姓名` in the main task sheet and `姓名` in the `接收部门参考` sheet. The reference sheet expands multi-user department nodes to one row per user with department, node ID, name, and login name.
+- Receiver validation still matches by login name, not by name, to avoid同名人员误匹配. `接收人姓名` is for display/readability and the normalized preview result.
+- Task wording changed on the frontend and template: `任务内容` is now displayed as `工作内容`; `目标要求` is now displayed as `工作目标`. The underlying database fields remain `CONTENT` and `TARGET_DESC`.
+- Added task work-category support through `DYN_DW_PLAN3_TASK.WORK_CATEGORY VARCHAR2(100)`. Base DDL was updated and incremental patch `db/dw_work_plan_3_patch_20260702_work_category.sql` was added for existing environments.
+- Backend save/edit/direct-dispatch/import flows now read and persist `workCategory`. Child dispatch inherits the parent `WORK_CATEGORY` unless a value is explicitly submitted.
+- Frontend shows `工作分类` in the task list, task modal, task detail summary, stats recent table, import template, and import preview. Keyword search includes `WORK_CATEGORY`.
+
+## 2026-07-02 List Batch Dispatch
+
+- Scope remains 党委计划 3.0 only. Runtime code/data stay under `dwworkplan3` and `DYN_DW_PLAN3_*`; no old module runtime dependency was added.
+- Added a work-plan toolbar `批量下发` button immediately to the right of `批量导入`. It is visible only for `PARTY_SENDER` on the work-plan tab.
+- The toolbar button works on checked list rows, not on import-preview rows. It targets saved party root draft tasks, which is the common flow after importing many rows as drafts.
+- Frontend filters selected rows to dispatchable drafts: `TASK_LEVEL=PARTY`, `STATUS=DRAFT`, current receiver is the logged-in party user, no child task exists, and draft department receiver fields are present. The confirmation text tells the user when non-dispatchable selected rows will be skipped.
+- Added backend API `api/task/batchDirectDispatch`. It revalidates every submitted task before writing and reuses `dispatchChild`, so child task creation, root `WAIT_CHILD` status, messages, and portal business todo generation stay consistent with single-task direct dispatch.
+- Backend validation is all-or-nothing for submitted IDs: if any selected task is missing, no longer draft, already dispatched, missing draft receiver data, or not a direct department receiver, the batch is rejected before dispatching.
+- No SQL/table change was added for this feature.
+
+## 2026-07-02 Three-Module Intranet Package
+
+- User is deploying 党委计划 3.0 together with Excel multi-sub-table export and portal business todos.
+- Official baseline release script could not run because `D:\pb-release\baseline\pb-baseline.json` does not exist. Baseline was not updated.
+- Superseded class-based focused package:
+  - Directory: `D:\pb-release\内网部署-三模块-20260702-105726`
+  - Zip: `D:\pb-release\内网部署-三模块-20260702-105726\pb-three-modules-release.zip`
+  - Manifest: `manifest.md`
+  - Manual steps: `manual-steps.md`
+  - Warnings: `warnings.md`
+- User clarified they do not need `.class` files and future multi-module packages should be split by Chinese module folders. Created replacement source-only package:
+  - Directory: `D:\pb-release\内网部署-三模块-源码版-分模块-20260702-110455`
+  - Zip: `D:\pb-release\内网部署-三模块-源码版-分模块-20260702-110455\pb-three-modules-source-by-module.zip`
+  - Module folders: `按模块分开\Excel多子表导出`, `按模块分开\党委计划3.0`, `按模块分开\门户待办推送`
+  - `.class` count verified as 0.
+- Package structure:
+  - `按模块分开`: source-friendly copy split into Chinese module folders. Each folder preserves PB project-relative paths.
+  - `可选SQL`: contains `db/dw_work_plan_3_import_person_tree.sql`; this is not for default execution because it reads old `DYN_DW_PLAN_PERSON_TREE`.
+- 3.0 files included: `WebRoot/avicit/pb/dwworkplan3/index.jsp`, `WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.{js,css}`, all `src/avicit/pb/dwworkplan3` Java sources, and SQL `db/dw_work_plan_3.sql` plus patches `20260630`, `20260701_multi_person`, and `20260702_work_category`.
+- Portal todo files included: `PortalBusinessTodoService`, modified `PortalTaskService`, modified `PortalUnionTaskController`, runtime/source `PortalTaskMapper.xml`, `DwWorkPlan3PortalTodoService`, and SQL `db/portal_business_todo.sql`.
+- Intranet manual platform steps: configure 3.0 menu URL `platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/toIndex`; grant menu/resource access to ordinary users; keep portal todo endpoint as existing `/ims/oa/todo/uniontask/pendingWork`.
+- Verification before packaging: 3.0 JS `node --check` passed; all related Java sources compiled into `WebRoot/WEB-INF/classes`; `scripts/verify-dwworkplan3.ps1` passed; `db/dw_work_plan_3.sql` and `db/portal_business_todo.sql` passed PB audit-field checks; frontend guardrail scan for `WebRoot/static/pb-modern/dwworkplan3` returned 0 warnings; 3.0 old-module runtime reference scan returned no matches outside the optional import script.

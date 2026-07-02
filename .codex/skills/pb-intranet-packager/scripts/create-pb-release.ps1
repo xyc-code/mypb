@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$ProjectRoot = (Resolve-Path ".").Path,
   [string]$BaselinePath = "D:\pb-release\baseline\pb-baseline.json",
   [string]$ReleaseRoot = "D:\pb-release"
@@ -16,6 +16,7 @@ function Convert-ToRelativePath([string]$Base, [string]$Path) {
 
 function Test-ExcludedPath([string]$RelativePath) {
   $p = $RelativePath -replace '/', '\'
+  $lower = $p.ToLowerInvariant()
   if ($p -like ".codex\skills\pb-intranet-packager\*") { return $true }
   if ($p -like ".git\*") { return $true }
   if ($p -like "target\*") { return $true }
@@ -23,8 +24,23 @@ function Test-ExcludedPath([string]$RelativePath) {
   if ($p -like "logs\*") { return $true }
   if ($p -like "temp\*") { return $true }
   if ($p -like "tmp\*") { return $true }
+  if ($lower -like "webroot\web-inf\classes\*.class" -or $lower -like "webroot\web-inf\classes\*\*.class") { return $true }
   if ($p -ieq "WebRoot\static\js\platform\sysmessage\js\messageDialog.js") { return $true }
   return $false
+}
+
+function Get-ModuleFolderName([string]$RelativePath) {
+  $p = ($RelativePath -replace '/', '\').ToLowerInvariant()
+  if ($p -like "*excelexportconfig*" -or $p -like "*excel-export-config*" -or $p -like "*multisubtableexcelexporter*" -or $p -like "*pb_excel_export_config.sql") {
+    return "Excel多子表导出"
+  }
+  if ($p -like "*dwworkplan3*" -or $p -like "*dw_work_plan_3*") {
+    return "党委计划3.0"
+  }
+  if ($p -like "*portalbusinesstodo*" -or $p -like "*portaltaskmapper.xml" -or $p -like "*portaltaskservice*" -or $p -like "*portaluniontaskcontroller*" -or $p -like "*portal_business_todo.sql") {
+    return "门户待办推送"
+  }
+  return "其他变更"
 }
 
 function Get-FileKind([string]$RelativePath) {
@@ -40,11 +56,11 @@ function Get-FileKind([string]$RelativePath) {
   if ($lower -eq "db\imp_exp.dmp") { return "blocked-dump" }
   if ($lower -like "webroot\web-inf\classes\*.properties" -or $lower -like "webroot\web-inf\classes\*\*.properties") { return "risk-config" }
   if ($lower -like "webroot\web-inf\lib\*.jar") { return "risk-jar" }
+  if ($lower -like "src\*.java" -or $lower -like "src\*\*.java" -or $lower -like "src\*.xml" -or $lower -like "src\*\*.xml") { return "package-file" }
   if ($lower -like "src\*") { return "source-reference" }
   if ($lower -like "webroot\*.jsp" -or $lower -like "webroot\*\*.jsp") { return "package-file" }
   if ($lower -like "webroot\*.js" -or $lower -like "webroot\*\*.js") { return "package-file" }
   if ($lower -like "webroot\*.css" -or $lower -like "webroot\*\*.css") { return "package-file" }
-  if ($lower -like "webroot\web-inf\classes\*.class" -or $lower -like "webroot\web-inf\classes\*\*.class") { return "package-file" }
   if ($lower -like "webroot\web-inf\classes\*mapper.xml" -or $lower -like "webroot\web-inf\classes\*\*mapper.xml") { return "mapper-xml" }
   if ($lower -like "*.sql") { return "sql-review" }
   return "review"
@@ -82,9 +98,8 @@ if (-not (Test-Path -LiteralPath $BaselinePath)) {
 
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $releaseDir = Join-Path $ReleaseRoot $timestamp
-$filesDir = Join-Path $releaseDir "files"
-$dbDir = Join-Path $releaseDir "db"
-New-Item -ItemType Directory -Force -Path $filesDir,$dbDir | Out-Null
+$filesDir = Join-Path $releaseDir "按模块分开"
+New-Item -ItemType Directory -Force -Path $filesDir | Out-Null
 
 $baseline = Get-Content -LiteralPath $BaselinePath -Raw | ConvertFrom-Json
 $baselineMap = @{}
@@ -141,15 +156,15 @@ foreach ($change in $changesSorted) {
   $file = $currentMap[$change.path]
   switch ($change.kind) {
     "package-file" {
-      Copy-WithRelativePath $file.fullName $filesDir $change.path
+      Copy-WithRelativePath $file.fullName (Join-Path $filesDir (Get-ModuleFolderName $change.path)) $change.path
       $packaged += $change
     }
     "mapper-xml" {
-      Copy-WithRelativePath $file.fullName $filesDir $change.path
+      Copy-WithRelativePath $file.fullName (Join-Path $filesDir (Get-ModuleFolderName $change.path)) $change.path
       $packaged += $change
     }
     "sql-review" {
-      Copy-WithRelativePath $file.fullName $dbDir (Split-Path -Leaf $change.path)
+      Copy-WithRelativePath $file.fullName (Join-Path $filesDir (Get-ModuleFolderName $change.path)) $change.path
       $sql += $change
     }
     "blocked-config" {
@@ -164,16 +179,7 @@ foreach ($change in $changesSorted) {
   }
 }
 
-$changedJava = @($changesSorted | Where-Object { $_.path.ToLowerInvariant().StartsWith("src\") -and $_.path.ToLowerInvariant().EndsWith(".java") -and $_.status -ne "deleted" })
-$changedClasses = @($changesSorted | Where-Object { $_.path.ToLowerInvariant().StartsWith("webroot\web-inf\classes\") -and $_.path.ToLowerInvariant().EndsWith(".class") -and $_.status -ne "deleted" })
 $javaWarnings = @()
-foreach ($java in $changedJava) {
-  $baseName = [System.IO.Path]::GetFileNameWithoutExtension($java.path)
-  $matches = @($changedClasses | Where-Object { [System.IO.Path]::GetFileNameWithoutExtension($_.path) -eq $baseName })
-  if ($matches.Count -eq 0) {
-    $javaWarnings += "BLOCKING: Changed source has no changed matching class: $($java.path)"
-  }
-}
 
 $dbKeywords = "create table|alter table|drop table|create view|replace view|sys_menu|sys_resource|sys_lookup|sys_permission|bpm_|eform_|qrtz_|sys_job|doccenter|attachment"
 $dbSuspects = @($changesSorted | Where-Object { $_.path -match $dbKeywords -or $_.path.ToLowerInvariant().EndsWith(".sql") })
@@ -238,10 +244,10 @@ if (@($deleted).Count -eq 0) { $manifestMd += "- None" } else { foreach ($item i
 $manifestMd += ""
 $manifestMd += "## Intranet Copy Instructions"
 $manifestMd += ""
-$manifestMd += "1. Copy the contents of $bt" + "files\" + "$bt into the intranet PB application root, preserving relative paths."
+$manifestMd += "1. Open $bt" + "按模块分开\" + "$bt, choose the required Chinese module folder, then copy that folder's contents into the intranet PB application root, preserving relative paths."
 $manifestMd += "2. Review $bt" + "warnings.md" + "$bt before copying anything."
 $manifestMd += "3. Apply SQL or platform configuration manually only after confirmation."
-$manifestMd += "4. Do not copy blocked environment files unless the intranet value has been explicitly confirmed."
+$manifestMd += "4. Do not copy blocked environment files or $bt" + ".class" + "$bt files. Java changes are delivered as source for intranet compilation."
 $manifestMd += "5. After intranet sync succeeds, run $bt" + "update-baseline.ps1" + "$bt in the test project to accept this state as the new baseline."
 $manifestMd -join "`r`n" | Set-Content -LiteralPath (Join-Path $releaseDir "manifest.md") -Encoding UTF8
 
@@ -277,6 +283,7 @@ if (@($sql).Count -gt 0 -or @($dbSuspects).Count -gt 0) {
 $warnings += ""
 $warnings += "## Default Exclusions Reminder"
 $warnings += ""
+$warnings += "- $bt" + ".class" + "$bt files are not packaged. Java changes are delivered as $bt" + "src" + "$bt files for intranet compilation."
 $warnings += "- $bt" + "jdbc.properties" + "$bt, $bt" + "platform6.properties" + "$bt, $bt" + "rest-client.xml" + "$bt, $bt" + "spring-redis.xml" + "$bt, MQ configs, $bt" + "service/application-service.xml" + "$bt, and $bt" + "db\imp_exp.dmp" + "$bt are not packaged by default."
 $warnings -join "`r`n" | Set-Content -LiteralPath (Join-Path $releaseDir "warnings.md") -Encoding UTF8
 
@@ -286,3 +293,4 @@ Write-Host "Packaged files: $(@($packaged).Count)"
 Write-Host "Risk/review files: $(@($risk).Count)"
 Write-Host "Blocked/excluded files: $(@($blocked).Count)"
 Write-Host "Warnings: $(Join-Path $releaseDir 'warnings.md')"
+

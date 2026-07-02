@@ -6,14 +6,28 @@ import avicit.platform6.api.sysuser.dto.SysUser;
 import avicit.platform6.commons.utils.ComUtil;
 import avicit.platform6.modules.system.sysfileupload.service.SwfUploadService;
 import avicit.pb.dwworkplan3.dto.DwWorkPlan3Constants;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +51,9 @@ public class DwWorkPlan3Service {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String TASK_ATTACHMENT_ELEMENT_ID = "dwTaskAttachment";
     private static final String FEEDBACK_ATTACHMENT_ELEMENT_ID = "dwFeedbackAttachment";
+    private static final String[] IMPORT_HEADERS = new String[]{"任务标题", "工作分类", "工作内容", "工作目标", "截止日期", "接收部门", "接收人姓名", "接收人登录名", "备注"};
+    private static final String IMPORT_SHEET_NAME = "任务填写";
+    private static final String RECEIVER_SHEET_NAME = "接收部门参考";
 
     public Map<String, Object> currentUser(HttpServletRequest request) {
         ensureBootstrapRoot(request);
@@ -210,6 +227,7 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> saveRootTask(Map<String, String> p, HttpServletRequest request) {
+        ensureTaskWorkCategoryColumn();
         if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
             return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u65b0\u5efa\u4efb\u52a1");
         }
@@ -220,19 +238,19 @@ public class DwWorkPlan3Service {
             id = ComUtil.getId();
             jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
                             "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
-                            "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
+                            "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,WORK_CATEGORY,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
                             "SENDER_ID,SENDER_NAME,RECEIVER_ID,RECEIVER_NAME,PERSON_NODE_ID,DRAFT_DEPT_NODE_ID,DRAFT_DEPT_USER_ID,DRAFT_DEPT_NAME,ATTACHMENT_ID,DISPATCH_TIME) " +
-                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
+                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
                     id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
                     value(p, "batchId"), null, id, DwWorkPlan3Constants.LEVEL_PARTY, value(p, "title"),
-                    emptyToNull(value(p, "content")), emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")),
+                    emptyToNull(value(p, "workCategory")), emptyToNull(value(p, "content")), emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")),
                     DwWorkPlan3Constants.STATUS_DRAFT, loginUser(request), userName(loginUser(request)), loginUser(request),
                     userName(loginUser(request)), null, draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId);
         } else {
             jdbcTemplate.update("update DYN_DW_PLAN3_TASK set LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=?," +
-                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
+                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,WORK_CATEGORY=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
                             "where ID=? and TASK_LEVEL=? and STATUS=? and SENDER_ID=?",
-                    loginUser(request), request.getRemoteAddr(), value(p, "batchId"), value(p, "title"), emptyToNull(value(p, "content")),
+                    loginUser(request), request.getRemoteAddr(), value(p, "batchId"), value(p, "title"), emptyToNull(value(p, "workCategory")), emptyToNull(value(p, "content")),
                     emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")), draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId,
                     id, DwWorkPlan3Constants.LEVEL_PARTY, DwWorkPlan3Constants.STATUS_DRAFT, loginUser(request));
         }
@@ -251,7 +269,56 @@ public class DwWorkPlan3Service {
         return dispatchChild(p, request);
     }
 
+    @Transactional
+    public Map<String, Object> batchDirectDispatch(String ids, HttpServletRequest request) {
+        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u6279\u91cf\u4e0b\u53d1\u4efb\u52a1");
+        }
+        List<String> idList = splitPersonList(ids);
+        if (idList.isEmpty()) {
+            return failure("\u8bf7\u9009\u62e9\u8981\u4e0b\u53d1\u7684\u8349\u7a3f\u4efb\u52a1");
+        }
+        List<Map<String, Object>> tasks = new ArrayList<Map<String, Object>>();
+        List<String> errors = new ArrayList<String>();
+        for (String id : idList) {
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList("select * from DYN_DW_PLAN3_TASK where ID=?", id);
+            if (rows.isEmpty()) {
+                errors.add("\u4efb\u52a1" + id + "\u4e0d\u5b58\u5728");
+                continue;
+            }
+            Map<String, Object> task = rows.get(0);
+            String error = validateBatchDispatchTask(task, request);
+            if (StringUtils.isNotBlank(error)) {
+                errors.add("\u3010" + defaultValue(string(task.get("TITLE")), id) + "\u3011" + error);
+                continue;
+            }
+            tasks.add(task);
+        }
+        if (!errors.isEmpty()) {
+            Map<String, Object> result = failure("\u90e8\u5206\u4efb\u52a1\u4e0d\u80fd\u6279\u91cf\u4e0b\u53d1\uff1a" + limitedErrorText(errors));
+            result.put("errors", errors);
+            return result;
+        }
+        List<String> childIds = new ArrayList<String>();
+        for (Map<String, Object> task : tasks) {
+            Map<String, String> p = new HashMap<String, String>();
+            p.put("parentId", string(task.get("ID")));
+            p.put("personNodeId", string(task.get("DRAFT_DEPT_NODE_ID")));
+            p.put("receiverId", string(task.get("DRAFT_DEPT_USER_ID")));
+            Map<String, Object> dispatched = dispatchChild(p, request);
+            if (!"success".equals(dispatched.get("flag"))) {
+                throw new IllegalArgumentException("\u3010" + string(task.get("TITLE")) + "\u3011" + string(dispatched.get("errorMsg")));
+            }
+            childIds.add(string(dispatched.get("id")));
+        }
+        Map<String, Object> result = success();
+        result.put("count", Integer.valueOf(childIds.size()));
+        result.put("ids", childIds);
+        return result;
+    }
+
     public Map<String, Object> dispatchChild(Map<String, String> p, HttpServletRequest request) {
+        ensureTaskWorkCategoryColumn();
         String userId = loginUser(request);
         String parentId = value(p, "parentId");
         Map<String, Object> parent = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", parentId);
@@ -290,12 +357,13 @@ public class DwWorkPlan3Service {
         String id = ComUtil.getId();
         jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
                         "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
-                        "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
+                        "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,WORK_CATEGORY,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
                         "SENDER_ID,SENDER_NAME,RECEIVER_ID,RECEIVER_NAME,PERSON_NODE_ID,ATTACHMENT_ID,DISPATCH_TIME) " +
-                        "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
+                        "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
                 id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
                 parent.get("BATCH_ID"), parentId, parent.get("ROOT_ID"), nextLevel,
                 defaultValue(value(p, "title"), string(parent.get("TITLE"))),
+                emptyToNull(defaultValue(value(p, "workCategory"), string(parent.get("WORK_CATEGORY")))),
                 emptyToNull(defaultValue(value(p, "content"), string(parent.get("CONTENT")))),
                 emptyToNull(defaultValue(value(p, "targetDesc"), string(parent.get("TARGET_DESC")))),
                 date(defaultValue(value(p, "planDeadline"), dateString(parent.get("PLAN_DEADLINE")))),
@@ -631,6 +699,484 @@ public class DwWorkPlan3Service {
                 node.get("ID"), nextRole);
     }
 
+    public void downloadImportTemplate(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        ensureBootstrapRoot(request);
+        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+            response.reset();
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("text/plain;charset=UTF-8");
+            response.getWriter().write("只有党委计划下发者可以下载批量导入模板");
+            return;
+        }
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        Sheet taskSheet = workbook.createSheet(IMPORT_SHEET_NAME);
+        Row header = taskSheet.createRow(0);
+        for (int i = 0; i < IMPORT_HEADERS.length; i++) {
+            header.createCell(i).setCellValue(IMPORT_HEADERS[i]);
+            taskSheet.setColumnWidth(i, i == 0 ? 9000 : 5200);
+        }
+        CellStyle dateStyle = workbook.createCellStyle();
+        DataFormat dataFormat = workbook.createDataFormat();
+        dateStyle.setDataFormat(dataFormat.getFormat("yyyy-mm-dd"));
+        taskSheet.setDefaultColumnStyle(4, dateStyle);
+
+        Sheet receiverSheet = workbook.createSheet(RECEIVER_SHEET_NAME);
+        Row receiverHeader = receiverSheet.createRow(0);
+        String[] receiverHeaders = new String[]{"接收部门", "接收部门节点ID", "姓名", "登录名"};
+        for (int i = 0; i < receiverHeaders.length; i++) {
+            receiverHeader.createCell(i).setCellValue(receiverHeaders[i]);
+            receiverSheet.setColumnWidth(i, i == 1 ? 9000 : 6800);
+        }
+        int rowIndex = 1;
+        for (Map<String, Object> receiver : listReceivers(request)) {
+            List<String> userIds = splitPersonList(string(receiver.get("USER_ID")));
+            List<String> userNames = splitPersonList(string(receiver.get("USER_NAME")));
+            if (userIds.isEmpty()) {
+                Row row = receiverSheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(string(receiver.get("NODE_NAME")));
+                row.createCell(1).setCellValue(string(receiver.get("ID")));
+                continue;
+            }
+            for (int i = 0; i < userIds.size(); i++) {
+                String userId = userIds.get(i);
+                Row row = receiverSheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(string(receiver.get("NODE_NAME")));
+                row.createCell(1).setCellValue(string(receiver.get("ID")));
+                row.createCell(2).setCellValue(i < userNames.size() && StringUtils.isNotBlank(userNames.get(i)) ? userNames.get(i) : userName(userId));
+                row.createCell(3).setCellValue(userLoginName(userId));
+            }
+        }
+
+        String fileName = URLEncoder.encode("党委计划3.0导入模板.xlsx", "UTF-8").replace("+", "%20");
+        response.reset();
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"; filename*=UTF-8''" + fileName);
+        OutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+    }
+
+    public Map<String, Object> previewImport(MultipartFile file, String year, String quarter, HttpServletRequest request) throws Exception {
+        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+            return failure("只有党委计划下发者可以使用批量导入");
+        }
+        String periodError = validateImportPeriod(year, quarter);
+        if (StringUtils.isNotBlank(periodError)) {
+            return failure(periodError);
+        }
+        if (file == null || file.isEmpty()) {
+            return failure("请选择要导入的 Excel 文件");
+        }
+        InputStream in = file.getInputStream();
+        try {
+            Workbook workbook = WorkbookFactory.create(in);
+            Sheet sheet = workbook.getNumberOfSheets() == 0 ? null : workbook.getSheetAt(0);
+            if (sheet == null) {
+                return failure("Excel 文件没有可读取的工作表");
+            }
+            String headerError = validateImportHeaders(sheet.getRow(0));
+            if (StringUtils.isNotBlank(headerError)) {
+                return failure(headerError);
+            }
+            List<Map<String, String>> rows = readImportRows(sheet);
+            Map<String, Object> result = validateImportRows(rows, request);
+            result.put("year", year);
+            result.put("quarter", quarter);
+            return result;
+        } finally {
+            in.close();
+        }
+    }
+
+    @Transactional
+    public Map<String, Object> saveImportDrafts(String rowsJson, String year, String quarter, HttpServletRequest request) {
+        return persistImportRows(rowsJson, year, quarter, request, false);
+    }
+
+    @Transactional
+    public Map<String, Object> directDispatchImport(String rowsJson, String year, String quarter, HttpServletRequest request) {
+        return persistImportRows(rowsJson, year, quarter, request, true);
+    }
+
+    private Map<String, Object> persistImportRows(String rowsJson, String year, String quarter, HttpServletRequest request, boolean directDispatch) {
+        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+            return failure("只有党委计划下发者可以使用批量导入");
+        }
+        String periodError = validateImportPeriod(year, quarter);
+        if (StringUtils.isNotBlank(periodError)) {
+            return failure(periodError);
+        }
+        List<Map<String, String>> rows = parseImportRows(rowsJson);
+        if (rows.isEmpty()) {
+            return failure("没有可保存的导入行");
+        }
+        Map<String, Object> checked = validateImportRows(rows, request);
+        Integer errorCount = (Integer) checked.get("errorCount");
+        if (errorCount != null && errorCount > 0) {
+            checked.put("flag", "failure");
+            checked.put("errorMsg", "导入数据未通过校验，请重新预览后再操作");
+            return checked;
+        }
+        Map<String, Object> batch = createBatch(year, quarter, request);
+        if (!"success".equals(batch.get("flag"))) {
+            return batch;
+        }
+        String batchId = string(batch.get("id"));
+        List<Map<String, Object>> checkedRows = (List<Map<String, Object>>) checked.get("rows");
+        List<String> createdIds = new ArrayList<String>();
+        for (Map<String, Object> row : checkedRows) {
+            Map<String, String> taskParams = importTaskParams(row, batchId);
+            Map<String, Object> saved = directDispatch ? directDispatchRoot(taskParams, request) : saveRootTask(taskParams, request);
+            if (!"success".equals(saved.get("flag"))) {
+                throw new IllegalArgumentException("第" + string(row.get("rowNumber")) + "行处理失败：" + string(saved.get("errorMsg")));
+            }
+            createdIds.add(string(saved.get("id")));
+        }
+        Map<String, Object> result = success();
+        result.put("count", Integer.valueOf(createdIds.size()));
+        result.put("ids", createdIds);
+        result.put("batchId", batchId);
+        return result;
+    }
+
+    private String validateImportPeriod(String year, String quarter) {
+        if (StringUtils.isBlank(year) || StringUtils.isBlank(quarter)) {
+            return "请选择导入年度和季度";
+        }
+        try {
+            Integer.valueOf(year);
+        } catch (Exception ex) {
+            return "导入年度必须是有效数字";
+        }
+        if (!"Q1".equals(quarter) && !"Q2".equals(quarter) && !"Q3".equals(quarter) && !"Q4".equals(quarter)) {
+            return "导入季度不正确";
+        }
+        return "";
+    }
+
+    private String validateImportHeaders(Row header) {
+        if (header == null) {
+            return "Excel 第一行必须是导入模板表头";
+        }
+        for (int i = 0; i < IMPORT_HEADERS.length; i++) {
+            if (!IMPORT_HEADERS[i].equals(cellText(header.getCell(i)))) {
+                return "Excel 表头不正确，请使用下载的导入模板";
+            }
+        }
+        return "";
+    }
+
+    private List<Map<String, String>> readImportRows(Sheet sheet) {
+        List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
+        int last = sheet.getLastRowNum();
+        for (int i = 1; i <= last; i++) {
+            Row excelRow = sheet.getRow(i);
+            if (excelRow == null || importRowBlank(excelRow)) {
+                continue;
+            }
+            Map<String, String> row = new HashMap<String, String>();
+            row.put("rowNumber", String.valueOf(i + 1));
+            row.put("title", cellText(excelRow.getCell(0)));
+            row.put("workCategory", cellText(excelRow.getCell(1)));
+            row.put("content", cellText(excelRow.getCell(2)));
+            row.put("targetDesc", cellText(excelRow.getCell(3)));
+            row.put("planDeadline", cellDateText(excelRow.getCell(4)));
+            row.put("deptName", cellText(excelRow.getCell(5)));
+            row.put("receiverName", cellText(excelRow.getCell(6)));
+            row.put("receiverLogin", cellText(excelRow.getCell(7)));
+            row.put("remark", cellText(excelRow.getCell(8)));
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    private boolean importRowBlank(Row row) {
+        for (int i = 0; i < IMPORT_HEADERS.length; i++) {
+            if (StringUtils.isNotBlank(cellText(row.getCell(i)))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Map<String, Object> validateImportRows(List<Map<String, String>> sourceRows, HttpServletRequest request) {
+        Map<String, Object> result = success();
+        List<Map<String, String>> receivers = receiverChoices(listReceivers(request));
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        int errorCount = 0;
+        int warningCount = 0;
+        for (Map<String, String> source : sourceRows) {
+            Map<String, Object> row = new HashMap<String, Object>();
+            List<String> errors = new ArrayList<String>();
+            List<String> warnings = new ArrayList<String>();
+            String title = value(source, "title");
+            String workCategory = value(source, "workCategory");
+            String content = value(source, "content");
+            String targetDesc = value(source, "targetDesc");
+            String planDeadline = normalizeImportDate(value(source, "planDeadline"));
+            String deptInput = defaultValue(value(source, "deptNodeId"), value(source, "deptName"));
+            String receiverName = value(source, "receiverName");
+            String receiverLogin = value(source, "receiverLogin");
+            String remark = value(source, "remark");
+
+            row.put("rowNumber", defaultValue(value(source, "rowNumber"), String.valueOf(rows.size() + 2)));
+            row.put("title", title);
+            row.put("workCategory", workCategory);
+            row.put("content", content);
+            row.put("targetDesc", targetDesc);
+            row.put("planDeadline", planDeadline);
+            row.put("deptName", value(source, "deptName"));
+            row.put("deptNodeId", value(source, "deptNodeId"));
+            row.put("receiverName", receiverName);
+            row.put("receiverLogin", receiverLogin);
+            row.put("remark", remark);
+
+            if (StringUtils.isBlank(title)) {
+                errors.add("任务标题不能为空");
+            }
+            if (StringUtils.isBlank(value(source, "planDeadline"))) {
+                errors.add("截止日期不能为空");
+            } else if (StringUtils.isBlank(planDeadline)) {
+                errors.add("截止日期必须是有效日期");
+            }
+            if (StringUtils.isBlank(deptInput)) {
+                errors.add("接收部门不能为空");
+            } else {
+                fillImportReceiver(row, receivers, deptInput, receiverLogin, errors, warnings);
+            }
+
+            if (errors.isEmpty()) {
+                row.put("status", warnings.isEmpty() ? "OK" : "WARN");
+                row.put("importable", "Y");
+                if (!warnings.isEmpty()) {
+                    warningCount++;
+                }
+            } else {
+                row.put("status", "ERROR");
+                row.put("importable", "N");
+                errorCount++;
+            }
+            row.put("messages", errors);
+            row.put("warnings", warnings);
+            rows.add(row);
+        }
+        result.put("rows", rows);
+        result.put("total", Integer.valueOf(rows.size()));
+        result.put("validCount", Integer.valueOf(rows.size() - errorCount));
+        result.put("importableCount", Integer.valueOf(rows.size() - errorCount));
+        result.put("errorCount", Integer.valueOf(errorCount));
+        result.put("warningCount", Integer.valueOf(warningCount));
+        result.put("blockedCount", Integer.valueOf(errorCount));
+        return result;
+    }
+
+    private void fillImportReceiver(Map<String, Object> row, List<Map<String, String>> receivers, String deptInput,
+                                    String receiverLogin, List<String> errors, List<String> warnings) {
+        List<String> nodeIds = new ArrayList<String>();
+        for (Map<String, String> receiver : receivers) {
+            String nodeId = receiver.get("nodeId");
+            String nodeName = receiver.get("nodeName");
+            if ((deptInput.equals(nodeId) || deptInput.equals(nodeName)) && !nodeIds.contains(nodeId)) {
+                nodeIds.add(nodeId);
+            }
+        }
+        if (nodeIds.isEmpty()) {
+            errors.add("接收部门不在当前党委直属部门中");
+            return;
+        }
+        if (nodeIds.size() > 1) {
+            errors.add("接收部门名称重复，请填写接收部门参考页中的节点ID");
+            return;
+        }
+        List<Map<String, String>> nodeUsers = new ArrayList<Map<String, String>>();
+        for (Map<String, String> receiver : receivers) {
+            if (nodeIds.get(0).equals(receiver.get("nodeId"))) {
+                nodeUsers.add(receiver);
+            }
+        }
+        if (nodeUsers.isEmpty() || StringUtils.isBlank(nodeUsers.get(0).get("userId"))) {
+            errors.add("接收部门没有绑定平台用户");
+            return;
+        }
+        Map<String, String> matched = null;
+        if (StringUtils.isBlank(receiverLogin)) {
+            if (nodeUsers.size() == 1) {
+                matched = nodeUsers.get(0);
+                warnings.add("已按单用户部门自动匹配接收人：" + matched.get("userName"));
+            } else {
+                errors.add("该接收部门绑定多个用户，必须填写接收人登录名");
+                return;
+            }
+        } else {
+            for (Map<String, String> user : nodeUsers) {
+                if (receiverLogin.equalsIgnoreCase(user.get("loginName"))) {
+                    matched = user;
+                    break;
+                }
+            }
+            if (matched == null) {
+                errors.add("接收人登录名不属于该接收部门");
+                return;
+            }
+        }
+        row.put("deptName", matched.get("nodeName"));
+        row.put("deptNodeId", matched.get("nodeId"));
+        row.put("personNodeId", matched.get("nodeId"));
+        row.put("receiverId", matched.get("userId"));
+        row.put("receiverName", matched.get("userName"));
+        row.put("receiverLogin", matched.get("loginName"));
+    }
+
+    private List<Map<String, String>> receiverChoices(List<Map<String, Object>> receivers) {
+        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        for (Map<String, Object> receiver : receivers) {
+            List<String> userIds = splitPersonList(string(receiver.get("USER_ID")));
+            List<String> userNames = splitPersonList(string(receiver.get("USER_NAME")));
+            if (userIds.isEmpty()) {
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("nodeId", string(receiver.get("ID")));
+                item.put("nodeName", string(receiver.get("NODE_NAME")));
+                item.put("userId", "");
+                item.put("userName", "");
+                item.put("loginName", "");
+                result.add(item);
+                continue;
+            }
+            for (int i = 0; i < userIds.size(); i++) {
+                String userId = userIds.get(i);
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("nodeId", string(receiver.get("ID")));
+                item.put("nodeName", string(receiver.get("NODE_NAME")));
+                item.put("userId", userId);
+                item.put("userName", i < userNames.size() && StringUtils.isNotBlank(userNames.get(i)) ? userNames.get(i) : userName(userId));
+                item.put("loginName", userLoginName(userId));
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    private List<Map<String, String>> parseImportRows(String rowsJson) {
+        List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
+        if (StringUtils.isBlank(rowsJson)) {
+            return rows;
+        }
+        List<Map> rawRows = JSON.parseArray(rowsJson, Map.class);
+        if (rawRows == null) {
+            return rows;
+        }
+        for (Map raw : rawRows) {
+            Map<String, String> row = new HashMap<String, String>();
+            row.put("rowNumber", string(raw.get("rowNumber")));
+            row.put("title", string(raw.get("title")));
+            row.put("workCategory", string(raw.get("workCategory")));
+            row.put("content", string(raw.get("content")));
+            row.put("targetDesc", string(raw.get("targetDesc")));
+            row.put("planDeadline", string(raw.get("planDeadline")));
+            row.put("deptName", string(raw.get("deptName")));
+            row.put("deptNodeId", string(raw.get("deptNodeId")));
+            row.put("receiverName", string(raw.get("receiverName")));
+            row.put("receiverLogin", string(raw.get("receiverLogin")));
+            row.put("remark", string(raw.get("remark")));
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    private Map<String, String> importTaskParams(Map<String, Object> row, String batchId) {
+        Map<String, String> p = new HashMap<String, String>();
+        p.put("batchId", batchId);
+        p.put("title", string(row.get("title")));
+        p.put("workCategory", string(row.get("workCategory")));
+        p.put("content", importContent(row));
+        p.put("targetDesc", string(row.get("targetDesc")));
+        p.put("planDeadline", string(row.get("planDeadline")));
+        p.put("personNodeId", string(row.get("personNodeId")));
+        p.put("receiverId", string(row.get("receiverId")));
+        p.put("draftDeptNodeId", string(row.get("personNodeId")));
+        p.put("draftDeptUserId", string(row.get("receiverId")));
+        p.put("draftDeptName", string(row.get("deptName")));
+        return p;
+    }
+
+    private String importContent(Map<String, Object> row) {
+        String content = string(row.get("content"));
+        String remark = string(row.get("remark"));
+        if (StringUtils.isBlank(remark)) {
+            return content;
+        }
+        if (StringUtils.isBlank(content)) {
+            return "备注：" + remark;
+        }
+        return content + "\n\n备注：" + remark;
+    }
+
+    private String cellText(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        try {
+            if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                return cell.getStringCellValue() == null ? "" : cell.getStringCellValue().trim();
+            }
+            if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+                    return DATE_FORMAT.format(cell.getDateCellValue());
+                }
+                double value = cell.getNumericCellValue();
+                long rounded = Math.round(value);
+                if (Math.abs(value - rounded) < 0.000001) {
+                    return String.valueOf(rounded);
+                }
+                return String.valueOf(value);
+            }
+            if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+                return cell.getBooleanCellValue() ? "true" : "false";
+            }
+            if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+                try {
+                    return cell.getStringCellValue() == null ? "" : cell.getStringCellValue().trim();
+                } catch (Exception ex) {
+                    double value = cell.getNumericCellValue();
+                    long rounded = Math.round(value);
+                    return Math.abs(value - rounded) < 0.000001 ? String.valueOf(rounded) : String.valueOf(value);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return "";
+    }
+
+    private String cellDateText(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+            return DATE_FORMAT.format(cell.getDateCellValue());
+        }
+        return cellText(cell);
+    }
+
+    private String normalizeImportDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return "";
+        }
+        String text = value.trim();
+        if (text.length() > 10 && (text.charAt(10) == ' ' || text.charAt(10) == 'T')) {
+            text = text.substring(0, 10);
+        }
+        String[] patterns = new String[]{"yyyy-MM-dd", "yyyy/M/d", "yyyy/MM/dd", "yyyy.M.d", "yyyy.MM.dd", "yyyyMMdd"};
+        for (int i = 0; i < patterns.length; i++) {
+            try {
+                SimpleDateFormat format = new SimpleDateFormat(patterns[i]);
+                format.setLenient(false);
+                return DATE_FORMAT.format(format.parse(text));
+            } catch (Exception ignored) {
+            }
+        }
+        return "";
+    }
+
     public Map<String, Object> stats(HttpServletRequest request, String batchId) {
         Map<String, Object> result = success();
         StringBuilder where = new StringBuilder();
@@ -818,6 +1364,38 @@ public class DwWorkPlan3Service {
         return result;
     }
 
+    private String validateBatchDispatchTask(Map<String, Object> task, HttpServletRequest request) {
+        String userId = loginUser(request);
+        if (!userId.equals(string(task.get("RECEIVER_ID")))) {
+            return "\u4e0d\u662f\u5f53\u524d\u7528\u6237\u7684\u8349\u7a3f\u4efb\u52a1";
+        }
+        if (!DwWorkPlan3Constants.LEVEL_PARTY.equals(string(task.get("TASK_LEVEL")))) {
+            return "\u53ea\u80fd\u6279\u91cf\u4e0b\u53d1\u515a\u59d4\u6839\u4efb\u52a1";
+        }
+        if (!DwWorkPlan3Constants.STATUS_DRAFT.equals(string(task.get("STATUS")))) {
+            return "\u53ea\u80fd\u6279\u91cf\u4e0b\u53d1\u8349\u7a3f\u72b6\u6001\u4efb\u52a1";
+        }
+        Integer childCount = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=?",
+                Integer.class, task.get("ID"));
+        if (childCount != null && childCount > 0) {
+            return "\u5df2\u7ecf\u4e0b\u53d1\u8fc7\uff0c\u4e0d\u80fd\u91cd\u590d\u4e0b\u53d1";
+        }
+        String nodeId = string(task.get("DRAFT_DEPT_NODE_ID"));
+        String receiverId = string(task.get("DRAFT_DEPT_USER_ID"));
+        if (StringUtils.isBlank(nodeId) || StringUtils.isBlank(receiverId)) {
+            return "\u7f3a\u5c11\u8349\u7a3f\u63a5\u6536\u90e8\u95e8\u6216\u63a5\u6536\u4eba";
+        }
+        try {
+            Map<String, Object> receiverNode = validateDirectChildReceiver(userId, nodeId, receiverId);
+            if (!DwWorkPlan3Constants.ROLE_DEPT.equals(string(receiverNode.get("ROLE_CODE")))) {
+                return "\u515a\u59d4\u6839\u4efb\u52a1\u53ea\u80fd\u4e0b\u53d1\u7ed9\u90e8\u95e8";
+            }
+        } catch (Exception ex) {
+            return defaultValue(ex.getMessage(), "\u63a5\u6536\u90e8\u95e8\u6216\u63a5\u6536\u4eba\u4e0d\u6b63\u786e");
+        }
+        return "";
+    }
+
     private String expectedParentRole(String roleCode) {
         if (DwWorkPlan3Constants.ROLE_DEPT.equals(roleCode)) {
             return DwWorkPlan3Constants.ROLE_PARTY;
@@ -829,6 +1407,16 @@ public class DwWorkPlan3Service {
             return DwWorkPlan3Constants.ROLE_OFFICE;
         }
         return "";
+    }
+
+    private String limitedErrorText(List<String> errors) {
+        int max = Math.min(errors.size(), 5);
+        List<String> visible = errors.subList(0, max);
+        String text = StringUtils.join(visible, "\uff1b");
+        if (errors.size() > max) {
+            text += "\uff1b\u7b49" + errors.size() + "\u9879";
+        }
+        return text;
     }
 
     private boolean hasRole(String userId, String role) {
@@ -1198,6 +1786,29 @@ public class DwWorkPlan3Service {
         return joinPersonList(names);
     }
 
+    private String userLoginNamesForIds(String userIds) {
+        List<String> ids = splitPersonList(userIds);
+        List<String> names = new ArrayList<String>();
+        for (String id : ids) {
+            names.add(userLoginName(id));
+        }
+        return joinPersonList(names);
+    }
+
+    private String userLoginName(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            return "";
+        }
+        try {
+            SysUser user = sysUserAPI.getSysUserById(userId);
+            if (user != null && StringUtils.isNotBlank(user.getLoginName())) {
+                return user.getLoginName();
+            }
+        } catch (Exception ignored) {
+        }
+        return userId;
+    }
+
     private String userNameFromPersonNode(Map<String, Object> node, String userId) {
         List<String> ids = splitPersonList(string(node.get("USER_ID")));
         List<String> names = splitPersonList(string(node.get("USER_NAME")));
@@ -1298,6 +1909,23 @@ public class DwWorkPlan3Service {
     private void ensurePersonUserColumnLength() {
         ensureColumnLength("DYN_DW_PLAN3_PERSON_TREE", "USER_ID", 1000);
         ensureColumnLength("DYN_DW_PLAN3_PERSON_TREE", "USER_NAME", 1000);
+    }
+
+    private void ensureTaskWorkCategoryColumn() {
+        try {
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                    "select DATA_LENGTH from USER_TAB_COLUMNS where TABLE_NAME=? and COLUMN_NAME=?",
+                    "DYN_DW_PLAN3_TASK", "WORK_CATEGORY");
+            if (rows.isEmpty()) {
+                jdbcTemplate.execute("ALTER TABLE DYN_DW_PLAN3_TASK ADD WORK_CATEGORY VARCHAR2(100)");
+                return;
+            }
+            int length = Integer.parseInt(string(rows.get(0).get("DATA_LENGTH")));
+            if (length < 100) {
+                jdbcTemplate.execute("ALTER TABLE DYN_DW_PLAN3_TASK MODIFY WORK_CATEGORY VARCHAR2(100)");
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private void ensureColumnLength(String tableName, String columnName, int minLength) {
