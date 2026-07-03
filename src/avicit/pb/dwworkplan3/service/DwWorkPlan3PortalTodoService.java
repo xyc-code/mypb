@@ -75,7 +75,7 @@ public class DwWorkPlan3PortalTodoService {
         if (StringUtils.isBlank(receiverId)) {
             return;
         }
-        portalBusinessTodoService.createOrUpdateTodo(baseTodo(task, request)
+        portalBusinessTodoService.createOrUpdateTodo(baseTodo(task, request, targetPersonNodeId(task, SCENE_HANDLE))
                 .businessScene(SCENE_HANDLE)
                 .receiver(receiverId, string(task.get("RECEIVER_NAME")))
                 .title("工作计划待处理：" + string(task.get("TITLE")))
@@ -87,22 +87,43 @@ public class DwWorkPlan3PortalTodoService {
         if (StringUtils.isBlank(senderId)) {
             return;
         }
-        portalBusinessTodoService.createOrUpdateTodo(baseTodo(task, request)
+        portalBusinessTodoService.createOrUpdateTodo(baseTodo(task, request, targetPersonNodeId(task, SCENE_CONFIRM))
                 .businessScene(SCENE_CONFIRM)
                 .receiver(senderId, string(task.get("SENDER_NAME")))
                 .title("工作计划反馈待确认：" + string(task.get("TITLE")))
                 .taskDesc("下级已提交反馈，请及时确认。"));
     }
 
-    private PortalBusinessTodoService.Todo baseTodo(Map<String, Object> task, HttpServletRequest request) {
+    private PortalBusinessTodoService.Todo baseTodo(Map<String, Object> task, HttpServletRequest request, String personNodeId) {
         return new PortalBusinessTodoService.Todo()
                 .sourceModule(SOURCE_MODULE)
                 .businessId(string(task.get("ID")))
                 .taskType(TASK_TYPE)
                 .priority("1")
                 .sender(string(task.get("SENDER_ID")), string(task.get("SENDER_NAME")))
-                .targetUrl("platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/toIndex?taskId=" + string(task.get("ID")))
+                .targetUrl(targetUrl(task, personNodeId))
                 .audit(currentUser(request), remoteAddr(request), orgIdentity(request));
+    }
+
+    private String targetPersonNodeId(Map<String, Object> task, String scene) {
+        if (SCENE_CONFIRM.equals(scene)) {
+            String parentId = string(task.get("PARENT_ID"));
+            if (StringUtils.isNotBlank(parentId)) {
+                List<Map<String, Object>> rows = jdbcTemplate.queryForList("select PERSON_NODE_ID from DYN_DW_PLAN3_TASK where ID=?", parentId);
+                if (!rows.isEmpty() && StringUtils.isNotBlank(string(rows.get(0).get("PERSON_NODE_ID")))) {
+                    return string(rows.get(0).get("PERSON_NODE_ID"));
+                }
+            }
+        }
+        return string(task.get("PERSON_NODE_ID"));
+    }
+
+    private String targetUrl(Map<String, Object> task, String personNodeId) {
+        String url = "platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/toIndex?taskId=" + string(task.get("ID"));
+        if (StringUtils.isNotBlank(personNodeId)) {
+            url += "&personNodeId=" + personNodeId;
+        }
+        return url;
     }
 
     private String handleDesc(String status) {

@@ -337,6 +337,21 @@
 - Read-only viewer users can open and inspect the personnel tree, but must not create, edit, delete, dispatch, accept, feedback, confirm, return, import, batch-dispatch, or maintain the personnel tree.
 - Runtime role lookup uses platform tables `sys_user_role` and `sys_role` by `sys_role.role_name='党委一级管理员'`; no 3.0 business table is added for this rule.
 
+## 2026-07-03 Multi-Role And Self-Created Tasks
+
+- User confirmed two new business rules for 党委计划 3.0:
+  - The same platform user may appear in multiple personnel-tree roles, for example both department minister and office director.
+  - Departments, offices, and staff may create their own tasks. Department and office tasks can be dispatched down one level. Staff-created tasks default to the staff user themself.
+- Implementation decision: task data scope and operation identity now use the frontend-selected `currentNodeId`, not the old `topUserNode(loginUser)` fallback. Party still sees all tasks; department/office see their selected subtree; staff sees only tasks under the selected staff node; platform readonly viewer still sees all and cannot edit.
+- Personnel-tree duplicate binding rule was relaxed: cross-level duplicate platform users are allowed. The single party-root rule remains enforced by `validatePersonHierarchy`.
+- `saveRootTask` now creates a root task at the selected identity level:
+  - PARTY/DEPT/OFFICE root tasks are saved as `DRAFT` and can later be directly dispatched to their next-level receiver.
+  - STAFF root tasks are saved as `DOING`, use the selected staff node as `PERSON_NODE_ID`, and sync a self handle todo.
+- `dispatchChild`, receiver lists, task lists, batch lists, statistics, import template, import preview, import persistence, and batch direct dispatch now all honor `currentNodeId`.
+- Portal business todo target URLs now include `personNodeId` when available. HANDLE todos select the task receiver node; CONFIRM todos select the parent task node so a multi-role user lands in the role that must confirm.
+- Frontend role switching reloads batches, personnel scope, receiver list, tasks, and stats. Operation buttons are shown only when the task's `PERSON_NODE_ID` matches the selected role; legacy party tasks with blank `PERSON_NODE_ID` remain compatible for party users.
+- Verification on 2026-07-03: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3PortalTodoService`; `scripts/verify-dwworkplan3.ps1` passed; local Tomcat restarted; `/pb/login` returned 200, unauthenticated 3.0 `toIndex` returned 302, and 3.0 JS returned 200.
+
 ## 2026-07-02 Three-Module Intranet Package
 
 - User is deploying 党委计划 3.0 together with Excel multi-sub-table export and portal business todos.

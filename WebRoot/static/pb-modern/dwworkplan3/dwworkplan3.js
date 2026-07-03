@@ -67,6 +67,8 @@
     importRows: [],
     selectedTaskIds: {},
     expandedTaskIds: {},
+    initialTaskId: "",
+    initialPersonNodeId: "",
     currentView: "plans",
     charts: {}
   };
@@ -116,9 +118,15 @@
     $("#dwRefreshBtn").on("click", loadAll);
     $("#dwRoleSelect").on("change", function () {
       state.currentNodeId = this.value;
+      state.selectedTaskIds = {};
       renderCurrentRole();
       updateCreateButton();
-      loadReceivers(renderTaskTable);
+      $.when(loadBatches(), loadPersons()).always(function () {
+        loadReceivers(loadTasks);
+        if (state.currentView === "stats") {
+          loadStats();
+        }
+      });
     });
     $("#dwDownloadImportTemplateBtn").on("click", downloadImportTemplate);
     $("#dwImportBtn").on("click", openImportModal);
@@ -240,11 +248,36 @@
     });
   }
 
+  function currentNodeParams(extra) {
+    var data = extra || {};
+    data.currentNodeId = state.currentNodeId || "";
+    return data;
+  }
+
+  function queryParam(name) {
+    var match = new RegExp("[?&]" + name + "=([^&]*)").exec(window.location.search || "");
+    return match ? decodeURIComponent(match[1].replace(/\+/g, " ")) : "";
+  }
+
+  function initialRoleId() {
+    if (!state.initialPersonNodeId) {
+      return "";
+    }
+    for (var i = 0; i < state.roles.length; i++) {
+      if (text(state.roles[i].ID) === state.initialPersonNodeId) {
+        return state.initialPersonNodeId;
+      }
+    }
+    return "";
+  }
+
   function loadAll() {
+    state.initialTaskId = queryParam("taskId");
+    state.initialPersonNodeId = queryParam("personNodeId");
     api("api/currentUser").done(function (res) {
       state.user = res;
       state.roles = res.roles || [];
-      state.currentNodeId = state.currentNodeId || (state.roles[0] && text(state.roles[0].ID));
+      state.currentNodeId = initialRoleId() || state.currentNodeId || (state.roles[0] && text(state.roles[0].ID));
       renderRoleSelect();
       renderCurrentRole();
       updateCreateButton();
@@ -260,7 +293,7 @@
   }
 
   function loadBatches() {
-    return api("api/batch/list").done(function (res) {
+    return api("api/batch/list", currentNodeParams()).done(function (res) {
       state.batches = res.rows || [];
       state.batchById = {};
       $.each(state.batches, function (_, row) {
@@ -271,7 +304,7 @@
   }
 
   function loadPersons() {
-    return api("api/person/list").done(function (res) {
+    return api("api/person/list", currentNodeParams()).done(function (res) {
       state.persons = res.rows || [];
       state.personById = {};
       $.each(state.persons, function (_, row) {
@@ -285,7 +318,7 @@
   }
 
   function loadReceivers(done) {
-    api("api/person/receivers").done(function (res) {
+    api("api/person/receivers", currentNodeParams()).done(function (res) {
       state.receivers = res.rows || [];
       renderReceiverSelect();
       if ($.isFunction(done)) {
@@ -303,6 +336,7 @@
       return;
     }
     api("api/task/list", {
+      currentNodeId: state.currentNodeId,
       year: period.year,
       quarter: period.quarter,
       status: $("#dwFilterStatus").val()
@@ -365,7 +399,8 @@
   }
 
   function updateCreateButton() {
-    $("#dwCreateTaskBtn,#dwDownloadImportTemplateBtn,#dwImportBtn,#dwBatchDispatchBtn").toggle(isParty() && state.currentView === "plans");
+    $("#dwCreateTaskBtn").toggle(!isViewerOnly() && !!currentNode() && state.currentView === "plans");
+    $("#dwDownloadImportTemplateBtn,#dwImportBtn,#dwBatchDispatchBtn").toggle(isParty() && state.currentView === "plans");
     $("#dwBatchDeleteBtn").toggle(isParty() && state.currentView === "plans");
     $('.dw-tab[data-view="persons"]').toggle(!isStaff());
     $('.dw-tab[data-view="stats"]').toggle(!isStaff());
@@ -629,14 +664,21 @@
   }
 
   function openCreateTask() {
-    if (!isParty()) {
-      message("只有党委计划下发者可以新建任务");
+    if (isViewerOnly() || !currentNode()) {
+      message("当前用户不能新建任务");
       return;
     }
     resetTaskModal();
     $("#dwTaskModalTitle").text("新建任务");
-    $("#dwTaskReceiverWrap").show().find("label").text("接收部门");
-    $("#dwTaskSaveDraftBtn,#dwTaskDirectDispatchBtn").show();
+    if (isStaff()) {
+      $("#dwTaskReceiverWrap").hide();
+      $("#dwTaskSaveDraftBtn").text("保存任务").show();
+      $("#dwTaskDirectDispatchBtn").hide();
+    } else {
+      $("#dwTaskReceiverWrap").show().find("label").text(receiverLabel());
+      $("#dwTaskSaveDraftBtn").text("保存草稿").show();
+      $("#dwTaskDirectDispatchBtn").show();
+    }
     $("#dwTaskDispatchBtn").hide();
     renderReceiverSelect();
     initTaskUploader("");
@@ -652,8 +694,8 @@
     resetTaskModal();
     fillTaskModal(task);
     $("#dwTaskModalTitle").text("编辑草稿");
-    $("#dwTaskSaveDraftBtn").show();
-    $("#dwTaskDirectDispatchBtn").show();
+    $("#dwTaskSaveDraftBtn").text("保存草稿").show();
+    $("#dwTaskDirectDispatchBtn").toggle(!isStaff());
     $("#dwTaskDispatchBtn").hide();
     renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
     initTaskUploader(text(task.ID));
@@ -670,7 +712,7 @@
     fillTaskModal(task);
     $("#dwTaskParentId").val(id);
     $("#dwTaskModalTitle").text("下发任务");
-    $("#dwTaskReceiverWrap").show();
+    $("#dwTaskReceiverWrap").show().find("label").text(receiverLabel());
     $("#dwTaskSaveDraftBtn,#dwTaskDirectDispatchBtn").hide();
     $("#dwTaskDispatchBtn").show();
     renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
@@ -711,7 +753,7 @@
     if (!payload) {
       return;
     }
-    api("api/batch/create", { year: payload.year, quarter: payload.quarter }).done(function (res) {
+    api("api/batch/create", currentNodeParams({ year: payload.year, quarter: payload.quarter })).done(function (res) {
       payload.batchId = res.id;
       api("api/task/saveRoot", payload).done(function (saved) {
         uploadPlatformFiles("dwTaskAttachment", text(saved.id), TASK_ATTACHMENT_ELEMENT_ID, function () {
@@ -727,11 +769,11 @@
     if (!payload) {
       return;
     }
-    if (!payload.personNodeId) {
+    if (!isStaff() && !payload.personNodeId) {
       message("请选择接收部门");
       return;
     }
-    api("api/batch/create", { year: payload.year, quarter: payload.quarter }).done(function (res) {
+    api("api/batch/create", currentNodeParams({ year: payload.year, quarter: payload.quarter })).done(function (res) {
       payload.batchId = res.id;
       confirmBox("确定直接下发给选中部门吗？", function () {
         api("api/task/directDispatchRoot", payload).done(function (saved) {
@@ -751,7 +793,8 @@
     }
     var period = defaultImportPeriod();
     window.location.href = API_BASE + "api/import/template?year=" + encodeURIComponent(period.year) +
-      "&quarter=" + encodeURIComponent(period.quarter);
+      "&quarter=" + encodeURIComponent(period.quarter) +
+      "&currentNodeId=" + encodeURIComponent(state.currentNodeId || "");
   }
 
   function openImportModal() {
@@ -802,6 +845,7 @@
     var form = new FormData();
     form.append("year", period.year);
     form.append("quarter", period.quarter);
+    form.append("currentNodeId", state.currentNodeId || "");
     form.append("file", input.files[0]);
     $.ajax({
       url: API_BASE + "api/import/preview",
@@ -838,6 +882,7 @@
     confirmBox(confirmMessage, function () {
       setImportBusy(true);
       api(path, {
+        currentNodeId: state.currentNodeId,
         year: period.year,
         quarter: period.quarter,
         rows: JSON.stringify(rows)
@@ -962,6 +1007,7 @@
     var receiverId = $("#dwTaskReceiver option:selected").attr("data-user-id") || "";
     var payload = {
       id: $("#dwTaskId").val(),
+      currentNodeId: state.currentNodeId,
       year: $.trim($("#dwTaskYear").val()),
       quarter: $("#dwTaskQuarter").val(),
       title: $.trim($("#dwTaskTitle").val()),
@@ -1036,7 +1082,7 @@
       confirmMessage += " 将自动跳过 " + skipped + " 项不可下发任务。";
     }
     confirmBox(confirmMessage, function () {
-      api("api/task/batchDirectDispatch", { ids: dispatchableIds.join(",") }).done(function (res) {
+      api("api/task/batchDirectDispatch", currentNodeParams({ ids: dispatchableIds.join(",") })).done(function (res) {
         state.selectedTaskIds = {};
         message("已批量下发 " + (number(res.count) || dispatchableIds.length) + " 项任务");
         afterTaskChanged();
@@ -1412,7 +1458,7 @@
       renderStats({});
       return;
     }
-    api("api/stats", { batchId: batchId }).done(function (res) {
+    api("api/stats", currentNodeParams({ batchId: batchId })).done(function (res) {
       renderStats(res);
     }).fail(showError);
   }
@@ -1711,7 +1757,15 @@
   }
 
   function currentNode() {
-    return state.personById[state.currentNodeId] || state.roles[0] || null;
+    if (state.personById[state.currentNodeId]) {
+      return state.personById[state.currentNodeId];
+    }
+    for (var i = 0; i < state.roles.length; i++) {
+      if (text(state.roles[i].ID) === text(state.currentNodeId)) {
+        return state.roles[i];
+      }
+    }
+    return state.roles[0] || null;
   }
 
   function isParty() {
@@ -1722,6 +1776,21 @@
   function isStaff() {
     var node = currentNode();
     return node && text(node.ROLE_CODE) === "STAFF";
+  }
+
+  function receiverLabel() {
+    var node = currentNode();
+    var role = node ? text(node.ROLE_CODE) : "";
+    if (role === "PARTY_SENDER") {
+      return "接收部门";
+    }
+    if (role === "DEPT_MINISTER") {
+      return "接收科室";
+    }
+    if (role === "OFFICE_DIRECTOR") {
+      return "接收科员";
+    }
+    return "接收对象";
   }
 
   function isViewerOnly() {
@@ -1751,7 +1820,10 @@
     if (isViewerOnly()) {
       return false;
     }
-    return text(task.TASK_LEVEL) === "PARTY" && text(task.STATUS) === "DRAFT" && text(task.SENDER_ID) === currentUserId();
+    return !text(task.PARENT_ID) &&
+      text(task.STATUS) === "DRAFT" &&
+      text(task.RECEIVER_ID) === currentUserId() &&
+      taskMatchesCurrentNode(task);
   }
 
   function canDispatch(task) {
@@ -1761,14 +1833,17 @@
     if (text(task.RECEIVER_ID) !== currentUserId()) {
       return false;
     }
+    if (!taskMatchesCurrentNode(task)) {
+      return false;
+    }
     if (text(task.TASK_LEVEL) === "STAFF") {
       return false;
     }
     if (number(task.CHILD_COUNT) > 0) {
       return false;
     }
-    if (text(task.TASK_LEVEL) === "PARTY") {
-      return text(task.STATUS) === "DRAFT";
+    if (!text(task.PARENT_ID) && text(task.STATUS) === "DRAFT") {
+      return true;
     }
     return text(task.STATUS) === "DOING" || text(task.STATUS) === "RETURNED";
   }
@@ -1781,6 +1856,7 @@
       text(task.TASK_LEVEL) === "PARTY" &&
       text(task.STATUS) === "DRAFT" &&
       text(task.RECEIVER_ID) === currentUserId() &&
+      taskMatchesCurrentNode(task) &&
       number(task.CHILD_COUNT) === 0 &&
       !!text(task.DRAFT_DEPT_NODE_ID) &&
       !!text(task.DRAFT_DEPT_USER_ID);
@@ -1790,14 +1866,14 @@
     if (isViewerOnly()) {
       return false;
     }
-    return text(task.RECEIVER_ID) === currentUserId() && text(task.STATUS) === "TODO";
+    return text(task.RECEIVER_ID) === currentUserId() && text(task.STATUS) === "TODO" && taskMatchesCurrentNode(task);
   }
 
   function canTakeBack(task) {
     if (isViewerOnly()) {
       return false;
     }
-    return text(task.SENDER_ID) === currentUserId() && text(task.STATUS) === "TODO" && !!text(task.PARENT_ID);
+    return text(task.SENDER_ID) === currentUserId() && text(task.STATUS) === "TODO" && !!text(task.PARENT_ID) && parentMatchesCurrentNode(task);
   }
 
   function canFeedback(task) {
@@ -1805,6 +1881,9 @@
       return false;
     }
     if (text(task.RECEIVER_ID) !== currentUserId()) {
+      return false;
+    }
+    if (!taskMatchesCurrentNode(task)) {
       return false;
     }
     if (text(task.STATUS) !== "DOING" && text(task.STATUS) !== "RETURNED") {
@@ -1834,6 +1913,28 @@
       }
     }
     return null;
+  }
+
+  function taskMatchesCurrentNode(task) {
+    var node = currentNode();
+    if (!task || !node) {
+      return false;
+    }
+    var nodeId = text(node.ID);
+    var taskNodeId = text(task.PERSON_NODE_ID);
+    if (taskNodeId && taskNodeId === nodeId) {
+      return true;
+    }
+    return !taskNodeId && text(node.ROLE_CODE) === "PARTY_SENDER" && text(task.TASK_LEVEL) === "PARTY";
+  }
+
+  function parentMatchesCurrentNode(task) {
+    var parentId = text(task.PARENT_ID);
+    if (!parentId) {
+      return false;
+    }
+    var parent = findTask(parentId);
+    return parent && taskMatchesCurrentNode(parent);
   }
 
   function isOverdue(task) {
@@ -1925,7 +2026,7 @@
     fillTaskModal(task);
     $("#dwTaskParentId").val(id);
     $("#dwTaskModalTitle").text("\u4e0b\u53d1\u4efb\u52a1");
-    $("#dwTaskReceiverWrap").show();
+    $("#dwTaskReceiverWrap").show().find("label").text(receiverLabel());
     $("#dwTaskSaveDraftBtn,#dwTaskDirectDispatchBtn").hide();
     $("#dwTaskDispatchBtn").show();
     renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
