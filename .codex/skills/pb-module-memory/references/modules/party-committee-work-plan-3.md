@@ -6,7 +6,7 @@
 - Memory file: `.codex/skills/pb-module-memory/references/modules/party-committee-work-plan-3.md`
 - Status: local-verified
 - Owner/requester: xyc
-- Last updated: 2026-06-30
+- Last updated: 2026-07-03
 - Non-negotiable isolation rule: 党委计划 3.0 是全新的独立模块，必须始终与之前做的党委计划下发模块没有任何关系；运行期不得复用旧 `avicit/pb/dwworkplan` 后端命名空间、旧接口、旧表 `DYN_DW_PLAN_*`、旧菜单或旧业务闭环；允许在 3.0 自有 JSP/JS/CSS/Service/SQL 中复刻旧版页面形态、交互和表结构。
 
 ## Business
@@ -101,7 +101,7 @@
 
 - Local URL/menu path: `platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/toIndex`
 - Test data: `scripts/seed-verify-dwworkplan3.ps1` creates repeatable DW3-prefixed personnel, batch, task, and feedback rows.
-- 2026-06-30 bugfix memory: 页面“新增”打不开的根因是当前登录人没有 3.0 人员节点时 `currentUser.roles` 为空，前端按“非党委计划下发者”禁用新建按钮；`ensureBootstrapRoot` 已改为按当前登录人补齐 3.0 根节点，而不是只在整张人员表为空时初始化。`scripts/seed-verify-dwworkplan3.ps1` 增加 `DW3_STRANGER` 回归检查，覆盖已有人员树但当前用户未配置节点的场景。
+- Superseded 2026-06-30 bugfix memory: earlier behavior auto-created a party root for a login user without a 3.0 personnel node. This is no longer valid; see 2026-07-03 root-node rule below.
 - Checks performed:
   - `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed.
   - `scripts/verify-dwworkplan3.ps1` passed.
@@ -302,6 +302,40 @@
 - Added backend API `api/task/batchDirectDispatch`. It revalidates every submitted task before writing and reuses `dispatchChild`, so child task creation, root `WAIT_CHILD` status, messages, and portal business todo generation stay consistent with single-task direct dispatch.
 - Backend validation is all-or-nothing for submitted IDs: if any selected task is missing, no longer draft, already dispatched, missing draft receiver data, or not a direct department receiver, the batch is rejected before dispatching.
 - No SQL/table change was added for this feature.
+
+## 2026-07-02 Personnel Tree Add Button Fix
+
+- User noticed the 3.0 personnel tree add button was missing after the tree was simplified to one visible `节点名称` column.
+- Frontend-only final behavior: `新增下级` lives on the personnel tree selected row, not in the right-side node detail form. It appears only after selecting a node that can have children; `STAFF` rows do not show the button.
+- The selected-row button reuses the existing personnel save flow and `NEXT_ROLE` hierarchy mapping. The active personnel-tree renderer was updated because a later duplicate `personTreeCell` definition was the function actually used by the page.
+- Button styling was polished as a scoped pill action aligned to the right side of the selected tree row, with node names protected from overlap through ellipsis.
+- Resource cache version was bumped to `?v=20260702_person_tree_add_18`.
+- Verification: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; PB frontend conflict scan checked the touched JSP/JS/CSS files and returned 0 warnings.
+
+## 2026-07-02 Intranet Deadline Timestamp Fix
+
+- User reported that after intranet deployment the work-plan list showed `PLAN_DEADLINE` as a number such as `1785945600`.
+- Cause: the intranet JSON serializer can return Java/DB `DATE` values as Unix timestamps in seconds, while the previous frontend formatter only handled date strings and displayed 10-digit values unchanged.
+- Frontend-only fix: `dateOnly` and `dateTime` now recognize 10-digit Unix seconds, 13-digit Unix milliseconds, and `/Date(...)` values, then format them as local `yyyy-MM-dd` or `yyyy-MM-dd HH:mm:ss`.
+- Resource cache version was bumped to `?v=20260702_deadline_timestamp_19`.
+- Verification: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; a Node timestamp check confirmed `1785945600` renders as `2026-08-06`; `scripts/verify-dwworkplan3.ps1` passed; PB frontend conflict scan checked the touched JSP/JS files and returned 0 warnings.
+
+## 2026-07-03 Single Personnel Root Rule
+
+- User clarified that 3.0 does not need automatic root-node completion. The personnel tree root must always be a single configured `PARTY_SENDER` root node.
+- Removed the backend auto-bootstrap behavior from `DwWorkPlan3Service`: `currentUser`, `listPersonTree`, `listBatches`, `listTasks`, and import-template download no longer call `ensureBootstrapRoot`, and the helper was removed.
+- `currentUser` now simply returns an empty `roles` list for users not configured in `DYN_DW_PLAN3_PERSON_TREE`; the frontend already shows “当前用户未配置 3.0 人员节点”.
+- `savePerson` now rejects creating another enabled `PARTY_SENDER` root when one already exists, so the backend enforces “党委计划下发者根节点只能有一个”.
+- `scripts/seed-verify-dwworkplan3.ps1` was updated so `DW3_STRANGER` verifies that unconfigured users are not inserted into `DYN_DW_PLAN3_PERSON_TREE`.
+- Intranet cleanup note: duplicate auto-created roots can be identified by `ROLE_CODE='PARTY_SENDER'`, `PARENT_ID is null`, and `REMARK='当前用户首次访问 3.0 自动初始化根节点'`; only delete them after confirming they have no related tasks.
+
+## 2026-07-03 Platform Role Readonly Viewer Rule
+
+- User chose platform role based read-only access for leaders who are not in the 3.0 personnel tree.
+- Permission precedence: if the current user exists in `DYN_DW_PLAN3_PERSON_TREE`, the module must ignore the platform viewer role and use the personnel-tree identity and data scope only.
+- Fallback rule: only users who are not in the personnel tree and have platform role name `党委一级管理员` get global read-only access to 3.0 tasks, statistics, personnel tree, feedback chain, and attachments.
+- Read-only viewer users can open and inspect the personnel tree, but must not create, edit, delete, dispatch, accept, feedback, confirm, return, import, batch-dispatch, or maintain the personnel tree.
+- Runtime role lookup uses platform tables `sys_user_role` and `sys_role` by `sys_role.role_name='党委一级管理员'`; no 3.0 business table is added for this rule.
 
 ## 2026-07-02 Three-Module Intranet Package
 

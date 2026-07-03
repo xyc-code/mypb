@@ -37,7 +37,7 @@ function Get-ModuleFolderName([string]$RelativePath) {
   if ($p -like "*dwworkplan3*" -or $p -like "*dw_work_plan_3*") {
     return "党委计划3.0"
   }
-  if ($p -like "*portalbusinesstodo*" -or $p -like "*portaltaskmapper.xml" -or $p -like "*portaltaskservice*" -or $p -like "*portaluniontaskcontroller*" -or $p -like "*portal_business_todo.sql") {
+  if ($p -like "*portalbusinesstodo*" -or $p -like "*portaltaskdao*" -or $p -like "*portaltaskmapper.xml" -or $p -like "*portaltaskservice*" -or $p -like "*portaluniontaskcontroller*" -or $p -like "*portal_business_todo.sql") {
     return "门户待办推送"
   }
   return "其他变更"

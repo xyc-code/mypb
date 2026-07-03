@@ -344,7 +344,9 @@
 
   function renderRoleSelect() {
     var html = "";
-    if (!state.roles.length) {
+    if (isViewerOnly()) {
+      html = '<option value="">\u5168\u5c40\u67e5\u770b</option>';
+    } else if (!state.roles.length) {
       html = '<option value="">未配置人员节点</option>';
     } else {
       $.each(state.roles, function (_, row) {
@@ -358,7 +360,8 @@
 
   function renderCurrentRole() {
     var node = currentNode();
-    $("#dwCurrentRoleText").text(node ? roleLabel(text(node.ROLE_CODE)) + " / " + text(node.NODE_NAME) : "当前用户未配置 3.0 人员节点");
+    $("#dwCurrentRoleText").text(isViewerOnly() ? "\u515a\u59d4\u4e00\u7ea7\u7ba1\u7406\u5458 / \u5168\u5c40\u67e5\u770b" :
+      (node ? roleLabel(text(node.ROLE_CODE)) + " / " + text(node.NODE_NAME) : "当前用户未配置 3.0 人员节点"));
   }
 
   function updateCreateButton() {
@@ -366,6 +369,7 @@
     $("#dwBatchDeleteBtn").toggle(isParty() && state.currentView === "plans");
     $('.dw-tab[data-view="persons"]').toggle(!isStaff());
     $('.dw-tab[data-view="stats"]').toggle(!isStaff());
+    $("#dwPersonSaveBtn,#dwPersonDeleteBtn,#dwPersonUserPickBtn").toggle(!isViewerOnly());
   }
 
   function renderBatchSelects() {
@@ -1200,6 +1204,7 @@
     if (state.selectedPersonId) {
       fillPersonForm(state.selectedPersonId);
     }
+    applyPersonReadonlyState();
   }
 
   function buildPersonTree() {
@@ -1240,18 +1245,23 @@
   }
 
   function personTreeCell(node, depth, childCount, expanded) {
+    var id = text(node.ID);
     var indent = depth * 22;
     var icon = childCount ? (expanded ? "▾" : "▸") : "•";
     var toggleClass = childCount ? "dw-tree-toggle" : "dw-tree-toggle is-leaf";
     var html = '<span class="dw-tree-cell" style="padding-left:' + indent + 'px">';
     if (childCount) {
-      html += '<button type="button" class="' + toggleClass + '" data-person-id="' + esc(text(node.ID)) + '">' + icon + "</button>";
+      html += '<button type="button" class="' + toggleClass + '" data-person-id="' + esc(id) + '">' + icon + "</button>";
     } else {
       html += '<button type="button" class="' + toggleClass + '" tabindex="-1">' + icon + "</button>";
     }
     html += '<span class="dw-tree-title">' + esc(text(node.NODE_NAME)) + "</span>";
     if (childCount) {
       html += '<span class="dw-tree-count">' + childCount + "</span>";
+    }
+    if (!isViewerOnly() && state.selectedPersonId === id && NEXT_ROLE[text(node.ROLE_CODE)]) {
+      html += '<button type="button" class="dw-inline-add-btn" data-person-action="addChild" data-person-id="' + esc(id) + '">' +
+        '<span class="dw-inline-add-icon" aria-hidden="true"></span>新增下级</button>';
     }
     return html + "</span>";
   }
@@ -1281,6 +1291,7 @@
     $("#dwPersonRemark").val(text(node.REMARK));
     $("#dwPersonTable tr").removeClass("selected");
     $('#dwPersonTable tr[data-person-id="' + id + '"]').addClass("selected");
+    applyPersonReadonlyState();
   }
 
   function selectPerson(id) {
@@ -1292,18 +1303,35 @@
   }
 
   function handlePersonAction(action, id) {
+    if (isViewerOnly()) {
+      message("\u5f53\u524d\u662f\u5168\u5c40\u67e5\u770b\u6a21\u5f0f\uff0c\u4eba\u5458\u6811\u53ea\u80fd\u67e5\u770b");
+      return;
+    }
     if (action === "addChild") {
       var parent = state.personById[id];
+      if (!parent) {
+        message("请先选择上级节点");
+        return;
+      }
+      var nextRole = NEXT_ROLE[text(parent.ROLE_CODE)];
+      if (!nextRole) {
+        message("科员节点不能继续添加下级");
+        return;
+      }
       $("#dwPersonId").val("");
       $("#dwPersonParent").val(id);
       $("#dwPersonNodeName,#dwPersonUserId,#dwPersonUserName,#dwPersonSort,#dwPersonRemark").val("");
-      $("#dwPersonRole").val(NEXT_ROLE[text(parent.ROLE_CODE)] || "STAFF");
+      $("#dwPersonRole").val(nextRole);
+      $("#dwPersonNodeName").focus();
     } else if (action === "delete") {
       deletePerson(id);
     }
   }
 
   function openPersonUserSelect() {
+    if (isViewerOnly()) {
+      return;
+    }
     if (typeof H5CommonSelect === "function") {
       var roleCode = $("#dwPersonRole").val();
       new H5CommonSelect({
@@ -1318,6 +1346,10 @@
   }
 
   function savePerson() {
+    if (isViewerOnly()) {
+      message("\u5f53\u524d\u662f\u5168\u5c40\u67e5\u770b\u6a21\u5f0f\uff0c\u4e0d\u80fd\u4fdd\u5b58\u4eba\u5458\u6811");
+      return;
+    }
     var roleCode = $("#dwPersonRole").val();
     if (!personRoleAllowsMulti(roleCode) && splitPersonList($("#dwPersonUserId").val()).length > 1) {
       message("\u515a\u59d4\u548c\u79d1\u5458\u8282\u70b9\u53ea\u80fd\u5173\u8054\u4e00\u4e2a\u7528\u6237\uff0c\u90e8\u95e8\u548c\u79d1\u5ba4\u8282\u70b9\u53ef\u4ee5\u5173\u8054\u591a\u4e2a\u7528\u6237");
@@ -1340,6 +1372,10 @@
   }
 
   function deleteCurrentPerson() {
+    if (isViewerOnly()) {
+      message("\u5f53\u524d\u662f\u5168\u5c40\u67e5\u770b\u6a21\u5f0f\uff0c\u4e0d\u80fd\u5220\u9664\u4eba\u5458\u6811");
+      return;
+    }
     var id = $("#dwPersonId").val();
     if (!id) {
       message("请选择节点");
@@ -1349,6 +1385,10 @@
   }
 
   function deletePerson(id) {
+    if (isViewerOnly()) {
+      message("\u5f53\u524d\u662f\u5168\u5c40\u67e5\u770b\u6a21\u5f0f\uff0c\u4e0d\u80fd\u5220\u9664\u4eba\u5458\u6811");
+      return;
+    }
     confirmBox("确定删除该节点吗？删除后不可恢复。", function () {
       api("api/person/delete", { id: id }).done(function () {
         state.selectedPersonId = "";
@@ -1684,6 +1724,10 @@
     return node && text(node.ROLE_CODE) === "STAFF";
   }
 
+  function isViewerOnly() {
+    return !!(state.user && state.user.adminViewer) && !state.roles.length;
+  }
+
   function currentUserId() {
     return state.user ? text(state.user.userId) : "";
   }
@@ -1704,10 +1748,16 @@
   }
 
   function canEditRoot(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     return text(task.TASK_LEVEL) === "PARTY" && text(task.STATUS) === "DRAFT" && text(task.SENDER_ID) === currentUserId();
   }
 
   function canDispatch(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     if (text(task.RECEIVER_ID) !== currentUserId()) {
       return false;
     }
@@ -1724,6 +1774,9 @@
   }
 
   function canBatchDispatch(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     return isParty() &&
       text(task.TASK_LEVEL) === "PARTY" &&
       text(task.STATUS) === "DRAFT" &&
@@ -1734,14 +1787,23 @@
   }
 
   function canAccept(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     return text(task.RECEIVER_ID) === currentUserId() && text(task.STATUS) === "TODO";
   }
 
   function canTakeBack(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     return text(task.SENDER_ID) === currentUserId() && text(task.STATUS) === "TODO" && !!text(task.PARENT_ID);
   }
 
   function canFeedback(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     if (text(task.RECEIVER_ID) !== currentUserId()) {
       return false;
     }
@@ -1752,7 +1814,17 @@
   }
 
   function canDelete(task) {
+    if (isViewerOnly()) {
+      return false;
+    }
     return isParty();
+  }
+
+  function applyPersonReadonlyState() {
+    var readonly = isViewerOnly();
+    $("#dwPersonParent,#dwPersonNodeName,#dwPersonUserName,#dwPersonRole,#dwPersonSort,#dwPersonRemark")
+      .prop("disabled", readonly);
+    $("#dwPersonSaveBtn,#dwPersonDeleteBtn,#dwPersonUserPickBtn").toggle(!readonly);
   }
 
   function findTask(id) {
@@ -2236,15 +2308,20 @@
   }
 
   function personTreeCell(node, depth, childCount, expanded) {
+    var id = text(node.ID);
     var indent = depth * 20;
     var icon = childCount ? (expanded ? "\u25be" : "\u25b8") : "\u2022";
     var toggleClass = childCount ? "dw-tree-toggle" : "dw-tree-toggle is-leaf";
     var html = '<span class="dw-tree-cell" style="padding-left:' + indent + 'px">';
-    html += '<button type="button" class="' + toggleClass + '" data-person-id="' + esc(text(node.ID)) + '"' + (childCount ? "" : ' tabindex="-1"') + ">" + icon + "</button>";
+    html += '<button type="button" class="' + toggleClass + '" data-person-id="' + esc(id) + '"' + (childCount ? "" : ' tabindex="-1"') + ">" + icon + "</button>";
     html += '<span class="dw-person-level dw-person-level-' + esc(personLevelClass(text(node.ROLE_CODE))) + '">' + esc(personLevelLabel(text(node.ROLE_CODE))) + "</span>";
     html += '<span class="dw-tree-title">' + esc(text(node.NODE_NAME)) + "</span>";
     if (childCount) {
       html += '<span class="dw-tree-count">' + childCount + "</span>";
+    }
+    if (!isViewerOnly() && state.selectedPersonId === id && NEXT_ROLE[text(node.ROLE_CODE)]) {
+      html += '<button type="button" class="dw-inline-add-btn" data-person-action="addChild" data-person-id="' + esc(id) + '">' +
+        '<span class="dw-inline-add-icon" aria-hidden="true"></span>新增下级</button>';
     }
     return html + "</span>";
   }
@@ -2316,6 +2393,10 @@
     if (!raw) {
       return "";
     }
+    var timestampDate = timestampToDate(raw);
+    if (timestampDate) {
+      return formatDate(timestampDate);
+    }
     return raw.length >= 10 ? raw.substring(0, 10) : raw;
   }
 
@@ -2324,7 +2405,34 @@
     if (!raw) {
       return "";
     }
+    var timestampDate = timestampToDate(raw);
+    if (timestampDate) {
+      return formatDate(timestampDate) + " " + pad2(timestampDate.getHours()) + ":" + pad2(timestampDate.getMinutes()) + ":" + pad2(timestampDate.getSeconds());
+    }
     return raw.replace("T", " ").substring(0, Math.min(raw.length, 19));
+  }
+
+  function timestampToDate(value) {
+    var raw = $.trim(text(value));
+    var dateMatch = raw.match(/^\/Date\((\d+)\)\/$/);
+    if (dateMatch) {
+      raw = dateMatch[1];
+    }
+    var date = null;
+    if (/^\d{13}$/.test(raw)) {
+      date = new Date(parseInt(raw, 10));
+    } else if (/^\d{10}$/.test(raw)) {
+      date = new Date(parseInt(raw, 10) * 1000);
+    }
+    return date && !isNaN(date.getTime()) ? date : null;
+  }
+
+  function formatDate(date) {
+    return date.getFullYear() + "-" + pad2(date.getMonth() + 1) + "-" + pad2(date.getDate());
+  }
+
+  function pad2(value) {
+    return value < 10 ? "0" + value : String(value);
   }
 
   function today() {

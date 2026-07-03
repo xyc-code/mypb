@@ -498,10 +498,12 @@
 
 .pb-dwworkplan3-page .dw-tree-cell {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
   min-height: 24px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .pb-dwworkplan3-page .dw-tree-cell::before {
@@ -521,6 +523,10 @@
 .pb-dwworkplan3-page .dw-tree-title {
   color: var(--dw-fg);
   font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pb-dwworkplan3-page .dw-tree-toggle {
@@ -576,12 +582,15 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 28px;
-  padding: 4px 9px;
-  border: 1px solid var(--dw-red-line);
-  border-radius: 6px;
-  background: #fff;
-  color: var(--dw-red);
+  flex: 0 0 auto;
+  min-height: 30px;
+  margin-left: auto;
+  padding: 5px 11px;
+  border: 1px solid rgba(185, 28, 28, 0.2);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+  box-shadow: 0 4px 10px rgba(185, 28, 28, 0.12);
+  color: #b91c1c;
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
@@ -590,16 +599,23 @@
 }
 
 .pb-dwworkplan3-page .dw-inline-add-btn:hover {
-  border-color: var(--dw-red);
-  background: var(--dw-red-soft);
+  border-color: rgba(185, 28, 28, 0.42);
+  background: #fff1f1;
+  box-shadow: 0 6px 14px rgba(185, 28, 28, 0.18);
+  transform: translateY(-1px);
+}
+
+.pb-dwworkplan3-page .dw-inline-add-btn:active {
+  box-shadow: 0 3px 8px rgba(185, 28, 28, 0.14);
+  transform: translateY(0);
 }
 
 .pb-dwworkplan3-page .dw-inline-add-icon {
   position: relative;
   width: 14px;
   height: 14px;
-  border-radius: 4px;
-  background: var(--dw-red);
+  border-radius: 999px;
+  background: #b91c1c;
   flex: 0 0 auto;
 }
 

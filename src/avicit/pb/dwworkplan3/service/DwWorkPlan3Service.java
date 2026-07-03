@@ -54,23 +54,33 @@ public class DwWorkPlan3Service {
     private static final String[] IMPORT_HEADERS = new String[]{"任务标题", "工作分类", "工作内容", "工作目标", "截止日期", "接收部门", "接收人姓名", "接收人登录名", "备注"};
     private static final String IMPORT_SHEET_NAME = "任务填写";
     private static final String RECEIVER_SHEET_NAME = "接收部门参考";
+    private static final String LEADER_VIEW_ROLE_NAME = "党委一级管理员";
 
     public Map<String, Object> currentUser(HttpServletRequest request) {
-        ensureBootstrapRoot(request);
         String userId = loginUser(request);
+        List<Map<String, Object>> roles = jdbcTemplate.queryForList(
+                "select * from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y' order by SORT_NO, CREATION_DATE",
+                userId);
+        boolean adminViewer = roles.isEmpty() && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
         Map<String, Object> result = success();
         result.put("userId", userId);
         result.put("userName", userName(userId));
-        result.put("roles", jdbcTemplate.queryForList(
-                "select * from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y' order by SORT_NO, CREATION_DATE",
-                userId));
+        result.put("roles", roles);
+        result.put("adminViewer", adminViewer);
+        result.put("viewAll", adminViewer);
         return result;
     }
 
     public List<Map<String, Object>> listPersonTree(HttpServletRequest request) {
-        ensureBootstrapRoot(request);
-        Map<String, Object> topNode = topUserNode(loginUser(request));
-        if (topNode == null || DwWorkPlan3Constants.ROLE_STAFF.equals(string(topNode.get("ROLE_CODE")))) {
+        String userId = loginUser(request);
+        Map<String, Object> topNode = topUserNode(userId);
+        if (topNode == null) {
+            if (hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME)) {
+                return listPersonTree();
+            }
+            return Collections.emptyList();
+        }
+        if (DwWorkPlan3Constants.ROLE_STAFF.equals(string(topNode.get("ROLE_CODE")))) {
             return Collections.emptyList();
         }
         if (DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")))) {
@@ -93,6 +103,9 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> savePerson(Map<String, String> p, HttpServletRequest request) {
+        if (topUserNode(loginUser(request)) == null) {
+            return failure("\u5f53\u524d\u662f\u5168\u5c40\u67e5\u770b\u6a21\u5f0f\uff0c\u4e0d\u80fd\u7ef4\u62a4\u4eba\u5458\u6811");
+        }
         ensurePersonUserColumnLength();
         String id = value(p, "id");
         String userId = normalizePersonList(value(p, "userId"));
@@ -136,6 +149,9 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> disablePerson(String id, HttpServletRequest request) {
+        if (topUserNode(loginUser(request)) == null) {
+            return failure("\u5f53\u524d\u662f\u5168\u5c40\u67e5\u770b\u6a21\u5f0f\uff0c\u4e0d\u80fd\u7ef4\u62a4\u4eba\u5458\u6811");
+        }
         if (StringUtils.isBlank(id)) {
             return failure("\u8bf7\u9009\u62e9\u8981\u5220\u9664\u7684\u8282\u70b9");
         }
@@ -184,14 +200,15 @@ public class DwWorkPlan3Service {
     }
 
     public List<Map<String, Object>> listBatches(HttpServletRequest request) {
-        ensureBootstrapRoot(request);
-        Map<String, Object> topNode = topUserNode(loginUser(request));
+        String userId = loginUser(request);
+        Map<String, Object> topNode = topUserNode(userId);
+        boolean leaderViewer = topNode == null && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
         StringBuilder countScope = new StringBuilder();
         List<Object> countArgs = new ArrayList<Object>();
-        appendVisibleTaskScope(countScope, "t", topNode, countArgs);
+        appendVisibleTaskScope(countScope, "t", topNode, countArgs, leaderViewer);
         StringBuilder existsScope = new StringBuilder();
         List<Object> existsArgs = new ArrayList<Object>();
-        appendVisibleTaskScope(existsScope, "t", topNode, existsArgs);
+        appendVisibleTaskScope(existsScope, "t", topNode, existsArgs, leaderViewer);
         String sql = "select b.*,(select count(1) from DYN_DW_PLAN3_TASK t where t.BATCH_ID=b.ID" + countScope +
                 ") TASK_COUNT from DYN_DW_PLAN3_BATCH b where exists(select 1 from DYN_DW_PLAN3_TASK t where t.BATCH_ID=b.ID" + existsScope +
                 ") order by b.PLAN_YEAR desc, b.QUARTER desc, b.CREATION_DATE desc";
@@ -571,7 +588,6 @@ public class DwWorkPlan3Service {
     }
 
     public List<Map<String, Object>> listTasks(HttpServletRequest request, String batchId, String year, String quarter, String status) {
-        ensureBootstrapRoot(request);
         String userId = loginUser(request);
         StringBuilder sql = new StringBuilder("select t.*," +
                 "(select dbms_lob.substr(f.FEEDBACK_CONTENT,4000,1) from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and rownum=1) FEEDBACK_DRAFT_CONTENT," +
@@ -608,9 +624,10 @@ public class DwWorkPlan3Service {
             args.add(status);
         }
         Map<String, Object> topNode = topUserNode(userId);
-        if (topNode == null) {
+        boolean leaderViewer = topNode == null && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
+        if (topNode == null && !leaderViewer) {
             sql.append(" and 1=0");
-        } else if (!DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")))) {
+        } else if (topNode != null && !DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")))) {
             List<String> subtreeIds = subtreeNodeIds(string(topNode.get("ID")));
             if (subtreeIds.isEmpty()) {
                 return Collections.emptyList();
@@ -700,7 +717,6 @@ public class DwWorkPlan3Service {
     }
 
     public void downloadImportTemplate(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        ensureBootstrapRoot(request);
         if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
             response.reset();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -1183,15 +1199,16 @@ public class DwWorkPlan3Service {
         List<Object> args = new ArrayList<Object>();
         String userId = loginUser(request);
         Map<String, Object> topNode = topUserNode(userId);
+        boolean leaderViewer = topNode == null && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
         boolean party = topNode != null && DwWorkPlan3Constants.ROLE_PARTY.equals(string(topNode.get("ROLE_CODE")));
         if (StringUtils.isNotBlank(batchId)) {
             where.append(" where BATCH_ID=?");
             args.add(batchId);
         }
-        if (topNode == null) {
+        if (topNode == null && !leaderViewer) {
             where.append(where.length() == 0 ? " where " : " and ");
             where.append("1=0");
-        } else if (!party) {
+        } else if (topNode != null && !party) {
             List<String> subtreeIds = subtreeNodeIds(string(topNode.get("ID")));
             where.append(where.length() == 0 ? " where " : " and ");
             if (subtreeIds.isEmpty()) {
@@ -1210,26 +1227,6 @@ public class DwWorkPlan3Service {
                 "PLAN_DEADLINE<sysdate and STATUS<>'COMPLETED' group by TASK_LEVEL", args.toArray()));
         result.put("recent", listTasks(request, batchId, null));
         return result;
-    }
-
-    private void ensureBootstrapRoot(HttpServletRequest request) {
-        String userId = loginUser(request);
-        if (StringUtils.isBlank(userId)) {
-            return;
-        }
-        Integer count = jdbcTemplate.queryForObject(
-                "select count(1) from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y'",
-                Integer.class, userId);
-        if (count != null && count == 0) {
-            String id = ComUtil.getId();
-            String name = userName(userId);
-            jdbcTemplate.update("insert into DYN_DW_PLAN3_PERSON_TREE(" +
-                            "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
-                            "PARENT_ID,NODE_NAME,USER_ID,USER_NAME,ROLE_CODE,SORT_NO,ENABLED,REMARK) values(" +
-                            "?,?,sysdate,?,sysdate,?,0,?,null,?,?,?,?,1,'Y',?)",
-                    id, userId, userId, request.getRemoteAddr(), orgIdentity(request), name + "\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005", userId,
-                    name, DwWorkPlan3Constants.ROLE_PARTY, "\u5f53\u524d\u7528\u6237\u9996\u6b21\u8bbf\u95ee 3.0 \u81ea\u52a8\u521d\u59cb\u5316\u6839\u8282\u70b9");
-        }
     }
 
     private boolean allChildrenCompleted(String taskId) {
@@ -1321,7 +1318,18 @@ public class DwWorkPlan3Service {
             return "\u8bf7\u9009\u62e9\u4eba\u5458\u89d2\u8272";
         }
         if (DwWorkPlan3Constants.ROLE_PARTY.equals(roleCode)) {
-            return StringUtils.isBlank(parentId) ? "" : "\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u5fc5\u987b\u662f\u6839\u8282\u70b9";
+            if (StringUtils.isNotBlank(parentId)) {
+                return "\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u5fc5\u987b\u662f\u6839\u8282\u70b9";
+            }
+            StringBuilder sql = new StringBuilder("select count(1) from DYN_DW_PLAN3_PERSON_TREE where ROLE_CODE=? and nvl(ENABLED,'Y')='Y'");
+            List<Object> args = new ArrayList<Object>();
+            args.add(DwWorkPlan3Constants.ROLE_PARTY);
+            if (StringUtils.isNotBlank(id)) {
+                sql.append(" and ID<>?");
+                args.add(id);
+            }
+            Integer count = jdbcTemplate.queryForObject(sql.toString(), Integer.class, args.toArray());
+            return count != null && count > 0 ? "\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u6839\u8282\u70b9\u53ea\u80fd\u6709\u4e00\u4e2a" : "";
         }
         if (StringUtils.isBlank(parentId)) {
             return "\u8bf7\u9009\u62e9\u4e0a\u7ea7\u8282\u70b9";
@@ -1425,6 +1433,17 @@ public class DwWorkPlan3Service {
         return count != null && count > 0;
     }
 
+    private boolean hasPlatformRole(String userId, String roleName) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(roleName)) {
+            return false;
+        }
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(1) from sys_user_role ur join sys_role r on r.id=ur.sys_role_id " +
+                        "where ur.sys_user_id=? and r.role_name=? and nvl(r.valid_flag,'1')='1'",
+                Integer.class, userId, roleName);
+        return count != null && count > 0;
+    }
+
     private Map<String, Object> topUserNode(String userId) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
                 "select * from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y' order by SORT_NO, CREATION_DATE",
@@ -1505,8 +1524,11 @@ public class DwWorkPlan3Service {
         }
     }
 
-    private void appendVisibleTaskScope(StringBuilder sql, String alias, Map<String, Object> topNode, List<Object> args) {
+    private void appendVisibleTaskScope(StringBuilder sql, String alias, Map<String, Object> topNode, List<Object> args, boolean allowAllWithoutNode) {
         if (topNode == null) {
+            if (allowAllWithoutNode) {
+                return;
+            }
             sql.append(" and 1=0");
             return;
         }

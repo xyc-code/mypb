@@ -110,11 +110,15 @@ public class DwWorkPlan3BusinessVerifier {
         assertContainsNode(service.listPersonTree(), staffNode, "person/list after save");
         assertContainsNode(service.listReceivers(partyReq), deptNode, "person/receivers for party");
 
-        Map<String, Object> bootstrapUser = service.currentUser(request(STRANGER, "DW3 Stranger"));
-        assertSuccess(bootstrapUser, "bootstrap current user");
-        List bootstrapRoles = (List) bootstrapUser.get("roles");
-        if (bootstrapRoles == null || bootstrapRoles.isEmpty()) {
-            throw new IllegalStateException("Current user without a 3.0 node was not bootstrapped; create button would stay disabled.");
+        Map<String, Object> unconfiguredUser = service.currentUser(request(STRANGER, "DW3 Stranger"));
+        assertSuccess(unconfiguredUser, "unconfigured current user");
+        List unconfiguredRoles = (List) unconfiguredUser.get("roles");
+        if (unconfiguredRoles != null && !unconfiguredRoles.isEmpty()) {
+            throw new IllegalStateException("Current user without a 3.0 node should not be auto-bootstrapped.");
+        }
+        Integer strangerNodes = jdbc.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where USER_ID=?", Integer.class, STRANGER);
+        if (strangerNodes != null && strangerNodes > 0) {
+            throw new IllegalStateException("Unconfigured user was written into DYN_DW_PLAN3_PERSON_TREE.");
         }
 
         String batchId = id(service.createBatch("2026", "Q3", partyReq));
