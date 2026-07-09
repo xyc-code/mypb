@@ -1037,6 +1037,24 @@
   padding: 0 18px;
 }
 
+.pb-dwworkplan3-page .dw-feedback-target-wrap {
+  padding: 0 18px;
+  margin: 10px 0 4px;
+}
+
+.pb-dwworkplan3-page .dw-feedback-target-wrap label {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pb-dwworkplan3-page #dwFeedbackTargetWrap label {
+  margin: 0;
+}
+
 .pb-dwworkplan3-page #dwFeedbackModal .dw-modal {
   width: min(920px, 100%);
 }
@@ -1046,6 +1064,58 @@
 .pb-dwworkplan3-page #dwFeedbackAttachment {
   margin-left: 18px;
   margin-right: 18px;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-uploader {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px dashed #fecaca;
+  border-radius: 8px;
+  background: #fff7f7;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: var(--dw-red);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-pick input {
+  display: none;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-plus {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-file {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  background: #fff;
+  color: #7f1d1d;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .pb-dwworkplan3-page .dw-platform-attachment-readonly {
@@ -1087,6 +1157,58 @@
 
 .dw-layer-dialog .dw-attachment-legacy {
   margin-bottom: 10px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-list {
+  margin-bottom: 12px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-title {
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dw-layer-dialog .dw-attachment-direct-items {
+  display: grid;
+  gap: 8px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.dw-layer-dialog .dw-attachment-direct-item:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.dw-layer-dialog .dw-attachment-direct-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.dw-layer-dialog .dw-attachment-direct-meta {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-download {
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .dw-layer-dialog .dw-attachment-viewer .dw-platform-attachment,
@@ -1466,6 +1588,81 @@
   background: #1d4ed8;
 }
 
+.pb-dwworkplan3-page .dw-action-grassroot {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-summary {
+  padding: 0 18px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, .78fr) minmax(0, 1.22fr);
+  gap: 14px;
+  padding: 0 18px 10px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-editor,
+.pb-dwworkplan3-page .dw-grassroot-list {
+  min-width: 0;
+  border: 1px solid var(--dw-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-editor {
+  padding: 14px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-list {
+  overflow: hidden;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pb-dwworkplan3-page .dw-multi-select {
+  min-height: 148px;
+  padding: 8px 10px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table-wrap {
+  max-height: 420px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(1) { width: 18%; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(2) { width: 18%; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(3) { width: 100px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(4) { width: 90px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(5) { width: 90px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(6) { width: 100px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(8) { width: 72px; }
+
+.pb-dwworkplan3-page .dw-grassroot-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-draft {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-dispatched {
+  background: #ecfdf5;
+  color: var(--dw-green);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-failed {
+  background: #fee2e2;
+  color: var(--dw-red);
+}
+
 @media (max-width: 1100px) {
   .pb-dwworkplan3-page .dw-shell-head {
     grid-template-columns: 1fr;
@@ -1479,6 +1676,7 @@
 
   .pb-dwworkplan3-page .dw-grid-person,
   .pb-dwworkplan3-page .dw-grid-stats,
+  .pb-dwworkplan3-page .dw-grassroot-layout,
   .pb-dwworkplan3-page .dw-kpis {
     grid-template-columns: 1fr;
   }

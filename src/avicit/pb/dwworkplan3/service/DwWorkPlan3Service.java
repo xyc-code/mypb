@@ -2,6 +2,7 @@ package avicit.pb.dwworkplan3.service;
 
 import avicit.platform6.api.session.SessionHelper;
 import avicit.platform6.api.sysuser.SysUserAPI;
+import avicit.platform6.api.sysuser.SysUserDeptPositionAPI;
 import avicit.platform6.api.sysuser.dto.SysUser;
 import avicit.platform6.commons.utils.ComUtil;
 import avicit.platform6.modules.system.sysfileupload.domain.SysFileUpload;
@@ -44,6 +45,8 @@ public class DwWorkPlan3Service {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private SysUserAPI sysUserAPI;
+    @Autowired
+    private SysUserDeptPositionAPI sysUserDeptPositionAPI;
     @Autowired
     private SwfUploadService swfUploadService;
     @Autowired
@@ -942,6 +945,271 @@ public class DwWorkPlan3Service {
                 node.get("ID"), nextRole);
     }
 
+    public List<Map<String, Object>> listGrassrootBusinessTree(HttpServletRequest request) {
+        if (!tableExists("DYN_ZBJHYWS")) {
+            return Collections.emptyList();
+        }
+        return jdbcTemplate.queryForList(
+                "select ID,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,PARENT_ID,TREE_LEVEL,TREE_LEAF,TREE_SORT,TREE_SORTS " +
+                        "from DYN_ZBJHYWS where nvl(VALID_FLAG,'1')='1' and YWMC is not null order by TREE_SORTS,TREE_SORT,YWMC");
+    }
+
+    public List<Map<String, Object>> listGrassrootPartyOrgTree(HttpServletRequest request) {
+        if (!tableExists("PARTY_ORGANIZATION")) {
+            return Collections.emptyList();
+        }
+        return jdbcTemplate.queryForList(
+                "select ID,PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS from PARTY_ORGANIZATION " +
+                        "where PARTY_NAME is not null and nvl(PARTY_NAME,' ') not like '%党小组%' and ID<>'-1' " +
+                        "order by TREE_SORTS,TREE_SORT,PARTY_NAME");
+    }
+
+    public Map<String, Object> listGrassrootDispatch(String taskId, HttpServletRequest request) {
+        ensureGrassrootDispatchTable();
+        Map<String, Object> taskCheck = requireGrassrootTask(taskId, request);
+        if (!"success".equals(taskCheck.get("flag"))) {
+            return taskCheck;
+        }
+        String taskStatusSql = tableExists("DYN_ZBRWB") ? "(select z.RWZT from DYN_ZBRWB z where z.ID=d.GRASSROOT_TASK_ID)" : "null";
+        Map<String, Object> result = success();
+        result.put("rows", jdbcTemplate.queryForList(
+                "select d.*," + taskStatusSql + " GRASSROOT_TASK_STATUS " +
+                        "from DYN_DW_PLAN3_GRASSROOT_DISPATCH d where d.TASK_ID=? order by d.CREATION_DATE,d.ID",
+                taskId));
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Object> saveGrassrootDispatch(Map<String, String> p, HttpServletRequest request) {
+        ensureGrassrootDispatchTable();
+        String taskId = value(p, "taskId");
+        Map<String, Object> taskCheck = requireGrassrootTask(taskId, request);
+        if (!"success".equals(taskCheck.get("flag"))) {
+            return taskCheck;
+        }
+        if (!tableExists("DYN_ZBJHYWS")) {
+            return failure("业务树表 DYN_ZBJHYWS 不存在，无法保存基层分发清单");
+        }
+        if (!tableExists("PARTY_ORGANIZATION")) {
+            return failure("基层党组织表 PARTY_ORGANIZATION 不存在，无法保存基层分发清单");
+        }
+        String businessTreeId = value(p, "businessTreeId");
+        if (StringUtils.isBlank(businessTreeId)) {
+            return failure("请选择业务");
+        }
+        Map<String, Object> business = queryOne(
+                "select ID,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX from DYN_ZBJHYWS where ID=? and nvl(VALID_FLAG,'1')='1'",
+                businessTreeId);
+        List<String> partyOrgIds = splitPersonList(value(p, "partyOrgIds"));
+        if (partyOrgIds.isEmpty()) {
+            return failure("请选择要发送的基层党组织");
+        }
+        Date deadline = date(defaultValue(value(p, "deadline"), dateString(((Map<String, Object>) taskCheck.get("task")).get("PLAN_DEADLINE"))));
+        if (deadline == null) {
+            return failure("请填写完成期限");
+        }
+        List<String> errors = new ArrayList<String>();
+        int count = 0;
+        for (String partyOrgId : partyOrgIds) {
+            List<Map<String, Object>> partyOrgRows = jdbcTemplate.queryForList("select ID,PARTY_NAME from PARTY_ORGANIZATION where ID=?", partyOrgId);
+            if (partyOrgRows.isEmpty()) {
+                errors.add("基层党组织不存在：" + partyOrgId);
+                continue;
+            }
+            Map<String, Object> partyOrg = partyOrgRows.get(0);
+            List<Map<String, Object>> existing = jdbcTemplate.queryForList(
+                    "select ID,STATUS from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID=? and BUSINESS_TREE_ID=? and PARTY_ORG_ID=?",
+                    taskId, businessTreeId, partyOrgId);
+            if (!existing.isEmpty() && DwWorkPlan3Constants.GRASSROOT_DISPATCHED.equals(string(existing.get(0).get("STATUS")))) {
+                errors.add("【" + string(partyOrg.get("PARTY_NAME")) + "】已分发，不能重复保存");
+                continue;
+            }
+            if (existing.isEmpty()) {
+                insertGrassrootDispatch(taskId, business, partyOrg, deadline, p, request);
+            } else {
+                updateGrassrootDispatch(string(existing.get(0).get("ID")), business, partyOrg, deadline, p, request);
+            }
+            count++;
+        }
+        Map<String, Object> result = count > 0 ? success() : failure(limitedErrorText(errors));
+        result.put("count", Integer.valueOf(count));
+        result.put("errors", errors);
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Object> deleteGrassrootDispatch(String id, HttpServletRequest request) {
+        ensureGrassrootDispatchTable();
+        if (StringUtils.isBlank(id)) {
+            return failure("请选择要删除的基层分发记录");
+        }
+        Map<String, Object> row = queryOne("select * from DYN_DW_PLAN3_GRASSROOT_DISPATCH where ID=?", id);
+        Map<String, Object> taskCheck = requireGrassrootTask(string(row.get("TASK_ID")), request);
+        if (!"success".equals(taskCheck.get("flag"))) {
+            return taskCheck;
+        }
+        if (DwWorkPlan3Constants.GRASSROOT_DISPATCHED.equals(string(row.get("STATUS")))) {
+            return failure("已分发到基层的记录不能删除");
+        }
+        jdbcTemplate.update("delete from DYN_DW_PLAN3_GRASSROOT_DISPATCH where ID=?", id);
+        return success();
+    }
+
+    @Transactional
+    public Map<String, Object> dispatchGrassroot(String taskId, String ids, HttpServletRequest request) {
+        ensureGrassrootDispatchTable();
+        Map<String, Object> taskCheck = requireGrassrootTask(taskId, request);
+        if (!"success".equals(taskCheck.get("flag"))) {
+            return taskCheck;
+        }
+        if (!tableExists("DYN_ZBRWB")) {
+            return failure("基层接收任务表 DYN_ZBRWB 不存在，无法分发");
+        }
+        Map<String, Object> task = (Map<String, Object>) taskCheck.get("task");
+        List<Object> args = new ArrayList<Object>();
+        StringBuilder sql = new StringBuilder("select * from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID=? and nvl(STATUS,?)<>?");
+        args.add(taskId);
+        args.add(DwWorkPlan3Constants.GRASSROOT_DRAFT);
+        args.add(DwWorkPlan3Constants.GRASSROOT_DISPATCHED);
+        List<String> idList = splitPersonList(ids);
+        if (!idList.isEmpty()) {
+            sql.append(" and ID in (");
+            appendPlaceholders(sql, idList.size());
+            sql.append(")");
+            args.addAll(idList);
+        }
+        sql.append(" order by CREATION_DATE,ID");
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), args.toArray());
+        if (rows.isEmpty()) {
+            return failure("没有可分发的基层任务");
+        }
+        Map<String, Object> currentNode = currentUserNode(request);
+        List<String> errors = new ArrayList<String>();
+        int count = 0;
+        for (Map<String, Object> row : rows) {
+            try {
+                String grassrootTaskId = insertGrassrootReceiveTask(task, row, currentNode, request);
+                jdbcTemplate.update("update DYN_DW_PLAN3_GRASSROOT_DISPATCH set STATUS=?,GRASSROOT_TASK_ID=?,DISPATCH_TIME=sysdate,ERROR_MSG=null," +
+                                "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                        DwWorkPlan3Constants.GRASSROOT_DISPATCHED, grassrootTaskId, loginUser(request), request.getRemoteAddr(), row.get("ID"));
+                count++;
+            } catch (Exception ex) {
+                String message = defaultValue(ex.getMessage(), "分发失败");
+                errors.add("【" + string(row.get("BUSINESS_NAME")) + " - " + string(row.get("PARTY_ORG_NAME")) + "】" + message);
+                jdbcTemplate.update("update DYN_DW_PLAN3_GRASSROOT_DISPATCH set STATUS=?,ERROR_MSG=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                        DwWorkPlan3Constants.GRASSROOT_FAILED, limitedText(message, 900), loginUser(request), request.getRemoteAddr(), row.get("ID"));
+            }
+        }
+        Map<String, Object> result = count > 0 ? success() : failure(limitedErrorText(errors));
+        result.put("count", Integer.valueOf(count));
+        result.put("errors", errors);
+        return result;
+    }
+
+    private Map<String, Object> requireGrassrootTask(String taskId, HttpServletRequest request) {
+        if (StringUtils.isBlank(taskId)) {
+            return failure("请选择要分发到基层的科员任务");
+        }
+        Map<String, Object> task = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", taskId);
+        if (!DwWorkPlan3Constants.LEVEL_STAFF.equals(string(task.get("TASK_LEVEL")))) {
+            return failure("只有科员任务可以分发到基层党组织");
+        }
+        if (!loginUser(request).equals(string(task.get("RECEIVER_ID")))) {
+            return failure("只有任务接收科员可以分发到基层党组织");
+        }
+        if (!taskMatchesCurrentNode(task, currentUserNode(request))) {
+            return failure("请切换到该任务对应的科员身份后再操作");
+        }
+        if (DwWorkPlan3Constants.STATUS_TODO.equals(string(task.get("STATUS")))) {
+            return failure("请先接收任务，再分发到基层党组织");
+        }
+        Map<String, Object> result = success();
+        result.put("task", task);
+        return result;
+    }
+
+    private void insertGrassrootDispatch(String taskId, Map<String, Object> business, Map<String, Object> partyOrg,
+                                         Date deadline, Map<String, String> p, HttpServletRequest request) {
+        jdbcTemplate.update("insert into DYN_DW_PLAN3_GRASSROOT_DISPATCH(" +
+                        "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
+                        "TASK_ID,BUSINESS_TREE_ID,BUSINESS_NAME,BUSINESS_TYPE,BUSINESS_CODE,FORM_ID,FORM_CODE,VIEW_ID,VIEW_CODE,HAS_FORM,COMPLETE_TYPE," +
+                        "PARTY_ORG_ID,PARTY_ORG_NAME,PLAN_YEAR,PLAN_MONTH,PLAN_QUARTER,DEADLINE,REMARK,STATUS) " +
+                        "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                ComUtil.getId(), loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
+                taskId, business.get("ID"), business.get("YWMC"), business.get("YWLX"), business.get("YWBH"),
+                business.get("BD_ID"), business.get("BDBH"), business.get("ST_ID"), business.get("ST_BM"),
+                business.get("SFCZBD"), business.get("WCLX"), partyOrg.get("ID"), partyOrg.get("PARTY_NAME"),
+                emptyToNull(value(p, "year")), emptyToNull(value(p, "month")), emptyToNull(value(p, "quarter")),
+                deadline, emptyToNull(value(p, "remark")), DwWorkPlan3Constants.GRASSROOT_DRAFT);
+    }
+
+    private void updateGrassrootDispatch(String id, Map<String, Object> business, Map<String, Object> partyOrg,
+                                         Date deadline, Map<String, String> p, HttpServletRequest request) {
+        jdbcTemplate.update("update DYN_DW_PLAN3_GRASSROOT_DISPATCH set BUSINESS_NAME=?,BUSINESS_TYPE=?,BUSINESS_CODE=?,FORM_ID=?,FORM_CODE=?," +
+                        "VIEW_ID=?,VIEW_CODE=?,HAS_FORM=?,COMPLETE_TYPE=?,PARTY_ORG_NAME=?,PLAN_YEAR=?,PLAN_MONTH=?,PLAN_QUARTER=?,DEADLINE=?,REMARK=?," +
+                        "STATUS=?,ERROR_MSG=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                business.get("YWMC"), business.get("YWLX"), business.get("YWBH"), business.get("BD_ID"), business.get("BDBH"),
+                business.get("ST_ID"), business.get("ST_BM"), business.get("SFCZBD"), business.get("WCLX"), partyOrg.get("PARTY_NAME"),
+                emptyToNull(value(p, "year")), emptyToNull(value(p, "month")), emptyToNull(value(p, "quarter")),
+                deadline, emptyToNull(value(p, "remark")), DwWorkPlan3Constants.GRASSROOT_DRAFT,
+                loginUser(request), request.getRemoteAddr(), id);
+    }
+
+    private String insertGrassrootReceiveTask(Map<String, Object> task, Map<String, Object> dispatch,
+                                              Map<String, Object> currentNode, HttpServletRequest request) {
+        String partyOrgId = string(dispatch.get("PARTY_ORG_ID"));
+        String principalUserId = resolvePartyMember(partyOrgId, new String[]{"0", "1", "2", "7"});
+        String receiverUserId = resolvePartyMember(partyOrgId, new String[]{"4", "7"});
+        if (StringUtils.isBlank(principalUserId)) {
+            throw new IllegalArgumentException("基层党组织未配置负责人");
+        }
+        if (StringUtils.isBlank(receiverUserId)) {
+            throw new IllegalArgumentException("基层党组织未配置接收人/组织委员");
+        }
+        String id = ComUtil.getId();
+        String deptId = chiefDeptId(principalUserId, currentNode);
+        jdbcTemplate.update("insert into DYN_ZBRWB(" +
+                        "ID,FZR,BZ,RWBDID,SFGLRW,RWZT,WCJD,DZZID,DZZMC,RWMC,FK_COL_ID,STID,SFLCRW,JSR,BDBM,STBM,YEAR,MONTH,JD,SFCZBD,FFR,FFBM,WCLX,YWSJ_ID," +
+                        "LAST_UPDATE_DATE,CREATION_DATE,CREATED_DEPT,LAST_UPDATE_IP,CREATED_BY,LAST_UPDATED_BY,VERSION,ORG_IDENTITY) " +
+                        "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate,sysdate,?,?,?,?,0,?)",
+                id, principalUserId, dispatch.get("REMARK"), dispatch.get("FORM_ID"), "否", "未开始", dispatch.get("DEADLINE"),
+                dispatch.get("PARTY_ORG_ID"), dispatch.get("PARTY_ORG_NAME"), dispatch.get("BUSINESS_NAME"), dispatch.get("BUSINESS_TREE_ID"),
+                dispatch.get("VIEW_ID"), "否", receiverUserId, dispatch.get("FORM_CODE"), dispatch.get("VIEW_CODE"),
+                dispatch.get("PLAN_YEAR"), dispatch.get("PLAN_MONTH"), dispatch.get("PLAN_QUARTER"), dispatch.get("HAS_FORM"),
+                currentUserNodeDisplayName(request), currentNode == null ? "" : currentNode.get("NODE_NAME"), dispatch.get("COMPLETE_TYPE"),
+                task.get("ID"), deptId, request.getRemoteAddr(), principalUserId, principalUserId, orgIdentity(request));
+        jdbcTemplate.update("update DYN_DW_PLAN3_GRASSROOT_DISPATCH set PRINCIPAL_USER_ID=?,RECEIVER_USER_ID=? where ID=?",
+                principalUserId, receiverUserId, dispatch.get("ID"));
+        return id;
+    }
+
+    private String resolvePartyMember(String partyOrgId, String[] posts) {
+        StringBuilder sql = new StringBuilder("select USER_ID from PARTY_ORGAN_MEMBER where PARTY_ID=? and USER_POST in (");
+        appendPlaceholders(sql, posts.length);
+        sql.append(") and rownum=1");
+        List<Object> args = new ArrayList<Object>();
+        args.add(partyOrgId);
+        for (int i = 0; i < posts.length; i++) {
+            args.add(posts[i]);
+        }
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), args.toArray());
+        return rows.isEmpty() ? "" : string(rows.get(0).get("USER_ID"));
+    }
+
+    private String chiefDeptId(String userId, Map<String, Object> currentNode) {
+        try {
+            if (sysUserDeptPositionAPI != null) {
+                String deptId = sysUserDeptPositionAPI.getChiefDeptIdBySysUserId(userId);
+                if (StringUtils.isNotBlank(deptId)) {
+                    return deptId;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        String nodeId = currentNode == null ? "" : string(currentNode.get("ID"));
+        return StringUtils.isBlank(nodeId) ? "ORG_ROOT" : nodeId;
+    }
+
     public void downloadImportTemplate(HttpServletResponse response, HttpServletRequest request) throws IOException {
         if (!currentRoleIs(request, DwWorkPlan3Constants.ROLE_OFFICE)) {
             response.reset();
@@ -1720,6 +1988,13 @@ public class DwWorkPlan3Service {
         return text;
     }
 
+    private String limitedText(String text, int maxLength) {
+        if (StringUtils.isBlank(text) || text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength);
+    }
+
     private boolean hasRole(String userId, String role) {
         Integer count = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ROLE_CODE=? and ENABLED='Y'",
                 Integer.class, userId, role);
@@ -2356,6 +2631,36 @@ public class DwWorkPlan3Service {
         ensureColumnExists("DYN_DW_PLAN3_FEEDBACK", "TARGET_USER_ID", "VARCHAR2(50)");
         ensureColumnExists("DYN_DW_PLAN3_FEEDBACK", "TARGET_USER_NAME", "VARCHAR2(100)");
         ensureColumnExists("DYN_DW_PLAN3_FEEDBACK", "TARGET_PERSON_NODE_ID", "VARCHAR2(50)");
+    }
+
+    private void ensureGrassrootDispatchTable() {
+        try {
+            if (tableExists("DYN_DW_PLAN3_GRASSROOT_DISPATCH")) {
+                return;
+            }
+            jdbcTemplate.execute("CREATE TABLE DYN_DW_PLAN3_GRASSROOT_DISPATCH (" +
+                    "ID VARCHAR2(50) NOT NULL,CREATED_BY VARCHAR2(50),CREATION_DATE DATE,LAST_UPDATED_BY VARCHAR2(50)," +
+                    "LAST_UPDATE_DATE DATE,LAST_UPDATE_IP VARCHAR2(50),VERSION NUMBER(16),ORG_IDENTITY VARCHAR2(32)," +
+                    "TASK_ID VARCHAR2(50) NOT NULL,BUSINESS_TREE_ID VARCHAR2(50) NOT NULL,BUSINESS_NAME VARCHAR2(500)," +
+                    "BUSINESS_TYPE VARCHAR2(100),BUSINESS_CODE VARCHAR2(200),FORM_ID VARCHAR2(200),FORM_CODE VARCHAR2(200)," +
+                    "VIEW_ID VARCHAR2(200),VIEW_CODE VARCHAR2(200),HAS_FORM VARCHAR2(50),COMPLETE_TYPE VARCHAR2(50)," +
+                    "PARTY_ORG_ID VARCHAR2(50) NOT NULL,PARTY_ORG_NAME VARCHAR2(500),PRINCIPAL_USER_ID VARCHAR2(50)," +
+                    "RECEIVER_USER_ID VARCHAR2(50),PLAN_YEAR VARCHAR2(20),PLAN_MONTH VARCHAR2(20),PLAN_QUARTER VARCHAR2(20)," +
+                    "DEADLINE DATE,REMARK VARCHAR2(1000),STATUS VARCHAR2(30),GRASSROOT_TASK_ID VARCHAR2(50),DISPATCH_TIME DATE," +
+                    "ERROR_MSG VARCHAR2(1000),CONSTRAINT PK_DW_PLAN3_GRASSROOT_DISPATCH PRIMARY KEY (ID))");
+            jdbcTemplate.execute("CREATE INDEX IDX_DW_PLAN3_GRASS_TASK ON DYN_DW_PLAN3_GRASSROOT_DISPATCH (TASK_ID)");
+            jdbcTemplate.execute("CREATE INDEX IDX_DW_PLAN3_GRASS_TARGET ON DYN_DW_PLAN3_GRASSROOT_DISPATCH (BUSINESS_TREE_ID, PARTY_ORG_ID)");
+        } catch (Exception ignored) {
+        }
+    }
+
+    private boolean tableExists(String tableName) {
+        try {
+            Integer count = jdbcTemplate.queryForObject("select count(1) from USER_TABLES where TABLE_NAME=?", Integer.class, tableName);
+            return count != null && count > 0;
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     private void ensureColumnExists(String tableName, String columnName, String declaration) {

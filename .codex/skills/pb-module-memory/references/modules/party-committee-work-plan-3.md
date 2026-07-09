@@ -6,7 +6,7 @@
 - Memory file: `.codex/skills/pb-module-memory/references/modules/party-committee-work-plan-3.md`
 - Status: local-verified
 - Owner/requester: xyc
-- Last updated: 2026-07-03
+- Last updated: 2026-07-09
 - Non-negotiable isolation rule: 党委计划 3.0 是全新的独立模块，必须始终与之前做的党委计划下发模块没有任何关系；运行期不得复用旧 `avicit/pb/dwworkplan` 后端命名空间、旧接口、旧表 `DYN_DW_PLAN_*`、旧菜单或旧业务闭环；允许在 3.0 自有 JSP/JS/CSS/Service/SQL 中复刻旧版页面形态、交互和表结构。
 
 ## Business
@@ -44,6 +44,7 @@
   - `DYN_DW_PLAN3_TASK`
   - `DYN_DW_PLAN3_FEEDBACK`
   - `DYN_DW_PLAN3_ATTACHMENT`
+  - `DYN_DW_PLAN3_GRASSROOT_DISPATCH`
 - Required audit fields checked: yes
 - SQL/migration notes: SQL 文件为 `db/dw_work_plan_3.sql`。
 - Data backfill or cleanup: 无，旧模块不迁移。
@@ -534,3 +535,14 @@
 - If the current office has duplicate staff node names, or a matched staff node binds multiple platform users, import fails with a clear validation error instead of guessing a receiver.
 - The reference sheet is simplified to one `接收科员` column. JSP/JS preview columns were reduced to match the new template, and cache version was bumped to `20260708_import_staff_name_31`.
 - Verification on 2026-07-08: red check first failed because a valid staff-name import still used an old wrong `receiverLogin`; after the fix, JDK 8 compile passed for `DwWorkPlan3Service`, `node --check` passed, `scripts/verify-dwworkplan3.ps1` passed, and `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK` with cleanup OK. Tomcat and Redis restarted; `/pb/login` returned 200, 3.0 entry returned 302 to login, and versioned JS/CSS returned 200.
+
+## 2026-07-09 Grassroot Dispatch Rebuild
+
+- User decided not to bridge to the old low-code dispatch module. 3.0 owns the dispatch draft/list UI and state in new table `DYN_DW_PLAN3_GRASSROOT_DISPATCH`, while the final receive task rows are still inserted into the intranet original receive-task table `DYN_ZBRWB`.
+- Business-tree source is `DYN_ZBJHYWS`; `DYN_DW_PLAN3_GRASSROOT_DISPATCH.BUSINESS_TREE_ID` maps to `DYN_ZBRWB.FK_COL_ID`.
+- A staff task can open `基层分发` only when it belongs to the current user/current 3.0 personnel node and is already accepted or completed by the staff. The modal lets the user select one business and multiple基层党组织, save a dispatch list, then push pending rows to `DYN_ZBRWB`.
+- Final receive-task mapping writes `YWSJ_ID` as the 3.0 source task id, `RWMC` from business name, form/view/code fields from `DYN_ZBJHYWS`, `DZZID/DZZMC` from the selected基层党组织, `FZR/JSR` from party members, and period/deadline/remark from the 3.0 modal.
+- Missing基层负责人 or 接收人 is not silently skipped: that dispatch row becomes `FAILED` with `ERROR_MSG`; valid rows can still be dispatched.
+- 3.0 old-module boundary is preserved: no runtime reference to old `DYN_KYFFRW`, `DYN_DWJHRY`, `DynThreeFourController`, or `ffTask`.
+- SQL patch: `db/dw_work_plan_3_patch_20260709_grassroot_dispatch.sql`. JSP cache version: `20260709_grassroot_dispatch_32`.
+- Verification on 2026-07-09: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; PB audit-field checker passed for `db/dw_work_plan_3.sql` and the 20260709 patch; JDK 8 compile passed for `DwWorkPlan3Constants`, `DwWorkPlan3Service`, and `DwWorkPlan3Controller`; `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK` and covers grassroot business tree, party-org tree, save list, dispatch, duplicate no-pending rejection, `DYN_ZBRWB` field mapping, failure row on missing receiver, and cleanup. Tomcat and Redis restarted; `/pb/login` returned 200, 3.0 entry returned 302 to login, and versioned JS/CSS returned 200.

@@ -42,6 +42,11 @@ public class DwWorkPlan3BusinessVerifier {
     private static final String OTHER_STAFF = "DW3_OTHER_STAFF";
     private static final String STRANGER = "DW3_STRANGER";
     private static final String PARTY_NODE = "DW3_NODE_PARTY";
+    private static final String GRASSROOT_BIZ = "DW3_GRASS_BIZ";
+    private static final String GRASSROOT_ORG = "DW3_GRASS_ORG";
+    private static final String GRASSROOT_ORG_MISSING = "DW3_GRASS_ORG_MISSING";
+    private static final String GRASSROOT_FZR = "DW3_GRASS_FZR";
+    private static final String GRASSROOT_JSR = "DW3_GRASS_JSR";
 
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
@@ -57,6 +62,7 @@ public class DwWorkPlan3BusinessVerifier {
         DwWorkPlan3Service service = new DwWorkPlan3Service();
         inject(service, "jdbcTemplate", jdbc);
 
+        ensureGrassrootExternalTables(jdbc);
         clean(jdbc);
 
         HttpServletRequest partyReq = request(PARTY, "DW3 Party");
@@ -253,6 +259,40 @@ public class DwWorkPlan3BusinessVerifier {
         ), staffReq), "staff direct complete");
         assertStatus(jdbc, staffRoot, DwWorkPlan3Constants.STATUS_COMPLETED);
 
+        seedGrassrootExternalData(jdbc);
+        assertContainsExternalRow(service.listGrassrootBusinessTree(staffReq), GRASSROOT_BIZ, "grassroot business tree");
+        assertContainsExternalRow(service.listGrassrootPartyOrgTree(staffReq), GRASSROOT_ORG, "grassroot party organization tree");
+        assertSuccessCount(service.saveGrassrootDispatch(params(
+                "taskId", staffRoot,
+                "businessTreeId", GRASSROOT_BIZ,
+                "partyOrgIds", GRASSROOT_ORG,
+                "year", "2026",
+                "month", "07",
+                "quarter", "Q3",
+                "deadline", "2026-11-20",
+                "remark", "DW3 grassroot dispatch remark"
+        ), staffReq), "save grassroot dispatch", 1);
+        Map<String, Object> grassrootList = service.listGrassrootDispatch(staffRoot, staffReq);
+        assertSuccess(grassrootList, "list grassroot dispatch");
+        assertGrassrootList((List<Map<String, Object>>) grassrootList.get("rows"), GRASSROOT_BIZ, GRASSROOT_ORG, "DRAFT");
+        assertSuccessCount(service.dispatchGrassroot(staffRoot, "", staffReq), "dispatch grassroot task", 1);
+        Map<String, Object> grassrootAfterDispatch = service.listGrassrootDispatch(staffRoot, staffReq);
+        String grassrootsTaskId = assertGrassrootDispatched((List<Map<String, Object>>) grassrootAfterDispatch.get("rows"), GRASSROOT_BIZ, GRASSROOT_ORG);
+        assertGrassrootReceiveTask(jdbc, grassrootsTaskId, staffRoot);
+        assertFailure(service.dispatchGrassroot(staffRoot, "", staffReq), "duplicate grassroot dispatch should have no pending rows");
+        assertSuccessCount(service.saveGrassrootDispatch(params(
+                "taskId", staffRoot,
+                "businessTreeId", GRASSROOT_BIZ,
+                "partyOrgIds", GRASSROOT_ORG_MISSING,
+                "year", "2026",
+                "month", "07",
+                "quarter", "Q3",
+                "deadline", "2026-11-21",
+                "remark", "DW3 grassroot missing member"
+        ), staffReq), "save grassroot dispatch with missing receiver", 1);
+        assertFailure(service.dispatchGrassroot(staffRoot, "", staffReq), "grassroot dispatch should fail when party member receiver is missing");
+        assertGrassrootFailed(jdbc, staffRoot, GRASSROOT_ORG_MISSING);
+
         String externalImportRow = jsonRows(params(
                 "rowNumber", "2",
                 "title", "DW3 test external import should fail",
@@ -298,7 +338,7 @@ public class DwWorkPlan3BusinessVerifier {
         }
 
         System.out.println("DWWORKPLAN3_BUSINESS_OK");
-        System.out.println("apiCoverage=currentUser,personSave,personList,personReceivers,batchCreate,taskSaveRoot,directDispatch,taskAccept,taskDelete,taskComplete,taskList,feedbackSubmit,feedbackList,feedbackConfirm,importSaveDrafts,importDirectDispatch,stats");
+        System.out.println("apiCoverage=currentUser,personSave,personList,personReceivers,batchCreate,taskSaveRoot,directDispatch,taskAccept,taskDelete,taskComplete,taskList,feedbackSubmit,feedbackList,feedbackConfirm,grassrootBusinessTree,grassrootPartyOrgTree,grassrootSave,grassrootList,grassrootDispatch,importSaveDrafts,importDirectDispatch,stats");
         System.out.println("batchId=" + batchId);
         System.out.println("completedRootId=" + rootId);
         System.out.println("staffSelfRootId=" + staffRoot);
@@ -310,11 +350,16 @@ public class DwWorkPlan3BusinessVerifier {
     }
 
     private static void clean(JdbcTemplate jdbc) {
+        jdbc.update("delete from DYN_ZBRWB where YWSJ_ID in (select ID from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%') or ID like 'DW3_GRASSROOT_TASK%'", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
+        jdbc.update("delete from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID in (select ID from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%') or CREATED_BY in (?,?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER, PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_FEEDBACK where TASK_ID in (select ID from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%')", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%'", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_ATTACHMENT where CREATED_BY in (?,?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_BATCH where CREATED_BY in (?,?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_PERSON_TREE where CREATED_BY in (?,?) or USER_ID in (?,?,?,?,?,?) or NODE_NAME like 'DW3 Test%'", PARTY, STRANGER, PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
+        jdbc.update("delete from PARTY_ORGAN_MEMBER where PARTY_ID in (?,?) or USER_ID in (?,?)", GRASSROOT_ORG, GRASSROOT_ORG_MISSING, GRASSROOT_FZR, GRASSROOT_JSR);
+        jdbc.update("delete from PARTY_ORGANIZATION where ID in (?,?)", GRASSROOT_ORG, GRASSROOT_ORG_MISSING);
+        jdbc.update("delete from DYN_ZBJHYWS where ID=?", GRASSROOT_BIZ);
         try {
             jdbc.update("delete from SYS_MSG where RECV_USER in (?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2);
         } catch (Exception ignored) {
@@ -324,6 +369,62 @@ public class DwWorkPlan3BusinessVerifier {
     private static void seedPartyRoot(JdbcTemplate jdbc) {
         jdbc.update("insert into DYN_DW_PLAN3_PERSON_TREE(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARENT_ID,NODE_NAME,USER_ID,USER_NAME,ROLE_CODE,SORT_NO,ENABLED,REMARK) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?)",
                 PARTY_NODE, PARTY, PARTY, "127.0.0.1", "ORG_ROOT", null, "DW3 Test Party", PARTY, "DW3 Party", DwWorkPlan3Constants.ROLE_PARTY, 1, "Y", "DW3 test seeded root");
+    }
+
+    private static void ensureGrassrootExternalTables(JdbcTemplate jdbc) {
+        if (!tableExists(jdbc, "DYN_DW_PLAN3_GRASSROOT_DISPATCH")) {
+            jdbc.execute("CREATE TABLE DYN_DW_PLAN3_GRASSROOT_DISPATCH (" +
+                    "ID VARCHAR2(50) NOT NULL,CREATED_BY VARCHAR2(50),CREATION_DATE DATE,LAST_UPDATED_BY VARCHAR2(50),LAST_UPDATE_DATE DATE," +
+                    "LAST_UPDATE_IP VARCHAR2(50),VERSION NUMBER(16),ORG_IDENTITY VARCHAR2(32),TASK_ID VARCHAR2(50) NOT NULL," +
+                    "BUSINESS_TREE_ID VARCHAR2(50) NOT NULL,BUSINESS_NAME VARCHAR2(500),BUSINESS_TYPE VARCHAR2(100),BUSINESS_CODE VARCHAR2(200)," +
+                    "FORM_ID VARCHAR2(200),FORM_CODE VARCHAR2(200),VIEW_ID VARCHAR2(200),VIEW_CODE VARCHAR2(200),HAS_FORM VARCHAR2(50)," +
+                    "COMPLETE_TYPE VARCHAR2(50),PARTY_ORG_ID VARCHAR2(50) NOT NULL,PARTY_ORG_NAME VARCHAR2(500),PRINCIPAL_USER_ID VARCHAR2(50)," +
+                    "RECEIVER_USER_ID VARCHAR2(50),PLAN_YEAR VARCHAR2(20),PLAN_MONTH VARCHAR2(20),PLAN_QUARTER VARCHAR2(20),DEADLINE DATE," +
+                    "REMARK VARCHAR2(1000),STATUS VARCHAR2(30),GRASSROOT_TASK_ID VARCHAR2(50),DISPATCH_TIME DATE,ERROR_MSG VARCHAR2(1000)," +
+                    "CONSTRAINT PK_DW_PLAN3_GRASSROOT_DISPATCH PRIMARY KEY (ID))");
+        }
+        if (!tableExists(jdbc, "DYN_ZBJHYWS")) {
+            jdbc.execute("CREATE TABLE DYN_ZBJHYWS (" +
+                    "ID VARCHAR2(200) NOT NULL,CREATED_BY VARCHAR2(200) NOT NULL,CREATION_DATE TIMESTAMP(0) NOT NULL," +
+                    "LAST_UPDATED_BY VARCHAR2(200) NOT NULL,LAST_UPDATE_DATE TIMESTAMP(0) NOT NULL,LAST_UPDATE_IP VARCHAR2(200) NOT NULL," +
+                    "VERSION NUMBER(16,0) NOT NULL,ORG_IDENTITY VARCHAR2(200) NOT NULL,CREATED_DEPT VARCHAR2(200) NOT NULL," +
+                    "TREE_SORTS VARCHAR2(4000),YWLX VARCHAR2(1020),YWBH VARCHAR2(200),IS_LEAD_PARTY VARCHAR2(8),BDBH VARCHAR2(1020)," +
+                    "YWMC VARCHAR2(2000),TREE_SORT NUMBER(38,0),VALID_FLAG VARCHAR2(4),TREE_LEAF VARCHAR2(8),TREE_PATH VARCHAR2(4000)," +
+                    "TREE_LEVEL NUMBER(38,0),PARENT_ID VARCHAR2(200),BD_ID VARCHAR2(1020),ST_ID VARCHAR2(200),ST_BM VARCHAR2(200)," +
+                    "SFCZBD VARCHAR2(50),WCLX VARCHAR2(50),CONSTRAINT PK_DW3_TEST_ZBJHYWS PRIMARY KEY (ID))");
+        }
+        if (!tableExists(jdbc, "DYN_ZBRWB")) {
+            jdbc.execute("CREATE TABLE DYN_ZBRWB (" +
+                    "ID VARCHAR2(200) NOT NULL,CREATED_BY VARCHAR2(200) NOT NULL,CREATION_DATE TIMESTAMP(0) NOT NULL," +
+                    "LAST_UPDATED_BY VARCHAR2(200) NOT NULL,LAST_UPDATE_DATE TIMESTAMP(0) NOT NULL,LAST_UPDATE_IP VARCHAR2(200) NOT NULL," +
+                    "VERSION NUMBER(16,0) NOT NULL,ORG_IDENTITY VARCHAR2(200) NOT NULL,CREATED_DEPT VARCHAR2(200) NOT NULL," +
+                    "SFGLRW VARCHAR2(800),FK_COL_ID VARCHAR2(800),JSR VARCHAR2(800),WCJD TIMESTAMP(0),SFLCRW VARCHAR2(800)," +
+                    "DZZMC VARCHAR2(8000),RWBDID VARCHAR2(800),DZZID VARCHAR2(800),BZ VARCHAR2(8000),RWZT VARCHAR2(800),STID VARCHAR2(800)," +
+                    "RWMC VARCHAR2(800),FZR VARCHAR2(800),YWSJ_ID VARCHAR2(200),BDBM VARCHAR2(200),STBM VARCHAR2(200),YEAR VARCHAR2(200)," +
+                    "MONTH VARCHAR2(200),JD VARCHAR2(200),SFCZBD VARCHAR2(50),FFR VARCHAR2(50),FFBM VARCHAR2(50),WCLX VARCHAR2(50)," +
+                    "REASON VARCHAR2(4000),CONSTRAINT PK_DW3_TEST_ZBRWB PRIMARY KEY (ID))");
+        }
+    }
+
+    private static boolean tableExists(JdbcTemplate jdbc, String tableName) {
+        Integer count = jdbc.queryForObject("select count(1) from USER_TABLES where TABLE_NAME=?", Integer.class, tableName);
+        return count != null && count > 0;
+    }
+
+    private static void seedGrassrootExternalData(JdbcTemplate jdbc) {
+        jdbc.update("insert into DYN_ZBJHYWS(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                GRASSROOT_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Grassroot Business", "d", "DW3-BIZ-001", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u6708\u5ea6", "1", "1", 2, 1, "001", null);
+        insertPartyOrganization(jdbc, GRASSROOT_ORG, "DW3 Grassroot Party Org", "001");
+        insertPartyOrganization(jdbc, GRASSROOT_ORG_MISSING, "DW3 Grassroot Missing Org", "002");
+        jdbc.update("insert into PARTY_ORGAN_MEMBER(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_ID,USER_ID,USER_POST) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?)",
+                "DW3_GRASS_MEMBER_FZR", STAFF, STAFF, "127.0.0.1", "ORG_ROOT", GRASSROOT_ORG, GRASSROOT_FZR, "0");
+        jdbc.update("insert into PARTY_ORGAN_MEMBER(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_ID,USER_ID,USER_POST) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?)",
+                "DW3_GRASS_MEMBER_JSR", STAFF, STAFF, "127.0.0.1", "ORG_ROOT", GRASSROOT_ORG, GRASSROOT_JSR, "4");
+    }
+
+    private static void insertPartyOrganization(JdbcTemplate jdbc, String id, String name, String sort) {
+        jdbc.update("insert into PARTY_ORGANIZATION(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?)",
+                id, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", name, PARTY_NODE, 2, Integer.valueOf(sort), sort);
     }
 
     private static void assertNoDw3TestData(JdbcTemplate jdbc) {
@@ -356,6 +457,73 @@ public class DwWorkPlan3BusinessVerifier {
             }
         }
         throw new IllegalStateException(label + " did not contain node " + id);
+    }
+
+    private static void assertContainsExternalRow(List<Map<String, Object>> rows, String id, String label) {
+        for (Map<String, Object> row : rows) {
+            if (id.equals(String.valueOf(row.get("ID")))) {
+                return;
+            }
+        }
+        throw new IllegalStateException(label + " did not contain row " + id);
+    }
+
+    private static void assertGrassrootList(List<Map<String, Object>> rows, String businessId, String partyOrgId, String expectedStatus) {
+        Map<String, Object> row = grassrootRow(rows, businessId, partyOrgId);
+        if (row == null) {
+            throw new IllegalStateException("grassroot dispatch list did not contain business/org row.");
+        }
+        if (!expectedStatus.equals(String.valueOf(row.get("STATUS")))) {
+            throw new IllegalStateException("Unexpected grassroot dispatch status: " + row);
+        }
+    }
+
+    private static String assertGrassrootDispatched(List<Map<String, Object>> rows, String businessId, String partyOrgId) {
+        Map<String, Object> row = grassrootRow(rows, businessId, partyOrgId);
+        if (row == null) {
+            throw new IllegalStateException("grassroot dispatched row missing.");
+        }
+        if (!DwWorkPlan3Constants.GRASSROOT_DISPATCHED.equals(String.valueOf(row.get("STATUS")))) {
+            throw new IllegalStateException("grassroot row was not marked dispatched: " + row);
+        }
+        String grassrootTaskId = String.valueOf(row.get("GRASSROOT_TASK_ID"));
+        if (blank(grassrootTaskId)) {
+            throw new IllegalStateException("grassroot row missing DYN_ZBRWB id.");
+        }
+        return grassrootTaskId;
+    }
+
+    private static Map<String, Object> grassrootRow(List<Map<String, Object>> rows, String businessId, String partyOrgId) {
+        for (Map<String, Object> row : rows) {
+            if (businessId.equals(String.valueOf(row.get("BUSINESS_TREE_ID"))) && partyOrgId.equals(String.valueOf(row.get("PARTY_ORG_ID")))) {
+                return row;
+            }
+        }
+        return null;
+    }
+
+    private static void assertGrassrootReceiveTask(JdbcTemplate jdbc, String grassrootTaskId, String sourceTaskId) {
+        Map<String, Object> row = jdbc.queryForMap("select * from DYN_ZBRWB where ID=?", grassrootTaskId);
+        assertEquals(GRASSROOT_BIZ, row.get("FK_COL_ID"), "DYN_ZBRWB.FK_COL_ID should point to DYN_ZBJHYWS.ID");
+        assertEquals(sourceTaskId, row.get("YWSJ_ID"), "DYN_ZBRWB.YWSJ_ID should keep the 3.0 task id");
+        assertEquals("\u672a\u5f00\u59cb", row.get("RWZT"), "grassroot receive task status");
+        assertEquals("\u5426", row.get("SFGLRW"), "grassroot receive task relation flag");
+        assertEquals(GRASSROOT_ORG, row.get("DZZID"), "grassroot party org id");
+        assertEquals(GRASSROOT_FZR, row.get("FZR"), "grassroot principal user");
+        assertEquals(GRASSROOT_JSR, row.get("JSR"), "grassroot receiver user");
+    }
+
+    private static void assertGrassrootFailed(JdbcTemplate jdbc, String taskId, String partyOrgId) {
+        Map<String, Object> row = jdbc.queryForMap("select STATUS,ERROR_MSG from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID=? and PARTY_ORG_ID=?", taskId, partyOrgId);
+        if (!DwWorkPlan3Constants.GRASSROOT_FAILED.equals(String.valueOf(row.get("STATUS"))) || blank(row.get("ERROR_MSG"))) {
+            throw new IllegalStateException("grassroot missing receiver row should be FAILED with ERROR_MSG: " + row);
+        }
+    }
+
+    private static void assertEquals(Object expected, Object actual, String label) {
+        if (expected == null ? actual != null : !String.valueOf(expected).equals(String.valueOf(actual))) {
+            throw new IllegalStateException(label + " expected=" + expected + ", actual=" + actual);
+        }
     }
 
     private static void assertContainsFeedback(List<Map<String, Object>> rows, String id, String label) {

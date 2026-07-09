@@ -65,6 +65,10 @@
     receivers: [],
     tasks: [],
     importRows: [],
+    grassrootBusinesses: [],
+    grassrootPartyOrgs: [],
+    grassrootRows: [],
+    currentGrassrootTask: null,
     selectedTaskIds: {},
     expandedTaskIds: {},
     initialTaskId: "",
@@ -181,6 +185,11 @@
     $("#dwTaskTableBody").on("click", "[data-task-action]", function (event) {
       event.stopPropagation();
       handleTaskAction($(this).attr("data-task-action"), $(this).attr("data-task-id"));
+    });
+    $("#dwGrassrootAddBtn").on("click", saveGrassrootDispatch);
+    $("#dwGrassrootDispatchBtn").on("click", dispatchGrassrootRows);
+    $("#dwGrassrootTableBody").on("click", "[data-grassroot-delete]", function () {
+      deleteGrassrootDispatch($(this).attr("data-grassroot-delete"));
     });
     $("#dwTaskTableBody").on("click", ".dw-task-toggle", function (event) {
       event.stopPropagation();
@@ -649,6 +658,8 @@
       openCompleteTask(id);
     } else if (action === "feedback") {
       openFeedback(id);
+    } else if (action === "grassroot") {
+      openGrassrootDispatch(id);
     } else if (action === "delete") {
       confirmBox("确定删除该任务吗？此操作不可恢复。", function () {
         api("api/task/delete", currentNodeParams({ id: id })).done(afterTaskChanged).fail(showError);
@@ -994,6 +1005,211 @@
         });
       }).fail(showError);
     });
+  }
+
+  function openGrassrootDispatch(id) {
+    var task = findTask(id);
+    if (!task || !canGrassrootDispatch(task)) {
+      message("当前任务不能分发给基层党组织");
+      return;
+    }
+    state.currentGrassrootTask = task;
+    resetGrassrootModal(task);
+    openModal("dwGrassrootModal");
+    setGrassrootBusy(true);
+    $.when(
+      api("api/grassroot/businessTree", currentNodeParams()),
+      api("api/grassroot/partyOrgTree", currentNodeParams()),
+      api("api/grassroot/list", currentNodeParams({ taskId: id }))
+    ).done(function (businessRes, partyOrgRes, listRes) {
+      state.grassrootBusinesses = businessRes.rows || [];
+      state.grassrootPartyOrgs = partyOrgRes.rows || [];
+      state.grassrootRows = listRes.rows || [];
+      renderGrassrootBusinessSelect();
+      renderGrassrootPartyOrgSelect();
+      renderGrassrootRows();
+    }).fail(showError).always(function () {
+      setGrassrootBusy(false);
+    });
+  }
+
+  function resetGrassrootModal(task) {
+    var deadline = dateOnly(task && task.PLAN_DEADLINE) || today();
+    var period = selectedPeriod();
+    $("#dwGrassrootTaskId").val(text(task && task.ID));
+    $("#dwGrassrootSummary").html(taskSummaryHtml(task));
+    $("#dwGrassrootBusiness").html('<option value="">正在读取业务...</option>');
+    $("#dwGrassrootPartyOrg").html('<option value="">正在读取基层党组织...</option>');
+    $("#dwGrassrootYear").val(period.year || deadline.substring(0, 4));
+    $("#dwGrassrootMonth").val(deadline.length >= 7 ? deadline.substring(5, 7) : "");
+    $("#dwGrassrootQuarter").val(period.quarter || currentQuarter());
+    $("#dwGrassrootDeadline").val(deadline);
+    $("#dwGrassrootRemark").val("");
+    state.grassrootRows = [];
+    renderGrassrootRows();
+  }
+
+  function renderGrassrootBusinessSelect() {
+    var html = '<option value="">请选择业务</option>';
+    $.each(state.grassrootBusinesses, function (_, row) {
+      var level = Math.max(0, number(row.TREE_LEVEL) - 1);
+      html += '<option value="' + esc(text(row.ID)) + '">' +
+        esc(indentText(level) + (text(row.YWMC) || text(row.YWBH) || text(row.ID))) + "</option>";
+    });
+    $("#dwGrassrootBusiness").html(html);
+  }
+
+  function renderGrassrootPartyOrgSelect() {
+    var html = "";
+    $.each(state.grassrootPartyOrgs, function (_, row) {
+      var level = Math.max(0, number(row.TREE_LEVEL) - 1);
+      html += '<option value="' + esc(text(row.ID)) + '">' +
+        esc(indentText(level) + (text(row.PARTY_NAME) || text(row.ID))) + "</option>";
+    });
+    $("#dwGrassrootPartyOrg").html(html || '<option value="">暂无基层党组织</option>');
+  }
+
+  function saveGrassrootDispatch() {
+    var taskId = $("#dwGrassrootTaskId").val();
+    var businessTreeId = $("#dwGrassrootBusiness").val();
+    var orgIds = $("#dwGrassrootPartyOrg").val() || [];
+    if (!taskId || !businessTreeId) {
+      message("请选择业务");
+      return;
+    }
+    if (!orgIds.length) {
+      message("请选择基层党组织");
+      return;
+    }
+    if (!$("#dwGrassrootDeadline").val()) {
+      message("请填写完成期限");
+      return;
+    }
+    setGrassrootBusy(true);
+    api("api/grassroot/save", currentNodeParams({
+      taskId: taskId,
+      businessTreeId: businessTreeId,
+      partyOrgIds: orgIds.join(","),
+      year: $.trim($("#dwGrassrootYear").val()),
+      month: $.trim($("#dwGrassrootMonth").val()),
+      quarter: $("#dwGrassrootQuarter").val(),
+      deadline: $("#dwGrassrootDeadline").val(),
+      remark: $.trim($("#dwGrassrootRemark").val())
+    })).done(function (res) {
+      showGrassrootResult("已保存基层分发清单 " + number(res.count) + " 条", res);
+      loadGrassrootRows(taskId);
+    }).fail(showError).always(function () {
+      setGrassrootBusy(false);
+    });
+  }
+
+  function dispatchGrassrootRows() {
+    var taskId = $("#dwGrassrootTaskId").val();
+    var rows = $.grep(state.grassrootRows || [], function (row) {
+      return text(row.STATUS) !== "DISPATCHED";
+    });
+    if (!rows.length) {
+      message("没有可分发的基层任务");
+      return;
+    }
+    confirmBox("确定将清单中的任务分发给基层党组织吗？", function () {
+      setGrassrootBusy(true);
+      api("api/grassroot/dispatch", currentNodeParams({ taskId: taskId })).done(function (res) {
+        showGrassrootResult("已分发基层任务 " + number(res.count) + " 条", res);
+        loadGrassrootRows(taskId);
+      }).fail(function (err) {
+        showError(err);
+        loadGrassrootRows(taskId);
+      }).always(function () {
+        setGrassrootBusy(false);
+      });
+    });
+  }
+
+  function deleteGrassrootDispatch(id) {
+    if (!id) {
+      return;
+    }
+    confirmBox("确定删除这条未分发的基层任务吗？", function () {
+      setGrassrootBusy(true);
+      api("api/grassroot/delete", currentNodeParams({ id: id })).done(function () {
+        loadGrassrootRows($("#dwGrassrootTaskId").val());
+      }).fail(showError).always(function () {
+        setGrassrootBusy(false);
+      });
+    });
+  }
+
+  function loadGrassrootRows(taskId) {
+    return api("api/grassroot/list", currentNodeParams({ taskId: taskId })).done(function (res) {
+      state.grassrootRows = res.rows || [];
+      renderGrassrootRows();
+    }).fail(showError);
+  }
+
+  function renderGrassrootRows() {
+    var rows = state.grassrootRows || [];
+    var html = "";
+    if (!rows.length) {
+      html = '<tr><td colspan="8"><div class="dw-empty">暂无基层分发清单</div></td></tr>';
+    } else {
+      $.each(rows, function (_, row) {
+        var status = text(row.STATUS) || "DRAFT";
+        html += "<tr>";
+        html += "<td>" + esc(text(row.BUSINESS_NAME) || "-") + "</td>";
+        html += "<td>" + esc(text(row.PARTY_ORG_NAME) || "-") + "</td>";
+        html += "<td>" + esc(dateOnly(row.DEADLINE) || "-") + "</td>";
+        html += "<td>" + esc([text(row.PLAN_YEAR), text(row.PLAN_MONTH), text(row.PLAN_QUARTER)].join("/").replace(/^\/+|\/+$/g, "") || "-") + "</td>";
+        html += "<td>" + grassrootStatusBadge(status) + "</td>";
+        html += "<td>" + esc(text(row.GRASSROOT_TASK_STATUS) || text(row.GRASSROOT_TASK_ID) || "-") + "</td>";
+        html += "<td>" + esc(text(row.ERROR_MSG) || text(row.REMARK) || "-") + "</td>";
+        html += '<td><div class="dw-actions">';
+        if (status !== "DISPATCHED") {
+          html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-delete" data-grassroot-delete="' + esc(text(row.ID)) + '">删除</button>';
+        }
+        html += "</div></td></tr>";
+      });
+    }
+    $("#dwGrassrootTableBody").html(html);
+    $("#dwGrassrootDispatchBtn").prop("disabled", !hasPendingGrassrootRows());
+  }
+
+  function showGrassrootResult(messageText, res) {
+    var errors = normalizeArray(res && res.errors);
+    if (errors.length) {
+      message(messageText + "，失败 " + errors.length + " 条：" + errors.slice(0, 2).join("；"));
+    } else {
+      message(messageText);
+    }
+  }
+
+  function setGrassrootBusy(busy) {
+    $("#dwGrassrootAddBtn").prop("disabled", !!busy);
+    $("#dwGrassrootDispatchBtn").prop("disabled", !!busy || !hasPendingGrassrootRows());
+  }
+
+  function hasPendingGrassrootRows() {
+    return $.grep(state.grassrootRows || [], function (row) {
+      return text(row.STATUS) !== "DISPATCHED";
+    }).length > 0;
+  }
+
+  function grassrootStatusBadge(status) {
+    if (status === "DISPATCHED") {
+      return '<span class="dw-badge dw-grassroot-dispatched">已分发</span>';
+    }
+    if (status === "FAILED") {
+      return '<span class="dw-badge dw-grassroot-failed">失败</span>';
+    }
+    return '<span class="dw-badge dw-grassroot-draft">待分发</span>';
+  }
+
+  function indentText(level) {
+    var text = "";
+    for (var i = 0; i < level; i++) {
+      text += "　";
+    }
+    return text;
   }
 
   function taskPayload() {
@@ -2107,6 +2323,16 @@
       (text(task.STATUS) === "DOING" || text(task.STATUS) === "RETURNED");
   }
 
+  function canGrassrootDispatch(task) {
+    if (isViewerOnly() || !isStaff()) {
+      return false;
+    }
+    return text(task.TASK_LEVEL) === "STAFF" &&
+      text(task.RECEIVER_ID) === currentUserId() &&
+      taskMatchesCurrentNode(task) &&
+      text(task.STATUS) !== "TODO";
+  }
+
   function canDelete(task) {
     if (isViewerOnly()) {
       return false;
@@ -2693,6 +2919,9 @@
     }
     if (canFeedback(task)) {
       html += actionBtn("feedback", id, feedbackActionLabel(task), "dw-action-feedback");
+    }
+    if (canGrassrootDispatch(task)) {
+      html += actionBtn("grassroot", id, "\u57fa\u5c42\u5206\u53d1", "dw-action-grassroot");
     }
     return html;
   }

@@ -12,6 +12,7 @@ $requiredFiles = @(
   'WebRoot/avicit/pb/dwworkplan3/index.jsp',
   'WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.css',
   'WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js',
+  'db/dw_work_plan_3_patch_20260709_grassroot_dispatch.sql',
   '.codex/skills/pb-module-memory/references/modules/party-committee-work-plan-3.md'
 )
 
@@ -26,7 +27,7 @@ if ($missing.Count -gt 0) {
 
 $sqlPath = Join-Path $Root 'db/dw_work_plan_3.sql'
 $sql = Get-Content -Raw -LiteralPath $sqlPath
-$tables = @('DYN_DW_PLAN3_BATCH','DYN_DW_PLAN3_TASK','DYN_DW_PLAN3_FEEDBACK','DYN_DW_PLAN3_PERSON_TREE','DYN_DW_PLAN3_ATTACHMENT')
+$tables = @('DYN_DW_PLAN3_BATCH','DYN_DW_PLAN3_TASK','DYN_DW_PLAN3_FEEDBACK','DYN_DW_PLAN3_PERSON_TREE','DYN_DW_PLAN3_ATTACHMENT','DYN_DW_PLAN3_GRASSROOT_DISPATCH')
 $auditColumns = @(
   'ID VARCHAR2(50)',
   'CREATED_BY VARCHAR2(50)',
@@ -82,6 +83,21 @@ if ($js -match 'receiverLogin' -or $js -match 'row\.receiverName' -or $service -
 
 if ($js -notmatch 'dw-feedback-reviewer' -or $js -notmatch 'CONFIRM_USER_NAME' -or $js -notmatch 'CONFIRM_TIME') {
   throw 'Feedback chain must display reviewer name and review time.'
+}
+
+$forbiddenOldDispatchRefs = @('DYN_KYFFRW', 'DYN_DWJHRY', 'DynThreeFourController', 'ffTask')
+foreach ($text in $forbiddenOldDispatchRefs) {
+  if ($js.Contains($text) -or $jsp.Contains($text) -or $service.Contains($text)) {
+    throw "党委计划 3.0 基层分发不能复用旧分发模块引用: $text"
+  }
+}
+
+if ($service -notmatch 'DYN_DW_PLAN3_GRASSROOT_DISPATCH' -or $service -notmatch 'DYN_ZBRWB' -or $service -notmatch 'DYN_ZBJHYWS') {
+  throw 'Grassroot dispatch must keep 3.0 dispatch state and write the intranet grassroots task table using the business tree.'
+}
+
+if ($js -notmatch 'openGrassrootDispatch' -or $jsp -notmatch 'dwGrassrootModal') {
+  throw 'Grassroot dispatch UI is missing.'
 }
 
 Write-Host 'DW work plan 3 module file and audit-field checks passed.'

@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260708_import_staff_name_31">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260709_grassroot_dispatch_32">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -334,6 +334,80 @@ String importlibs = "common,form,fileupload";
     </section>
   </div>
 
+  <div class="dw-modal-mask" id="dwGrassrootModal" aria-hidden="true">
+    <section class="dw-modal dw-modal-xl">
+      <div class="dw-modal-head">
+        <h2>基层分发</h2>
+        <button type="button" class="dw-icon-btn" data-close-modal="dwGrassrootModal">×</button>
+      </div>
+      <input id="dwGrassrootTaskId" type="hidden">
+      <div id="dwGrassrootSummary" class="dw-grassroot-summary"></div>
+      <div class="dw-grassroot-layout">
+        <section class="dw-grassroot-editor">
+          <div class="dw-section-title">分发信息</div>
+          <div class="dw-form-grid dw-grassroot-form">
+            <label class="dw-span-2">业务
+              <select id="dwGrassrootBusiness" class="dw-input"></select>
+            </label>
+            <label class="dw-span-2">基层党组织
+              <select id="dwGrassrootPartyOrg" class="dw-input dw-multi-select" multiple></select>
+            </label>
+            <label>年份
+              <input id="dwGrassrootYear" class="dw-input" type="number">
+            </label>
+            <label>月份
+              <input id="dwGrassrootMonth" class="dw-input" type="number" min="1" max="12">
+            </label>
+            <label>季度
+              <select id="dwGrassrootQuarter" class="dw-input">
+                <option value="">无</option>
+                <option value="Q1">第一季度</option>
+                <option value="Q2">第二季度</option>
+                <option value="Q3">第三季度</option>
+                <option value="Q4">第四季度</option>
+              </select>
+            </label>
+            <label>完成期限
+              <input id="dwGrassrootDeadline" class="dw-input" type="date">
+            </label>
+            <label class="dw-span-2">备注
+              <textarea id="dwGrassrootRemark" class="dw-textarea"></textarea>
+            </label>
+          </div>
+          <div class="dw-button-row">
+            <button type="button" class="dw-btn dw-btn-primary" id="dwGrassrootAddBtn">加入清单</button>
+          </div>
+        </section>
+        <section class="dw-grassroot-list">
+          <div class="dw-section-title">分发清单</div>
+          <div class="dw-table-wrap dw-grassroot-table-wrap">
+            <table class="dw-table dw-grassroot-table">
+              <thead>
+              <tr>
+                <th>业务</th>
+                <th>基层党组织</th>
+                <th>完成期限</th>
+                <th>周期</th>
+                <th>分发状态</th>
+                <th>基层任务</th>
+                <th>说明</th>
+                <th>操作</th>
+              </tr>
+              </thead>
+              <tbody id="dwGrassrootTableBody">
+              <tr><td colspan="8"><div class="dw-empty">暂无基层分发清单</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      <div class="dw-modal-foot">
+        <button type="button" class="dw-btn dw-btn-ghost" data-close-modal="dwGrassrootModal">取消</button>
+        <button type="button" class="dw-btn dw-btn-primary" id="dwGrassrootDispatchBtn" disabled>分发任务</button>
+      </div>
+    </section>
+  </div>
+
   <div class="dw-modal-mask" id="dwDetailModal" aria-hidden="true">
     <section class="dw-modal dw-modal-lg">
       <div class="dw-modal-head">
@@ -349,6 +423,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260708_import_staff_name_31"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260709_grassroot_dispatch_32"></script>
 </body>
 </html>

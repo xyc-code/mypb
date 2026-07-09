@@ -27,6 +27,10 @@ public final class DwWorkPlan3Constants {
     public static final String FEEDBACK_CONFIRMED = "CONFIRMED";
     public static final String FEEDBACK_RETURNED = "RETURNED";
 
+    public static final String GRASSROOT_DRAFT = "DRAFT";
+    public static final String GRASSROOT_DISPATCHED = "DISPATCHED";
+    public static final String GRASSROOT_FAILED = "FAILED";
+
     public static String nextRole(String role) {
         if (ROLE_PARTY.equals(role)) {
             return ROLE_DEPT;
