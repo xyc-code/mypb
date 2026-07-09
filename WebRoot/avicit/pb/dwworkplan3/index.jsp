@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260702_deadline_timestamp_19">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260708_import_staff_name_31">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -229,14 +229,14 @@ String importlibs = "common,form,fileupload";
         <label>截止时间
           <input id="dwTaskDeadline" class="dw-input" type="date">
         </label>
-        <label id="dwTaskReceiverWrap">接收部门
+        <label id="dwTaskReceiverWrap">接收科员
           <select id="dwTaskReceiver" class="dw-input"></select>
-        </label>
-        <label class="dw-span-2">工作内容
-          <textarea id="dwTaskContent" class="dw-textarea"></textarea>
         </label>
         <label class="dw-span-2">工作目标
           <textarea id="dwTaskTarget" class="dw-textarea"></textarea>
+        </label>
+        <label class="dw-span-2">工作内容
+          <textarea id="dwTaskContent" class="dw-textarea"></textarea>
         </label>
         <label class="dw-span-2">附件
           <input id="dwTaskFile" class="dw-input" type="file">
@@ -290,10 +290,10 @@ String importlibs = "common,form,fileupload";
               <th>状态</th>
               <th>任务标题</th>
               <th>工作分类</th>
+              <th>工作目标</th>
+              <th>工作内容</th>
               <th>截止日期</th>
-              <th>接收部门</th>
-              <th>接收人姓名</th>
-              <th>接收人登录名</th>
+              <th>接收科员</th>
               <th>校验信息</th>
             </tr>
             </thead>
@@ -319,6 +319,7 @@ String importlibs = "common,form,fileupload";
       </div>
       <input id="dwFeedbackTaskId" type="hidden">
       <input id="dwFeedbackAttachmentId" type="hidden">
+      <input id="dwFeedbackPreparedId" type="hidden">
       <label>反馈内容
         <textarea id="dwFeedbackContent" class="dw-textarea"></textarea>
       </label>
@@ -348,6 +349,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260702_deadline_timestamp_19"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260708_import_staff_name_31"></script>
 </body>
 </html>

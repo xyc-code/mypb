@@ -352,6 +352,84 @@
 - Frontend role switching reloads batches, personnel scope, receiver list, tasks, and stats. Operation buttons are shown only when the task's `PERSON_NODE_ID` matches the selected role; legacy party tasks with blank `PERSON_NODE_ID` remain compatible for party users.
 - Verification on 2026-07-03: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3PortalTodoService`; `scripts/verify-dwworkplan3.ps1` passed; local Tomcat restarted; `/pb/login` returned 200, unauthenticated 3.0 `toIndex` returned 302, and 3.0 JS returned 200.
 
+## 2026-07-03 Self-Created Task Completion Rule
+
+- User clarified the new completion boundary for self-created tasks:
+  - Staff-created root tasks do not need feedback. Staff complete them directly.
+  - For tasks created and dispatched by department or office users, once the lower-level feedback is confirmed, the creator's parent task is completed directly.
+  - The chain stops at the person who issued that task; the creator does not need to submit another feedback upward for their own self-created root task.
+- Implementation:
+  - Added `api/task/complete` for staff self-created root tasks only. It requires current `PERSON_NODE_ID`, `RECEIVER_ID`, root task, `TASK_LEVEL=STAFF`, and status `DOING` or `RETURNED`.
+  - Frontend shows a direct `完成` action for staff self-created root tasks and suppresses the feedback action for that case.
+  - `syncParentAfterChildDone` now marks the parent task `COMPLETED` when all child tasks are completed, then recursively syncs the parent's parent. It no longer forces department/office parent tasks back to `DOING` just to make them submit another feedback.
+  - Portal business todos are synced when direct completion or automatic parent completion occurs, so active todos close as status becomes completed.
+- Verification: JS syntax passed; JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3Controller`; `scripts/verify-dwworkplan3.ps1` passed; temporary `DwWorkPlan3MultiRoleVerifier` covered staff direct complete, staff feedback confirmed by office, office root auto-completion, and todo closure.
+
+## 2026-07-03 Staff Self-Created Completion Modal
+
+- User clarified that when staff complete their own self-created task, clicking `完成` must open a page/modal instead of completing from a simple confirmation.
+- Frontend behavior: the active task action `complete` opens the existing feedback modal in completion mode, titled `任务完成`, with submit button `确认完成`, completion-content validation, and an editable platform attachment uploader.
+- Backend behavior: `api/task/complete` now accepts `content` and optional `attachmentId`, stores the content in `COMPLETE_DETAIL`, preserves/binds the attachment, marks the staff root task completed, and syncs portal todo closure.
+- Verification on 2026-07-03: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3Controller`; `scripts/verify-dwworkplan3.ps1` passed; temporary `DwWorkPlan3MultiRoleVerifier` returned `DWWORKPLAN3_MULTI_ROLE_TODO_OK`; Tomcat restarted; `/pb/login` returned 200, unauthenticated 3.0 `toIndex` returned 302, and 3.0 JS returned 200.
+
+## 2026-07-03 Full Regression After Completion Modal
+
+- `scripts/seed-verify-dwworkplan3.ps1` was updated to match current business rules:
+  - Because automatic root-node creation is forbidden, the verifier seeds only its own `DW3_NODE_PARTY` test root directly and still creates lower-level nodes through the service API.
+  - Because self-created department/office chains now stop at the creator, the verifier expects child-feedback confirmation to auto-complete the parent chain and rejects extra upward feedback.
+- Full local regression passed on 2026-07-03: JS syntax check, 3.0 module verifier, old-module runtime-reference scan, JDK 8 compile, `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returning `DWWORKPLAN3_BUSINESS_OK`, and `DwWorkPlan3MultiRoleVerifier` returning `DWWORKPLAN3_MULTI_ROLE_TODO_OK`.
+- Test cleanup was explicitly checked after the run: `DYN_DW_PLAN3_TASK`, `DYN_DW_PLAN3_PERSON_TREE`, `DYN_DW_PLAN3_FEEDBACK`, and `PB_PORTAL_BUSINESS_TODO` all had zero `DW3`/`DW3MR` verifier rows.
+- Follow-up cleanup: the stale earlier `taskActions`/`actionBtn` definitions in `dwworkplan3.js` were removed, leaving only the active styled action renderer. Regression rerun passed: JS syntax check, `scripts/verify-dwworkplan3.ps1`, `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` with `testDataCleanup=OK`, `DwWorkPlan3MultiRoleVerifier` with `DWWORKPLAN3_MULTI_ROLE_TODO_OK`, and final DW3/DW3MR cleanup check returned all zero.
+
+## 2026-07-08 Office-Started Workflow
+
+- User and leader changed the 3.0 main workflow: party users no longer create, import, dispatch, confirm, return, or delete tasks; party users remain global read-only viewers for task lists, statistics, details, personnel tree, and feedback chain.
+- New task chain: office director creates or Excel-imports root tasks, dispatches directly to staff; staff accepts and submits feedback; office director confirms staff feedback; the office root task then enters department-level pending confirmation; department minister confirms and closes the task. Party users do not receive final confirmation todos.
+- Department ministers are read/confirm only: they can see department-scope data and receive final confirmation todos for office-root tasks under their department, but they do not create or dispatch tasks.
+- Staff-created root tasks still default to the staff user and complete directly through the completion modal.
+- Excel import was moved from party-side to office-side: template and preview now use `接收科员` / `接收科员参考`, and receiver validation is against the current office node's direct staff children.
+- Page display order changed everywhere touched by this update: `工作目标` is shown before `工作内容`; database fields are unchanged (`TARGET_DESC` remains goal, `CONTENT` remains content).
+- Portal todo behavior changed for department final confirmation: when an office-root task becomes `PENDING_CONFIRM`, `DwWorkPlan3PortalTodoService` sends the confirm todo to the parent department node users and includes that department `personNodeId` in the target URL.
+- Regression script `scripts/seed-verify-dwworkplan3.ps1` now verifies the new workflow and no longer asserts the superseded party -> department -> office -> staff dispatch chain.
+- Verification on 2026-07-08: JDK 8 compile passed for touched 3.0 Java sources; `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK` with `testDataCleanup=OK`.
+
+## 2026-07-08 Display Name Persistence Fix
+
+- Bug found during existing-personnel-tree verification: some feedback and portal todo display-name fields could store platform user IDs such as `LOLUSER...` when the platform user API was unavailable in the verifier/runtime path.
+- Fix rule: keep business ID fields unchanged, but write display-name fields from the 3.0 personnel tree node or existing task `RECEIVER_NAME` before falling back to platform user lookup.
+- Touched behavior: child-task `SENDER_NAME`, submitted feedback `FEEDBACK_USER_NAME`, and feedback confirm/return `CONFIRM_USER_NAME` now prefer personnel-tree display names.
+- Verification on 2026-07-08: JDK 8 compile passed; existing-tree verifier passed with marker `现有人员树测试-20260708-113923`; retained task/feedback/todo rows show names like `狂厄蔷薇(910020)`, `潮汐海灵(910036)`, and `残月之肃(910010)` instead of `LOLUSER...`; Tomcat restarted and `/pb/login` plus 3.0 JS returned 200.
+
+## 2026-07-08 Returned Feedback Attachment And Manual Department Feedback
+
+- User clarified two workflow fixes:
+  - When feedback with attachments is returned, the user must be able to reopen feedback and upload attachments again.
+  - After an office director confirms all staff feedback, the office-root task must not automatically submit to the department minister. The office director must manually submit feedback upward.
+- Frontend now calls `api/feedback/prepare` when opening the feedback modal, initializes the platform attachment uploader with that prepared feedback ID, and sends `preparedId` with `api/feedback/submit`.
+- Backend `submitFeedback` accepts a safe unused `preparedId` and uses it as the feedback row ID for new feedback submissions, so platform attachments and feedback rows share the same business ID on retry after return.
+- `syncParentAfterChildDone` now changes an office-root task to `DOING`, creates/updates a feedback draft from aggregated staff feedback, syncs a handle todo for the office director, and does not create a department confirm todo until the office director manually submits feedback.
+- Removed the old automatic department-feedback helper to prevent accidental reintroduction.
+- Verification on 2026-07-08: JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3Controller`; `node --check dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; `DwWorkPlan3FeedbackManualVerifier` returned `DW3_FEEDBACK_MANUAL_OK` with retained marker `DW3MANUAL-20260708-115952`; Tomcat restarted and `/pb/login` plus versioned 3.0 JS returned 200.
+
+## 2026-07-08 Office Self Task And Returned Attachment Retry Fix
+
+- User clarified that office directors can create tasks for themselves and complete them directly; such tasks do not need to be dispatched to staff.
+- Backend rule: when an office director saves a root task without a selected staff receiver, the task is treated as a self task with status `DOING`, receiver/sender as the office director, and a handle todo for the office director. Office and staff root self tasks can use `api/task/complete`.
+- Frontend rule: office root tasks with no parent, matching current office identity, and status `DOING`/`RETURNED` show the direct complete action.
+- Returned feedback attachment retry fix: keep `preparedId` for the eventual feedback row ID, but initialize the platform upload control with an empty business ID and upload files after `api/feedback/submit` returns the saved feedback ID. This avoids PB uploader issues when initialized against a feedback ID that is not yet persisted.
+- Verification on 2026-07-08: JDK 8 compile passed for `DwWorkPlan3Service` and controller; `node --check dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; `DwWorkPlan3FeedbackManualVerifier` returned `DW3_FEEDBACK_MANUAL_OK` with retained marker `DW3MANUAL-20260708-133449`; Tomcat restarted and `/pb/login` plus JS version `20260708_office_self_retry_attach_21` returned 200.
+
+## 2026-07-08 Workflow Logic Regression Fix
+
+- User clarified the intended 3.0 business logic:
+  - Office-to-department feedback must notify the department minister through both portal todo and platform message.
+  - Every feedback submission and its attachment must remain visible as history; returned feedback and retry feedback must not overwrite each other.
+  - After staff feedback is confirmed by the office director, the office director must manually submit feedback to the department minister.
+  - Staff self-created tasks and office self-created tasks close directly through completion and do not feed upward.
+- Fixed `SYS_MSG` writes: both `DwWorkPlan3Service` and `DwWorkPlan3PortalTodoService` now insert the required PB audit fields (`CREATION_DATE`, `CREATED_BY`, `LAST_UPDATE_DATE`, `LAST_UPDATED_BY`, `LAST_UPDATE_IP`, `VERSION`, etc.) so platform messages are not silently lost.
+- `DwWorkPlan3FeedbackManualVerifier` now covers department portal todo, department `SYS_MSG`, returned feedback retry, separate attachment IDs for returned/retry feedback rows, manual office-to-department feedback, department final confirmation, office self-completion, and staff self-completion.
+- Verification on 2026-07-08: JDK 8 compile passed for 3.0 service/controller/todo service; `node --check dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; final verifier returned `DW3_FEEDBACK_MANUAL_OK` with retained marker `DW3MANUAL-20260708-135638`; Tomcat restarted and `/pb/login` plus 3.0 JS returned 200.
+
 ## 2026-07-02 Three-Module Intranet Package
 
 - User is deploying 党委计划 3.0 together with Excel multi-sub-table export and portal business todos.
@@ -374,3 +452,85 @@
 - Portal todo files included: `PortalBusinessTodoService`, modified `PortalTaskService`, modified `PortalUnionTaskController`, runtime/source `PortalTaskMapper.xml`, `DwWorkPlan3PortalTodoService`, and SQL `db/portal_business_todo.sql`.
 - Intranet manual platform steps: configure 3.0 menu URL `platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/toIndex`; grant menu/resource access to ordinary users; keep portal todo endpoint as existing `/ims/oa/todo/uniontask/pendingWork`.
 - Verification before packaging: 3.0 JS `node --check` passed; all related Java sources compiled into `WebRoot/WEB-INF/classes`; `scripts/verify-dwworkplan3.ps1` passed; `db/dw_work_plan_3.sql` and `db/portal_business_todo.sql` passed PB audit-field checks; frontend guardrail scan for `WebRoot/static/pb-modern/dwworkplan3` returned 0 warnings; 3.0 old-module runtime reference scan returned no matches outside the optional import script.
+
+## 2026-07-08 Feedback Attachment Visibility And Office Upward Feedback Fix
+
+- Root cause found for "office task cannot feedback upward after staff completion": frontend `canDirectComplete(task)` treated office-root tasks with children as directly completable, so `canFeedback(task)` suppressed the upward-feedback action. Direct completion is now allowed only when the root task has no children.
+- Backend protection added: `DwWorkPlan3Service.completeSelfTask` rejects root tasks that have child tasks. Dispatched office-root tasks must first process child feedback, then submit feedback upward manually.
+- Attachment visibility verification was strengthened in `DwWorkPlan3FeedbackManualVerifier`: staff first feedback keeps its attachment after return, retry feedback keeps a second attachment, and `service.listFeedback(...)` returns both historical feedback rows with `FEEDBACK_ATTACHMENT_COUNT >= 1` and the expected `ATTACHMENT_ID`.
+- Verification on 2026-07-08: JDK 8 compile passed for 3.0 service/controller/todo service; `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; final verifier returned `DW3_FEEDBACK_MANUAL_OK` with marker `DW3MANUAL-20260708-141636`; Tomcat restarted and `/pb/login` plus JS version `20260708_logic_regression_22` returned 200.
+
+## 2026-07-08 Department Notice And Feedback Attachment Entry
+
+- Department minister list reminders now include department-confirmation office-root tasks: when an office-root task is `PENDING_CONFIRM` and the current user is bound to the parent department node, `NOTICE_FLAG` returns `Y`.
+- Frontend notice labels are clearer: office-root department confirmation rows show `待部长确认`; other pending rows show `待确认`; returned rows show `被退回`.
+- Feedback-chain attachment entry is no longer hidden just because attachment counting fails. Every persisted feedback row now shows a `查看附件` entry; the attachment window then displays platform/legacy attachments or an empty state.
+- Verification on 2026-07-08: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK 8 compile passed for `DwWorkPlan3Service`; `scripts/verify-dwworkplan3.ps1` passed; `DwWorkPlan3FeedbackManualVerifier` returned `DW3_FEEDBACK_MANUAL_OK` with marker `DW3MANUAL-20260708-143851` and explicitly verified department `NOTICE_FLAG=Y`; Tomcat restarted and `/pb/login` plus JS version `20260708_dept_notice_attachment_23` returned 200.
+
+## 2026-07-08 Attachment Viewer Direct List Fix
+
+- User found that clicking `查看附件` opened the platform uploader dialog but the table could be empty, leaving no visible attachment even when feedback history had an attachment entry.
+- Added 3.0-specific `api/attachment/list`, which merges legacy `DYN_DW_PLAN3_ATTACHMENT` rows and platform uploader files from `SwfUploadService.getFileListByFormId(businessId, elementId)`.
+- The attachment dialog now renders a direct download list from `api/attachment/list` before the platform read-only uploader. This is the required fallback for feedback-chain attachments, because the platform uploader table can fail to show rows or show an empty table.
+- Verification on 2026-07-08: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3Controller`; `scripts/verify-dwworkplan3.ps1` passed; `DwWorkPlan3FeedbackManualVerifier` returned `DW3_FEEDBACK_MANUAL_OK` with marker `DW3MANUAL-20260708-150104` and verifies `listAttachmentLinks(...)` returns direct download rows for retained feedback attachments; Tomcat restarted and `/pb/login` plus JS version `20260708_attachment_list_24` returned 200.
+
+## 2026-07-08 Feedback Attachment Binding Fix
+
+- Root cause for the repeated empty feedback-attachment dialog: previous fixes made the viewer/list more tolerant, but a feedback submission could still save a `DYN_DW_PLAN3_FEEDBACK` row without reliably binding uploaded file rows to that feedback ID. Once the file is not bound, the viewer correctly returns empty.
+- New rule: feedback attachments use the 3.0 direct upload endpoint/table as the primary feedback-upload path. The feedback modal uploads selected files to `DYN_DW_PLAN3_ATTACHMENT`, submits all returned IDs as `attachmentIds`, and `DwWorkPlan3Service.submitFeedback(...)` binds every ID to the saved `DYN_DW_PLAN3_FEEDBACK.ID`.
+- Returned-feedback retry rule: a returned feedback is history; retry feedback creates a new feedback row and can bind new attachment rows to the retry feedback ID. It must not overwrite or reuse the returned row.
+- Attachment viewer rule: feedback-chain attachment popups render only the 3.0 direct attachment list for feedback rows. Do not show the platform upload/read-only table inside feedback attachment popups, because that table can appear empty or show a misleading `选择文件` control.
+- Verification on 2026-07-08: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; JDK 8 compile passed for `DwWorkPlan3Service` and `DwWorkPlan3Controller`; `scripts/verify-dwworkplan3.ps1` passed; `DwWorkPlan3FeedbackManualVerifier` returned `DW3_FEEDBACK_MANUAL_OK` with marker `DW3MANUAL-20260708-154145` and verifies returned feedback history plus retry feedback with two attachments bound to the retry feedback ID; Tomcat and Redis restarted, `/pb/login` returned 200, and JS version `20260708_feedback_direct_attach_25` returned 200.
+
+## 2026-07-08 Feedback Target And Platform Uploader Fix
+
+- User clarified the final expected rule: feedback remains one row per submission, every retry after return creates a new feedback row, and each row's attachments must stay visible and downloadable from that row's feedback-chain entry.
+- This entry supersedes the previous "direct upload endpoint as primary" rule for feedback submission. The feedback modal now restores PB platform `uploaderExt` as the primary upload control and rebuilds the uploader DOM every time the feedback modal opens. New feedback uses the prepared feedback ID as the eventual `DYN_DW_PLAN3_FEEDBACK.ID`; office-upward draft feedback uses the existing `FEEDBACK_DRAFT_ID` so platform attachment business ID and final feedback row ID still match.
+- Department confirmation target rule: when an office-root task is manually fed back upward to the parent department, the office director can choose one bound department user as the target. Single-user departments default automatically; multi-user departments require a selection.
+- New feedback columns: `TARGET_USER_ID`, `TARGET_USER_NAME`, `TARGET_PERSON_NODE_ID`. SQL patch: `db/dw_work_plan_3_patch_20260708_feedback_target.sql`. Old feedback rows without these target fields keep the legacy parent-department-member fallback.
+- Department confirm todo/message/list notice/confirm permission now target the selected department user only. Unselected users in the same department can still see scoped data, but cannot confirm or return that targeted feedback.
+- Regression script `scripts/seed-verify-dwworkplan3.ps1` now matches the manual office-upward-feedback flow: office confirms staff feedback, root task returns to `DOING`, office manually submits feedback to department, then the department target confirms.
+- Verification on 2026-07-08: JS syntax passed; JDK 8 compile passed for touched 3.0 Java sources; `scripts/verify-dwworkplan3.ps1` passed; PB audit-field checker passed for `db/dw_work_plan_3.sql`; `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK` with cleanup OK; `DwWorkPlan3FeedbackManualVerifier` returned `DW3_FEEDBACK_MANUAL_OK` with marker `DW3MANUAL-20260708-164813`; Tomcat and Redis restarted, `/pb/login` returned 200, and versioned JS/CSS `20260708_feedback_target_platform_26` returned 200.
+
+## 2026-07-08 Feedback Upload Click Layer Fix
+
+- User found the feedback modal's `选择文件` button displayed but clicking it did nothing.
+- Root cause: PB platform `uploaderExt`/WebUploader creates a transparent file-input layer over the visible button and positions it during initialization/refresh. Initializing `dwFeedbackAttachment` before `#dwFeedbackModal` is visible can produce a zero-size or misplaced click layer, so the visible button has no working file picker.
+- Fix rule: feedback and direct-complete attachment uploaders using `dwFeedbackAttachment` must open the modal first, then initialize the platform uploader and force a WebUploader refresh/window resize after layout.
+- Current frontend helper: `initVisiblePlatformUploader(...)` initializes after the modal is visible, then `refreshPlatformUploader(...)` calls uploader refresh and triggers window resize twice.
+- JSP cache version bumped to `20260708_feedback_upload_visible_27`.
+- Verification on 2026-07-08: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; explicit order check returned `FEEDBACK_UPLOAD_CLICK_LAYER_ORDER_OK`; `scripts/verify-dwworkplan3.ps1` passed; `/pb/login` returned 200; versioned 3.0 JS/CSS returned 200; no Java/backend compile or restart was required for this frontend-only fix.
+
+## 2026-07-08 Feedback Attachment Entry Regression Fix
+
+- User uploaded a feedback attachment but the feedback chain still did not show the `查看附件` button.
+- Root cause: frontend `feedbackAttachmentButton(...)` had regressed to hiding the entry when `FEEDBACK_ATTACHMENT_COUNT`/`HAS_ATTACHMENT` said no attachment. That is unsafe because platform attachment counting can miss rows; every persisted feedback row must keep a visible attachment entry.
+- Restored rule: if a feedback row has an `ID`, show `查看附件`. The attachment dialog then shows the row's platform/legacy/direct attachments, or an empty state if the row truly has no bound attachment.
+- Added a frontend submit guard for selected platform uploader files: after PB `uploaderExt` reports upload completion, 3.0 polls `api/attachment/list` for the feedback/task business ID before calling the business submit API. If the selected attachment cannot be found, submission stops with an error instead of saving a feedback row with missing attachment binding.
+- JSP cache version bumped to `20260708_feedback_attachment_visible_28`.
+- Verification on 2026-07-08: `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; static checks returned `FEEDBACK_ATTACHMENT_BUTTON_ALWAYS_VISIBLE_OK` and `FEEDBACK_UPLOAD_WAIT_OK`; `scripts/verify-dwworkplan3.ps1` passed; `/pb/login`, versioned JS, and versioned CSS returned 200. No Java/backend compile or restart was required for this frontend-only fix.
+
+## 2026-07-08 Feedback Prepared ID DOM Fix
+
+- User found that after selecting a feedback attachment and clicking `提交反馈`, the attachment disappeared and no feedback row was created for the submitted content.
+- Root cause: the frontend code used hidden field `dwFeedbackPreparedId` to carry the prepared feedback ID into `uploadPlatformFiles(...)`, but the JSP template did not actually render that hidden input. As a result `preparedId` was empty at submit time, platform upload was skipped, and the backend generated a different feedback ID.
+- Fix rule: `dwFeedbackPreparedId` is mandatory in the feedback modal. `index.jsp` now renders it next to `dwFeedbackTaskId`/`dwFeedbackAttachmentId`, and `prepareDynamicDom()` also creates it as a safety net if an older template misses it.
+- JSP cache version bumped to `20260708_feedback_prepared_id_29`.
+- Verification on 2026-07-08: the red-capable DOM/data-flow check first failed with `PREPARED_ID_DOM_MISSING`, then passed with `PREPARED_ID_DOM_OK` and `PREPARED_ID_FLOW_OK`; `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js` passed; `scripts/verify-dwworkplan3.ps1` passed; `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK` with `testDataCleanup=OK`; `/pb/login` and versioned JS/CSS returned 200. No Java/backend compile or restart was required for this JSP/JS-only fix.
+
+## 2026-07-08 Feedback Timeline And Office Import Scope Fix
+
+- User clarified three fixes: feedback chain must display by feedback timeline, office import/dispatch must only target current-office staff, and feedback cards must show who reviewed the feedback.
+- Backend `listFeedback(...)` now orders by `nvl(FEEDBACK_TIME, CREATION_DATE), CREATION_DATE, ID` instead of role level. Frontend `feedbackHtml(...)` no longer reverses rows and displays `CONFIRM_USER_NAME` / `CONFIRM_TIME` when present.
+- Office dispatch wording is unified to staff-facing labels. User-visible `接收部门`, `选中部门`, and `接收对象` were removed from the 3.0 JSP/JS dispatch/import surfaces; internal `DRAFT_DEPT_*` column names remain unchanged for compatibility.
+- Import scope keeps the existing service guards: preview and persist re-run `validateImportRows(...)`, and batch/direct dispatch re-check `validateDirectChildReceiver(...)`. The verifier now covers external-office staff rejection for both draft import and direct-dispatch import, plus valid current-office staff import.
+- JSP cache version bumped to `20260708_feedback_timeline_reviewer_30`.
+- Verification on 2026-07-08: red checks first failed on browser reverse and service timeline order, then passed after the fix. Final checks passed: JDK 8 compile for `DwWorkPlan3Service`; `node --check WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`; `scripts/verify-dwworkplan3.ps1`; stale-label scan; `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` with `DWWORKPLAN3_BUSINESS_OK` and cleanup OK. Tomcat and Redis restarted; `/pb/login` returned 200, 3.0 entry returned 302 to login, and versioned JS/CSS returned 200.
+
+## 2026-07-08 Import Staff Name Only Template Fix
+
+- User clarified the import template should not contain `接收人姓名` or `接收人登录名`. The task sheet now contains only `任务标题`, `工作分类`, `工作目标`, `工作内容`, `截止日期`, `接收科员`, and `备注`.
+- Import matching now uses the `接收科员` value to find a direct staff node under the current office. Old `receiverLogin` JSON values are ignored, so stale clients cannot force login-name matching.
+- If the current office has duplicate staff node names, or a matched staff node binds multiple platform users, import fails with a clear validation error instead of guessing a receiver.
+- The reference sheet is simplified to one `接收科员` column. JSP/JS preview columns were reduced to match the new template, and cache version was bumped to `20260708_import_staff_name_31`.
+- Verification on 2026-07-08: red check first failed because a valid staff-name import still used an old wrong `receiverLogin`; after the fix, JDK 8 compile passed for `DwWorkPlan3Service`, `node --check` passed, `scripts/verify-dwworkplan3.ps1` passed, and `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK` with cleanup OK. Tomcat and Redis restarted; `/pb/login` returned 200, 3.0 entry returned 302 to login, and versioned JS/CSS returned 200.

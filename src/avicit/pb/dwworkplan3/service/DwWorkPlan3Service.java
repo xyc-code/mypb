@@ -4,6 +4,7 @@ import avicit.platform6.api.session.SessionHelper;
 import avicit.platform6.api.sysuser.SysUserAPI;
 import avicit.platform6.api.sysuser.dto.SysUser;
 import avicit.platform6.commons.utils.ComUtil;
+import avicit.platform6.modules.system.sysfileupload.domain.SysFileUpload;
 import avicit.platform6.modules.system.sysfileupload.service.SwfUploadService;
 import avicit.pb.dwworkplan3.dto.DwWorkPlan3Constants;
 import com.alibaba.fastjson.JSON;
@@ -51,9 +52,9 @@ public class DwWorkPlan3Service {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String TASK_ATTACHMENT_ELEMENT_ID = "dwTaskAttachment";
     private static final String FEEDBACK_ATTACHMENT_ELEMENT_ID = "dwFeedbackAttachment";
-    private static final String[] IMPORT_HEADERS = new String[]{"任务标题", "工作分类", "工作内容", "工作目标", "截止日期", "接收部门", "接收人姓名", "接收人登录名", "备注"};
+    private static final String[] IMPORT_HEADERS = new String[]{"任务标题", "工作分类", "工作目标", "工作内容", "截止日期", "接收科员", "备注"};
     private static final String IMPORT_SHEET_NAME = "任务填写";
-    private static final String RECEIVER_SHEET_NAME = "接收部门参考";
+    private static final String RECEIVER_SHEET_NAME = "接收科员参考";
     private static final String LEADER_VIEW_ROLE_NAME = "党委一级管理员";
 
     public Map<String, Object> currentUser(HttpServletRequest request) {
@@ -173,8 +174,12 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> createBatch(String year, String quarter, HttpServletRequest request) {
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
-            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u7ef4\u62a4\u6279\u6b21");
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (currentNode == null) {
+            return failure("\u5f53\u524d\u7528\u6237\u672a\u5728\u4eba\u5458\u6811\u4e2d\u914d\u7f6e\uff0c\u4e0d\u80fd\u521b\u5efa\u4efb\u52a1\u6279\u6b21");
+        }
+        if (!canCreateRootTaskRole(string(currentNode.get("ROLE_CODE")))) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u548c\u79d1\u5458\u53ef\u4ee5\u521b\u5efa\u4efb\u52a1\u6279\u6b21");
         }
         if (StringUtils.isBlank(year) || StringUtils.isBlank(quarter)) {
             return failure("\u5e74\u5ea6\u548c\u5b63\u5ea6\u4e0d\u80fd\u4e3a\u7a7a");
@@ -219,11 +224,19 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> deleteBatch(String id, HttpServletRequest request) {
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
-            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u7ef4\u62a4\u6279\u6b21");
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (currentNode == null || !canCreateRootTaskRole(string(currentNode.get("ROLE_CODE")))) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u548c\u79d1\u5458\u53ef\u4ee5\u5220\u9664\u81ea\u5df1\u7684\u6279\u6b21");
         }
         if (StringUtils.isBlank(id)) {
             return failure("\u8bf7\u9009\u62e9\u6279\u6b21");
+        }
+        List<Map<String, Object>> batchRows = jdbcTemplate.queryForList("select CREATED_BY from DYN_DW_PLAN3_BATCH where ID=?", id);
+        if (batchRows.isEmpty()) {
+            return failure("\u6279\u6b21\u4e0d\u5b58\u5728");
+        }
+        if (!loginUser(request).equals(string(batchRows.get(0).get("CREATED_BY")))) {
+            return failure("\u53ea\u80fd\u5220\u9664\u81ea\u5df1\u521b\u5efa\u7684\u6279\u6b21");
         }
         List<Map<String, Object>> feedbackIds = jdbcTemplate.queryForList(
                 "select f.ID,f.ATTACHMENT_ID from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID in (select t.ID from DYN_DW_PLAN3_TASK t where t.BATCH_ID=?)",
@@ -251,16 +264,19 @@ public class DwWorkPlan3Service {
             return failure("\u5f53\u524d\u7528\u6237\u672a\u5728\u4eba\u5458\u6811\u4e2d\u914d\u7f6e\uff0c\u4e0d\u80fd\u65b0\u5efa\u4efb\u52a1");
         }
         String roleCode = string(currentNode.get("ROLE_CODE"));
+        if (!canCreateRootTaskRole(roleCode)) {
+            return failure("\u515a\u59d4\u548c\u90e8\u957f\u53ea\u80fd\u67e5\u770b\u6216\u786e\u8ba4\uff0c\u4e0d\u80fd\u65b0\u5efa\u4efb\u52a1");
+        }
         String taskLevel = taskLevelForRole(roleCode);
         if (StringUtils.isBlank(taskLevel)) {
             return failure("\u5f53\u524d\u4eba\u5458\u6811\u89d2\u8272\u4e0d\u80fd\u65b0\u5efa\u4efb\u52a1");
         }
-        boolean staffTask = DwWorkPlan3Constants.ROLE_STAFF.equals(roleCode);
+        boolean selfTask = isSelfRootTask(roleCode, p);
         String id = value(p, "id");
         String attachmentId = emptyToNull(value(p, "attachmentId"));
-        Map<String, String> draftDept = staffTask ? emptyDraftReceiver() : draftDeptParams(p, request, currentNode);
+        Map<String, String> draftDept = selfTask ? emptyDraftReceiver() : draftDeptParams(p, request, currentNode);
         String nodeUserName = userNameFromPersonNode(currentNode, userId);
-        String status = staffTask ? DwWorkPlan3Constants.STATUS_DOING : DwWorkPlan3Constants.STATUS_DRAFT;
+        String status = selfTask ? DwWorkPlan3Constants.STATUS_DOING : DwWorkPlan3Constants.STATUS_DRAFT;
         if (StringUtils.isBlank(id)) {
             id = ComUtil.getId();
             jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
@@ -282,7 +298,7 @@ public class DwWorkPlan3Service {
                     id, taskLevel, status, userId, string(currentNode.get("ID")), taskLevel);
         }
         bindAttachment(attachmentId, id, "ROOT_TASK", request);
-        if (staffTask) {
+        if (selfTask) {
             syncPortalTodo(id, request);
         }
         Map<String, Object> result = success();
@@ -295,8 +311,8 @@ public class DwWorkPlan3Service {
         if (currentNode == null) {
             return failure("\u5f53\u524d\u7528\u6237\u672a\u5728\u4eba\u5458\u6811\u4e2d\u914d\u7f6e\uff0c\u4e0d\u80fd\u4e0b\u53d1\u4efb\u52a1");
         }
-        if (DwWorkPlan3Constants.ROLE_STAFF.equals(string(currentNode.get("ROLE_CODE")))) {
-            return failure("\u79d1\u5458\u81ea\u5efa\u4efb\u52a1\u9ed8\u8ba4\u7ed9\u81ea\u5df1\uff0c\u4e0d\u9700\u8981\u4e0b\u53d1");
+        if (!DwWorkPlan3Constants.ROLE_OFFICE.equals(string(currentNode.get("ROLE_CODE")))) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u53ef\u4ee5\u4e0b\u53d1\u7ed9\u79d1\u5458");
         }
         if (StringUtils.isBlank(defaultValue(value(p, "draftDeptNodeId"), value(p, "personNodeId")))
                 || StringUtils.isBlank(defaultValue(value(p, "draftDeptUserId"), value(p, "receiverId")))) {
@@ -312,8 +328,9 @@ public class DwWorkPlan3Service {
 
     @Transactional
     public Map<String, Object> batchDirectDispatch(String ids, HttpServletRequest request) {
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
-            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u6279\u91cf\u4e0b\u53d1\u4efb\u52a1");
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (currentNode == null || !DwWorkPlan3Constants.ROLE_OFFICE.equals(string(currentNode.get("ROLE_CODE")))) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u53ef\u4ee5\u6279\u91cf\u4e0b\u53d1\u4efb\u52a1");
         }
         List<String> idList = splitPersonList(ids);
         if (idList.isEmpty()) {
@@ -365,6 +382,9 @@ public class DwWorkPlan3Service {
         if (currentNode == null) {
             return failure("\u8bf7\u5148\u5207\u6362\u5230\u4efb\u52a1\u5bf9\u5e94\u7684\u4eba\u5458\u6811\u8eab\u4efd");
         }
+        if (!DwWorkPlan3Constants.ROLE_OFFICE.equals(string(currentNode.get("ROLE_CODE")))) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u53ef\u4ee5\u4e0b\u53d1\u7ed9\u79d1\u5458");
+        }
         String parentId = value(p, "parentId");
         Map<String, Object> parent = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", parentId);
         if (!userId.equals(string(parent.get("RECEIVER_ID")))) {
@@ -400,6 +420,7 @@ public class DwWorkPlan3Service {
         if (StringUtils.isNotBlank(expectedRole) && !expectedRole.equals(string(receiverNode.get("ROLE_CODE")))) {
             return failure("\u53ea\u80fd\u4e0b\u53d1\u7ed9\u5f53\u524d\u4eba\u5458\u6811\u8282\u70b9\u7684\u76f4\u5c5e\u4e0b\u4e00\u7ea7");
         }
+        String senderName = userNameFromPersonNode(currentNode, userId);
         String receiverName = userNameFromPersonNode(receiverNode, receiverId);
         String attachmentId = emptyToNull(value(p, "attachmentId"));
         String id = ComUtil.getId();
@@ -415,7 +436,7 @@ public class DwWorkPlan3Service {
                 emptyToNull(defaultValue(value(p, "content"), string(parent.get("CONTENT")))),
                 emptyToNull(defaultValue(value(p, "targetDesc"), string(parent.get("TARGET_DESC")))),
                 date(defaultValue(value(p, "planDeadline"), dateString(parent.get("PLAN_DEADLINE")))),
-                DwWorkPlan3Constants.STATUS_TODO, loginUser(request), userName(loginUser(request)), receiverId,
+                DwWorkPlan3Constants.STATUS_TODO, loginUser(request), senderName, receiverId,
                 receiverName, personNodeId, attachmentId);
         bindAttachment(attachmentId, id, "DISPATCH_TASK", request);
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate where ID=?",
@@ -459,12 +480,45 @@ public class DwWorkPlan3Service {
         return result;
     }
 
+    public Map<String, Object> completeSelfTask(Map<String, String> p, HttpServletRequest request) {
+        String id = value(p, "id");
+        if (StringUtils.isBlank(id)) {
+            return failure("\u8bf7\u9009\u62e9\u8981\u5b8c\u6210\u7684\u4efb\u52a1");
+        }
+        Map<String, Object> task = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", id);
+        if (!loginUser(request).equals(string(task.get("RECEIVER_ID")))) {
+            return failure("\u53ea\u6709\u4efb\u52a1\u63a5\u6536\u4eba\u53ef\u4ee5\u5b8c\u6210\u8be5\u4efb\u52a1");
+        }
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (!taskMatchesCurrentNode(task, currentNode)) {
+            return failure("\u8bf7\u5207\u6362\u5230\u8be5\u4efb\u52a1\u5bf9\u5e94\u7684\u4eba\u5458\u6811\u8eab\u4efd\u540e\u518d\u64cd\u4f5c");
+        }
+        if (StringUtils.isNotBlank(string(task.get("PARENT_ID"))) || !directCompletableRootLevel(string(task.get("TASK_LEVEL")))) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u6216\u79d1\u5458\u81ea\u5df1\u521b\u5efa\u7684\u4efb\u52a1\u53ef\u4ee5\u76f4\u63a5\u5b8c\u6210");
+        }
+        Integer childCount = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=?", Integer.class, id);
+        if (childCount != null && childCount > 0) {
+            return failure("\u5df2\u4e0b\u53d1\u7684\u4efb\u52a1\u9700\u8981\u5148\u5904\u7406\u4e0b\u7ea7\u53cd\u9988\uff0c\u518d\u5411\u4e0a\u7ea7\u53cd\u9988");
+        }
+        String status = string(task.get("STATUS"));
+        if (!DwWorkPlan3Constants.STATUS_DOING.equals(status) && !DwWorkPlan3Constants.STATUS_RETURNED.equals(status)) {
+            return failure("\u5f53\u524d\u72b6\u6001\u4e0d\u80fd\u76f4\u63a5\u5b8c\u6210");
+        }
+        String completeDetail = emptyToNull(value(p, "content"));
+        String attachmentIds = value(p, "attachmentIds");
+        String attachmentId = firstAttachmentId(value(p, "attachmentId"), attachmentIds);
+        jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,COMPLETE_TIME=sysdate,COMPLETE_DETAIL=?,ATTACHMENT_ID=nvl(?,ATTACHMENT_ID),RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                DwWorkPlan3Constants.STATUS_COMPLETED, completeDetail, attachmentId, loginUser(request), request.getRemoteAddr(), id);
+        bindAttachments(defaultValue(attachmentIds, attachmentId), id, "COMPLETE_TASK", request);
+        syncPortalTodo(id, request);
+        Map<String, Object> result = success();
+        result.put("id", id);
+        return result;
+    }
+
     public Map<String, Object> deleteTask(String id, HttpServletRequest request) {
         if (StringUtils.isBlank(id)) {
             return failure("\u8bf7\u9009\u62e9\u8981\u5220\u9664\u7684\u4efb\u52a1");
-        }
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
-            return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u53ef\u4ee5\u5220\u9664\u4efb\u52a1");
         }
         List<Map<String, Object>> taskRows = jdbcTemplate.queryForList("select * from DYN_DW_PLAN3_TASK where ID=?", id);
         if (taskRows.isEmpty()) {
@@ -472,6 +526,20 @@ public class DwWorkPlan3Service {
         }
         Map<String, Object> task = taskRows.get(0);
         String userId = loginUser(request);
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (currentNode == null) {
+            return failure("\u5f53\u524d\u7528\u6237\u672a\u5728\u4eba\u5458\u6811\u4e2d\u914d\u7f6e\uff0c\u4e0d\u80fd\u5220\u9664\u4efb\u52a1");
+        }
+        String roleCode = string(currentNode.get("ROLE_CODE"));
+        if (!DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode) && !DwWorkPlan3Constants.ROLE_STAFF.equals(roleCode)) {
+            return failure("\u515a\u59d4\u548c\u90e8\u957f\u53ea\u80fd\u67e5\u770b\u6216\u786e\u8ba4\uff0c\u4e0d\u80fd\u5220\u9664\u4efb\u52a1");
+        }
+        if (StringUtils.isNotBlank(string(task.get("PARENT_ID")))) {
+            return failure("\u53ea\u80fd\u5220\u9664\u81ea\u5df1\u521b\u5efa\u7684\u6839\u4efb\u52a1");
+        }
+        if (!userId.equals(string(task.get("RECEIVER_ID"))) || !taskMatchesCurrentNode(task, currentNode)) {
+            return failure("\u53ea\u80fd\u5220\u9664\u5f53\u524d\u8eab\u4efd\u4e0b\u81ea\u5df1\u521b\u5efa\u7684\u4efb\u52a1");
+        }
         List<String> taskIds = taskSubtreeIds(id);
         if (taskIds.isEmpty()) {
             return failure("\u4efb\u52a1\u5df2\u5220\u9664\u6216\u4e0d\u5b58\u5728\uff0c\u8bf7\u5237\u65b0\u5217\u8868");
@@ -516,6 +584,7 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> submitFeedback(Map<String, String> p, HttpServletRequest request) {
+        ensureFeedbackTargetColumns();
         String taskId = value(p, "taskId");
         if (StringUtils.isBlank(taskId)) {
             return failure("\u8bf7\u9009\u62e9\u4efb\u52a1");
@@ -535,28 +604,41 @@ public class DwWorkPlan3Service {
             return failure("\u4e0b\u7ea7\u4efb\u52a1\u5c1a\u672a\u5168\u90e8\u5b8c\u6210\uff0c\u6682\u4e0d\u80fd\u53cd\u9988");
         }
         Map<String, Object> draft = feedbackDraft(taskId);
-        String id = draft == null ? ComUtil.getId() : string(draft.get("ID"));
+        String preparedId = usablePreparedId(value(p, "preparedId"));
+        String id = draft == null ? defaultValue(preparedId, ComUtil.getId()) : string(draft.get("ID"));
         String feedbackContent = defaultValue(value(p, "content"), string(draft == null ? null : draft.get("FEEDBACK_CONTENT")));
-        String attachmentId = emptyToNull(value(p, "attachmentId"));
+        String feedbackUserName = defaultValue(string(task.get("RECEIVER_NAME")), currentUserNodeDisplayName(request));
+        String attachmentIds = value(p, "attachmentIds");
+        String attachmentId = firstAttachmentId(value(p, "attachmentId"), attachmentIds);
+        Map<String, Object> target;
+        try {
+            target = resolveFeedbackTarget(task, p);
+        } catch (IllegalArgumentException e) {
+            return failure(e.getMessage());
+        }
+        String targetUserId = emptyToNull(string(target.get("USER_ID")));
+        String targetUserName = emptyToNull(string(target.get("USER_NAME")));
+        String targetPersonNodeId = emptyToNull(string(target.get("PERSON_NODE_ID")));
         if (StringUtils.isBlank(attachmentId) && draft != null) {
             attachmentId = emptyToNull(string(draft.get("ATTACHMENT_ID")));
         }
         if (draft != null && !hasFeedbackHistory(taskId)) {
             jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set FEEDBACK_USER_ID=?,FEEDBACK_USER_NAME=?,FEEDBACK_CONTENT=?,FEEDBACK_TIME=sysdate,ATTACHMENT_ID=?,CONFIRM_RESULT=?," +
-                            "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                    loginUser(request), userName(loginUser(request)), emptyToNull(feedbackContent), attachmentId,
-                    DwWorkPlan3Constants.FEEDBACK_PENDING, loginUser(request), request.getRemoteAddr(), id);
+                            "TARGET_USER_ID=?,TARGET_USER_NAME=?,TARGET_PERSON_NODE_ID=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                    loginUser(request), feedbackUserName, emptyToNull(feedbackContent), attachmentId,
+                    DwWorkPlan3Constants.FEEDBACK_PENDING, targetUserId, targetUserName, targetPersonNodeId,
+                    loginUser(request), request.getRemoteAddr(), id);
         } else {
-            id = ComUtil.getId();
+            id = defaultValue(preparedId, ComUtil.getId());
             jdbcTemplate.update("insert into DYN_DW_PLAN3_FEEDBACK(" +
                             "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
-                            "TASK_ID,FEEDBACK_USER_ID,FEEDBACK_USER_NAME,FEEDBACK_CONTENT,FEEDBACK_TIME,ATTACHMENT_ID,CONFIRM_RESULT) " +
-                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,sysdate,?,?)",
+                            "TASK_ID,FEEDBACK_USER_ID,FEEDBACK_USER_NAME,FEEDBACK_CONTENT,FEEDBACK_TIME,ATTACHMENT_ID,TARGET_USER_ID,TARGET_USER_NAME,TARGET_PERSON_NODE_ID,CONFIRM_RESULT) " +
+                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,sysdate,?,?,?,?,?)",
                     id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request), taskId,
-                    loginUser(request), userName(loginUser(request)), emptyToNull(feedbackContent),
-                    attachmentId, DwWorkPlan3Constants.FEEDBACK_PENDING);
+                    loginUser(request), feedbackUserName, emptyToNull(feedbackContent),
+                    attachmentId, targetUserId, targetUserName, targetPersonNodeId, DwWorkPlan3Constants.FEEDBACK_PENDING);
         }
-        bindAttachment(attachmentId, id, "FEEDBACK");
+        bindAttachments(defaultValue(attachmentIds, attachmentId), id, "FEEDBACK", request);
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                 DwWorkPlan3Constants.STATUS_PENDING_CONFIRM, loginUser(request), request.getRemoteAddr(), taskId);
         notifyParent(taskId, "\u5de5\u4f5c\u8ba1\u5212\u53cd\u9988\u5f85\u786e\u8ba4", "\u4e0b\u7ea7\u5df2\u63d0\u4ea4\u53cd\u9988\uff0c\u8bf7\u53ca\u65f6\u786e\u8ba4\u3002");
@@ -566,19 +648,50 @@ public class DwWorkPlan3Service {
         return result;
     }
 
+    public Map<String, Object> prepareFeedback(HttpServletRequest request) {
+        Map<String, Object> result = success();
+        result.put("id", ComUtil.getId());
+        return result;
+    }
+
+    public Map<String, Object> listFeedbackTargets(String taskId, HttpServletRequest request) {
+        ensureFeedbackTargetColumns();
+        if (StringUtils.isBlank(taskId)) {
+            return failure("\u8bf7\u9009\u62e9\u4efb\u52a1");
+        }
+        Map<String, Object> task = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", taskId);
+        Map<String, Object> result = success();
+        result.put("required", "N");
+        result.put("rows", Collections.emptyList());
+        if (!departmentConfirmationRequired(task)) {
+            return result;
+        }
+        if (!loginUser(request).equals(string(task.get("RECEIVER_ID"))) || !taskMatchesCurrentNode(task, currentUserNode(request))) {
+            return failure("\u8bf7\u5207\u6362\u5230\u8be5\u4efb\u52a1\u5bf9\u5e94\u7684\u4eba\u5458\u6811\u8eab\u4efd\u540e\u518d\u64cd\u4f5c");
+        }
+        List<Map<String, Object>> targets = departmentConfirmTargets(task);
+        result.put("required", "Y");
+        result.put("rows", targets);
+        if (targets.size() == 1) {
+            result.put("defaultUserId", string(targets.get(0).get("USER_ID")));
+        }
+        return result;
+    }
+
     public Map<String, Object> confirmFeedback(String feedbackId, HttpServletRequest request) {
-        Map<String, Object> feedback = queryOne("select f.*,t.SENDER_ID,t.PARENT_ID,t.TITLE from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID where f.ID=?", feedbackId);
+        Map<String, Object> feedback = queryOne("select f.*,t.SENDER_ID,t.PARENT_ID,t.TITLE,t.TASK_LEVEL,t.PERSON_NODE_ID from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID where f.ID=?", feedbackId);
         String taskId = string(feedback.get("TASK_ID"));
-        if (!loginUser(request).equals(string(feedback.get("SENDER_ID")))) {
+        if (!canConfirmFeedback(feedback, request)) {
             return failure("\u53ea\u6709\u4efb\u52a1\u4e0b\u53d1\u4eba\u53ef\u4ee5\u786e\u8ba4\u53cd\u9988");
         }
         if (!DwWorkPlan3Constants.FEEDBACK_PENDING.equals(string(feedback.get("CONFIRM_RESULT")))) {
             return failure("\u8be5\u53cd\u9988\u5df2\u7ecf\u5904\u7406\uff0c\u4e0d\u80fd\u91cd\u590d\u786e\u8ba4");
         }
         String completeDetail = string(feedback.get("FEEDBACK_CONTENT"));
+        String confirmUserName = currentUserNodeDisplayName(request);
         jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set CONFIRM_RESULT=?,CONFIRM_USER_ID=?,CONFIRM_USER_NAME=?,CONFIRM_TIME=sysdate," +
                         "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                DwWorkPlan3Constants.FEEDBACK_CONFIRMED, loginUser(request), userName(loginUser(request)), loginUser(request),
+                DwWorkPlan3Constants.FEEDBACK_CONFIRMED, loginUser(request), confirmUserName, loginUser(request),
                 request.getRemoteAddr(), feedbackId);
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,COMPLETE_TIME=sysdate,COMPLETE_DETAIL=?,RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                 DwWorkPlan3Constants.STATUS_COMPLETED, emptyToNull(completeDetail), loginUser(request), request.getRemoteAddr(), taskId);
@@ -589,9 +702,9 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> returnFeedback(String feedbackId, String reason, HttpServletRequest request) {
-        Map<String, Object> feedback = queryOne("select f.*,t.SENDER_ID,t.PARENT_ID,t.TITLE from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID where f.ID=?", feedbackId);
+        Map<String, Object> feedback = queryOne("select f.*,t.SENDER_ID,t.PARENT_ID,t.TITLE,t.TASK_LEVEL,t.PERSON_NODE_ID from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID where f.ID=?", feedbackId);
         String taskId = string(feedback.get("TASK_ID"));
-        if (!loginUser(request).equals(string(feedback.get("SENDER_ID")))) {
+        if (!canConfirmFeedback(feedback, request)) {
             return failure("\u53ea\u6709\u4efb\u52a1\u4e0b\u53d1\u4eba\u53ef\u4ee5\u9000\u56de\u53cd\u9988");
         }
         if (!DwWorkPlan3Constants.FEEDBACK_PENDING.equals(string(feedback.get("CONFIRM_RESULT")))) {
@@ -600,9 +713,10 @@ public class DwWorkPlan3Service {
         if (StringUtils.isBlank(reason)) {
             return failure("\u8bf7\u586b\u5199\u4e0d\u901a\u8fc7\u539f\u56e0");
         }
+        String confirmUserName = currentUserNodeDisplayName(request);
         jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set CONFIRM_RESULT=?,RETURN_REASON=?,CONFIRM_USER_ID=?,CONFIRM_USER_NAME=?,CONFIRM_TIME=sysdate," +
                         "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                DwWorkPlan3Constants.FEEDBACK_RETURNED, emptyToNull(reason), loginUser(request), userName(loginUser(request)),
+                DwWorkPlan3Constants.FEEDBACK_RETURNED, emptyToNull(reason), loginUser(request), confirmUserName,
                 loginUser(request), request.getRemoteAddr(), feedbackId);
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,RETURN_REASON=?,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                 DwWorkPlan3Constants.STATUS_RETURNED, emptyToNull(reason), loginUser(request), request.getRemoteAddr(), taskId);
@@ -619,8 +733,10 @@ public class DwWorkPlan3Service {
     }
 
     public List<Map<String, Object>> listTasks(HttpServletRequest request, String batchId, String year, String quarter, String status) {
+        ensureFeedbackTargetColumns();
         String userId = loginUser(request);
         StringBuilder sql = new StringBuilder("select t.*," +
+                "(select f.ID from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and rownum=1) FEEDBACK_DRAFT_ID," +
                 "(select dbms_lob.substr(f.FEEDBACK_CONTENT,4000,1) from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and rownum=1) FEEDBACK_DRAFT_CONTENT," +
                 "(select f.ATTACHMENT_ID from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and rownum=1) FEEDBACK_DRAFT_ATTACHMENT_ID," +
                 "(select p.ID from DYN_DW_PLAN3_TASK p where p.ID=t.PARENT_ID) PARENT_TASK_ID," +
@@ -629,9 +745,16 @@ public class DwWorkPlan3Service {
                 "(select count(1) from DYN_DW_PLAN3_TASK c where c.PARENT_ID=t.ID) CHILD_COUNT," +
                 "(select count(1) from DYN_DW_PLAN3_TASK c where c.PARENT_ID=t.ID and c.STATUS<>?) CHILD_OPEN_COUNT," +
                 "case when t.PLAN_DEADLINE<sysdate and t.STATUS<>? then 'Y' else 'N' end OVERDUE," +
-                "case when t.RECEIVER_ID=? and t.STATUS in (?,?,?) then 'Y' when t.SENDER_ID=? and t.STATUS=? then 'Y' else 'N' end NOTICE_FLAG " +
+                "case when t.RECEIVER_ID=? and t.STATUS in (?,?,?) then 'Y' " +
+                "when t.SENDER_ID=? and t.STATUS=? then 'Y' " +
+                "when t.PARENT_ID is null and t.TASK_LEVEL=? and t.STATUS=? and (" +
+                "exists(select 1 from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and nvl(f.TARGET_USER_ID,'')<>'' and f.TARGET_USER_ID=?) " +
+                "or (not exists(select 1 from DYN_DW_PLAN3_FEEDBACK f where f.TASK_ID=t.ID and f.CONFIRM_RESULT=? and nvl(f.TARGET_USER_ID,'')<>'') " +
+                "and exists(select 1 from DYN_DW_PLAN3_PERSON_TREE office_node join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID where office_node.ID=t.PERSON_NODE_ID and " + userMatchSql("dept_node.USER_ID") + "))) then 'Y' " +
+                "else 'N' end NOTICE_FLAG " +
                 "from DYN_DW_PLAN3_TASK t where 1=1");
         List<Object> args = new ArrayList<Object>();
+        args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         args.add(DwWorkPlan3Constants.STATUS_COMPLETED);
@@ -642,6 +765,12 @@ public class DwWorkPlan3Service {
         args.add(DwWorkPlan3Constants.STATUS_RETURNED);
         args.add(userId);
         args.add(DwWorkPlan3Constants.STATUS_PENDING_CONFIRM);
+        args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
+        args.add(DwWorkPlan3Constants.STATUS_PENDING_CONFIRM);
+        args.add(DwWorkPlan3Constants.FEEDBACK_PENDING);
+        args.add(userId);
+        args.add(DwWorkPlan3Constants.FEEDBACK_PENDING);
+        args.add(userId);
         if (StringUtils.isNotBlank(batchId)) {
             sql.append(" and t.BATCH_ID=?");
             args.add(batchId);
@@ -682,6 +811,7 @@ public class DwWorkPlan3Service {
     }
 
     public List<Map<String, Object>> listFeedback(String taskId, HttpServletRequest request) {
+        ensureFeedbackTargetColumns();
         if (StringUtils.isBlank(taskId)) {
             return Collections.emptyList();
         }
@@ -692,19 +822,19 @@ public class DwWorkPlan3Service {
         StringBuilder placeholders = new StringBuilder();
         appendPlaceholders(placeholders, taskIds.size());
         List<Object> args = new ArrayList<Object>();
+        args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
+        args.add(loginUser(request));
+        args.add(loginUser(request));
+        args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
         args.add(loginUser(request));
         args.addAll(taskIds);
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
-        args.add(DwWorkPlan3Constants.LEVEL_PARTY);
-        args.add(DwWorkPlan3Constants.LEVEL_DEPT);
-        args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
-        args.add(DwWorkPlan3Constants.LEVEL_STAFF);
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
                 "select f.*,t.TITLE TASK_TITLE,t.TASK_LEVEL TASK_LEVEL,t.SENDER_ID TASK_SENDER_ID,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
-                        "case when t.SENDER_ID=? then 'Y' else 'N' end CAN_CONFIRM " +
+                        "case when (t.PARENT_ID is null and t.TASK_LEVEL=? and ((nvl(f.TARGET_USER_ID,'')<>'' and f.TARGET_USER_ID=?) or (nvl(f.TARGET_USER_ID,'')='' and exists(select 1 from DYN_DW_PLAN3_PERSON_TREE office_node join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID where office_node.ID=t.PERSON_NODE_ID and " + userMatchSql("dept_node.USER_ID") + ")))) or (not (t.PARENT_ID is null and t.TASK_LEVEL=?) and t.SENDER_ID=?) then 'Y' else 'N' end CAN_CONFIRM " +
                         "from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID " +
                         "where f.TASK_ID in (" + placeholders + ") and nvl(f.CONFIRM_RESULT,'PENDING')<>? " +
-                        "order by case t.TASK_LEVEL when ? then 1 when ? then 2 when ? then 3 when ? then 4 else 9 end, f.FEEDBACK_TIME, f.CREATION_DATE",
+                        "order by nvl(f.FEEDBACK_TIME,f.CREATION_DATE), f.CREATION_DATE, f.ID",
                 args.toArray());
         enrichFeedbackAttachmentInfo(rows);
         return rows;
@@ -733,9 +863,75 @@ public class DwWorkPlan3Service {
         return queryOne("select * from DYN_DW_PLAN3_ATTACHMENT where ID=?", id);
     }
 
+    public Map<String, Object> listAttachmentLinks(String businessId, String elementId, String legacyAttachmentId) {
+        Map<String, Object> result = success();
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        String legacyId = emptyToNull(legacyAttachmentId);
+        if (StringUtils.isNotBlank(legacyId)) {
+            List<Map<String, Object>> legacyRows = jdbcTemplate.queryForList("select ID,FILE_NAME,FILE_SIZE,CONTENT_TYPE from DYN_DW_PLAN3_ATTACHMENT where ID=?", legacyId);
+            if (!legacyRows.isEmpty()) {
+                Map<String, Object> legacy = legacyRows.get(0);
+                addDwAttachmentItem(rows, legacy);
+            }
+        }
+        if (StringUtils.isNotBlank(businessId)) {
+            List<Map<String, Object>> directRows = jdbcTemplate.queryForList(
+                    "select ID,FILE_NAME,FILE_SIZE,CONTENT_TYPE from DYN_DW_PLAN3_ATTACHMENT where BUSINESS_ID=? order by CREATION_DATE,ID",
+                    businessId);
+            for (Map<String, Object> direct : directRows) {
+                addDwAttachmentItem(rows, direct);
+            }
+        }
+        if (StringUtils.isNotBlank(businessId) && swfUploadService != null) {
+            try {
+                List<SysFileUpload> files = StringUtils.isBlank(elementId)
+                        ? swfUploadService.getFileListByFormId(businessId)
+                        : swfUploadService.getFileListByFormId(businessId, elementId);
+                for (SysFileUpload file : files) {
+                    Map<String, Object> item = new HashMap<String, Object>();
+                    item.put("id", file.getId());
+                    item.put("name", file.getFILE_NAME());
+                    item.put("size", Long.valueOf(file.getFILE_SIZE()));
+                    item.put("source", "PLATFORM");
+                    item.put("url", "webuploader/download?fileId=" + url(file.getId()) + "&allowEncry=false");
+                    rows.add(item);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        result.put("rows", rows);
+        return result;
+    }
+
+    private void addDwAttachmentItem(List<Map<String, Object>> rows, Map<String, Object> attachment) {
+        String id = string(attachment.get("ID"));
+        if (StringUtils.isBlank(id) || hasAttachmentItem(rows, id, "DW3")) {
+            return;
+        }
+        Map<String, Object> item = new HashMap<String, Object>();
+        item.put("id", id);
+        item.put("name", string(attachment.get("FILE_NAME")));
+        item.put("size", attachment.get("FILE_SIZE"));
+        item.put("source", "DW3");
+        item.put("url", "platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/api/attachment/download?id=" + url(id));
+        rows.add(item);
+    }
+
+    private boolean hasAttachmentItem(List<Map<String, Object>> rows, String id, String source) {
+        for (Map<String, Object> row : rows) {
+            if (id.equals(string(row.get("id"))) && source.equals(string(row.get("source")))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<Map<String, Object>> listReceivers(HttpServletRequest request) {
         Map<String, Object> node = currentUserNode(request);
         if (node == null) {
+            return Collections.emptyList();
+        }
+        if (!DwWorkPlan3Constants.ROLE_OFFICE.equals(string(node.get("ROLE_CODE")))) {
             return Collections.emptyList();
         }
         String nextRole = DwWorkPlan3Constants.nextRole(string(node.get("ROLE_CODE")));
@@ -747,11 +943,11 @@ public class DwWorkPlan3Service {
     }
 
     public void downloadImportTemplate(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
+        if (!currentRoleIs(request, DwWorkPlan3Constants.ROLE_OFFICE)) {
             response.reset();
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write("只有党委计划下发者可以下载批量导入模板");
+            response.getWriter().write("只有室主任可以下载批量导入模板");
             return;
         }
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -768,29 +964,15 @@ public class DwWorkPlan3Service {
 
         Sheet receiverSheet = workbook.createSheet(RECEIVER_SHEET_NAME);
         Row receiverHeader = receiverSheet.createRow(0);
-        String[] receiverHeaders = new String[]{"接收部门", "接收部门节点ID", "姓名", "登录名"};
+        String[] receiverHeaders = new String[]{"接收科员"};
         for (int i = 0; i < receiverHeaders.length; i++) {
             receiverHeader.createCell(i).setCellValue(receiverHeaders[i]);
-            receiverSheet.setColumnWidth(i, i == 1 ? 9000 : 6800);
+            receiverSheet.setColumnWidth(i, 6800);
         }
         int rowIndex = 1;
         for (Map<String, Object> receiver : listReceivers(request)) {
-            List<String> userIds = splitPersonList(string(receiver.get("USER_ID")));
-            List<String> userNames = splitPersonList(string(receiver.get("USER_NAME")));
-            if (userIds.isEmpty()) {
-                Row row = receiverSheet.createRow(rowIndex++);
-                row.createCell(0).setCellValue(string(receiver.get("NODE_NAME")));
-                row.createCell(1).setCellValue(string(receiver.get("ID")));
-                continue;
-            }
-            for (int i = 0; i < userIds.size(); i++) {
-                String userId = userIds.get(i);
-                Row row = receiverSheet.createRow(rowIndex++);
-                row.createCell(0).setCellValue(string(receiver.get("NODE_NAME")));
-                row.createCell(1).setCellValue(string(receiver.get("ID")));
-                row.createCell(2).setCellValue(i < userNames.size() && StringUtils.isNotBlank(userNames.get(i)) ? userNames.get(i) : userName(userId));
-                row.createCell(3).setCellValue(userLoginName(userId));
-            }
+            Row row = receiverSheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(string(receiver.get("NODE_NAME")));
         }
 
         String fileName = URLEncoder.encode("党委计划3.0导入模板.xlsx", "UTF-8").replace("+", "%20");
@@ -803,8 +985,8 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> previewImport(MultipartFile file, String year, String quarter, HttpServletRequest request) throws Exception {
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
-            return failure("只有党委计划下发者可以使用批量导入");
+        if (!currentRoleIs(request, DwWorkPlan3Constants.ROLE_OFFICE)) {
+            return failure("只有室主任可以使用批量导入");
         }
         String periodError = validateImportPeriod(year, quarter);
         if (StringUtils.isNotBlank(periodError)) {
@@ -845,8 +1027,8 @@ public class DwWorkPlan3Service {
     }
 
     private Map<String, Object> persistImportRows(String rowsJson, String year, String quarter, HttpServletRequest request, boolean directDispatch) {
-        if (!hasRole(loginUser(request), DwWorkPlan3Constants.ROLE_PARTY)) {
-            return failure("只有党委计划下发者可以使用批量导入");
+        if (!currentRoleIs(request, DwWorkPlan3Constants.ROLE_OFFICE)) {
+            return failure("只有室主任可以使用批量导入");
         }
         String periodError = validateImportPeriod(year, quarter);
         if (StringUtils.isNotBlank(periodError)) {
@@ -924,13 +1106,11 @@ public class DwWorkPlan3Service {
             row.put("rowNumber", String.valueOf(i + 1));
             row.put("title", cellText(excelRow.getCell(0)));
             row.put("workCategory", cellText(excelRow.getCell(1)));
-            row.put("content", cellText(excelRow.getCell(2)));
-            row.put("targetDesc", cellText(excelRow.getCell(3)));
+            row.put("targetDesc", cellText(excelRow.getCell(2)));
+            row.put("content", cellText(excelRow.getCell(3)));
             row.put("planDeadline", cellDateText(excelRow.getCell(4)));
             row.put("deptName", cellText(excelRow.getCell(5)));
-            row.put("receiverName", cellText(excelRow.getCell(6)));
-            row.put("receiverLogin", cellText(excelRow.getCell(7)));
-            row.put("remark", cellText(excelRow.getCell(8)));
+            row.put("remark", cellText(excelRow.getCell(6)));
             rows.add(row);
         }
         return rows;
@@ -961,8 +1141,6 @@ public class DwWorkPlan3Service {
             String targetDesc = value(source, "targetDesc");
             String planDeadline = normalizeImportDate(value(source, "planDeadline"));
             String deptInput = defaultValue(value(source, "deptNodeId"), value(source, "deptName"));
-            String receiverName = value(source, "receiverName");
-            String receiverLogin = value(source, "receiverLogin");
             String remark = value(source, "remark");
 
             row.put("rowNumber", defaultValue(value(source, "rowNumber"), String.valueOf(rows.size() + 2)));
@@ -973,8 +1151,6 @@ public class DwWorkPlan3Service {
             row.put("planDeadline", planDeadline);
             row.put("deptName", value(source, "deptName"));
             row.put("deptNodeId", value(source, "deptNodeId"));
-            row.put("receiverName", receiverName);
-            row.put("receiverLogin", receiverLogin);
             row.put("remark", remark);
 
             if (StringUtils.isBlank(title)) {
@@ -986,9 +1162,9 @@ public class DwWorkPlan3Service {
                 errors.add("截止日期必须是有效日期");
             }
             if (StringUtils.isBlank(deptInput)) {
-                errors.add("接收部门不能为空");
+                errors.add("接收科员不能为空");
             } else {
-                fillImportReceiver(row, receivers, deptInput, receiverLogin, errors, warnings);
+                fillImportReceiver(row, receivers, deptInput, errors);
             }
 
             if (errors.isEmpty()) {
@@ -1017,7 +1193,7 @@ public class DwWorkPlan3Service {
     }
 
     private void fillImportReceiver(Map<String, Object> row, List<Map<String, String>> receivers, String deptInput,
-                                    String receiverLogin, List<String> errors, List<String> warnings) {
+                                    List<String> errors) {
         List<String> nodeIds = new ArrayList<String>();
         for (Map<String, String> receiver : receivers) {
             String nodeId = receiver.get("nodeId");
@@ -1027,11 +1203,11 @@ public class DwWorkPlan3Service {
             }
         }
         if (nodeIds.isEmpty()) {
-            errors.add("接收部门不在当前党委直属部门中");
+            errors.add("接收科员不在当前科室下");
             return;
         }
         if (nodeIds.size() > 1) {
-            errors.add("接收部门名称重复，请填写接收部门参考页中的节点ID");
+            errors.add("当前科室下接收科员名称重复，请先在人员树中调整为唯一名称");
             return;
         }
         List<Map<String, String>> nodeUsers = new ArrayList<Map<String, String>>();
@@ -1041,36 +1217,19 @@ public class DwWorkPlan3Service {
             }
         }
         if (nodeUsers.isEmpty() || StringUtils.isBlank(nodeUsers.get(0).get("userId"))) {
-            errors.add("接收部门没有绑定平台用户");
+            errors.add("接收科员没有绑定平台用户");
             return;
         }
-        Map<String, String> matched = null;
-        if (StringUtils.isBlank(receiverLogin)) {
-            if (nodeUsers.size() == 1) {
-                matched = nodeUsers.get(0);
-                warnings.add("已按单用户部门自动匹配接收人：" + matched.get("userName"));
-            } else {
-                errors.add("该接收部门绑定多个用户，必须填写接收人登录名");
-                return;
-            }
-        } else {
-            for (Map<String, String> user : nodeUsers) {
-                if (receiverLogin.equalsIgnoreCase(user.get("loginName"))) {
-                    matched = user;
-                    break;
-                }
-            }
-            if (matched == null) {
-                errors.add("接收人登录名不属于该接收部门");
-                return;
-            }
+        if (nodeUsers.size() > 1) {
+            errors.add("该接收科员节点绑定多个平台用户，请在人员树中只绑定一个用户后再导入");
+            return;
         }
+        Map<String, String> matched = nodeUsers.get(0);
         row.put("deptName", matched.get("nodeName"));
         row.put("deptNodeId", matched.get("nodeId"));
         row.put("personNodeId", matched.get("nodeId"));
         row.put("receiverId", matched.get("userId"));
         row.put("receiverName", matched.get("userName"));
-        row.put("receiverLogin", matched.get("loginName"));
     }
 
     private List<Map<String, String>> receiverChoices(List<Map<String, Object>> receivers) {
@@ -1121,8 +1280,6 @@ public class DwWorkPlan3Service {
             row.put("planDeadline", string(raw.get("planDeadline")));
             row.put("deptName", string(raw.get("deptName")));
             row.put("deptNodeId", string(raw.get("deptNodeId")));
-            row.put("receiverName", string(raw.get("receiverName")));
-            row.put("receiverLogin", string(raw.get("receiverLogin")));
             row.put("remark", string(raw.get("remark")));
             rows.add(row);
         }
@@ -1277,22 +1434,119 @@ public class DwWorkPlan3Service {
         }
         Map<String, Object> parent = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", parentId);
         String draftContent = aggregateChildFeedbackContent(parentId);
-        String parentAttachmentId = copyAttachment(feedbackAttachmentId, null, "FEEDBACK_DRAFT", request);
-        upsertFeedbackDraft(parentId, defaultValue(draftContent, feedbackContent), parentAttachmentId, request);
         if (allChildrenCompleted(parentId)) {
-            if (DwWorkPlan3Constants.LEVEL_PARTY.equals(string(parent.get("TASK_LEVEL")))) {
-                jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,COMPLETE_TIME=sysdate,RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                        DwWorkPlan3Constants.STATUS_COMPLETED, loginUser(request), request.getRemoteAddr(), parentId);
-            } else {
+            String completeDetail = defaultValue(draftContent, feedbackContent);
+            if (departmentConfirmationRequired(parent)) {
+                String parentAttachmentId = copyAttachment(feedbackAttachmentId, null, "FEEDBACK_DRAFT", request);
+                upsertFeedbackDraft(parentId, completeDetail, parentAttachmentId, request);
                 jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                         DwWorkPlan3Constants.STATUS_DOING, loginUser(request), request.getRemoteAddr(), parentId);
-                notifyTaskReceiver(parentId, "\u5de5\u4f5c\u8ba1\u5212\u53cd\u9988\u5df2\u901a\u8fc7",
-                        "\u4e0b\u7ea7\u53cd\u9988\u5df2\u901a\u8fc7\uff0c\u8bf7\u53ca\u65f6\u5904\u7406\u4e0a\u7ea7\u53cd\u9988\u3002");
+                syncPortalTodo(parentId, request);
+            } else {
+                jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,COMPLETE_TIME=sysdate,COMPLETE_DETAIL=?,RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
+                        DwWorkPlan3Constants.STATUS_COMPLETED, emptyToNull(completeDetail), loginUser(request), request.getRemoteAddr(), parentId);
+                syncPortalTodo(parentId, request);
+                syncParentAfterChildDone(parentId, completeDetail, feedbackAttachmentId, request);
             }
         } else {
+            String parentAttachmentId = copyAttachment(feedbackAttachmentId, null, "FEEDBACK_DRAFT", request);
+            upsertFeedbackDraft(parentId, defaultValue(draftContent, feedbackContent), parentAttachmentId, request);
             jdbcTemplate.update("update DYN_DW_PLAN3_TASK set LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
                     loginUser(request), request.getRemoteAddr(), parentId);
         }
+    }
+
+    private boolean departmentConfirmationRequired(Map<String, Object> task) {
+        return task != null
+                && StringUtils.isBlank(string(task.get("PARENT_ID")))
+                && DwWorkPlan3Constants.LEVEL_OFFICE.equals(string(task.get("TASK_LEVEL")))
+                && !DwWorkPlan3Constants.STATUS_COMPLETED.equals(string(task.get("STATUS")));
+    }
+
+    private Map<String, Object> resolveFeedbackTarget(Map<String, Object> task, Map<String, String> p) {
+        Map<String, Object> empty = new HashMap<String, Object>();
+        if (!departmentConfirmationRequired(task)) {
+            return empty;
+        }
+        List<Map<String, Object>> targets = departmentConfirmTargets(task);
+        if (targets.isEmpty()) {
+            throw new IllegalArgumentException("\u4e0a\u7ea7\u90e8\u95e8\u8282\u70b9\u672a\u7ed1\u5b9a\u786e\u8ba4\u4eba");
+        }
+        String targetUserId = value(p, "targetUserId");
+        if (StringUtils.isBlank(targetUserId)) {
+            if (targets.size() == 1) {
+                return targets.get(0);
+            }
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u53cd\u9988\u7ed9\u54ea\u4f4d\u90e8\u95e8\u786e\u8ba4\u4eba");
+        }
+        for (Map<String, Object> target : targets) {
+            if (targetUserId.equals(string(target.get("USER_ID")))) {
+                return target;
+            }
+        }
+        throw new IllegalArgumentException("\u9009\u62e9\u7684\u90e8\u95e8\u786e\u8ba4\u4eba\u4e0d\u5c5e\u4e8e\u5f53\u524d\u79d1\u5ba4\u4e0a\u7ea7\u90e8\u95e8");
+    }
+
+    private List<Map<String, Object>> departmentConfirmTargets(Map<String, Object> officeTask) {
+        String officeNodeId = string(officeTask.get("PERSON_NODE_ID"));
+        if (StringUtils.isBlank(officeNodeId)) {
+            return Collections.emptyList();
+        }
+        List<Map<String, Object>> deptRows = jdbcTemplate.queryForList(
+                "select dept_node.ID,dept_node.NODE_NAME,dept_node.USER_ID,dept_node.USER_NAME from DYN_DW_PLAN3_PERSON_TREE office_node " +
+                        "join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID " +
+                        "where office_node.ID=? and dept_node.ROLE_CODE=? and dept_node.ENABLED='Y'",
+                officeNodeId, DwWorkPlan3Constants.ROLE_DEPT);
+        if (deptRows.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Map<String, Object> deptNode = deptRows.get(0);
+        List<String> userIds = splitPersonList(string(deptNode.get("USER_ID")));
+        List<String> userNames = splitPersonList(string(deptNode.get("USER_NAME")));
+        List<Map<String, Object>> targets = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < userIds.size(); i++) {
+            String userId = userIds.get(i);
+            if (StringUtils.isBlank(userId)) {
+                continue;
+            }
+            Map<String, Object> target = new HashMap<String, Object>();
+            target.put("PERSON_NODE_ID", string(deptNode.get("ID")));
+            target.put("NODE_NAME", string(deptNode.get("NODE_NAME")));
+            target.put("USER_ID", userId);
+            target.put("USER_NAME", i < userNames.size() && StringUtils.isNotBlank(userNames.get(i)) ? userNames.get(i) : userName(userId));
+            targets.add(target);
+        }
+        return targets;
+    }
+
+    private boolean canConfirmFeedback(Map<String, Object> feedback, HttpServletRequest request) {
+        if (feedback == null) {
+            return false;
+        }
+        if (isDepartmentConfirmationTask(feedback)) {
+            String targetUserId = string(feedback.get("TARGET_USER_ID"));
+            if (StringUtils.isNotBlank(targetUserId)) {
+                return loginUser(request).equals(targetUserId);
+            }
+            return currentUserInParentDeptNode(string(feedback.get("PERSON_NODE_ID")), loginUser(request));
+        }
+        return loginUser(request).equals(string(feedback.get("SENDER_ID")));
+    }
+
+    private boolean isDepartmentConfirmationTask(Map<String, Object> task) {
+        return StringUtils.isBlank(string(task.get("PARENT_ID")))
+                && DwWorkPlan3Constants.LEVEL_OFFICE.equals(string(task.get("TASK_LEVEL")));
+    }
+
+    private boolean currentUserInParentDeptNode(String officeNodeId, String userId) {
+        if (StringUtils.isBlank(officeNodeId) || StringUtils.isBlank(userId)) {
+            return false;
+        }
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(1) from DYN_DW_PLAN3_PERSON_TREE office_node join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID " +
+                        "where office_node.ID=? and dept_node.ROLE_CODE=? and dept_node.ENABLED='Y' and " + userMatchSql("dept_node.USER_ID"),
+                Integer.class, officeNodeId, DwWorkPlan3Constants.ROLE_DEPT, userId);
+        return count != null && count > 0;
     }
 
     private void syncParentAfterChildReturned(String childTaskId, HttpServletRequest request) {
@@ -1407,8 +1661,8 @@ public class DwWorkPlan3Service {
     private String validateBatchDispatchTask(Map<String, Object> task, HttpServletRequest request) {
         String userId = loginUser(request);
         Map<String, Object> currentNode = currentUserNode(request);
-        if (currentNode == null || !DwWorkPlan3Constants.ROLE_PARTY.equals(string(currentNode.get("ROLE_CODE")))) {
-            return "\u8bf7\u5207\u6362\u5230\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u8eab\u4efd";
+        if (currentNode == null || !DwWorkPlan3Constants.ROLE_OFFICE.equals(string(currentNode.get("ROLE_CODE")))) {
+            return "\u8bf7\u5207\u6362\u5230\u5ba4\u4e3b\u4efb\u8eab\u4efd";
         }
         if (!userId.equals(string(task.get("RECEIVER_ID")))) {
             return "\u4e0d\u662f\u5f53\u524d\u7528\u6237\u7684\u8349\u7a3f\u4efb\u52a1";
@@ -1416,8 +1670,8 @@ public class DwWorkPlan3Service {
         if (!taskMatchesCurrentNode(task, currentNode)) {
             return "\u4e0d\u662f\u5f53\u524d\u8eab\u4efd\u4e0b\u7684\u8349\u7a3f\u4efb\u52a1";
         }
-        if (!DwWorkPlan3Constants.LEVEL_PARTY.equals(string(task.get("TASK_LEVEL")))) {
-            return "\u53ea\u80fd\u6279\u91cf\u4e0b\u53d1\u515a\u59d4\u6839\u4efb\u52a1";
+        if (!DwWorkPlan3Constants.LEVEL_OFFICE.equals(string(task.get("TASK_LEVEL")))) {
+            return "\u53ea\u80fd\u6279\u91cf\u4e0b\u53d1\u79d1\u5ba4\u6839\u4efb\u52a1";
         }
         if (!DwWorkPlan3Constants.STATUS_DRAFT.equals(string(task.get("STATUS")))) {
             return "\u53ea\u80fd\u6279\u91cf\u4e0b\u53d1\u8349\u7a3f\u72b6\u6001\u4efb\u52a1";
@@ -1430,12 +1684,12 @@ public class DwWorkPlan3Service {
         String nodeId = string(task.get("DRAFT_DEPT_NODE_ID"));
         String receiverId = string(task.get("DRAFT_DEPT_USER_ID"));
         if (StringUtils.isBlank(nodeId) || StringUtils.isBlank(receiverId)) {
-            return "\u7f3a\u5c11\u8349\u7a3f\u63a5\u6536\u90e8\u95e8\u6216\u63a5\u6536\u4eba";
+            return "\u7f3a\u5c11\u8349\u7a3f\u63a5\u6536\u79d1\u5458\u6216\u63a5\u6536\u4eba";
         }
         try {
             Map<String, Object> receiverNode = validateDirectChildReceiver(currentNode, nodeId, receiverId);
-            if (!DwWorkPlan3Constants.ROLE_DEPT.equals(string(receiverNode.get("ROLE_CODE")))) {
-                return "\u515a\u59d4\u6839\u4efb\u52a1\u53ea\u80fd\u4e0b\u53d1\u7ed9\u90e8\u95e8";
+            if (!DwWorkPlan3Constants.ROLE_STAFF.equals(string(receiverNode.get("ROLE_CODE")))) {
+                return "\u5ba4\u4e3b\u4efb\u4efb\u52a1\u53ea\u80fd\u4e0b\u53d1\u7ed9\u79d1\u5458";
             }
         } catch (Exception ex) {
             return defaultValue(ex.getMessage(), "\u63a5\u6536\u90e8\u95e8\u6216\u63a5\u6536\u4eba\u4e0d\u6b63\u786e");
@@ -1470,6 +1724,28 @@ public class DwWorkPlan3Service {
         Integer count = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ROLE_CODE=? and ENABLED='Y'",
                 Integer.class, userId, role);
         return count != null && count > 0;
+    }
+
+    private boolean currentRoleIs(HttpServletRequest request, String role) {
+        Map<String, Object> currentNode = currentUserNode(request);
+        return currentNode != null && role.equals(string(currentNode.get("ROLE_CODE")));
+    }
+
+    private boolean canCreateRootTaskRole(String roleCode) {
+        return DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode) || DwWorkPlan3Constants.ROLE_STAFF.equals(roleCode);
+    }
+
+    private boolean isSelfRootTask(String roleCode, Map<String, String> p) {
+        if (DwWorkPlan3Constants.ROLE_STAFF.equals(roleCode)) {
+            return true;
+        }
+        return DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode)
+                && StringUtils.isBlank(defaultValue(value(p, "draftDeptNodeId"), value(p, "personNodeId")))
+                && StringUtils.isBlank(defaultValue(value(p, "draftDeptUserId"), value(p, "receiverId")));
+    }
+
+    private boolean directCompletableRootLevel(String taskLevel) {
+        return DwWorkPlan3Constants.LEVEL_OFFICE.equals(taskLevel) || DwWorkPlan3Constants.LEVEL_STAFF.equals(taskLevel);
     }
 
     private boolean hasPlatformRole(String userId, String roleName) {
@@ -1681,6 +1957,19 @@ public class DwWorkPlan3Service {
 
     private int attachmentCount(String businessId, String elementId, Object legacyAttachmentId) {
         int count = StringUtils.isBlank(string(legacyAttachmentId)) ? 0 : 1;
+        if (StringUtils.isNotBlank(businessId)) {
+            List<Object> args = new ArrayList<Object>();
+            StringBuilder sql = new StringBuilder("select count(1) from DYN_DW_PLAN3_ATTACHMENT where BUSINESS_ID=?");
+            args.add(businessId);
+            if (StringUtils.isNotBlank(string(legacyAttachmentId))) {
+                sql.append(" and ID<>?");
+                args.add(string(legacyAttachmentId));
+            }
+            Integer directCount = jdbcTemplate.queryForObject(sql.toString(), Integer.class, args.toArray());
+            if (directCount != null) {
+                count += directCount.intValue();
+            }
+        }
         if (StringUtils.isBlank(businessId) || swfUploadService == null) {
             return count;
         }
@@ -1702,12 +1991,42 @@ public class DwWorkPlan3Service {
                 businessId, businessType, loginUser(request), request.getRemoteAddr(), attachmentId);
     }
 
+    private void bindAttachments(String attachmentIds, String businessId, String businessType, HttpServletRequest request) {
+        for (String attachmentId : splitIds(attachmentIds)) {
+            bindAttachment(attachmentId, businessId, businessType, request);
+        }
+    }
+
     private void bindAttachment(String attachmentId, String businessId, String businessType) {
         if (StringUtils.isBlank(attachmentId)) {
             return;
         }
         jdbcTemplate.update("update DYN_DW_PLAN3_ATTACHMENT set BUSINESS_ID=?,BUSINESS_TYPE=?,LAST_UPDATE_DATE=sysdate where ID=?",
                 businessId, businessType, attachmentId);
+    }
+
+    private String firstAttachmentId(String attachmentId, String attachmentIds) {
+        String id = emptyToNull(attachmentId);
+        if (StringUtils.isNotBlank(id)) {
+            return id;
+        }
+        List<String> ids = splitIds(attachmentIds);
+        return ids.isEmpty() ? null : ids.get(0);
+    }
+
+    private List<String> splitIds(String raw) {
+        List<String> ids = new ArrayList<String>();
+        if (StringUtils.isBlank(raw)) {
+            return ids;
+        }
+        String[] parts = raw.split("[,;\\s]+");
+        for (String part : parts) {
+            String id = emptyToNull(part);
+            if (StringUtils.isNotBlank(id) && !ids.contains(id)) {
+                ids.add(id);
+            }
+        }
+        return ids;
     }
 
     private void deleteAttachment(String attachmentId) {
@@ -1745,6 +2064,15 @@ public class DwWorkPlan3Service {
                 "select count(1) from DYN_DW_PLAN3_FEEDBACK where TASK_ID=? and nvl(CONFIRM_RESULT,?)<>?",
                 Integer.class, taskId, DwWorkPlan3Constants.FEEDBACK_PENDING, DwWorkPlan3Constants.FEEDBACK_DRAFT);
         return count != null && count > 0;
+    }
+
+    private String usablePreparedId(String id) {
+        id = StringUtils.trimToEmpty(id);
+        if (StringUtils.isBlank(id) || id.length() > 50 || !id.matches("[A-Za-z0-9_\\-]+")) {
+            return "";
+        }
+        Integer count = jdbcTemplate.queryForObject("select count(1) from DYN_DW_PLAN3_FEEDBACK where ID=?", Integer.class, id);
+        return count != null && count > 0 ? "" : id;
     }
 
     private void upsertFeedbackDraft(String taskId, String content, String attachmentId, HttpServletRequest request) {
@@ -1800,8 +2128,11 @@ public class DwWorkPlan3Service {
             return;
         }
         try {
-            jdbcTemplate.update("insert into SYS_MSG(ID,TITLE,CONTENT,MSG_TYPE,SEND_USER,RECV_USER,SEND_DATE) values(?,?,?,?,?,?,sysdate)",
-                    ComUtil.getId(), title, content, "0", "1", recvUser);
+            jdbcTemplate.update("insert into SYS_MSG(" +
+                            "ID,TITLE,CONTENT,SEND_USER,SEND_DATE,RECV_USER,IS_READED,LAST_UPDATE_DATE,LAST_UPDATED_BY," +
+                            "CREATION_DATE,CREATED_BY,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,MSG_TYPE,RECV_OR_SEND) " +
+                            "values(?,?,?,?,sysdate,?,'0',sysdate,?,sysdate,?,?,0,?,?,?)",
+                    ComUtil.getId(), title, content, "1", recvUser, "1", "1", "127.0.0.1", "ORG_ROOT", "0", "0");
         } catch (Exception ignored) {
             // Notification tables vary between PB deployments. Never fail the task flow for that.
         }
@@ -1929,6 +2260,15 @@ public class DwWorkPlan3Service {
         return userName(userId);
     }
 
+    private String currentUserNodeDisplayName(HttpServletRequest request) {
+        String userId = loginUser(request);
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (currentNode != null) {
+            return userNameFromPersonNode(currentNode, userId);
+        }
+        return userName(userId);
+    }
+
     private boolean allowsMultiPerson(String roleCode) {
         return DwWorkPlan3Constants.ROLE_DEPT.equals(roleCode) || DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode);
     }
@@ -2012,6 +2352,24 @@ public class DwWorkPlan3Service {
         }
     }
 
+    private void ensureFeedbackTargetColumns() {
+        ensureColumnExists("DYN_DW_PLAN3_FEEDBACK", "TARGET_USER_ID", "VARCHAR2(50)");
+        ensureColumnExists("DYN_DW_PLAN3_FEEDBACK", "TARGET_USER_NAME", "VARCHAR2(100)");
+        ensureColumnExists("DYN_DW_PLAN3_FEEDBACK", "TARGET_PERSON_NODE_ID", "VARCHAR2(50)");
+    }
+
+    private void ensureColumnExists(String tableName, String columnName, String declaration) {
+        try {
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                    "select 1 from USER_TAB_COLUMNS where TABLE_NAME=? and COLUMN_NAME=?",
+                    tableName, columnName);
+            if (rows.isEmpty()) {
+                jdbcTemplate.execute("ALTER TABLE " + tableName + " ADD " + columnName + " " + declaration);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
     private void ensureColumnLength(String tableName, String columnName, int minLength) {
         try {
             List<Map<String, Object>> rows = jdbcTemplate.queryForList(
@@ -2068,6 +2426,14 @@ public class DwWorkPlan3Service {
 
     private String string(Object value) {
         return value == null ? "" : String.valueOf(value);
+    }
+
+    private String url(String value) {
+        try {
+            return URLEncoder.encode(defaultValue(value, ""), "UTF-8");
+        } catch (Exception ignored) {
+            return defaultValue(value, "");
+        }
     }
 }
 
