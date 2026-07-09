@@ -955,13 +955,24 @@ public class DwWorkPlan3Service {
     }
 
     public List<Map<String, Object>> listGrassrootPartyOrgTree(HttpServletRequest request) {
-        if (!tableExists("PARTY_ORGANIZATION")) {
-            return Collections.emptyList();
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        if (tableExists("PARTY_ORGANIZATION")) {
+            rows.addAll(jdbcTemplate.queryForList(
+                    "select ID,PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS,'d' ORG_TYPE,'党组织' ORG_TYPE_NAME from PARTY_ORGANIZATION " +
+                            "where PARTY_NAME is not null and nvl(PARTY_NAME,' ') not like '%党小组%' and ID<>'-1' " +
+                            "order by TREE_SORTS,TREE_SORT,PARTY_NAME"));
         }
-        return jdbcTemplate.queryForList(
-                "select ID,PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS from PARTY_ORGANIZATION " +
-                        "where PARTY_NAME is not null and nvl(PARTY_NAME,' ') not like '%党小组%' and ID<>'-1' " +
-                        "order by TREE_SORTS,TREE_SORT,PARTY_NAME");
+        if (tableExists("DYN_TRADE_UNION_ORGANIZA")) {
+            rows.addAll(jdbcTemplate.queryForList(
+                    "select ID,LEAGUE_NAME PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS,'g' ORG_TYPE,'工会组织' ORG_TYPE_NAME " +
+                            "from DYN_TRADE_UNION_ORGANIZA where LEAGUE_NAME is not null and ID<>'-1' order by TREE_SORTS,TREE_SORT,LEAGUE_NAME"));
+        }
+        if (tableExists("LEAGUE_ORGANIZATION")) {
+            rows.addAll(jdbcTemplate.queryForList(
+                    "select ID,LEAGUE_NAME PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS,'t' ORG_TYPE,'团组织' ORG_TYPE_NAME " +
+                            "from LEAGUE_ORGANIZATION where LEAGUE_NAME is not null and ID<>'-1' order by TREE_SORTS,TREE_SORT,LEAGUE_NAME"));
+        }
+        return rows;
     }
 
     public Map<String, Object> listGrassrootDispatch(String taskId, HttpServletRequest request) {
@@ -990,9 +1001,6 @@ public class DwWorkPlan3Service {
         if (!tableExists("DYN_ZBJHYWS")) {
             return failure("业务树表 DYN_ZBJHYWS 不存在，无法保存基层分发清单");
         }
-        if (!tableExists("PARTY_ORGANIZATION")) {
-            return failure("基层党组织表 PARTY_ORGANIZATION 不存在，无法保存基层分发清单");
-        }
         String businessTreeId = value(p, "businessTreeId");
         if (StringUtils.isBlank(businessTreeId)) {
             return failure("请选择业务");
@@ -1000,6 +1008,7 @@ public class DwWorkPlan3Service {
         Map<String, Object> business = queryOne(
                 "select ID,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX from DYN_ZBJHYWS where ID=? and nvl(VALID_FLAG,'1')='1'",
                 businessTreeId);
+        String orgType = normalizeGrassrootOrgType(business.get("YWLX"));
         List<String> partyOrgIds = splitPersonList(value(p, "partyOrgIds"));
         if (partyOrgIds.isEmpty()) {
             return failure("请选择要发送的基层党组织");
@@ -1011,7 +1020,7 @@ public class DwWorkPlan3Service {
         List<String> errors = new ArrayList<String>();
         int count = 0;
         for (String partyOrgId : partyOrgIds) {
-            List<Map<String, Object>> partyOrgRows = jdbcTemplate.queryForList("select ID,PARTY_NAME from PARTY_ORGANIZATION where ID=?", partyOrgId);
+            List<Map<String, Object>> partyOrgRows = findGrassrootOrg(partyOrgId, orgType);
             if (partyOrgRows.isEmpty()) {
                 errors.add("基层党组织不存在：" + partyOrgId);
                 continue;
@@ -1158,8 +1167,9 @@ public class DwWorkPlan3Service {
     private String insertGrassrootReceiveTask(Map<String, Object> task, Map<String, Object> dispatch,
                                               Map<String, Object> currentNode, HttpServletRequest request) {
         String partyOrgId = string(dispatch.get("PARTY_ORG_ID"));
-        String principalUserId = resolvePartyMember(partyOrgId, new String[]{"0", "1", "2", "7"});
-        String receiverUserId = resolvePartyMember(partyOrgId, new String[]{"4", "7"});
+        String orgType = normalizeGrassrootOrgType(dispatch.get("BUSINESS_TYPE"));
+        String principalUserId = resolveGrassrootPrincipal(partyOrgId, orgType);
+        String receiverUserId = resolveGrassrootReceiver(partyOrgId, orgType, principalUserId);
         if (StringUtils.isBlank(principalUserId)) {
             throw new IllegalArgumentException("基层党组织未配置负责人");
         }
@@ -1183,17 +1193,71 @@ public class DwWorkPlan3Service {
         return id;
     }
 
-    private String resolvePartyMember(String partyOrgId, String[] posts) {
-        StringBuilder sql = new StringBuilder("select USER_ID from PARTY_ORGAN_MEMBER where PARTY_ID=? and USER_POST in (");
+    private List<Map<String, Object>> findGrassrootOrg(String orgId, String orgType) {
+        if ("g".equals(orgType)) {
+            if (!tableExists("DYN_TRADE_UNION_ORGANIZA")) {
+                return Collections.emptyList();
+            }
+            return jdbcTemplate.queryForList("select ID,LEAGUE_NAME PARTY_NAME from DYN_TRADE_UNION_ORGANIZA where ID=?", orgId);
+        }
+        if ("t".equals(orgType)) {
+            if (!tableExists("LEAGUE_ORGANIZATION")) {
+                return Collections.emptyList();
+            }
+            return jdbcTemplate.queryForList("select ID,LEAGUE_NAME PARTY_NAME from LEAGUE_ORGANIZATION where ID=?", orgId);
+        }
+        if (!tableExists("PARTY_ORGANIZATION")) {
+            return Collections.emptyList();
+        }
+        return jdbcTemplate.queryForList("select ID,PARTY_NAME from PARTY_ORGANIZATION where ID=?", orgId);
+    }
+
+    private String resolveGrassrootPrincipal(String orgId, String orgType) {
+        if ("g".equals(orgType)) {
+            return resolveGrassrootMember("DYN_TU_ORGAN_MEMBER", "LEAGUE_ID", orgId, new String[]{"0"});
+        }
+        if ("t".equals(orgType)) {
+            return resolveGrassrootMember("LEAGUE_ORGAN_MEMBER", "LEAGUE_ID", orgId, new String[]{"0", "6"});
+        }
+        return resolveGrassrootMember("PARTY_ORGAN_MEMBER", "PARTY_ID", orgId, new String[]{"0", "1", "2", "7"});
+    }
+
+    private String resolveGrassrootReceiver(String orgId, String orgType, String principalUserId) {
+        if ("g".equals(orgType)) {
+            return resolveGrassrootMember("DYN_TU_ORGAN_MEMBER", "LEAGUE_ID", orgId, new String[]{"2"});
+        }
+        if ("t".equals(orgType)) {
+            return principalUserId;
+        }
+        return resolveGrassrootMember("PARTY_ORGAN_MEMBER", "PARTY_ID", orgId, new String[]{"4", "7"});
+    }
+
+    private String resolveGrassrootMember(String tableName, String orgColumn, String orgId, String[] posts) {
+        if (!tableExists(tableName)) {
+            return "";
+        }
+        StringBuilder sql = new StringBuilder("select USER_ID from ");
+        sql.append(tableName).append(" where ").append(orgColumn).append("=? and USER_POST in (");
         appendPlaceholders(sql, posts.length);
         sql.append(") and rownum=1");
         List<Object> args = new ArrayList<Object>();
-        args.add(partyOrgId);
+        args.add(orgId);
         for (int i = 0; i < posts.length; i++) {
             args.add(posts[i]);
         }
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), args.toArray());
         return rows.isEmpty() ? "" : string(rows.get(0).get("USER_ID"));
+    }
+
+    private String normalizeGrassrootOrgType(Object typeValue) {
+        String type = string(typeValue).toLowerCase();
+        if (type.indexOf("g") >= 0 || type.indexOf("工") >= 0) {
+            return "g";
+        }
+        if (type.indexOf("t") >= 0 || type.indexOf("团") >= 0) {
+            return "t";
+        }
+        return "d";
     }
 
     private String chiefDeptId(String userId, Map<String, Object> currentNode) {

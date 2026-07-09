@@ -1600,7 +1600,7 @@
 
 .pb-dwworkplan3-page .dw-grassroot-layout {
   display: grid;
-  grid-template-columns: minmax(300px, .78fr) minmax(0, 1.22fr);
+  grid-template-columns: minmax(360px, .82fr) minmax(0, 1.18fr);
   gap: 14px;
   padding: 0 18px 10px;
 }
@@ -1625,27 +1625,137 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.pb-dwworkplan3-page .dw-multi-select {
-  min-height: 148px;
-  padding: 8px 10px;
+.pb-dwworkplan3-page .dw-grassroot-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 132px;
+  max-height: 180px;
+  margin-top: 7px;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid var(--dw-border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-party-list {
+  min-height: 170px;
+  max-height: 230px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-item,
+.pb-dwworkplan3-page .dw-grassroot-check-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: #fff;
+  color: #334155;
+  text-align: left;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-item {
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-item:hover,
+.pb-dwworkplan3-page .dw-grassroot-check-item:hover,
+.pb-dwworkplan3-page .dw-grassroot-picker-item.is-selected,
+.pb-dwworkplan3-page .dw-grassroot-check-item.is-selected {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: var(--dw-red);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-check-item {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-check-item input {
+  margin: 0;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-meta {
+  max-width: 120px;
+  overflow: hidden;
+  color: var(--dw-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-tools .dw-btn {
+  min-height: 28px;
+  padding: 4px 10px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-tools span {
+  margin-left: auto;
+  color: var(--dw-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-loading {
+  padding: 16px 8px;
+  color: var(--dw-muted);
+  text-align: center;
 }
 
 .pb-dwworkplan3-page .dw-grassroot-table-wrap {
   max-height: 420px;
 }
 
-.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(1) { width: 18%; }
-.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(2) { width: 18%; }
-.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(3) { width: 100px; }
-.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(4) { width: 90px; }
-.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(5) { width: 90px; }
-.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(6) { width: 100px; }
+.pb-dwworkplan3-page .dw-grassroot-table {
+  min-width: 920px;
+  table-layout: fixed;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(1) { width: 160px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(2) { width: 170px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(3) { width: 105px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(4) { width: 86px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(5) { width: 92px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(6) { width: 120px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(7) { width: 130px; }
 .pb-dwworkplan3-page .dw-grassroot-table th:nth-child(8) { width: 72px; }
 
 .pb-dwworkplan3-page .dw-grassroot-table td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table th:last-child,
+.pb-dwworkplan3-page .dw-grassroot-table td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table td:last-child .dw-actions {
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .pb-dwworkplan3-page .dw-grassroot-draft {

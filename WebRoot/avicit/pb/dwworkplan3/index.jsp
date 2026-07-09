@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260709_grassroot_dispatch_32">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260709_grassroot_dispatch_33">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -347,10 +347,18 @@ String importlibs = "common,form,fileupload";
           <div class="dw-section-title">分发信息</div>
           <div class="dw-form-grid dw-grassroot-form">
             <label class="dw-span-2">业务
-              <select id="dwGrassrootBusiness" class="dw-input"></select>
+              <input id="dwGrassrootBusiness" type="hidden">
+              <input id="dwGrassrootBusinessKeyword" class="dw-input" type="text" placeholder="输入业务名称或编码搜索">
+              <div id="dwGrassrootBusinessList" class="dw-grassroot-picker-list"></div>
             </label>
             <label class="dw-span-2">基层党组织
-              <select id="dwGrassrootPartyOrg" class="dw-input dw-multi-select" multiple></select>
+              <input id="dwGrassrootPartyKeyword" class="dw-input" type="text" placeholder="输入党支部名称搜索">
+              <div class="dw-grassroot-picker-tools">
+                <button type="button" class="dw-btn dw-btn-ghost" id="dwGrassrootSelectAllPartyBtn">全选党支部</button>
+                <button type="button" class="dw-btn dw-btn-ghost" id="dwGrassrootClearPartyBtn">清空</button>
+                <span id="dwGrassrootPartyCount">已选 0 个</span>
+              </div>
+              <div id="dwGrassrootPartyOrgList" class="dw-grassroot-picker-list dw-grassroot-party-list"></div>
             </label>
             <label>年份
               <input id="dwGrassrootYear" class="dw-input" type="number">
@@ -423,6 +431,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260709_grassroot_dispatch_32"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260709_grassroot_dispatch_33"></script>
 </body>
 </html>

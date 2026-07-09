@@ -69,6 +69,8 @@
     grassrootPartyOrgs: [],
     grassrootRows: [],
     currentGrassrootTask: null,
+    selectedGrassrootBusinessId: "",
+    selectedGrassrootPartyIds: {},
     selectedTaskIds: {},
     expandedTaskIds: {},
     initialTaskId: "",
@@ -188,6 +190,25 @@
     });
     $("#dwGrassrootAddBtn").on("click", saveGrassrootDispatch);
     $("#dwGrassrootDispatchBtn").on("click", dispatchGrassrootRows);
+    $("#dwGrassrootBusinessKeyword").on("input", renderGrassrootBusinessSelect);
+    $("#dwGrassrootPartyKeyword").on("input", renderGrassrootPartyOrgSelect);
+    $("#dwGrassrootBusinessList").on("click", "[data-grassroot-business-id]", function () {
+      state.selectedGrassrootBusinessId = $(this).attr("data-grassroot-business-id");
+      state.selectedGrassrootPartyIds = {};
+      $("#dwGrassrootBusiness").val(state.selectedGrassrootBusinessId);
+      renderGrassrootBusinessSelect();
+      renderGrassrootPartyOrgSelect();
+    });
+    $("#dwGrassrootPartyOrgList").on("change", "[data-grassroot-party-id]", function () {
+      var id = $(this).attr("data-grassroot-party-id");
+      state.selectedGrassrootPartyIds[id] = this.checked;
+      updateGrassrootPartyCount();
+    });
+    $("#dwGrassrootSelectAllPartyBtn").on("click", selectAllGrassrootParties);
+    $("#dwGrassrootClearPartyBtn").on("click", function () {
+      state.selectedGrassrootPartyIds = {};
+      renderGrassrootPartyOrgSelect();
+    });
     $("#dwGrassrootTableBody").on("click", "[data-grassroot-delete]", function () {
       deleteGrassrootDispatch($(this).attr("data-grassroot-delete"));
     });
@@ -1038,41 +1059,85 @@
     var period = selectedPeriod();
     $("#dwGrassrootTaskId").val(text(task && task.ID));
     $("#dwGrassrootSummary").html(taskSummaryHtml(task));
-    $("#dwGrassrootBusiness").html('<option value="">正在读取业务...</option>');
-    $("#dwGrassrootPartyOrg").html('<option value="">正在读取基层党组织...</option>');
+    $("#dwGrassrootBusiness").val("");
+    $("#dwGrassrootBusinessKeyword").val("");
+    $("#dwGrassrootPartyKeyword").val("");
+    $("#dwGrassrootBusinessList").html('<div class="dw-grassroot-loading">正在读取业务...</div>');
+    $("#dwGrassrootPartyOrgList").html('<div class="dw-grassroot-loading">正在读取基层党组织...</div>');
+    $("#dwGrassrootPartyCount").text("已选 0 个");
     $("#dwGrassrootYear").val(period.year || deadline.substring(0, 4));
     $("#dwGrassrootMonth").val(deadline.length >= 7 ? deadline.substring(5, 7) : "");
     $("#dwGrassrootQuarter").val(period.quarter || currentQuarter());
     $("#dwGrassrootDeadline").val(deadline);
     $("#dwGrassrootRemark").val("");
+    state.selectedGrassrootBusinessId = "";
+    state.selectedGrassrootPartyIds = {};
     state.grassrootRows = [];
     renderGrassrootRows();
   }
 
   function renderGrassrootBusinessSelect() {
-    var html = '<option value="">请选择业务</option>';
-    $.each(state.grassrootBusinesses, function (_, row) {
-      var level = Math.max(0, number(row.TREE_LEVEL) - 1);
-      html += '<option value="' + esc(text(row.ID)) + '">' +
-        esc(indentText(level) + (text(row.YWMC) || text(row.YWBH) || text(row.ID))) + "</option>";
+    var keyword = $.trim($("#dwGrassrootBusinessKeyword").val()).toLowerCase();
+    var rows = $.grep(state.grassrootBusinesses || [], function (row) {
+      var haystack = [
+        text(row.YWMC),
+        text(row.YWBH),
+        text(row.ID),
+        text(row.BDBH),
+        text(row.ST_BM)
+      ].join(" ").toLowerCase();
+      return !keyword || haystack.indexOf(keyword) >= 0;
     });
-    $("#dwGrassrootBusiness").html(html);
+    var html = "";
+    if (!rows.length) {
+      html = '<div class="dw-grassroot-loading">暂无匹配业务</div>';
+    }
+    $.each(rows, function (_, row) {
+      var level = Math.max(0, number(row.TREE_LEVEL) - 1);
+      var id = text(row.ID);
+      var selected = id === state.selectedGrassrootBusinessId;
+      html += '<button type="button" class="dw-grassroot-picker-item' + (selected ? " is-selected" : "") + '" data-grassroot-business-id="' + esc(id) + '">' +
+        '<span class="dw-grassroot-picker-name">' + esc(indentText(level) + (text(row.YWMC) || text(row.YWBH) || id)) + "</span>" +
+        '<span class="dw-grassroot-picker-meta">' + esc(text(row.YWBH) || text(row.BDBH) || text(row.ST_BM) || id) + "</span>" +
+        "</button>";
+    });
+    $("#dwGrassrootBusinessList").html(html);
   }
 
   function renderGrassrootPartyOrgSelect() {
-    var html = "";
-    $.each(state.grassrootPartyOrgs, function (_, row) {
-      var level = Math.max(0, number(row.TREE_LEVEL) - 1);
-      html += '<option value="' + esc(text(row.ID)) + '">' +
-        esc(indentText(level) + (text(row.PARTY_NAME) || text(row.ID))) + "</option>";
+    var keyword = $.trim($("#dwGrassrootPartyKeyword").val()).toLowerCase();
+    var orgType = selectedGrassrootOrgType();
+    var rows = $.grep(state.grassrootPartyOrgs || [], function (row) {
+      var haystack = [
+        text(row.PARTY_NAME),
+        text(row.ID),
+        text(row.ORG_TYPE_NAME)
+      ].join(" ").toLowerCase();
+      var typeMatched = !orgType || text(row.ORG_TYPE) === orgType;
+      return typeMatched && (!keyword || haystack.indexOf(keyword) >= 0);
     });
-    $("#dwGrassrootPartyOrg").html(html || '<option value="">暂无基层党组织</option>');
+    var html = "";
+    if (!rows.length) {
+      html = '<div class="dw-grassroot-loading">暂无匹配基层党组织</div>';
+    }
+    $.each(rows, function (_, row) {
+      var level = Math.max(0, number(row.TREE_LEVEL) - 1);
+      var id = text(row.ID);
+      var checked = !!state.selectedGrassrootPartyIds[id];
+      html += '<label class="dw-grassroot-check-item' + (checked ? " is-selected" : "") + '">' +
+        '<input type="checkbox" data-grassroot-party-id="' + esc(id) + '"' + (checked ? " checked" : "") + ">" +
+        '<span class="dw-grassroot-picker-name">' + esc(indentText(level) + (text(row.PARTY_NAME) || id)) + "</span>" +
+        '<span class="dw-grassroot-picker-meta">' + esc(text(row.ORG_TYPE_NAME) || "党组织") + "</span>" +
+        "</label>";
+    });
+    $("#dwGrassrootPartyOrgList").html(html);
+    updateGrassrootPartyCount();
   }
 
   function saveGrassrootDispatch() {
     var taskId = $("#dwGrassrootTaskId").val();
     var businessTreeId = $("#dwGrassrootBusiness").val();
-    var orgIds = $("#dwGrassrootPartyOrg").val() || [];
+    var orgIds = selectedGrassrootPartyIds();
     if (!taskId || !businessTreeId) {
       message("请选择业务");
       return;
@@ -1192,6 +1257,86 @@
     return $.grep(state.grassrootRows || [], function (row) {
       return text(row.STATUS) !== "DISPATCHED";
     }).length > 0;
+  }
+
+  function selectAllGrassrootParties() {
+    var keyword = $.trim($("#dwGrassrootPartyKeyword").val()).toLowerCase();
+    var orgType = selectedGrassrootOrgType();
+    var selected = 0;
+    $.each(state.grassrootPartyOrgs || [], function (_, row) {
+      var name = text(row.PARTY_NAME);
+      var haystack = [name, text(row.ID), text(row.ORG_TYPE_NAME)].join(" ").toLowerCase();
+      if (orgType && text(row.ORG_TYPE) !== orgType) {
+        return;
+      }
+      if (keyword && haystack.indexOf(keyword) < 0) {
+        return;
+      }
+      if (isPartyBranch(row)) {
+        state.selectedGrassrootPartyIds[text(row.ID)] = true;
+        selected++;
+      }
+    });
+    if (!selected) {
+      $.each(state.grassrootPartyOrgs || [], function (_, row) {
+        var haystack = [text(row.PARTY_NAME), text(row.ID), text(row.ORG_TYPE_NAME)].join(" ").toLowerCase();
+        if ((!orgType || text(row.ORG_TYPE) === orgType) && (!keyword || haystack.indexOf(keyword) >= 0)) {
+          state.selectedGrassrootPartyIds[text(row.ID)] = true;
+        }
+      });
+    }
+    renderGrassrootPartyOrgSelect();
+  }
+
+  function selectedGrassrootPartyIds() {
+    var ids = [];
+    $.each(state.selectedGrassrootPartyIds, function (id, checked) {
+      if (checked) {
+        ids.push(id);
+      }
+    });
+    return ids;
+  }
+
+  function updateGrassrootPartyCount() {
+    $("#dwGrassrootPartyCount").text("已选 " + selectedGrassrootPartyIds().length + " 个");
+  }
+
+  function isPartyBranch(row) {
+    var name = text(row.PARTY_NAME);
+    var type = text(row.ORG_TYPE);
+    return type === "d" || name.indexOf("党支部") >= 0 || name.indexOf("支部") >= 0;
+  }
+
+  function selectedGrassrootOrgType() {
+    var business = grassrootBusinessById(state.selectedGrassrootBusinessId);
+    if (!business) {
+      return "";
+    }
+    return normalizeGrassrootOrgType(text(business.YWLX));
+  }
+
+  function grassrootBusinessById(id) {
+    var found = null;
+    $.each(state.grassrootBusinesses || [], function (_, row) {
+      if (text(row.ID) === text(id)) {
+        found = row;
+        return false;
+      }
+      return true;
+    });
+    return found;
+  }
+
+  function normalizeGrassrootOrgType(value) {
+    var raw = text(value).toLowerCase();
+    if (raw.indexOf("g") >= 0 || raw.indexOf("工") >= 0) {
+      return "g";
+    }
+    if (raw.indexOf("t") >= 0 || raw.indexOf("团") >= 0) {
+      return "t";
+    }
+    return "d";
   }
 
   function grassrootStatusBadge(status) {
@@ -1911,7 +2056,7 @@
     var deferred = $.Deferred();
     done = $.isFunction(done) ? done : function () {};
     var input = document.getElementById("dwFeedbackDirectFiles");
-    var files = input && input.files ? Array.prototype.slice.call(input.files) : [];
+    var files = input && input.files ? [].slice.call(input.files) : [];
     if (!files.length) {
       done([]);
       deferred.resolve([]);
@@ -1964,7 +2109,7 @@
     if (!$el.length) {
       return;
     }
-    if (!$.fn.uploaderExt) {
+    if (!hasUploaderExt()) {
       $el.html('<div class="dw-empty">平台附件控件未加载</div>');
       return;
     }
@@ -1993,7 +2138,7 @@
 
   function uploadPlatformFiles(elementId, businessId, logicalElementId, done) {
     var $el = $("#" + elementId);
-    if (!$el.length || !businessId || !$.fn.uploaderExt) {
+    if (!$el.length || !businessId || !hasUploaderExt()) {
       if ($.isFunction(done)) {
         done();
       }
@@ -2844,7 +2989,7 @@
     if (!$el.length) {
       return;
     }
-    if (!$.fn.uploaderExt) {
+    if (!hasUploaderExt()) {
       $el.html('<div class="dw-empty">\u5e73\u53f0\u9644\u4ef6\u63a7\u4ef6\u672a\u52a0\u8f7d</div>');
       return;
     }
@@ -3036,6 +3181,10 @@
 
   function text(value) {
     return value == null ? "" : String(value);
+  }
+
+  function hasUploaderExt() {
+    return !!($ && $["fn"] && $["fn"].uploaderExt);
   }
 
   function number(value) {

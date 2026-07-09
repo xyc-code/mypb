@@ -100,6 +100,18 @@ if ($js -notmatch 'openGrassrootDispatch' -or $jsp -notmatch 'dwGrassrootModal')
   throw 'Grassroot dispatch UI is missing.'
 }
 
+if ($jsp -notmatch 'dwGrassrootBusinessKeyword' -or $jsp -notmatch 'dwGrassrootPartyKeyword' -or $jsp -notmatch 'dwGrassrootSelectAllPartyBtn') {
+  throw 'Grassroot dispatch must provide business search, party-organization search, and select-all branch controls.'
+}
+
+if ($js -notmatch 'selectAllGrassrootParties' -or $js -notmatch 'selectedGrassrootOrgType' -or $js -notmatch 'data-grassroot-party-id') {
+  throw 'Grassroot dispatch JS must support searchable business/org selection and branch multi-select.'
+}
+
+if ($service -notmatch 'PARTY_ORGAN_MEMBER' -or $service -notmatch 'DYN_TU_ORGAN_MEMBER' -or $service -notmatch 'LEAGUE_ORGAN_MEMBER') {
+  throw 'Grassroot dispatch backend must match original party/union/youth organization member resolution logic.'
+}
+
 Write-Host 'DW work plan 3 module file and audit-field checks passed.'
 
 
