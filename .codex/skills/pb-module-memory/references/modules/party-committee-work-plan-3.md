@@ -592,3 +592,12 @@
 - Java is delivered as source only. No `.class`, local environment configuration, demo data, screenshots, Playwright output, or test-result files belong in the intranet package.
 - Pre-package verification passed on 2026-07-13: JS syntax, `scripts/verify-dwworkplan3.ps1`, JDK 8 compilation, base-table audit fields, and `scripts/seed-verify-dwworkplan3.ps1` with `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`.
 - Existing intranet databases should apply the incremental patches in date order; `db/dw_work_plan_3.sql` is retained for fresh-install/reference use.
+
+## 2026-07-13 Consolidated Full-Rebuild Package
+
+- User chose a destructive clean rebuild for the intranet 3.0 database instead of incremental upgrades.
+- Added `db/dw_work_plan_3_full_rebuild.sql` as the only SQL file for the replacement 3.0 package.
+- The script conditionally drops the six `DYN_DW_PLAN3_*` tables and `PB_PORTAL_BUSINESS_TODO`, then recreates all seven tables and thirteen indexes with the latest schema.
+- The script intentionally does not touch shared tables such as `DYN_ZBRWB`, `DYN_ZBJHYWS`, party, union, or youth organization/member tables, and does not import the old personnel tree.
+- Validation: 7 drop blocks, 7 table definitions, and 13 indexes found; every recreated table structure matches the latest base SQL; PB mandatory audit-field check passed.
+- Replacement package rule: include only `db/dw_work_plan_3_full_rebuild.sql`; exclude the base SQL, all incremental patch SQL files, and `dw_work_plan_3_import_person_tree.sql` to prevent accidental duplicate execution.
