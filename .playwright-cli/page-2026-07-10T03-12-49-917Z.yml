@@ -1,0 +1,50 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e3]:
+    - generic [ref=f3e4]:
+      - generic [ref=f3e5]: V6测试平台
+      - generic [ref=f3e7]: 应用系统禁止存储、处理涉密信息
+    - generic [ref=f3e13]:
+      - generic [ref=f3e14] [cursor=pointer]: 潮汐海灵
+      - text:  
+  - generic [ref=f3e18]:
+    - generic [ref=f3e19]:
+      - list [ref=f3e21]:
+        - listitem [ref=f3e22]: 政治建设
+        - listitem [ref=f3e23]: 思想建设
+        - listitem [ref=f3e24]: 组织建设
+        - listitem [ref=f3e25]: 干部人才队伍建设
+        - listitem [ref=f3e26]: 纪律作风建设
+        - listitem [ref=f3e27]: 群团建设
+        - listitem [ref=f3e28]: 其他
+      - generic [ref=f3e29]:
+        - list:
+          - listitem "党委工作" [ref=f3e30]
+          - listitem "宣传思想文化工作" [ref=f3e32]
+          - listitem "组织工作" [ref=f3e34]
+          - listitem "干部人才工作" [ref=f3e36]
+          - listitem "纪委工作" [ref=f3e38]
+          - listitem "工会工作" [ref=f3e40]
+          - listitem "团委工作" [ref=f3e42]
+          - listitem "其他工作" [ref=f3e44]
+    - generic [ref=f3e46]:
+      - list:
+        - listitem [ref=f3e47]:
+          - link [ref=f3e48] [cursor=pointer]:
+            - /url: "#"
+            - paragraph [ref=f3e50]: 通用工作
+        - listitem [ref=f3e51]:
+          - link [ref=f3e52] [cursor=pointer]:
+            - /url: "#"
+            - paragraph [ref=f3e54]: 统计分析
+        - listitem [ref=f3e55]:
+          - link [ref=f3e56] [cursor=pointer]:
+            - /url: "#"
+            - paragraph [ref=f3e58]: 快速查阅
+  - generic [ref=f3e59]:
+    - generic [ref=f3e61]:
+      - list [ref=f3e64]:
+        - listitem [ref=f3e65]:
+          - link "首页" [ref=f3e66] [cursor=pointer]:
+            - /url: javascript:;
+      - iframe [ref=f3e71]
+    - text:  

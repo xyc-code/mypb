@@ -1,4 +1,4 @@
-package avicit.pb.dynThreeFour.dynthreefour.service;
+﻿package avicit.pb.dynThreeFour.dynthreefour.service;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -451,7 +451,7 @@ public class DynThreeFourService implements Serializable {
 		List<Map<String, Object>> partyOrganMemberDTOS = null;
 		//首先查出所有党组织
 		try {
-			partyOrganMemberDTOS = jdbcTemplate.queryForList("select * from party_organization t where t.tree_level != '1' and t.attribute_01 not in ('0') and " + partyName + " and t.party_name != '中国航发XX纪委'   order by t.TREE_SORTS");
+			partyOrganMemberDTOS = jdbcTemplate.queryForList("select * from party_organization t where t.tree_level != '1' and t.attribute_01 not in ('0') and " + partyName + " and t.party_name != '中国XXXX纪委'   order by t.TREE_SORTS");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("查询党组织失效，错误信息" + e.getMessage());

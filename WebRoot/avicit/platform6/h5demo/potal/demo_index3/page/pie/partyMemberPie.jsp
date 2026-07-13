@@ -1,4 +1,4 @@
-<%@page import="avicit.platform6.api.sysshirolog.impl.AfterLoginSessionProcess"%>
+﻿<%@page import="avicit.platform6.api.sysshirolog.impl.AfterLoginSessionProcess"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -85,7 +85,7 @@ avicAjax.ajax({
 				    			  },*/
 				    		  series: [
 				    		    {
-				    		      name: '中国航发XX党委',
+				    		      name: '中国XXXX党委',
 				    		      type: 'pie',
 				    		      radius: '50%',
 								    center: ['50%', '60%'],

@@ -380,7 +380,29 @@
 }
 
 .pb-dwworkplan3-page .dw-task-title {
+  overflow: hidden;
   font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-task-title-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pb-dwworkplan3-page .dw-task-table {
+  min-width: 1180px;
+}
+
+.pb-dwworkplan3-page .dw-task-table th:nth-child(2) { width: 300px; }
+.pb-dwworkplan3-page .dw-task-table th:nth-child(3) { width: 150px; }
+.pb-dwworkplan3-page .dw-task-table th:nth-child(4) { width: 92px; }
+.pb-dwworkplan3-page .dw-task-table th:nth-child(5),
+.pb-dwworkplan3-page .dw-task-table th:nth-child(6) { width: 112px; }
+.pb-dwworkplan3-page .dw-task-table th:nth-child(7) { width: 108px; }
+.pb-dwworkplan3-page .dw-task-table th:nth-child(8) { width: 112px; }
+.pb-dwworkplan3-page .dw-task-table th:nth-child(9) { width: 154px; }
 }
 
 .pb-dwworkplan3-page .dw-task-cell {
@@ -1037,6 +1059,24 @@
   padding: 0 18px;
 }
 
+.pb-dwworkplan3-page .dw-feedback-target-wrap {
+  padding: 0 18px;
+  margin: 10px 0 4px;
+}
+
+.pb-dwworkplan3-page .dw-feedback-target-wrap label {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pb-dwworkplan3-page #dwFeedbackTargetWrap label {
+  margin: 0;
+}
+
 .pb-dwworkplan3-page #dwFeedbackModal .dw-modal {
   width: min(920px, 100%);
 }
@@ -1046,6 +1086,58 @@
 .pb-dwworkplan3-page #dwFeedbackAttachment {
   margin-left: 18px;
   margin-right: 18px;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-uploader {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px dashed #fecaca;
+  border-radius: 8px;
+  background: #fff7f7;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: var(--dw-red);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-pick input {
+  display: none;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-plus {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pb-dwworkplan3-page .dw-direct-attachment-file {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  background: #fff;
+  color: #7f1d1d;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .pb-dwworkplan3-page .dw-platform-attachment-readonly {
@@ -1087,6 +1179,58 @@
 
 .dw-layer-dialog .dw-attachment-legacy {
   margin-bottom: 10px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-list {
+  margin-bottom: 12px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-title {
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dw-layer-dialog .dw-attachment-direct-items {
+  display: grid;
+  gap: 8px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.dw-layer-dialog .dw-attachment-direct-item:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.dw-layer-dialog .dw-attachment-direct-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.dw-layer-dialog .dw-attachment-direct-meta {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.dw-layer-dialog .dw-attachment-direct-download {
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .dw-layer-dialog .dw-attachment-viewer .dw-platform-attachment,
@@ -1466,6 +1610,408 @@
   background: #1d4ed8;
 }
 
+.pb-dwworkplan3-page .dw-action-grassroot {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-summary {
+  padding: 0 18px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress {
+  display: grid;
+  grid-template-columns: auto minmax(140px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 18px 12px;
+  padding: 10px 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-main {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-main strong {
+  color: #166534;
+  font-size: 18px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-main span,
+.pb-dwworkplan3-page .dw-grassroot-progress-stats {
+  color: var(--dw-muted);
+  font-size: 12px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-track,
+.pb-dwworkplan3-page .dw-task-grassroot-progress i {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #e2e8f0;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-track i,
+.pb-dwworkplan3-page .dw-task-grassroot-progress b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #16a34a;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-stats {
+  display: flex;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-progress-stats strong {
+  color: #334155;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-layout {
+  --dw-grassroot-workspace-height: min(58vh, 590px);
+  display: grid;
+  grid-template-columns: minmax(360px, .82fr) minmax(0, 1.18fr);
+  align-items: start;
+  gap: 14px;
+  padding: 0 18px 10px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-editor,
+.pb-dwworkplan3-page .dw-grassroot-list {
+  min-width: 0;
+  border: 1px solid var(--dw-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-editor {
+  height: var(--dw-grassroot-workspace-height);
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-list {
+  display: flex;
+  height: var(--dw-grassroot-workspace-height);
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pb-dwworkplan3-page #dwGrassrootModal.is-readonly .dw-grassroot-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pb-dwworkplan3-page #dwGrassrootModal.is-readonly .dw-grassroot-editor {
+  display: none;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pb-dwworkplan3-page .dw-grassroot-business-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-business-meta[hidden] {
+  display: none;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-business-meta span {
+  padding: 4px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-section {
+  overflow: hidden;
+  border: 1px solid var(--dw-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 0;
+  background: #f8fafc;
+  color: #334155;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-toggle:hover {
+  background: #fff1f2;
+  color: var(--dw-red);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-toggle-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--dw-muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(225deg);
+  transition: transform .15s ease;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-section.is-collapsed .dw-grassroot-chevron {
+  transform: rotate(45deg);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-body {
+  padding: 10px;
+  border-top: 1px solid var(--dw-border);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-org-section.is-collapsed .dw-grassroot-org-body {
+  display: none;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 132px;
+  max-height: 180px;
+  margin-top: 7px;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid var(--dw-border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-party-list {
+  min-height: 170px;
+  max-height: 230px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-item,
+.pb-dwworkplan3-page .dw-grassroot-check-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: #fff;
+  color: #334155;
+  text-align: left;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-item {
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-item:hover,
+.pb-dwworkplan3-page .dw-grassroot-check-item:hover,
+.pb-dwworkplan3-page .dw-grassroot-picker-item.is-selected,
+.pb-dwworkplan3-page .dw-grassroot-check-item.is-selected {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: var(--dw-red);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-check-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  cursor: pointer;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-check-item input {
+  margin: 0;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-meta {
+  max-width: 120px;
+  overflow: hidden;
+  color: var(--dw-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-tools .dw-btn {
+  min-height: 28px;
+  padding: 4px 10px;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-picker-tools span {
+  margin-left: auto;
+  color: var(--dw-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-loading {
+  padding: 16px 8px;
+  color: var(--dw-muted);
+  text-align: center;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table-wrap {
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table {
+  min-width: 630px;
+  table-layout: fixed;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(1) { width: 140px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(2) { width: 82px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(3) { width: 170px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(4) { width: 88px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(5) { width: 100px; }
+.pb-dwworkplan3-page .dw-grassroot-table th:nth-child(6) { width: 60px; }
+
+.pb-dwworkplan3-page .dw-grassroot-table th {
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table th:last-child,
+.pb-dwworkplan3-page .dw-grassroot-table td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-table td:last-child .dw-actions {
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-draft {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-dispatched {
+  background: #ecfdf5;
+  color: var(--dw-green);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-failed {
+  background: #fee2e2;
+  color: var(--dw-red);
+}
+
+.pb-dwworkplan3-page .dw-grassroot-pending {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.pb-dwworkplan3-page .dw-grassroot-doing {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.pb-dwworkplan3-page .dw-task-grassroot-progress {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  width: 100%;
+  max-width: 270px;
+  margin-top: 6px;
+  color: #166534;
+  font-size: 11px;
+}
+
+.pb-dwworkplan3-page .dw-task-grassroot-progress-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.pb-dwworkplan3-page .dw-task-grassroot-progress-labels strong {
+  color: #166534;
+  font-weight: 700;
+}
+
+.pb-dwworkplan3-page .dw-task-grassroot-progress i {
+  display: block;
+}
+
+.pb-dwworkplan3-page .dw-detail-grassroot-summary {
+  display: flex;
+  gap: 18px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #f8fbff;
+  color: var(--dw-muted);
+  font-size: 12px;
+}
+
+.pb-dwworkplan3-page .dw-detail-grassroot-summary strong {
+  margin-right: 4px;
+  color: #166534;
+  font-size: 15px;
+}
+
+.pb-dwworkplan3-page .dw-detail-grassroot-table {
+  min-width: 720px;
+}
+
 @media (max-width: 1100px) {
   .pb-dwworkplan3-page .dw-shell-head {
     grid-template-columns: 1fr;
@@ -1479,8 +2025,13 @@
 
   .pb-dwworkplan3-page .dw-grid-person,
   .pb-dwworkplan3-page .dw-grid-stats,
+  .pb-dwworkplan3-page .dw-grassroot-layout,
   .pb-dwworkplan3-page .dw-kpis {
     grid-template-columns: 1fr;
+  }
+
+  .pb-dwworkplan3-page .dw-grassroot-layout {
+    --dw-grassroot-workspace-height: min(52vh, 500px);
   }
 }
 

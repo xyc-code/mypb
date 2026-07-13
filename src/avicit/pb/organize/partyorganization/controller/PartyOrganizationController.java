@@ -1,4 +1,4 @@
-package avicit.pb.organize.partyorganization.controller;
+﻿package avicit.pb.organize.partyorganization.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -305,7 +305,7 @@ public class PartyOrganizationController implements LoaderConstant {
 		}
 		assert partyOrganizationDTO != null;
 		String partyName = partyOrganizationDTO.getPartyName();
-		if(partyName.contains("党委")&&!partyName.equals("中国航发XX党委")){
+		if(partyName.contains("党委")&&!partyName.equals("中国XXXX党委")){
 			zt = 1;
 		}
 		if(partyName.contains("党总支")){
@@ -313,10 +313,10 @@ public class PartyOrganizationController implements LoaderConstant {
 		}
 
 		if(partyName.contains("党支部")&&partyOrganizationDTO.getParentId().equals("402811817e482ecb017e483065e4014e")){
-			// 父节点为中国航发XX党委的支部为直属党支部 因为父节点id是固定的 所有用父节点id判断
+			// 父节点为中国XXXX党委的支部为直属党支部 因为父节点id是固定的 所有用父节点id判断
 			zt = 3;
 		}
-		//下属党支部和直属党支部的区别为 下属党支部的父节点一定是党委或者党总支 同时他的父节点一定不可能是中国航发XX党委 也就是根节点
+		//下属党支部和直属党支部的区别为 下属党支部的父节点一定是党委或者党总支 同时他的父节点一定不可能是中国XXXX党委 也就是根节点
 		//也就是说下属党支部与根节点之间一定存在一个节点
 		if(partyName.contains("党支部")&&!partyOrganizationDTO.getParentId().equals("402811817e482ecb017e483065e4014e")){
 			try {

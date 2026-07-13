@@ -1,0 +1,118 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e3]:
+    - link "业务基础平台控制台" [ref=f2e4] [cursor=pointer]:
+      - /url: "#"
+    - list [ref=f2e7]:
+      - link [ref=f2e8] [cursor=pointer]:
+        - /url: javascript:void(0);
+        - listitem [ref=f2e9]:
+          - generic "组织" [ref=f2e10]
+          - text:      
+      - link [ref=f2e12] [cursor=pointer]:
+        - /url: javascript:void(0);
+        - listitem [ref=f2e13]:
+          - generic "流程" [ref=f2e14]
+          - text:   
+      - link [ref=f2e16] [cursor=pointer]:
+        - /url: javascript:void(0);
+        - listitem [ref=f2e17]:
+          - generic "表单" [ref=f2e18]
+          - text:   
+      - link [ref=f2e20] [cursor=pointer]:
+        - /url: javascript:void(0);
+        - listitem [ref=f2e21]:
+          - generic "系统" [ref=f2e22]
+          - text:       
+    - generic [ref=f2e25]:
+      - list:
+        - link " 71" [ref=f2e26] [cursor=pointer]:
+          - /url: javascript:void(0);
+          - listitem "通知" [ref=f2e27]:
+            - text: 
+            - generic [ref=f2e28]: "71"
+        - link [ref=f2e29] [cursor=pointer]:
+          - /url: javascript:void(0);
+          - listitem "门户首页" [ref=f2e30]: 
+        - link "平台管理员 " [ref=f2e31] [cursor=pointer]:
+          - /url: javascript:void(0);
+          - listitem "平台管理员" [ref=f2e32]:
+            - generic [ref=f2e33]:
+              - generic [ref=f2e34]: 平台管理员
+              - generic [ref=f2e35]: 
+            - text:   
+  - generic [ref=f2e37]:
+    - list [ref=f2e40]:
+      - listitem [ref=f2e41]:
+        - link "配置向导" [ref=f2e42] [cursor=pointer]:
+          - /url: javascript:;
+    - iframe [ref=f2e47]:
+      - generic [ref=f3e1]:
+        - paragraph [ref=f3e5]: 数据加载中...
+        - generic [ref=f3e6]:
+          - generic [ref=f3e7]:
+            - heading "快速配置向导" [level=2] [ref=f3e9]
+            - list [ref=f3e10]:
+              - listitem [ref=f3e11] [cursor=pointer]:
+                - generic "表单模型" [ref=f3e12]:
+                  - heading "表单建模" [level=4] [ref=f3e15]
+                  - paragraph [ref=f3e16]: 提供30+种控件
+                  - paragraph [ref=f3e17]: 可视化配置（表单，视图）
+              - listitem [ref=f3e18] [cursor=pointer]:
+                - generic "流程建模" [ref=f3e19]:
+                  - heading "流程模型" [level=4] [ref=f3e22]
+                  - paragraph [ref=f3e23]: 可视化配置
+                  - paragraph [ref=f3e24]: 实现流程图的绘制和属性配置
+              - listitem [ref=f3e25] [cursor=pointer]:
+                - generic "集中授权" [ref=f3e26]:
+                  - heading "集中授权" [level=4] [ref=f3e29]
+                  - paragraph [ref=f3e30]: 对系统的菜单及
+                  - paragraph [ref=f3e31]: 组件进行权限设置
+              - listitem [ref=f3e32] [cursor=pointer]:
+                - generic "代码生成向导" [ref=f3e33]:
+                  - heading "代码生成" [level=4] [ref=f3e36]
+                  - paragraph [ref=f3e37]: Web版代码生成器
+              - listitem [ref=f3e38] [cursor=pointer]:
+                - generic "行数据权限维护" [ref=f3e39]:
+                  - heading "行数据权限维护" [level=4] [ref=f3e42]
+                  - paragraph [ref=f3e43]: 支持多维度的数据授权
+                  - paragraph [ref=f3e44]: 满足业务中行数据权限控制
+              - listitem [ref=f3e45] [cursor=pointer]:
+                - generic "系统监控" [ref=f3e46]:
+                  - heading "系统监控" [level=4] [ref=f3e49]
+                  - paragraph [ref=f3e50]: 监控磁盘、CPU、内存、
+                  - paragraph [ref=f3e51]: JVM虚拟机使用率，并预警
+          - generic [ref=f3e52]:
+            - heading "常用功能" [level=2] [ref=f3e54]
+            - list [ref=f3e55]:
+              - listitem [ref=f3e56]:
+                - generic "刷新缓存" [ref=f3e57] [cursor=pointer]:
+                  - generic [ref=f3e58]: 
+                  - paragraph [ref=f3e59]: 刷新缓存
+              - listitem [ref=f3e60]:
+                - generic "门户配置" [ref=f3e61] [cursor=pointer]:
+                  - generic [ref=f3e62]: 
+                  - paragraph [ref=f3e63]: 门户配置
+              - listitem [ref=f3e64]:
+                - generic "通用代码管理" [ref=f3e65] [cursor=pointer]:
+                  - generic [ref=f3e66]: 
+                  - paragraph [ref=f3e67]: 通用代码
+              - listitem [ref=f3e68]:
+                - generic "系统参数配置" [ref=f3e69] [cursor=pointer]:
+                  - generic [ref=f3e70]: 
+                  - paragraph [ref=f3e71]: 系统参数
+              - listitem [ref=f3e72]:
+                - generic "角色模型" [ref=f3e73] [cursor=pointer]:
+                  - generic [ref=f3e74]: 
+                  - paragraph [ref=f3e75]: 角色模型
+              - listitem [ref=f3e76]:
+                - generic "菜单授权" [ref=f3e77] [cursor=pointer]:
+                  - generic [ref=f3e78]: 
+                  - paragraph [ref=f3e79]: 菜单授权
+              - listitem [ref=f3e80]:
+                - generic "编码管理" [ref=f3e81] [cursor=pointer]:
+                  - generic [ref=f3e82]: 
+                  - paragraph [ref=f3e83]: 编码管理
+              - listitem [ref=f3e84]:
+                - generic "菜单管理" [ref=f3e85] [cursor=pointer]:
+                  - generic [ref=f3e86]: 
+                  - paragraph [ref=f3e87]: 菜单管理

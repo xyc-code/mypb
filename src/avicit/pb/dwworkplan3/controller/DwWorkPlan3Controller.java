@@ -220,12 +220,78 @@ public class DwWorkPlan3Controller {
         });
     }
 
+    @RequestMapping(value = "api/task/complete", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> completeTask(final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.completeSelfTask(params(request), request);
+            }
+        });
+    }
+
     @RequestMapping(value = "api/task/delete", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> deleteTask(@RequestParam(value = "id", required = false) final String id, final HttpServletRequest request) {
         return call(new Action() {
             public Object run() {
                 return dwWorkPlanService.deleteTask(id, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/grassroot/businessTree", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> grassrootBusinessTree(final HttpServletRequest request) {
+        return rows(dwWorkPlanService.listGrassrootBusinessTree(request));
+    }
+
+    @RequestMapping(value = "api/grassroot/partyOrgTree", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> grassrootPartyOrgTree(final HttpServletRequest request) {
+        return rows(dwWorkPlanService.listGrassrootPartyOrgTree(request));
+    }
+
+    @RequestMapping(value = "api/grassroot/list", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> grassrootList(@RequestParam(value = "taskId", required = false) final String taskId,
+                                             final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.listGrassrootDispatch(taskId, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/grassroot/save", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> grassrootSave(final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.saveGrassrootDispatch(params(request), request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/grassroot/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> grassrootDelete(@RequestParam(value = "id", required = false) final String id,
+                                               final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.deleteGrassrootDispatch(id, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/grassroot/dispatch", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> grassrootDispatch(@RequestParam(value = "taskId", required = false) final String taskId,
+                                                 @RequestParam(value = "ids", required = false) final String ids,
+                                                 final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.dispatchGrassroot(taskId, ids, request);
             }
         });
     }
@@ -243,6 +309,27 @@ public class DwWorkPlan3Controller {
         return call(new Action() {
             public Object run() {
                 return dwWorkPlanService.submitFeedback(params(request), request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/feedback/prepare", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> prepareFeedback(final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.prepareFeedback(request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/feedback/targets", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> feedbackTargets(@RequestParam(value = "taskId", required = false) final String taskId,
+                                               final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.listFeedbackTargets(taskId, request);
             }
         });
     }
@@ -289,6 +376,18 @@ public class DwWorkPlan3Controller {
         return call(new Action() {
             public Object run() throws Exception {
                 return dwWorkPlanService.uploadAttachment(file, businessType, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/attachment/list", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> listAttachments(@RequestParam(value = "businessId", required = false) final String businessId,
+                                               @RequestParam(value = "elementId", required = false) final String elementId,
+                                               @RequestParam(value = "legacyAttachmentId", required = false) final String legacyAttachmentId) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.listAttachmentLinks(businessId, elementId, legacyAttachmentId);
             }
         });
     }

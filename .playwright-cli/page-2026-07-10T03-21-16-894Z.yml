@@ -1,0 +1,361 @@
+- generic [ref=f33e6]:
+  - banner [ref=f33e7]:
+    - generic [ref=f33e8]:
+      - generic [ref=f33e9]: 党
+      - generic [ref=f33e10]:
+        - heading "党委计划 3.0" [level=1] [ref=f33e11]
+        - paragraph [ref=f33e12]: 科员 / 小鱼儿
+    - navigation "党委计划 3.0 页面切换" [ref=f33e13]:
+      - button "工作计划 1" [ref=f33e64] [cursor=pointer]:
+        - text: 工作计划
+        - generic [ref=f33e15]: "1"
+    - generic [ref=f33e18]:
+      - combobox "当前人员节点" [ref=f33e19]:
+        - option "小鱼儿 - 科员" [selected]
+      - button "刷新" [ref=f33e20] [cursor=pointer]
+      - button "新建任务" [ref=f33e21] [cursor=pointer]
+  - main [ref=f33e22]:
+    - generic [ref=f33e23]:
+      - generic [ref=f33e24]:
+        - combobox [ref=f33e25]:
+          - option "2026/三季度" [selected]
+        - combobox [ref=f33e26]:
+          - option "全部状态" [selected]
+          - option "草稿"
+          - option "待接收"
+          - option "执行中"
+          - option "待下级完成"
+          - option "待确认"
+          - option "已完成"
+          - option "已退回"
+        - textbox "搜索标题、接收人、下发人" [ref=f33e27]
+        - button "清空选中" [ref=f33e28] [cursor=pointer]
+        - button "删除" [ref=f33e32] [cursor=pointer]
+      - generic [ref=f33e33]:
+        - generic [ref=f33e34]:
+          - generic [ref=f33e35]: 任务总数
+          - strong [ref=f33e36]: "2"
+        - generic [ref=f33e37]:
+          - generic [ref=f33e38]: 待处理
+          - strong [ref=f33e39]: "1"
+        - generic [ref=f33e40]:
+          - generic [ref=f33e41]: 已完成
+          - strong [ref=f33e42]: "1"
+        - generic [ref=f33e43]:
+          - generic [ref=f33e44]: 逾期
+          - strong [ref=f33e45]: "0"
+      - generic [ref=f33e46]:
+        - generic [ref=f33e47]:
+          - heading "工作计划列表" [level=2] [ref=f33e48]
+          - generic [ref=f33e49]: 未选择任务
+        - table [ref=f33e51]:
+          - rowgroup [ref=f33e52]:
+            - row [ref=f33e53]:
+              - columnheader [ref=f33e54]:
+                - checkbox [ref=f33e55]: 
+              - columnheader "任务标题" [ref=f33e56]
+              - columnheader "工作分类" [ref=f33e57]
+              - columnheader "层级" [ref=f33e58]
+              - columnheader "下发人" [ref=f33e59]
+              - columnheader "接收人" [ref=f33e60]
+              - columnheader "状态" [ref=f33e61]
+              - columnheader "截止时间" [ref=f33e62]
+              - columnheader "操作" [ref=f33e63]
+          - rowgroup [ref=f33e65]:
+            - row [ref=f33e66] [cursor=pointer]:
+              - cell [ref=f33e67]:
+                - checkbox [ref=f33e68]: 
+              - cell "• 1 待处理" [ref=f33e69]:
+                - generic [ref=f33e70]:
+                  - button "•" [ref=f33e71]
+                  - generic [ref=f33e73]:
+                    - text: "1"
+                    - generic [ref=f33e74]: 待处理
+              - cell "1" [ref=f33e75]
+              - cell "科员" [ref=f33e76]
+              - cell "潮汐海灵(910036)" [ref=f33e77]
+              - cell "潮汐海灵(910036)" [ref=f33e78]
+              - cell "执行中" [ref=f33e79]
+              - cell "2026-08-08" [ref=f33e81]
+              - cell [ref=f33e82]:
+                - generic [ref=f33e83]:
+                  - button "查看" [ref=f33e84]
+                  - button "完成" [ref=f33e85]
+                  - button "基层分发" [ref=f33e86]
+            - row [ref=f33e87] [cursor=pointer]:
+              - cell [ref=f33e88]:
+                - checkbox [ref=f33e89]: 
+              - cell "• 1" [ref=f33e90]:
+                - generic [ref=f33e91]:
+                  - button "•" [ref=f33e92]
+                  - generic [ref=f33e93]: "1"
+              - cell "1" [ref=f33e95]
+              - cell "科员" [ref=f33e96]
+              - cell "狂厄蔷薇(910020)" [ref=f33e97]
+              - cell "潮汐海灵(910036)" [ref=f33e98]
+              - cell "已完成" [ref=f33e99]
+              - cell "2026-08-08" [ref=f33e101]
+              - cell [ref=f33e102]:
+                - generic [ref=f33e103]:
+                  - button "查看" [ref=f33e104]
+                  - button "基层分发" [ref=f33e105]
+  - generic [ref=f33e107]:
+    - generic [ref=f33e108]:
+      - heading "基层分发" [level=2] [ref=f33e109]
+      - button "×" [ref=f33e110] [cursor=pointer]
+    - generic [ref=f33e112]:
+      - generic [ref=f33e113]:
+        - generic [ref=f33e114]: 任务标题
+        - strong [ref=f33e115]: "1"
+      - generic [ref=f33e116]:
+        - generic [ref=f33e117]:
+          - generic [ref=f33e118]: 层级
+          - strong [ref=f33e119]: 科员
+        - generic [ref=f33e120]:
+          - generic [ref=f33e121]: 状态
+          - strong [ref=f33e122]: 执行中
+        - generic [ref=f33e123]:
+          - generic [ref=f33e124]: 工作分类
+          - strong [ref=f33e125]: "1"
+        - generic [ref=f33e126]:
+          - generic [ref=f33e127]: 截止时间
+          - strong [ref=f33e128]: 2026-08-08
+        - generic [ref=f33e129]:
+          - generic [ref=f33e130]: 下发人
+          - strong [ref=f33e131]: 潮汐海灵(910036)
+        - generic [ref=f33e132]:
+          - generic [ref=f33e133]: 接收人
+          - strong [ref=f33e134]: 潮汐海灵(910036)
+      - generic [ref=f33e135]:
+        - generic [ref=f33e136]:
+          - generic [ref=f33e137]: 工作目标
+          - strong [ref=f33e138]: "11"
+        - generic [ref=f33e139]:
+          - generic [ref=f33e140]: 工作内容
+          - strong [ref=f33e141]: "1"
+    - generic [ref=f33e142]:
+      - generic [ref=f33e143]:
+        - generic [ref=f33e144]: 分发信息
+        - generic [ref=f33e145]:
+          - generic [ref=f33e146]:
+            - text: 业务
+            - textbox "业务 基层党建信息化平台建设 DW3-BIZ-001 · 必须完成 党员教育培训 DW3-BIZ-002 · 自由完成 三会一课质量提升 DW3-BIZ-003 · 必须完成 主题党日活动 DW3-BIZ-004 · 自由完成 党支部品牌创建 DW3-BIZ-005 · 必须完成 组织生活会和民主评议 DW3-BIZ-006 · 自由完成" [ref=f33e147]:
+              - /placeholder: 输入业务名称或编码搜索
+            - generic [ref=f33e148]:
+              - button "基层党建信息化平台建设 DW3-BIZ-001 · 必须完成" [ref=f33e149] [cursor=pointer]:
+                - generic [ref=f33e150]: 基层党建信息化平台建设
+                - generic [ref=f33e151]: DW3-BIZ-001 · 必须完成
+              - button "党员教育培训 DW3-BIZ-002 · 自由完成" [ref=f33e152] [cursor=pointer]:
+                - generic [ref=f33e153]: 党员教育培训
+                - generic [ref=f33e154]: DW3-BIZ-002 · 自由完成
+              - button "三会一课质量提升 DW3-BIZ-003 · 必须完成" [ref=f33e155] [cursor=pointer]:
+                - generic [ref=f33e156]: 三会一课质量提升
+                - generic [ref=f33e157]: DW3-BIZ-003 · 必须完成
+              - button "主题党日活动 DW3-BIZ-004 · 自由完成" [ref=f33e158] [cursor=pointer]:
+                - generic [ref=f33e159]: 主题党日活动
+                - generic [ref=f33e160]: DW3-BIZ-004 · 自由完成
+              - button "党支部品牌创建 DW3-BIZ-005 · 必须完成" [ref=f33e161] [cursor=pointer]:
+                - generic [ref=f33e162]: 党支部品牌创建
+                - generic [ref=f33e163]: DW3-BIZ-005 · 必须完成
+              - button "组织生活会和民主评议 DW3-BIZ-006 · 自由完成" [ref=f33e164] [cursor=pointer]:
+                - generic [ref=f33e165]: 组织生活会和民主评议
+                - generic [ref=f33e166]: DW3-BIZ-006 · 自由完成
+          - generic [ref=f33e167]:
+            - button "基层党组织 已选 0 个" [expanded] [active] [ref=f33e168] [cursor=pointer]:
+              - generic [ref=f33e169]: 基层党组织
+              - generic [ref=f33e170]: 已选 0 个
+            - generic [ref=f33e341]:
+              - textbox "输入党支部名称搜索" [ref=f33e342]
+              - generic [ref=f33e343]:
+                - button "全选党支部" [ref=f33e344] [cursor=pointer]
+                - button "清空" [ref=f33e345] [cursor=pointer]
+              - generic [ref=f33e346]:
+                - generic [ref=f33e347] [cursor=pointer]:
+                  - checkbox "党群党支部" [ref=f33e348]: 
+                  - text: 党群党支部
+                - generic [ref=f33e349] [cursor=pointer]:
+                  - checkbox "信息工程部党支部" [ref=f33e350]: 
+                  - text: 信息工程部党支部
+                - generic [ref=f33e351] [cursor=pointer]:
+                  - checkbox "德玛西亚测试党支部" [ref=f33e352]: 
+                  - text: 德玛西亚测试党支部
+                - generic [ref=f33e353] [cursor=pointer]:
+                  - checkbox "艾欧尼亚测试党支部" [ref=f33e354]: 
+                  - text: 艾欧尼亚测试党支部
+                - generic [ref=f33e355] [cursor=pointer]:
+                  - checkbox "皮尔特沃夫测试党支部" [ref=f33e356]: 
+                  - text: 皮尔特沃夫测试党支部
+                - generic [ref=f33e357] [cursor=pointer]:
+                  - checkbox "祖安测试党支部" [ref=f33e358]: 
+                  - text: 祖安测试党支部
+                - generic [ref=f33e359] [cursor=pointer]:
+                  - checkbox "诺克萨斯测试党支部" [ref=f33e360]: 
+                  - text: 诺克萨斯测试党支部
+                - generic [ref=f33e361] [cursor=pointer]:
+                  - checkbox "第一党支部" [ref=f33e362]: 
+                  - text: 第一党支部
+                - generic [ref=f33e363] [cursor=pointer]:
+                  - checkbox "第二党支部" [ref=f33e364]: 
+                  - text: 第二党支部
+                - generic [ref=f33e365] [cursor=pointer]:
+                  - checkbox "生产一线党支部" [ref=f33e366]: 
+                  - text: 生产一线党支部
+                - generic [ref=f33e367] [cursor=pointer]:
+                  - checkbox "机关党支部" [ref=f33e368]: 
+                  - text: 机关党支部
+                - generic [ref=f33e369] [cursor=pointer]:
+                  - checkbox "青年党员突击队党支部" [ref=f33e370]: 
+                  - text: 青年党员突击队党支部
+                - generic [ref=f33e371] [cursor=pointer]:
+                  - checkbox "工程项目党支部" [ref=f33e372]: 
+                  - text: 工程项目党支部
+          - generic [ref=f33e173]:
+            - button "基层工会 已选 0 个" [ref=f33e174] [cursor=pointer]:
+              - generic [ref=f33e175]: 基层工会
+              - generic [ref=f33e176]: 已选 0 个
+            - text:       
+          - button "基层团委 已选 0 个" [ref=f33e180] [cursor=pointer]:
+            - generic [ref=f33e181]: 基层团委
+            - generic [ref=f33e182]: 已选 0 个
+          - generic [ref=f33e185]:
+            - text: 年份
+            - spinbutton "年份" [ref=f33e186]: "2026"
+          - generic [ref=f33e187]:
+            - text: 月份
+            - spinbutton "月份" [ref=f33e188]: "08"
+          - generic [ref=f33e189]:
+            - text: 季度
+            - combobox "季度" [ref=f33e190]:
+              - option "无"
+              - option "第一季度"
+              - option "第二季度"
+              - option "第三季度" [selected]
+              - option "第四季度"
+          - generic [ref=f33e191]:
+            - text: 完成期限
+            - textbox "完成期限" [ref=f33e192]: 2026-08-08
+          - generic [ref=f33e193]:
+            - text: 备注
+            - textbox "备注" [ref=f33e194]
+        - button "加入清单" [ref=f33e196] [cursor=pointer]
+      - generic [ref=f33e197]:
+        - generic [ref=f33e198]: 分发清单
+        - table [ref=f33e200]:
+          - rowgroup [ref=f33e201]:
+            - row [ref=f33e202]:
+              - columnheader "业务" [ref=f33e203]
+              - columnheader "完成类型" [ref=f33e204]
+              - columnheader "接收组织" [ref=f33e205]
+              - columnheader "完成期限" [ref=f33e206]
+              - columnheader "分发状态" [ref=f33e207]
+              - columnheader "操作" [ref=f33e208]
+          - rowgroup [ref=f33e209]:
+            - row [ref=f33e210] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e211]
+              - cell "自由完成" [ref=f33e212]
+              - cell "党群党支部" [ref=f33e213]
+              - cell "2026-08-08" [ref=f33e214]
+              - cell "失败" [ref=f33e215]
+              - cell [ref=f33e217]:
+                - button "删除" [ref=f33e219]
+            - row [ref=f33e220] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e221]
+              - cell "自由完成" [ref=f33e222]
+              - cell "信息工程部党支部" [ref=f33e223]
+              - cell "2026-08-08" [ref=f33e224]
+              - cell "失败" [ref=f33e225]
+              - cell [ref=f33e227]:
+                - button "删除" [ref=f33e229]
+            - row [ref=f33e230] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e231]
+              - cell "自由完成" [ref=f33e232]
+              - cell "-" [ref=f33e233]
+              - cell "2026-08-08" [ref=f33e234]
+              - cell "失败" [ref=f33e235]
+              - cell [ref=f33e237]:
+                - button "删除" [ref=f33e239]
+            - row [ref=f33e240] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e241]
+              - cell "自由完成" [ref=f33e242]
+              - cell "德玛西亚测试党支部" [ref=f33e243]
+              - cell "2026-08-08" [ref=f33e244]
+              - cell "失败" [ref=f33e245]
+              - cell [ref=f33e247]:
+                - button "删除" [ref=f33e249]
+            - row [ref=f33e250] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e251]
+              - cell "自由完成" [ref=f33e252]
+              - cell "艾欧尼亚测试党支部" [ref=f33e253]
+              - cell "2026-08-08" [ref=f33e254]
+              - cell "失败" [ref=f33e255]
+              - cell [ref=f33e257]:
+                - button "删除" [ref=f33e259]
+            - row [ref=f33e260] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e261]
+              - cell "自由完成" [ref=f33e262]
+              - cell "皮尔特沃夫测试党支部" [ref=f33e263]
+              - cell "2026-08-08" [ref=f33e264]
+              - cell "失败" [ref=f33e265]
+              - cell [ref=f33e267]:
+                - button "删除" [ref=f33e269]
+            - row [ref=f33e270] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e271]
+              - cell "自由完成" [ref=f33e272]
+              - cell "祖安测试党支部" [ref=f33e273]
+              - cell "2026-08-08" [ref=f33e274]
+              - cell "失败" [ref=f33e275]
+              - cell [ref=f33e277]:
+                - button "删除" [ref=f33e279]
+            - row [ref=f33e280] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e281]
+              - cell "自由完成" [ref=f33e282]
+              - cell "诺克萨斯测试党支部" [ref=f33e283]
+              - cell "2026-08-08" [ref=f33e284]
+              - cell "失败" [ref=f33e285]
+              - cell [ref=f33e287]:
+                - button "删除" [ref=f33e289]
+            - row [ref=f33e290] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e291]
+              - cell "自由完成" [ref=f33e292]
+              - cell "第一党支部" [ref=f33e293]
+              - cell "2026-08-08" [ref=f33e294]
+              - cell "已分发" [ref=f33e295]
+              - cell [ref=f33e297]
+            - row [ref=f33e298] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e299]
+              - cell "自由完成" [ref=f33e300]
+              - cell "第二党支部" [ref=f33e301]
+              - cell "2026-08-08" [ref=f33e302]
+              - cell "已分发" [ref=f33e303]
+              - cell [ref=f33e305]
+            - row [ref=f33e306] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e307]
+              - cell "自由完成" [ref=f33e308]
+              - cell "生产一线党支部" [ref=f33e309]
+              - cell "2026-08-08" [ref=f33e310]
+              - cell "已分发" [ref=f33e311]
+              - cell [ref=f33e313]
+            - row [ref=f33e314] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e315]
+              - cell "自由完成" [ref=f33e316]
+              - cell "机关党支部" [ref=f33e317]
+              - cell "2026-08-08" [ref=f33e318]
+              - cell "已分发" [ref=f33e319]
+              - cell [ref=f33e321]
+            - row [ref=f33e322] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e323]
+              - cell "自由完成" [ref=f33e324]
+              - cell "青年党员突击队党支部" [ref=f33e325]
+              - cell "2026-08-08" [ref=f33e326]
+              - cell "已分发" [ref=f33e327]
+              - cell [ref=f33e329]
+            - row [ref=f33e330] [cursor=pointer]:
+              - cell "主题党日活动" [ref=f33e331]
+              - cell "自由完成" [ref=f33e332]
+              - cell "工程项目党支部" [ref=f33e333]
+              - cell "2026-08-08" [ref=f33e334]
+              - cell "已分发" [ref=f33e335]
+              - cell [ref=f33e337]
+    - generic [ref=f33e338]:
+      - button "取消" [ref=f33e339] [cursor=pointer]
+      - button "分发任务" [ref=f33e340] [cursor=pointer]

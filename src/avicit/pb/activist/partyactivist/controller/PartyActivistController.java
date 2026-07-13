@@ -1,4 +1,4 @@
-package avicit.pb.activist.partyactivist.controller;
+﻿package avicit.pb.activist.partyactivist.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -486,7 +486,7 @@ public class PartyActivistController implements LoaderConstant {
     		dto.setEducationSector(partyActivistDTO.getAttribute02());
     		dto.setJoinParty(partyActivistDTO.getReqpartyTime());
     		dto.setEducationLevel(partyActivistDTO.getEducationLevel());
-    		dto.setJoinpartyDept("中国航发XX");
+    		dto.setJoinpartyDept("中国XXXX");
     		dto.setIntroducer(partyActivistDTO.getIntroducer());
     		dto.setWorkTime(partyActivistDTO.getWorkTime());
     		dto.setPost(partyActivistDTO.getPost());
