@@ -43,10 +43,18 @@ public class DwWorkPlan3BusinessVerifier {
     private static final String STRANGER = "DW3_STRANGER";
     private static final String PARTY_NODE = "DW3_NODE_PARTY";
     private static final String GRASSROOT_BIZ = "DW3_GRASS_BIZ";
+    private static final String GRASSROOT_FREE_BIZ = "DW3_GRASS_FREE_BIZ";
+    private static final String GRASSROOT_INVALID_BIZ = "DW3_GRASS_INVALID_BIZ";
     private static final String GRASSROOT_ORG = "DW3_GRASS_ORG";
     private static final String GRASSROOT_ORG_MISSING = "DW3_GRASS_ORG_MISSING";
+    private static final String GRASSROOT_INVALID_ORG = "DW3_GRASS_INVALID_ORG";
     private static final String GRASSROOT_FZR = "DW3_GRASS_FZR";
     private static final String GRASSROOT_JSR = "DW3_GRASS_JSR";
+    private static final String GRASSROOT_UNION_ORG = "DW3_GRASS_UNION_ORG";
+    private static final String GRASSROOT_UNION_FZR = "DW3_GRASS_UNION_FZR";
+    private static final String GRASSROOT_UNION_JSR = "DW3_GRASS_UNION_JSR";
+    private static final String GRASSROOT_YOUTH_ORG = "DW3_GRASS_YOUTH_ORG";
+    private static final String GRASSROOT_YOUTH_FZR = "DW3_GRASS_YOUTH_FZR";
 
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
@@ -260,28 +268,65 @@ public class DwWorkPlan3BusinessVerifier {
         assertStatus(jdbc, staffRoot, DwWorkPlan3Constants.STATUS_COMPLETED);
 
         seedGrassrootExternalData(jdbc);
-        assertContainsExternalRow(service.listGrassrootBusinessTree(staffReq), GRASSROOT_BIZ, "grassroot business tree");
-        assertContainsExternalRow(service.listGrassrootPartyOrgTree(staffReq), GRASSROOT_ORG, "grassroot party organization tree");
-        assertSuccessCount(service.saveGrassrootDispatch(params(
+        List<Map<String, Object>> grassrootBusinesses = service.listGrassrootBusinessTree(staffReq);
+        assertContainsExternalRow(grassrootBusinesses, GRASSROOT_BIZ, "grassroot business tree");
+        assertMissingExternalRow(grassrootBusinesses, GRASSROOT_INVALID_BIZ, "invalid completion type business");
+        List<Map<String, Object>> grassrootOrganizations = service.listGrassrootPartyOrgTree(staffReq);
+        assertContainsExternalRow(grassrootOrganizations, GRASSROOT_ORG, "grassroot party organization tree");
+        assertContainsExternalRow(grassrootOrganizations, GRASSROOT_UNION_ORG, "grassroot union organization tree");
+        assertContainsExternalRow(grassrootOrganizations, GRASSROOT_YOUTH_ORG, "grassroot youth organization tree");
+        assertMissingExternalRow(grassrootOrganizations, GRASSROOT_INVALID_ORG, "organization without a display name");
+        assertFailure(service.saveGrassrootDispatch(params(
                 "taskId", staffRoot,
                 "businessTreeId", GRASSROOT_BIZ,
                 "partyOrgIds", GRASSROOT_ORG,
+                "deadline", "2026-11-20"
+        ), staffReq), "completed staff task cannot dispatch to grassroot");
+
+        String staffGrassrootRoot = id(service.saveRootTask(params(
+                "batchId", staffBatchId,
+                "title", "DW3 test staff grassroot task",
+                "content", "Staff task dispatched to grassroot organizations.",
+                "planDeadline", "2026-11-20"
+        ), staffReq));
+        assertStatus(jdbc, staffGrassrootRoot, DwWorkPlan3Constants.STATUS_DOING);
+        assertFailure(service.saveGrassrootDispatch(params(
+                "taskId", staffGrassrootRoot,
+                "businessTreeId", GRASSROOT_INVALID_BIZ,
+                "partyOrgIds", GRASSROOT_ORG,
+                "deadline", "2026-11-20"
+        ), staffReq), "save grassroot dispatch rejects invalid completion type");
+        assertSuccessCount(service.saveGrassrootDispatch(params(
+                "taskId", staffGrassrootRoot,
+                "businessTreeId", GRASSROOT_BIZ,
+                "partyOrgIds", GRASSROOT_ORG,
+                "tradeUnionOrgIds", GRASSROOT_UNION_ORG,
+                "leagueOrgIds", GRASSROOT_YOUTH_ORG,
                 "year", "2026",
                 "month", "07",
                 "quarter", "Q3",
                 "deadline", "2026-11-20",
                 "remark", "DW3 grassroot dispatch remark"
-        ), staffReq), "save grassroot dispatch", 1);
-        Map<String, Object> grassrootList = service.listGrassrootDispatch(staffRoot, staffReq);
+        ), staffReq), "save grassroot dispatch", 3);
+        Map<String, Object> grassrootList = service.listGrassrootDispatch(staffGrassrootRoot, staffReq);
         assertSuccess(grassrootList, "list grassroot dispatch");
-        assertGrassrootList((List<Map<String, Object>>) grassrootList.get("rows"), GRASSROOT_BIZ, GRASSROOT_ORG, "DRAFT");
-        assertSuccessCount(service.dispatchGrassroot(staffRoot, "", staffReq), "dispatch grassroot task", 1);
-        Map<String, Object> grassrootAfterDispatch = service.listGrassrootDispatch(staffRoot, staffReq);
-        String grassrootsTaskId = assertGrassrootDispatched((List<Map<String, Object>>) grassrootAfterDispatch.get("rows"), GRASSROOT_BIZ, GRASSROOT_ORG);
-        assertGrassrootReceiveTask(jdbc, grassrootsTaskId, staffRoot);
-        assertFailure(service.dispatchGrassroot(staffRoot, "", staffReq), "duplicate grassroot dispatch should have no pending rows");
+        assertGrassrootSummary(grassrootList, 3, 0, 3, 0, 3, 0);
+        assertGrassrootList((List<Map<String, Object>>) grassrootList.get("rows"), GRASSROOT_BIZ, "d", GRASSROOT_ORG, "DRAFT");
+        assertGrassrootList((List<Map<String, Object>>) grassrootList.get("rows"), GRASSROOT_BIZ, "g", GRASSROOT_UNION_ORG, "DRAFT");
+        assertGrassrootList((List<Map<String, Object>>) grassrootList.get("rows"), GRASSROOT_BIZ, "t", GRASSROOT_YOUTH_ORG, "DRAFT");
+        assertSuccessCount(service.dispatchGrassroot(staffGrassrootRoot, "", staffReq), "dispatch grassroot task", 3);
+        Map<String, Object> grassrootAfterDispatch = service.listGrassrootDispatch(staffGrassrootRoot, staffReq);
+        assertGrassrootSummary(grassrootAfterDispatch, 3, 3, 0, 0, 3, 0);
+        List<Map<String, Object>> grassrootDispatchedRows = (List<Map<String, Object>>) grassrootAfterDispatch.get("rows");
+        String grassrootsTaskId = assertGrassrootDispatched(grassrootDispatchedRows, GRASSROOT_BIZ, "d", GRASSROOT_ORG);
+        String grassrootsUnionTaskId = assertGrassrootDispatched(grassrootDispatchedRows, GRASSROOT_BIZ, "g", GRASSROOT_UNION_ORG);
+        String grassrootsYouthTaskId = assertGrassrootDispatched(grassrootDispatchedRows, GRASSROOT_BIZ, "t", GRASSROOT_YOUTH_ORG);
+        assertGrassrootReceiveTask(jdbc, grassrootsTaskId, staffGrassrootRoot, GRASSROOT_ORG, "DW3 Grassroot Party Org", GRASSROOT_FZR, GRASSROOT_JSR);
+        assertGrassrootReceiveTask(jdbc, grassrootsUnionTaskId, staffGrassrootRoot, GRASSROOT_UNION_ORG, "DW3 Grassroot Union Org", GRASSROOT_UNION_FZR, GRASSROOT_UNION_JSR);
+        assertGrassrootReceiveTask(jdbc, grassrootsYouthTaskId, staffGrassrootRoot, GRASSROOT_YOUTH_ORG, "DW3 Grassroot Youth Org", GRASSROOT_YOUTH_FZR, GRASSROOT_YOUTH_FZR);
+        assertFailure(service.dispatchGrassroot(staffGrassrootRoot, "", staffReq), "duplicate grassroot dispatch should have no pending rows");
         assertSuccessCount(service.saveGrassrootDispatch(params(
-                "taskId", staffRoot,
+                "taskId", staffGrassrootRoot,
                 "businessTreeId", GRASSROOT_BIZ,
                 "partyOrgIds", GRASSROOT_ORG_MISSING,
                 "year", "2026",
@@ -290,8 +335,47 @@ public class DwWorkPlan3BusinessVerifier {
                 "deadline", "2026-11-21",
                 "remark", "DW3 grassroot missing member"
         ), staffReq), "save grassroot dispatch with missing receiver", 1);
-        assertFailure(service.dispatchGrassroot(staffRoot, "", staffReq), "grassroot dispatch should fail when party member receiver is missing");
-        assertGrassrootFailed(jdbc, staffRoot, GRASSROOT_ORG_MISSING);
+        assertFailure(service.dispatchGrassroot(staffGrassrootRoot, "", staffReq), "grassroot dispatch should fail when party member receiver is missing");
+        assertGrassrootFailed(jdbc, staffGrassrootRoot, GRASSROOT_ORG_MISSING);
+        assertFailure(service.completeSelfTask(params(
+                "id", staffGrassrootRoot,
+                "content", "Must not complete while required grassroot tasks are open."
+        ), staffReq), "required grassroot tasks block staff completion");
+        String failedGrassrootId = jdbc.queryForObject(
+                "select ID from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID=? and PARTY_ORG_ID=?",
+                String.class, staffGrassrootRoot, GRASSROOT_ORG_MISSING);
+        assertSuccess(service.deleteGrassrootDispatch(failedGrassrootId, staffReq), "delete failed grassroot row before completion");
+        jdbc.update("update DYN_ZBRWB set RWZT='\u5df2\u5b8c\u6210' where YWSJ_ID=?", staffGrassrootRoot);
+        Map<String, Object> completedGrassrootProgress = service.listGrassrootDispatch(staffGrassrootRoot, staffReq);
+        assertGrassrootSummary(completedGrassrootProgress, 3, 3, 0, 0, 3, 3);
+        Map<String, Object> staffGrassrootTask = rowById(service.listTasks(staffReq, staffBatchId, ""), staffGrassrootRoot);
+        assertEquals("3", staffGrassrootTask.get("GRASSROOT_TOTAL_COUNT"), "task list grassroot total");
+        assertEquals("3", staffGrassrootTask.get("GRASSROOT_COMPLETED_COUNT"), "task list grassroot completed");
+        assertSuccess(service.completeSelfTask(params(
+                "id", staffGrassrootRoot,
+                "content", "Required grassroot tasks completed."
+        ), staffReq), "staff completes after required grassroot tasks");
+        assertStatus(jdbc, staffGrassrootRoot, DwWorkPlan3Constants.STATUS_COMPLETED);
+        assertSuccess(service.listGrassrootDispatch(staffGrassrootRoot, staffReq), "completed staff task can still view grassroot progress");
+
+        String staffFreeRoot = id(service.saveRootTask(params(
+                "batchId", staffBatchId,
+                "title", "DW3 test staff free grassroot task",
+                "content", "Free grassroot work must not block completion.",
+                "planDeadline", "2026-11-22"
+        ), staffReq));
+        assertSuccessCount(service.saveGrassrootDispatch(params(
+                "taskId", staffFreeRoot,
+                "businessTreeId", GRASSROOT_FREE_BIZ,
+                "partyOrgIds", GRASSROOT_ORG,
+                "deadline", "2026-11-22"
+        ), staffReq), "save free grassroot row", 1);
+        assertSuccess(service.completeSelfTask(params(
+                "id", staffFreeRoot,
+                "content", "Free grassroot work does not block."
+        ), staffReq), "free grassroot task does not block staff completion");
+        assertStatus(jdbc, staffFreeRoot, DwWorkPlan3Constants.STATUS_COMPLETED);
+        assertSuccess(service.listGrassrootDispatch(staffFreeRoot, staffReq), "completed free task can view grassroot progress");
 
         String externalImportRow = jsonRows(params(
                 "rowNumber", "2",
@@ -358,8 +442,12 @@ public class DwWorkPlan3BusinessVerifier {
         jdbc.update("delete from DYN_DW_PLAN3_BATCH where CREATED_BY in (?,?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_PERSON_TREE where CREATED_BY in (?,?) or USER_ID in (?,?,?,?,?,?) or NODE_NAME like 'DW3 Test%'", PARTY, STRANGER, PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from PARTY_ORGAN_MEMBER where PARTY_ID in (?,?) or USER_ID in (?,?)", GRASSROOT_ORG, GRASSROOT_ORG_MISSING, GRASSROOT_FZR, GRASSROOT_JSR);
-        jdbc.update("delete from PARTY_ORGANIZATION where ID in (?,?)", GRASSROOT_ORG, GRASSROOT_ORG_MISSING);
-        jdbc.update("delete from DYN_ZBJHYWS where ID=?", GRASSROOT_BIZ);
+        jdbc.update("delete from DYN_TU_ORGAN_MEMBER where LEAGUE_ID=? or USER_ID in (?,?)", GRASSROOT_UNION_ORG, GRASSROOT_UNION_FZR, GRASSROOT_UNION_JSR);
+        jdbc.update("delete from LEAGUE_ORGAN_MEMBER where LEAGUE_ID=? or USER_ID=?", GRASSROOT_YOUTH_ORG, GRASSROOT_YOUTH_FZR);
+        jdbc.update("delete from PARTY_ORGANIZATION where ID in (?,?,?)", GRASSROOT_ORG, GRASSROOT_ORG_MISSING, GRASSROOT_INVALID_ORG);
+        jdbc.update("delete from DYN_TRADE_UNION_ORGANIZA where ID=?", GRASSROOT_UNION_ORG);
+        jdbc.update("delete from LEAGUE_ORGANIZATION where ID=?", GRASSROOT_YOUTH_ORG);
+        jdbc.update("delete from DYN_ZBJHYWS where ID in (?,?,?)", GRASSROOT_BIZ, GRASSROOT_FREE_BIZ, GRASSROOT_INVALID_BIZ);
         try {
             jdbc.update("delete from SYS_MSG where RECV_USER in (?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2);
         } catch (Exception ignored) {
@@ -378,7 +466,7 @@ public class DwWorkPlan3BusinessVerifier {
                     "LAST_UPDATE_IP VARCHAR2(50),VERSION NUMBER(16),ORG_IDENTITY VARCHAR2(32),TASK_ID VARCHAR2(50) NOT NULL," +
                     "BUSINESS_TREE_ID VARCHAR2(50) NOT NULL,BUSINESS_NAME VARCHAR2(500),BUSINESS_TYPE VARCHAR2(100),BUSINESS_CODE VARCHAR2(200)," +
                     "FORM_ID VARCHAR2(200),FORM_CODE VARCHAR2(200),VIEW_ID VARCHAR2(200),VIEW_CODE VARCHAR2(200),HAS_FORM VARCHAR2(50)," +
-                    "COMPLETE_TYPE VARCHAR2(50),PARTY_ORG_ID VARCHAR2(50) NOT NULL,PARTY_ORG_NAME VARCHAR2(500),PRINCIPAL_USER_ID VARCHAR2(50)," +
+                    "COMPLETE_TYPE VARCHAR2(50),TARGET_ORG_TYPE VARCHAR2(20),PARTY_ORG_ID VARCHAR2(50) NOT NULL,PARTY_ORG_NAME VARCHAR2(500),PRINCIPAL_USER_ID VARCHAR2(50)," +
                     "RECEIVER_USER_ID VARCHAR2(50),PLAN_YEAR VARCHAR2(20),PLAN_MONTH VARCHAR2(20),PLAN_QUARTER VARCHAR2(20),DEADLINE DATE," +
                     "REMARK VARCHAR2(1000),STATUS VARCHAR2(30),GRASSROOT_TASK_ID VARCHAR2(50),DISPATCH_TIME DATE,ERROR_MSG VARCHAR2(1000)," +
                     "CONSTRAINT PK_DW_PLAN3_GRASSROOT_DISPATCH PRIMARY KEY (ID))");
@@ -413,18 +501,42 @@ public class DwWorkPlan3BusinessVerifier {
 
     private static void seedGrassrootExternalData(JdbcTemplate jdbc) {
         jdbc.update("insert into DYN_ZBJHYWS(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                GRASSROOT_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Grassroot Business", "d", "DW3-BIZ-001", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u6708\u5ea6", "1", "1", 2, 1, "001", null);
-        insertPartyOrganization(jdbc, GRASSROOT_ORG, "DW3 Grassroot Party Org", "001");
+                GRASSROOT_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Grassroot Business", "d", "DW3-BIZ-001", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u5fc5\u987b\u5b8c\u6210", "1", "1", 2, 1, "001", null);
+        jdbc.update("insert into DYN_ZBJHYWS(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                GRASSROOT_FREE_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Grassroot Free Business", "d", "DW3-BIZ-FREE", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u81ea\u7531\u5b8c\u6210", "1", "1", 2, 2, "002", null);
+        jdbc.update("insert into DYN_ZBJHYWS(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                GRASSROOT_INVALID_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Invalid Completion Business", "d", "DW3-BIZ-INVALID", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u6708\u5ea6", "1", "1", 2, 3, "003", null);
+        insertPartyOrganization(jdbc, GRASSROOT_ORG, "DW3 Grassroot Party Org" + GRASSROOT_ORG, "001");
         insertPartyOrganization(jdbc, GRASSROOT_ORG_MISSING, "DW3 Grassroot Missing Org", "002");
+        insertPartyOrganization(jdbc, GRASSROOT_INVALID_ORG, "002001", "003");
         jdbc.update("insert into PARTY_ORGAN_MEMBER(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_ID,USER_ID,USER_POST) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?)",
                 "DW3_GRASS_MEMBER_FZR", STAFF, STAFF, "127.0.0.1", "ORG_ROOT", GRASSROOT_ORG, GRASSROOT_FZR, "0");
+        jdbc.update("insert into PARTY_ORGAN_MEMBER(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_ID,USER_ID,USER_POST,VALID_FLAG) values(?,?,sysdate-1,?,sysdate-1,?,0,?,?,?,?,?)",
+                "DW3_GRASS_MEMBER_INVALID", STAFF, STAFF, "127.0.0.1", "ORG_ROOT", GRASSROOT_ORG, STRANGER, "0", "0");
         jdbc.update("insert into PARTY_ORGAN_MEMBER(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_ID,USER_ID,USER_POST) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?)",
                 "DW3_GRASS_MEMBER_JSR", STAFF, STAFF, "127.0.0.1", "ORG_ROOT", GRASSROOT_ORG, GRASSROOT_JSR, "4");
+        insertLeagueOrganization(jdbc, "DYN_TRADE_UNION_ORGANIZA", GRASSROOT_UNION_ORG, "DW3 Grassroot Union Org", "003");
+        insertLeagueMember(jdbc, "DYN_TU_ORGAN_MEMBER", "DW3_GRASS_UNION_MEMBER_FZR", GRASSROOT_UNION_ORG, GRASSROOT_UNION_FZR, "0");
+        insertLeagueMember(jdbc, "DYN_TU_ORGAN_MEMBER", "DW3_GRASS_UNION_MEMBER_JSR", GRASSROOT_UNION_ORG, GRASSROOT_UNION_JSR, "2");
+        insertLeagueOrganization(jdbc, "LEAGUE_ORGANIZATION", GRASSROOT_YOUTH_ORG, "DW3 Grassroot Youth Org", "004");
+        insertLeagueMember(jdbc, "LEAGUE_ORGAN_MEMBER", "DW3_GRASS_YOUTH_MEMBER_FZR", GRASSROOT_YOUTH_ORG, GRASSROOT_YOUTH_FZR, "0");
     }
 
     private static void insertPartyOrganization(JdbcTemplate jdbc, String id, String name, String sort) {
         jdbc.update("insert into PARTY_ORGANIZATION(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARTY_NAME,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?)",
                 id, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", name, PARTY_NODE, 2, Integer.valueOf(sort), sort);
+    }
+
+    private static void insertLeagueOrganization(JdbcTemplate jdbc, String tableName, String id, String name, String sort) {
+        jdbc.update("insert into " + tableName + "(ID,LEAGUE_NAME,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,PARENT_ID,TREE_LEVEL,TREE_SORT,TREE_SORTS,TREE_LEAF,VALID_FLAG) " +
+                        "values(?,?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?)",
+                id, name, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", null, 2, Integer.valueOf(sort), sort, "1", "1");
+    }
+
+    private static void insertLeagueMember(JdbcTemplate jdbc, String tableName, String id, String leagueId, String userId, String userPost) {
+        jdbc.update("insert into " + tableName + "(ID,USER_ID,USER_POST,LEAGUE_ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,VALID_FLAG) " +
+                        "values(?,?,?,?,?,sysdate,?,sysdate,?,0,?,?,?)",
+                id, userId, userPost, leagueId, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "1");
     }
 
     private static void assertNoDw3TestData(JdbcTemplate jdbc) {
@@ -468,18 +580,50 @@ public class DwWorkPlan3BusinessVerifier {
         throw new IllegalStateException(label + " did not contain row " + id);
     }
 
-    private static void assertGrassrootList(List<Map<String, Object>> rows, String businessId, String partyOrgId, String expectedStatus) {
-        Map<String, Object> row = grassrootRow(rows, businessId, partyOrgId);
+    private static void assertMissingExternalRow(List<Map<String, Object>> rows, String id, String label) {
+        for (Map<String, Object> row : rows) {
+            if (id.equals(String.valueOf(row.get("ID")))) {
+                throw new IllegalStateException(label + " unexpectedly contained row " + id);
+            }
+        }
+    }
+
+    private static void assertGrassrootList(List<Map<String, Object>> rows, String businessId, String orgType, String partyOrgId, String expectedStatus) {
+        Map<String, Object> row = grassrootRow(rows, businessId, orgType, partyOrgId);
         if (row == null) {
             throw new IllegalStateException("grassroot dispatch list did not contain business/org row.");
         }
         if (!expectedStatus.equals(String.valueOf(row.get("STATUS")))) {
             throw new IllegalStateException("Unexpected grassroot dispatch status: " + row);
         }
+        assertEquals("\u5fc5\u987b\u5b8c\u6210", row.get("COMPLETE_TYPE"), "grassroot dispatch completion type");
     }
 
-    private static String assertGrassrootDispatched(List<Map<String, Object>> rows, String businessId, String partyOrgId) {
-        Map<String, Object> row = grassrootRow(rows, businessId, partyOrgId);
+    private static void assertGrassrootSummary(Map<String, Object> result, int total, int dispatched, int draft,
+                                               int failed, int requiredTotal, int requiredCompleted) {
+        Map<String, Object> summary = (Map<String, Object>) result.get("summary");
+        if (summary == null) {
+            throw new IllegalStateException("grassroot summary missing: " + result);
+        }
+        assertEquals(String.valueOf(total), summary.get("totalCount"), "grassroot summary total");
+        assertEquals(String.valueOf(dispatched), summary.get("dispatchedCount"), "grassroot summary dispatched");
+        assertEquals(String.valueOf(draft), summary.get("draftCount"), "grassroot summary draft");
+        assertEquals(String.valueOf(failed), summary.get("failedCount"), "grassroot summary failed");
+        assertEquals(String.valueOf(requiredTotal), summary.get("requiredTotalCount"), "grassroot summary required total");
+        assertEquals(String.valueOf(requiredCompleted), summary.get("requiredCompletedCount"), "grassroot summary required completed");
+    }
+
+    private static Map<String, Object> rowById(List<Map<String, Object>> rows, String id) {
+        for (Map<String, Object> row : rows) {
+            if (id.equals(String.valueOf(row.get("ID")))) {
+                return row;
+            }
+        }
+        throw new IllegalStateException("row not found: " + id);
+    }
+
+    private static String assertGrassrootDispatched(List<Map<String, Object>> rows, String businessId, String orgType, String partyOrgId) {
+        Map<String, Object> row = grassrootRow(rows, businessId, orgType, partyOrgId);
         if (row == null) {
             throw new IllegalStateException("grassroot dispatched row missing.");
         }
@@ -493,24 +637,35 @@ public class DwWorkPlan3BusinessVerifier {
         return grassrootTaskId;
     }
 
-    private static Map<String, Object> grassrootRow(List<Map<String, Object>> rows, String businessId, String partyOrgId) {
+    private static Map<String, Object> grassrootRow(List<Map<String, Object>> rows, String businessId, String orgType, String partyOrgId) {
         for (Map<String, Object> row : rows) {
-            if (businessId.equals(String.valueOf(row.get("BUSINESS_TREE_ID"))) && partyOrgId.equals(String.valueOf(row.get("PARTY_ORG_ID")))) {
+            if (businessId.equals(String.valueOf(row.get("BUSINESS_TREE_ID"))) &&
+                    orgType.equals(String.valueOf(row.get("TARGET_ORG_TYPE"))) &&
+                    partyOrgId.equals(String.valueOf(row.get("PARTY_ORG_ID")))) {
                 return row;
             }
         }
         return null;
     }
 
-    private static void assertGrassrootReceiveTask(JdbcTemplate jdbc, String grassrootTaskId, String sourceTaskId) {
+    private static void assertGrassrootReceiveTask(JdbcTemplate jdbc, String grassrootTaskId, String sourceTaskId,
+                                                   String orgId, String orgName, String principalUserId, String receiverUserId) {
         Map<String, Object> row = jdbc.queryForMap("select * from DYN_ZBRWB where ID=?", grassrootTaskId);
         assertEquals(GRASSROOT_BIZ, row.get("FK_COL_ID"), "DYN_ZBRWB.FK_COL_ID should point to DYN_ZBJHYWS.ID");
         assertEquals(sourceTaskId, row.get("YWSJ_ID"), "DYN_ZBRWB.YWSJ_ID should keep the 3.0 task id");
         assertEquals("\u672a\u5f00\u59cb", row.get("RWZT"), "grassroot receive task status");
         assertEquals("\u5426", row.get("SFGLRW"), "grassroot receive task relation flag");
-        assertEquals(GRASSROOT_ORG, row.get("DZZID"), "grassroot party org id");
-        assertEquals(GRASSROOT_FZR, row.get("FZR"), "grassroot principal user");
-        assertEquals(GRASSROOT_JSR, row.get("JSR"), "grassroot receiver user");
+        assertEquals(orgId, row.get("DZZID"), "grassroot target organization id");
+        assertEquals(orgName, row.get("DZZMC"), "grassroot target organization display name");
+        assertEquals(principalUserId, row.get("FZR"), "grassroot principal user");
+        assertEquals(receiverUserId, row.get("JSR"), "grassroot receiver user");
+        assertEquals("DW3 Grassroot Business", row.get("RWMC"), "grassroot business name");
+        assertEquals("DW3_FORM_ID", row.get("RWBDID"), "grassroot form id");
+        assertEquals("DW3_FORM_CODE", row.get("BDBM"), "grassroot form code");
+        assertEquals("DW3_VIEW_ID", row.get("STID"), "grassroot view id");
+        assertEquals("DW3_VIEW_CODE", row.get("STBM"), "grassroot view code");
+        assertEquals("\u662f", row.get("SFCZBD"), "grassroot has-form flag");
+        assertEquals("\u5fc5\u987b\u5b8c\u6210", row.get("WCLX"), "grassroot completion type");
     }
 
     private static void assertGrassrootFailed(JdbcTemplate jdbc, String taskId, String partyOrgId) {
@@ -818,7 +973,13 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($javaFile, $javaSource, $utf8NoBom)
 
 $classpath = "$Root\WebRoot\WEB-INF\classes;$Root\WebRoot\WEB-INF\lib\*"
-& "D:\jdk1.8\bin\javac.exe" -encoding UTF-8 -cp $classpath -d $workDir $javaFile
+$serviceSource = Join-Path $Root "src\avicit\pb\dwworkplan3\service\DwWorkPlan3Service.java"
+& "D:\jdk1.8\bin\javac.exe" -encoding UTF-8 -cp $classpath -d $workDir $serviceSource
+if ($LASTEXITCODE -ne 0) {
+  throw "DwWorkPlan3Service javac failed"
+}
+
+& "D:\jdk1.8\bin\javac.exe" -encoding UTF-8 -cp "$workDir;$classpath" -d $workDir $javaFile
 if ($LASTEXITCODE -ne 0) {
   throw "javac failed"
 }

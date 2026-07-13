@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260709_grassroot_dispatch_33">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260710_grassroot_layout_39">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -337,11 +337,12 @@ String importlibs = "common,form,fileupload";
   <div class="dw-modal-mask" id="dwGrassrootModal" aria-hidden="true">
     <section class="dw-modal dw-modal-xl">
       <div class="dw-modal-head">
-        <h2>基层分发</h2>
+        <h2 id="dwGrassrootModalTitle">基层分发</h2>
         <button type="button" class="dw-icon-btn" data-close-modal="dwGrassrootModal">×</button>
       </div>
       <input id="dwGrassrootTaskId" type="hidden">
       <div id="dwGrassrootSummary" class="dw-grassroot-summary"></div>
+      <div id="dwGrassrootProgress" class="dw-grassroot-progress"></div>
       <div class="dw-grassroot-layout">
         <section class="dw-grassroot-editor">
           <div class="dw-section-title">分发信息</div>
@@ -350,16 +351,50 @@ String importlibs = "common,form,fileupload";
               <input id="dwGrassrootBusiness" type="hidden">
               <input id="dwGrassrootBusinessKeyword" class="dw-input" type="text" placeholder="输入业务名称或编码搜索">
               <div id="dwGrassrootBusinessList" class="dw-grassroot-picker-list"></div>
+              <div id="dwGrassrootBusinessMeta" class="dw-grassroot-business-meta" hidden></div>
             </label>
-            <label class="dw-span-2">基层党组织
-              <input id="dwGrassrootPartyKeyword" class="dw-input" type="text" placeholder="输入党支部名称搜索">
-              <div class="dw-grassroot-picker-tools">
-                <button type="button" class="dw-btn dw-btn-ghost" id="dwGrassrootSelectAllPartyBtn">全选党支部</button>
-                <button type="button" class="dw-btn dw-btn-ghost" id="dwGrassrootClearPartyBtn">清空</button>
-                <span id="dwGrassrootPartyCount">已选 0 个</span>
+            <div class="dw-span-2 dw-grassroot-org-section is-collapsed" data-grassroot-org-group="d">
+              <button type="button" class="dw-grassroot-org-toggle" data-grassroot-org-toggle="d" aria-expanded="false">
+                <span>基层党组织</span>
+                <span class="dw-grassroot-org-toggle-side"><span data-grassroot-org-count="d">已选 0 个</span><i class="dw-grassroot-chevron" aria-hidden="true"></i></span>
+              </button>
+              <div class="dw-grassroot-org-body">
+                <input id="dwGrassrootPartyKeyword" class="dw-input" type="text" data-grassroot-org-keyword="d" placeholder="输入党支部名称搜索">
+                <div class="dw-grassroot-picker-tools">
+                  <button type="button" class="dw-btn dw-btn-ghost" data-grassroot-select-all="d">全选党支部</button>
+                  <button type="button" class="dw-btn dw-btn-ghost" data-grassroot-clear="d">清空</button>
+                </div>
+                <div id="dwGrassrootPartyOrgList" class="dw-grassroot-picker-list dw-grassroot-party-list" data-grassroot-org-list="d"></div>
               </div>
-              <div id="dwGrassrootPartyOrgList" class="dw-grassroot-picker-list dw-grassroot-party-list"></div>
-            </label>
+            </div>
+            <div class="dw-span-2 dw-grassroot-org-section is-collapsed" data-grassroot-org-group="g">
+              <button type="button" class="dw-grassroot-org-toggle" data-grassroot-org-toggle="g" aria-expanded="false">
+                <span>基层工会</span>
+                <span class="dw-grassroot-org-toggle-side"><span data-grassroot-org-count="g">已选 0 个</span><i class="dw-grassroot-chevron" aria-hidden="true"></i></span>
+              </button>
+              <div class="dw-grassroot-org-body">
+                <input id="dwGrassrootUnionKeyword" class="dw-input" type="text" data-grassroot-org-keyword="g" placeholder="输入基层工会名称搜索">
+                <div class="dw-grassroot-picker-tools">
+                  <button type="button" class="dw-btn dw-btn-ghost" data-grassroot-select-all="g">全选基层工会</button>
+                  <button type="button" class="dw-btn dw-btn-ghost" data-grassroot-clear="g">清空</button>
+                </div>
+                <div id="dwGrassrootUnionOrgList" class="dw-grassroot-picker-list dw-grassroot-party-list" data-grassroot-org-list="g"></div>
+              </div>
+            </div>
+            <div class="dw-span-2 dw-grassroot-org-section is-collapsed" data-grassroot-org-group="t">
+              <button type="button" class="dw-grassroot-org-toggle" data-grassroot-org-toggle="t" aria-expanded="false">
+                <span>基层团委</span>
+                <span class="dw-grassroot-org-toggle-side"><span data-grassroot-org-count="t">已选 0 个</span><i class="dw-grassroot-chevron" aria-hidden="true"></i></span>
+              </button>
+              <div class="dw-grassroot-org-body">
+                <input id="dwGrassrootLeagueKeyword" class="dw-input" type="text" data-grassroot-org-keyword="t" placeholder="输入基层团委名称搜索">
+                <div class="dw-grassroot-picker-tools">
+                  <button type="button" class="dw-btn dw-btn-ghost" data-grassroot-select-all="t">全选基层团委</button>
+                  <button type="button" class="dw-btn dw-btn-ghost" data-grassroot-clear="t">清空</button>
+                </div>
+                <div id="dwGrassrootLeagueOrgList" class="dw-grassroot-picker-list dw-grassroot-party-list" data-grassroot-org-list="t"></div>
+              </div>
+            </div>
             <label>年份
               <input id="dwGrassrootYear" class="dw-input" type="number">
             </label>
@@ -393,17 +428,15 @@ String importlibs = "common,form,fileupload";
               <thead>
               <tr>
                 <th>业务</th>
-                <th>基层党组织</th>
+                <th>完成类型</th>
+                <th>接收组织</th>
+                <th>基层状态</th>
                 <th>完成期限</th>
-                <th>周期</th>
-                <th>分发状态</th>
-                <th>基层任务</th>
-                <th>说明</th>
                 <th>操作</th>
               </tr>
               </thead>
               <tbody id="dwGrassrootTableBody">
-              <tr><td colspan="8"><div class="dw-empty">暂无基层分发清单</div></td></tr>
+              <tr><td colspan="6"><div class="dw-empty">暂无基层分发清单</div></td></tr>
               </tbody>
             </table>
           </div>
@@ -411,7 +444,7 @@ String importlibs = "common,form,fileupload";
       </div>
       <div class="dw-modal-foot">
         <button type="button" class="dw-btn dw-btn-ghost" data-close-modal="dwGrassrootModal">取消</button>
-        <button type="button" class="dw-btn dw-btn-primary" id="dwGrassrootDispatchBtn" disabled>分发任务</button>
+        <button type="button" class="dw-btn dw-btn-primary" id="dwGrassrootDispatchBtn">分发任务</button>
       </div>
     </section>
   </div>
@@ -431,6 +464,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260709_grassroot_dispatch_33"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260710_grassroot_layout_39"></script>
 </body>
 </html>

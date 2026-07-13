@@ -12,7 +12,9 @@ $requiredFiles = @(
   'WebRoot/avicit/pb/dwworkplan3/index.jsp',
   'WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.css',
   'WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js',
+  'scripts/seed-dwworkplan3-grassroot-demo.ps1',
   'db/dw_work_plan_3_patch_20260709_grassroot_dispatch.sql',
+  'db/dw_work_plan_3_patch_20260710_grassroot_org_type.sql',
   '.codex/skills/pb-module-memory/references/modules/party-committee-work-plan-3.md'
 )
 
@@ -26,7 +28,7 @@ if ($missing.Count -gt 0) {
 }
 
 $sqlPath = Join-Path $Root 'db/dw_work_plan_3.sql'
-$sql = Get-Content -Raw -LiteralPath $sqlPath
+$sql = Get-Content -Raw -Encoding UTF8 -LiteralPath $sqlPath
 $tables = @('DYN_DW_PLAN3_BATCH','DYN_DW_PLAN3_TASK','DYN_DW_PLAN3_FEEDBACK','DYN_DW_PLAN3_PERSON_TREE','DYN_DW_PLAN3_ATTACHMENT','DYN_DW_PLAN3_GRASSROOT_DISPATCH')
 $auditColumns = @(
   'ID VARCHAR2(50)',
@@ -52,8 +54,12 @@ foreach ($table in $tables) {
 
 $jsPath = Join-Path $Root 'WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js'
 $jspPath = Join-Path $Root 'WebRoot/avicit/pb/dwworkplan3/index.jsp'
-$js = Get-Content -Raw -LiteralPath $jsPath
-$jsp = Get-Content -Raw -LiteralPath $jspPath
+$cssPath = Join-Path $Root 'WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.css'
+$grassrootDemoPath = Join-Path $Root 'scripts/seed-dwworkplan3-grassroot-demo.ps1'
+$js = Get-Content -Raw -Encoding UTF8 -LiteralPath $jsPath
+$jsp = Get-Content -Raw -Encoding UTF8 -LiteralPath $jspPath
+$css = Get-Content -Raw -Encoding UTF8 -LiteralPath $cssPath
+$grassrootDemo = Get-Content -Raw -Encoding UTF8 -LiteralPath $grassrootDemoPath
 
 if ($js -match 'rows\.slice\(\)\.reverse\(\)') {
   throw 'Feedback chain must render in API timeline order, not reverse the list in the browser.'
@@ -67,7 +73,7 @@ foreach ($text in $staleReceiverTexts) {
 }
 
 $servicePath = Join-Path $Root 'src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java'
-$service = Get-Content -Raw -LiteralPath $servicePath
+$service = Get-Content -Raw -Encoding UTF8 -LiteralPath $servicePath
 $removedImportColumns = @(
   ([string][char]25509 + [char]25910 + [char]20154 + [char]22995 + [char]21517),
   ([string][char]25509 + [char]25910 + [char]20154 + [char]30331 + [char]24405 + [char]21517)
@@ -100,16 +106,96 @@ if ($js -notmatch 'openGrassrootDispatch' -or $jsp -notmatch 'dwGrassrootModal')
   throw 'Grassroot dispatch UI is missing.'
 }
 
-if ($jsp -notmatch 'dwGrassrootBusinessKeyword' -or $jsp -notmatch 'dwGrassrootPartyKeyword' -or $jsp -notmatch 'dwGrassrootSelectAllPartyBtn') {
-  throw 'Grassroot dispatch must provide business search, party-organization search, and select-all branch controls.'
+if ($jsp -notmatch 'dwGrassrootBusinessKeyword' -or
+    $jsp -notmatch 'data-grassroot-org-group="d"' -or
+    $jsp -notmatch 'data-grassroot-org-group="g"' -or
+    $jsp -notmatch 'data-grassroot-org-group="t"' -or
+    $jsp -notmatch 'dw-grassroot-org-section is-collapsed') {
+  throw 'Grassroot dispatch must provide three independently collapsed party, union, and youth organization selectors.'
 }
 
-if ($js -notmatch 'selectAllGrassrootParties' -or $js -notmatch 'selectedGrassrootOrgType' -or $js -notmatch 'data-grassroot-party-id') {
-  throw 'Grassroot dispatch JS must support searchable business/org selection and branch multi-select.'
+if ($js -notmatch 'tradeUnionOrgIds' -or $js -notmatch 'leagueOrgIds' -or $js -notmatch 'selectedGrassrootOrgIds') {
+  throw 'Grassroot dispatch JS must submit party, union, and youth organization selections independently.'
+}
+
+if ($service -notmatch 'TARGET_ORG_TYPE' -or $sql -notmatch 'TARGET_ORG_TYPE') {
+  throw 'Grassroot dispatch must persist the target organization type independently from the selected business type.'
+}
+
+if ($service -notmatch 'dispatch.get\("TARGET_ORG_TYPE"\)' -or
+    $service -notmatch 'dispatch.get\("COMPLETE_TYPE"\)' -or
+    $service -notmatch 'dispatch.get\("FORM_ID"\)' -or
+    $service -notmatch 'dispatch.get\("VIEW_ID"\)') {
+  throw 'Grassroot receive tasks must carry target type, completion type, form, and view data from the selected business.'
 }
 
 if ($service -notmatch 'PARTY_ORGAN_MEMBER' -or $service -notmatch 'DYN_TU_ORGAN_MEMBER' -or $service -notmatch 'LEAGUE_ORGAN_MEMBER') {
   throw 'Grassroot dispatch backend must match original party/union/youth organization member resolution logic.'
+}
+
+$mustComplete = ([string][char]24517 + [char]39035 + [char]23436 + [char]25104)
+$freeComplete = ([string][char]33258 + [char]30001 + [char]23436 + [char]25104)
+if ($js -notmatch 'function grassrootCompleteType' -or
+    -not $service.Contains($mustComplete) -or
+    -not $service.Contains($freeComplete)) {
+  throw 'Grassroot dispatch completion type must be restricted to required completion or free completion.'
+}
+
+if ($grassrootDemo -match '\\u6708\\u5ea6' -or
+    $grassrootDemo -notmatch '\\u5fc5\\u987b\\u5b8c\\u6210' -or
+    $grassrootDemo -notmatch '\\u81ea\\u7531\\u5b8c\\u6210') {
+  throw 'Grassroot demo businesses must use only the two supported completion types.'
+}
+
+if ($js -match 'dw-grassroot-picker-meta[^\r\n]*row\.ID' -or
+    -not $js.Contains('name === id') -or
+    -not $js.Contains('/^[A-Za-z0-9_-]+$/.test(name)') -or
+    $css -notmatch 'grid-template-columns:\s*auto minmax\(0, 1fr\);') {
+  throw 'Grassroot organization selectors must show valid organization names without internal IDs.'
+}
+
+$hiddenBusinessMeta = @(
+  ([string][char]34920 + [char]21333 + [char]32534 + [char]30721),
+  ([string][char]35270 + [char]22270 + [char]32534 + [char]30721),
+  ([string][char]26159 + [char]21542 + [char]23384 + [char]22312 + [char]34920 + [char]21333)
+)
+foreach ($text in $hiddenBusinessMeta) {
+  if ($js.Contains($text + ([string][char]65306))) {
+    throw "Grassroot business summary exposes an unnecessary technical field: $text"
+  }
+}
+
+$hiddenDispatchColumns = @(
+  ([string][char]32452 + [char]32455 + [char]31867 + [char]22411),
+  ([string][char]21608 + [char]26399),
+  ([string][char]22522 + [char]23618 + [char]20219 + [char]21153),
+  ([string][char]35828 + [char]26126)
+)
+foreach ($text in $hiddenDispatchColumns) {
+  if ($jsp.Contains('<th>' + $text + '</th>')) {
+    throw "Grassroot dispatch list still exposes an unnecessary column: $text"
+  }
+}
+if ($jsp -notmatch 'colspan="6"') {
+  throw 'Grassroot dispatch list must keep the compact six-column layout.'
+}
+
+if ($css -notmatch '--dw-grassroot-workspace-height' -or
+    $css -notmatch '\.dw-grassroot-editor[\s\S]*?overflow-y:\s*auto' -or
+    $css -notmatch '\.dw-grassroot-list[\s\S]*?height:\s*var\(--dw-grassroot-workspace-height\)') {
+  throw 'Grassroot editor and dispatch list must use one constrained workspace with independent scrolling.'
+}
+
+if ($js -notmatch 'dw-task-title-content' -or
+    $css -notmatch '\.dw-task-title-content' -or
+    $css -notmatch '\.dw-task-grassroot-progress[\s\S]*?grid-template-columns:\s*1fr') {
+  throw 'Task title and grassroot progress must use a readable stacked layout.'
+}
+
+if ($js -notmatch 'grassrootDirty' -or
+    $js -notmatch 'function closeGrassrootModal' -or
+    $js -notmatch 'afterTaskChanged\(\)') {
+  throw 'Closing a changed grassroot modal must refresh the parent task list automatically.'
 }
 
 Write-Host 'DW work plan 3 module file and audit-field checks passed.'

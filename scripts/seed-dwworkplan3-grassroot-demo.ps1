@@ -79,15 +79,15 @@ public class SeedDwWorkPlan3GrassrootDemo {
     }
 
     private static void seedBusiness(Connection conn) throws Exception {
-        insertBusiness(conn, "DW3_DEMO_BIZ_001", "\u57fa\u5c42\u515a\u5efa\u4fe1\u606f\u5316\u5e73\u53f0\u5efa\u8bbe", "DW3-BIZ-001", "001");
-        insertBusiness(conn, "DW3_DEMO_BIZ_002", "\u515a\u5458\u6559\u80b2\u57f9\u8bad", "DW3-BIZ-002", "002");
-        insertBusiness(conn, "DW3_DEMO_BIZ_003", "\u4e09\u4f1a\u4e00\u8bfe\u8d28\u91cf\u63d0\u5347", "DW3-BIZ-003", "003");
-        insertBusiness(conn, "DW3_DEMO_BIZ_004", "\u4e3b\u9898\u515a\u65e5\u6d3b\u52a8", "DW3-BIZ-004", "004");
-        insertBusiness(conn, "DW3_DEMO_BIZ_005", "\u515a\u652f\u90e8\u54c1\u724c\u521b\u5efa", "DW3-BIZ-005", "005");
-        insertBusiness(conn, "DW3_DEMO_BIZ_006", "\u7ec4\u7ec7\u751f\u6d3b\u4f1a\u548c\u6c11\u4e3b\u8bc4\u8bae", "DW3-BIZ-006", "006");
+        insertBusiness(conn, "DW3_DEMO_BIZ_001", "\u57fa\u5c42\u515a\u5efa\u4fe1\u606f\u5316\u5e73\u53f0\u5efa\u8bbe", "DW3-BIZ-001", "001", "\u5fc5\u987b\u5b8c\u6210");
+        insertBusiness(conn, "DW3_DEMO_BIZ_002", "\u515a\u5458\u6559\u80b2\u57f9\u8bad", "DW3-BIZ-002", "002", "\u81ea\u7531\u5b8c\u6210");
+        insertBusiness(conn, "DW3_DEMO_BIZ_003", "\u4e09\u4f1a\u4e00\u8bfe\u8d28\u91cf\u63d0\u5347", "DW3-BIZ-003", "003", "\u5fc5\u987b\u5b8c\u6210");
+        insertBusiness(conn, "DW3_DEMO_BIZ_004", "\u4e3b\u9898\u515a\u65e5\u6d3b\u52a8", "DW3-BIZ-004", "004", "\u81ea\u7531\u5b8c\u6210");
+        insertBusiness(conn, "DW3_DEMO_BIZ_005", "\u515a\u652f\u90e8\u54c1\u724c\u521b\u5efa", "DW3-BIZ-005", "005", "\u5fc5\u987b\u5b8c\u6210");
+        insertBusiness(conn, "DW3_DEMO_BIZ_006", "\u7ec4\u7ec7\u751f\u6d3b\u4f1a\u548c\u6c11\u4e3b\u8bc4\u8bae", "DW3-BIZ-006", "006", "\u81ea\u7531\u5b8c\u6210");
     }
 
-    private static void insertBusiness(Connection conn, String id, String name, String code, String sort) throws Exception {
+    private static void insertBusiness(Connection conn, String id, String name, String code, String sort, String completeType) throws Exception {
         PreparedStatement ps = conn.prepareStatement("insert into DYN_ZBJHYWS(" +
                 "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT," +
                 "YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) " +
@@ -106,7 +106,7 @@ public class SeedDwWorkPlan3GrassrootDemo {
         ps.setString(12, "DW3_DEMO_VIEW");
         ps.setString(13, "DW3_DEMO_VIEW_CODE");
         ps.setString(14, "\u662f");
-        ps.setString(15, "\u6708\u5ea6");
+        ps.setString(15, completeType);
         ps.setString(16, "1");
         ps.setString(17, "1");
         ps.setInt(18, 2);

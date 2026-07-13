@@ -6,7 +6,7 @@
 - Memory file: `.codex/skills/pb-module-memory/references/modules/party-committee-work-plan-3.md`
 - Status: local-verified
 - Owner/requester: xyc
-- Last updated: 2026-07-09
+- Last updated: 2026-07-13
 - Non-negotiable isolation rule: 党委计划 3.0 是全新的独立模块，必须始终与之前做的党委计划下发模块没有任何关系；运行期不得复用旧 `avicit/pb/dwworkplan` 后端命名空间、旧接口、旧表 `DYN_DW_PLAN_*`、旧菜单或旧业务闭环；允许在 3.0 自有 JSP/JS/CSS/Service/SQL 中复刻旧版页面形态、交互和表结构。
 
 ## Business
@@ -555,3 +555,40 @@
 - Original low-code dispatch logic alignment: backend now resolves organization/member rows by type. Party organizations use `PARTY_ORGANIZATION` + `PARTY_ORGAN_MEMBER` posts `0/1/2/7` for负责人 and `4/7` for接收人; trade union uses `DYN_TRADE_UNION_ORGANIZA` + `DYN_TU_ORGAN_MEMBER`; youth league uses `LEAGUE_ORGANIZATION` + `LEAGUE_ORGAN_MEMBER`, with团组织接收人 following the original “执行人=负责人” behavior.
 - JSP cache version bumped to `20260709_grassroot_dispatch_33`.
 - Verification on 2026-07-09: `node --check` passed; `scripts/verify-dwworkplan3.ps1` passed; frontend guardrail scan for the 3 changed frontend files returned 0 warnings; JDK 8 compile passed for touched 3.0 Java; `scripts/seed-verify-dwworkplan3.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_BUSINESS_OK`; `scripts/seed-dwworkplan3-grassroot-demo.ps1 -DbPassword 12345678aA` returned `DWWORKPLAN3_GRASSROOT_DEMO_OK business=6 partyOrgs=6`; Tomcat and Redis restarted, `/pb/login` returned 200, 3.0 entry returned 302 to login, and versioned JS/CSS `20260709_grassroot_dispatch_33` returned 200.
+
+## 2026-07-10 Three-Type Grassroot Dispatch
+
+- One selected business can now target party organizations, trade unions, and youth-league organizations in the same save operation. The UI has three independent searchable multi-select sections; all three are collapsed by default and keep their selected counts visible while collapsed.
+- Business type and target organization type are no longer coupled. `DYN_DW_PLAN3_GRASSROOT_DISPATCH.TARGET_ORG_TYPE` stores `d`, `g`, or `t`; legacy `PARTY_ORG_ID` / `PARTY_ORG_NAME` columns remain as generic target organization ID/name fields for compatibility.
+- SQL patch `db/dw_work_plan_3_patch_20260710_grassroot_org_type.sql` adds and backfills `TARGET_ORG_TYPE`. `ensureGrassrootDispatchTable()` also adds/backfills the column at runtime so copying the code to the intranet does not depend on a fresh table rebuild.
+- Selecting a business displays its completion type and form/view metadata. The save chain snapshots `DYN_ZBJHYWS.WCLX`, `BD_ID`, `BDBH`, `ST_ID`, `ST_BM`, `SFCZBD`, `YWMC`, and `ID`; dispatch writes them to `DYN_ZBRWB.WCLX`, `RWBDID`, `BDBM`, `STID`, `STBM`, `SFCZBD`, `RWMC`, and `FK_COL_ID`. `YWSJ_ID` remains the 3.0 source task ID.
+- Member rules remain aligned with the supplied intranet logic: party uses `PARTY_ORGAN_MEMBER`, union uses `DYN_TU_ORGAN_MEMBER`, and youth uses `LEAGUE_ORGAN_MEMBER`; youth receiver equals its principal.
+- JSP cache version is `20260710_grassroot_dispatch_34`. Frontend assets remain page-local under `WebRoot/static/pb-modern/dwworkplan3/`, scoped by `.pb-dwworkplan3-page`; no global platform, login, eform, or BPM assets were changed.
+- Verification on 2026-07-10: JS syntax, 3.0 static checks, frontend conflict scans, audit-field checks, scoped diff checks, and JDK 8 service compile passed. The database verifier created one party, union, and youth target in one save, dispatched three `DYN_ZBRWB` rows, verified target member rules and all business/completion fields, then cleaned test data. Tomcat and Redis restarted; login and versioned JS/CSS returned 200, and the unauthenticated 3.0 entry returned the expected 302 login redirect.
+
+## 2026-07-10 Grassroot Completion Type And Display Cleanup
+
+- Grassroot business completion type is now restricted to exactly `必须完成` or `自由完成`. The business-tree API excludes unsupported values, and save validates the selected business again so a crafted request cannot persist an invalid value.
+- The local demo businesses alternate between the two supported completion types. The database verifier also seeds a legacy `月度` business and verifies it is absent from the picker and rejected by save.
+- Organization selectors no longer render internal IDs. The backend and browser filter blank names, ID-as-name rows, one-character structural roots, and pure alphanumeric codes such as `002001`; direct save uses the same backend filter. Existing historical dispatch rows with an unusable organization name display `名称缺失` rather than exposing the code.
+- The selected-business summary only shows completion type. The business picker displays business name plus completion type while retaining name/code search internally.
+- The dispatch list was reduced from ten columns to six: `业务`, `完成类型`, `接收组织`, `完成期限`, `分发状态`, and `操作`. Failure details remain available in the status-cell tooltip. Legacy rows with an unsupported stored completion type fall back to the current selected business completion type for display.
+- JSP cache version is `20260710_grassroot_display_37`.
+- Verification on 2026-07-10: JS syntax and `scripts/verify-dwworkplan3.ps1` passed; JDK 8 compile passed for constants/service/controller; the database verifier returned `DWWORKPLAN3_BUSINESS_OK` and covered invalid completion type plus code-only organization rejection; demo seeding returned `DWWORKPLAN3_GRASSROOT_DEMO_OK business=6 partyOrgs=6`; Tomcat and Redis restarted. Playwright login as staff `910036` verified the modal, two completion types, name-only party organization list, compact six-column table, and no horizontal overflow (`clientWidth=665`, `scrollWidth=665`).
+
+## 2026-07-10 Grassroot Layout And Parent Refresh
+
+- The editable grassroot modal now gives the editor and dispatch list the same responsive workspace height. Each side scrolls independently, so the long selector form no longer leaves a large blank area below the dispatch list.
+- Task rows keep the title on the primary line and render `基层 completed/total` plus `必做 completed/total` as a compact secondary block with a full-width progress track. Fixed task-table column widths prevent the progress block from colliding with work category or level.
+- Successful grassroot save, delete, or dispatch marks the modal dirty. Closing by the header icon, footer button, or mask runs the existing `afterTaskChanged()` reload once, so task counts and progress update without a manual page refresh.
+- Completion behavior remains unchanged and database-verified: unfinished `必须完成` rows block staff completion; unfinished `自由完成` rows are counted but do not block.
+- Frontend cache version is `20260710_grassroot_layout_39`. Assets remain under `WebRoot/static/pb-modern/dwworkplan3/`, scoped by `.pb-dwworkplan3-page`; global platform, login, eform, and BPM assets remain untouched.
+- Verification: JS syntax and static module checks passed; the database verifier returned `DWWORKPLAN3_BUSINESS_OK`; the frontend guardrail scan checked three files with zero warnings. Playwright login as `910036` verified desktop and 900px layouts. Editable-layout measurement returned equal editor/list heights (`417.59px`) with independent overflow (`editorScroll=870`, `listScroll=567`).
+
+## 2026-07-13 Intranet Handoff Preparation
+
+- Requested release scope: 党委计划 3.0 plus a separately packaged party-organization-transfer listener.
+- 3.0 deployment scope includes the complete `src/avicit/pb/dwworkplan3` source closure, the 3.0 JSP/JS/CSS, the base SQL, and incremental SQL patches through `20260710`.
+- Java is delivered as source only. No `.class`, local environment configuration, demo data, screenshots, Playwright output, or test-result files belong in the intranet package.
+- Pre-package verification passed on 2026-07-13: JS syntax, `scripts/verify-dwworkplan3.ps1`, JDK 8 compilation, base-table audit fields, and `scripts/seed-verify-dwworkplan3.ps1` with `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`.
+- Existing intranet databases should apply the incremental patches in date order; `db/dw_work_plan_3.sql` is retained for fresh-install/reference use.
