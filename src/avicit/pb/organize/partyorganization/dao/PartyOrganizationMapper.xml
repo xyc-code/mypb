@@ -636,13 +636,13 @@
 		select count(*) from party_organization t1
 		where party_name like '%支部%'
 		or party_name like '%党委%'
-		and party_name != '中国航发XX党委'
+		and party_name != '中国XXXX党委'
 	</select>
 	
 	<select id="partyOrgJcdwCount" resultType="java.lang.String">
 		select count(*) from party_organization t1
 		where  party_name like '%党委%'
-		and party_name != '中国航发XX党委'
+		and party_name != '中国XXXX党委'
 	</select>
 	
 	<select id="partyOrgDzzCount" resultType="java.lang.String">

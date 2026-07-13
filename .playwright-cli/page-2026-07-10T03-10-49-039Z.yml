@@ -1,0 +1,69 @@
+- generic [active] [ref=f4e1]:
+  - paragraph [ref=f4e5]: 数据加载中...
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]:
+        - generic [ref=f4e9]: 党
+        - generic [ref=f4e10]:
+          - heading "党委计划 3.0" [level=1] [ref=f4e11]
+          - paragraph [ref=f4e12]: 加载当前角色...
+      - navigation "党委计划 3.0 页面切换" [ref=f4e13]:
+        - button "工作计划 0" [ref=f4e14] [cursor=pointer]:
+          - text: 工作计划
+          - generic [ref=f4e15]: "0"
+        - button "人员树维护" [ref=f4e16] [cursor=pointer]
+        - button "统计看板" [ref=f4e17] [cursor=pointer]
+      - generic [ref=f4e18]:
+        - combobox "当前人员节点" [ref=f4e19]
+        - button "刷新" [ref=f4e20] [cursor=pointer]
+        - button "新建任务" [ref=f4e21] [cursor=pointer]
+    - main [ref=f4e22]:
+      - generic [ref=f4e23]:
+        - generic [ref=f4e24]:
+          - combobox [ref=f4e25]
+          - combobox [ref=f4e26]:
+            - option "全部状态" [selected]
+            - option "草稿"
+            - option "待接收"
+            - option "执行中"
+            - option "待下级完成"
+            - option "待确认"
+            - option "已完成"
+            - option "已退回"
+          - textbox "搜索标题、接收人、下发人" [ref=f4e27]
+          - button "清空选中" [ref=f4e28] [cursor=pointer]
+          - button "下载导入模板" [ref=f4e29] [cursor=pointer]
+          - button "批量导入" [ref=f4e30] [cursor=pointer]
+          - button "批量下发" [ref=f4e31] [cursor=pointer]
+          - button "删除" [ref=f4e32] [cursor=pointer]
+        - generic [ref=f4e33]:
+          - generic [ref=f4e34]:
+            - generic [ref=f4e35]: 任务总数
+            - strong [ref=f4e36]: "0"
+          - generic [ref=f4e37]:
+            - generic [ref=f4e38]: 待处理
+            - strong [ref=f4e39]: "0"
+          - generic [ref=f4e40]:
+            - generic [ref=f4e41]: 已完成
+            - strong [ref=f4e42]: "0"
+          - generic [ref=f4e43]:
+            - generic [ref=f4e44]: 逾期
+            - strong [ref=f4e45]: "0"
+        - generic [ref=f4e46]:
+          - generic [ref=f4e47]:
+            - heading "工作计划列表" [level=2] [ref=f4e48]
+            - generic [ref=f4e49]: 未选择任务
+          - table [ref=f4e51]:
+            - rowgroup [ref=f4e52]:
+              - row [ref=f4e53]:
+                - columnheader [ref=f4e54]:
+                  - checkbox [ref=f4e55]: 
+                - columnheader "任务标题" [ref=f4e56]
+                - columnheader "工作分类" [ref=f4e57]
+                - columnheader "层级" [ref=f4e58]
+                - columnheader "下发人" [ref=f4e59]
+                - columnheader "接收人" [ref=f4e60]
+                - columnheader "状态" [ref=f4e61]
+                - columnheader "截止时间" [ref=f4e62]
+                - columnheader "操作" [ref=f4e63]
+            - rowgroup

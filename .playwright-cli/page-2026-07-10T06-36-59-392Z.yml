@@ -1,0 +1,15 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - heading "V6测试平台" [level=1] [ref=e7]
+    - generic [ref=e8]:
+      - heading "欢迎使用" [level=4] [ref=e9]
+      - paragraph [ref=e10]: 业务基础平台
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: 
+          - textbox "登录名" [ref=e14]
+        - generic [ref=e15]:
+          - generic [ref=e16]: 
+          - textbox "请在此输入密码" [ref=e17]: 密码
+        - button "登录" [ref=e20]
+  - paragraph [ref=e29]: © 2022 中国XXXX版权所有

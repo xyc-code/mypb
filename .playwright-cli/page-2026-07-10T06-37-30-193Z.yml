@@ -1,0 +1,16 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e4]:
+    - heading "V6测试平台" [level=1] [ref=f1e7]
+    - generic [ref=f1e8]:
+      - heading "欢迎使用" [level=4] [ref=f1e9]
+      - paragraph [ref=f1e10]: 业务基础平台
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: 
+          - textbox "登录名" [ref=f1e14]: "910036"
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: 
+          - textbox [ref=f1e17]: cape
+        - generic [ref=f1e18]: 登录失败:您输入的用户名或密码有误！
+        - button "登录" [ref=f1e20]
+  - paragraph [ref=f1e29]: © 2022 中国XXXX版权所有

@@ -1,0 +1,66 @@
+- generic [active] [ref=f15e1]:
+  - paragraph [ref=f15e5]: 数据加载中...
+  - generic [ref=f15e6]:
+    - banner [ref=f15e7]:
+      - generic [ref=f15e8]:
+        - generic [ref=f15e9]: 党
+        - generic [ref=f15e10]:
+          - heading "党委计划 3.0" [level=1] [ref=f15e11]
+          - paragraph [ref=f15e12]: 科员 / 小鱼儿
+      - navigation "党委计划 3.0 页面切换" [ref=f15e13]:
+        - button "工作计划 0" [ref=f15e14] [cursor=pointer]:
+          - text: 工作计划
+          - generic [ref=f15e15]: "0"
+      - generic [ref=f15e16]:
+        - combobox "当前人员节点" [ref=f15e17]:
+          - option "小鱼儿 - 科员" [selected]
+        - button "刷新" [ref=f15e18] [cursor=pointer]
+        - button "新建任务" [ref=f15e19] [cursor=pointer]
+    - main [ref=f15e20]:
+      - generic [ref=f15e21]:
+        - generic [ref=f15e22]:
+          - combobox [ref=f15e23]:
+            - option "2026/三季度" [selected]
+          - combobox [ref=f15e24]:
+            - option "全部状态" [selected]
+            - option "草稿"
+            - option "待接收"
+            - option "执行中"
+            - option "待下级完成"
+            - option "待确认"
+            - option "已完成"
+            - option "已退回"
+          - textbox "搜索标题、接收人、下发人" [ref=f15e25]
+          - button "清空选中" [ref=f15e26] [cursor=pointer]
+          - button "删除" [ref=f15e27] [cursor=pointer]
+        - generic [ref=f15e28]:
+          - generic [ref=f15e29]:
+            - generic [ref=f15e30]: 任务总数
+            - strong [ref=f15e31]: "0"
+          - generic [ref=f15e32]:
+            - generic [ref=f15e33]: 待处理
+            - strong [ref=f15e34]: "0"
+          - generic [ref=f15e35]:
+            - generic [ref=f15e36]: 已完成
+            - strong [ref=f15e37]: "0"
+          - generic [ref=f15e38]:
+            - generic [ref=f15e39]: 逾期
+            - strong [ref=f15e40]: "0"
+        - generic [ref=f15e41]:
+          - generic [ref=f15e42]:
+            - heading "工作计划列表" [level=2] [ref=f15e43]
+            - generic [ref=f15e44]: 未选择任务
+          - table [ref=f15e46]:
+            - rowgroup [ref=f15e47]:
+              - row [ref=f15e48]:
+                - columnheader [ref=f15e49]:
+                  - checkbox [ref=f15e50]: 
+                - columnheader "任务标题" [ref=f15e51]
+                - columnheader "工作分类" [ref=f15e52]
+                - columnheader "层级" [ref=f15e53]
+                - columnheader "下发人" [ref=f15e54]
+                - columnheader "接收人" [ref=f15e55]
+                - columnheader "状态" [ref=f15e56]
+                - columnheader "截止时间" [ref=f15e57]
+                - columnheader "操作" [ref=f15e58]
+            - rowgroup

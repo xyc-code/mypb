@@ -1,0 +1,244 @@
+- generic [ref=f15e6]:
+  - banner [ref=f15e7]:
+    - generic [ref=f15e8]:
+      - generic [ref=f15e9]: 党
+      - generic [ref=f15e10]:
+        - heading "党委计划 3.0" [level=1] [ref=f15e11]
+        - paragraph [ref=f15e12]: 科员 / 小鱼儿
+    - navigation "党委计划 3.0 页面切换" [ref=f15e13]:
+      - button "工作计划" [ref=f15e59] [cursor=pointer]
+    - generic [ref=f15e16]:
+      - combobox "当前人员节点" [ref=f15e17]:
+        - option "小鱼儿 - 科员" [selected]
+      - button "刷新" [ref=f15e18] [cursor=pointer]
+      - button "新建任务" [ref=f15e19] [cursor=pointer]
+  - main [ref=f15e20]:
+    - generic [ref=f15e21]:
+      - generic [ref=f15e22]:
+        - combobox [ref=f15e23]:
+          - option "2026/三季度" [selected]
+        - combobox [ref=f15e24]:
+          - option "全部状态" [selected]
+          - option "草稿"
+          - option "待接收"
+          - option "执行中"
+          - option "待下级完成"
+          - option "待确认"
+          - option "已完成"
+          - option "已退回"
+        - textbox "搜索标题、接收人、下发人" [ref=f15e25]
+        - button "清空选中" [ref=f15e26] [cursor=pointer]
+        - button "删除" [ref=f15e27] [cursor=pointer]
+      - generic [ref=f15e28]:
+        - generic [ref=f15e29]:
+          - generic [ref=f15e30]: 任务总数
+          - strong [ref=f15e31]: "1"
+        - generic [ref=f15e32]:
+          - generic [ref=f15e33]: 待处理
+          - strong [ref=f15e34]: "0"
+        - generic [ref=f15e35]:
+          - generic [ref=f15e36]: 已完成
+          - strong [ref=f15e37]: "1"
+        - generic [ref=f15e38]:
+          - generic [ref=f15e39]: 逾期
+          - strong [ref=f15e40]: "0"
+      - generic [ref=f15e41]:
+        - generic [ref=f15e42]:
+          - heading "工作计划列表" [level=2] [ref=f15e43]
+          - generic [ref=f15e44]: 未选择任务
+        - table [ref=f15e46]:
+          - rowgroup [ref=f15e47]:
+            - row [ref=f15e48]:
+              - columnheader [ref=f15e49]:
+                - checkbox [ref=f15e50]: 
+              - columnheader "任务标题" [ref=f15e51]
+              - columnheader "工作分类" [ref=f15e52]
+              - columnheader "层级" [ref=f15e53]
+              - columnheader "下发人" [ref=f15e54]
+              - columnheader "接收人" [ref=f15e55]
+              - columnheader "状态" [ref=f15e56]
+              - columnheader "截止时间" [ref=f15e57]
+              - columnheader "操作" [ref=f15e58]
+          - rowgroup [ref=f15e60]:
+            - row [ref=f15e61] [cursor=pointer]:
+              - cell [ref=f15e62]:
+                - checkbox [ref=f15e63]: 
+              - cell "• 1 基层 0/13 必做 0/13" [ref=f15e64]:
+                - generic [ref=f15e65]:
+                  - button "•" [ref=f15e66]
+                  - generic [ref=f15e67]:
+                    - generic [ref=f15e68]: "1"
+                    - generic [ref=f15e70]:
+                      - generic [ref=f15e71]:
+                        - text: 基层
+                        - strong [ref=f15e72]: 0/13
+                      - generic [ref=f15e73]:
+                        - text: 必做
+                        - strong [ref=f15e74]: 0/13
+              - cell "1" [ref=f15e76]
+              - cell "科员" [ref=f15e77]
+              - cell "狂厄蔷薇(910020)" [ref=f15e78]
+              - cell "潮汐海灵(910036)" [ref=f15e79]
+              - cell "已完成" [ref=f15e80]
+              - cell "2026-08-02" [ref=f15e82]
+              - cell [ref=f15e83]:
+                - generic [ref=f15e84]:
+                  - button "查看" [ref=f15e85]
+                  - button "基层进度" [active] [ref=f15e86]
+  - generic [ref=f15e88]:
+    - generic [ref=f15e89]:
+      - heading "基层任务进度" [level=2] [ref=f15e90]
+      - button "×" [ref=f15e91] [cursor=pointer]
+    - generic [ref=f15e93]:
+      - generic [ref=f15e94]:
+        - generic [ref=f15e95]: 任务标题
+        - strong [ref=f15e96]: "1"
+      - generic [ref=f15e97]:
+        - generic [ref=f15e98]:
+          - generic [ref=f15e99]: 层级
+          - strong [ref=f15e100]: 科员
+        - generic [ref=f15e101]:
+          - generic [ref=f15e102]: 状态
+          - strong [ref=f15e103]: 已完成
+        - generic [ref=f15e104]:
+          - generic [ref=f15e105]: 工作分类
+          - strong [ref=f15e106]: "1"
+        - generic [ref=f15e107]:
+          - generic [ref=f15e108]: 截止时间
+          - strong [ref=f15e109]: 2026-08-02
+        - generic [ref=f15e110]:
+          - generic [ref=f15e111]: 下发人
+          - strong [ref=f15e112]: 狂厄蔷薇(910020)
+        - generic [ref=f15e113]:
+          - generic [ref=f15e114]: 接收人
+          - strong [ref=f15e115]: 潮汐海灵(910036)
+      - generic [ref=f15e116]:
+        - generic [ref=f15e117]:
+          - generic [ref=f15e118]: 工作目标
+          - strong [ref=f15e119]: q
+        - generic [ref=f15e120]:
+          - generic [ref=f15e121]: 工作内容
+          - strong [ref=f15e122]: q
+    - generic [ref=f15e123]:
+      - generic [ref=f15e124]:
+        - strong [ref=f15e125]: 0/13
+        - generic [ref=f15e126]: 基层任务完成
+      - generic [ref=f15e128]:
+        - generic [ref=f15e129]:
+          - text: 未完成
+          - strong [ref=f15e130]: "13"
+        - generic [ref=f15e131]:
+          - text: 必做
+          - strong [ref=f15e132]: 0/13
+        - generic [ref=f15e133]:
+          - text: 待分发
+          - strong [ref=f15e134]: "0"
+        - generic [ref=f15e135]:
+          - text: 失败
+          - strong [ref=f15e136]: "0"
+    - generic [ref=f15e137]:
+      - text:                    
+      - generic [ref=f15e138]:
+        - generic [ref=f15e139]: 分发清单
+        - table [ref=f15e141]:
+          - rowgroup [ref=f15e142]:
+            - row [ref=f15e143]:
+              - columnheader "业务" [ref=f15e144]
+              - columnheader "完成类型" [ref=f15e145]
+              - columnheader "接收组织" [ref=f15e146]
+              - columnheader "基层状态" [ref=f15e147]
+              - columnheader "完成期限" [ref=f15e148]
+              - columnheader "操作" [ref=f15e149]
+          - rowgroup [ref=f15e150]:
+            - row [ref=f15e151] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e152]
+              - cell "必须完成" [ref=f15e153]
+              - cell "生产一线党支部" [ref=f15e154]
+              - cell "未开始" [ref=f15e155]
+              - cell "2026-08-02" [ref=f15e157]
+              - cell [ref=f15e158]
+            - row [ref=f15e159] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e160]
+              - cell "必须完成" [ref=f15e161]
+              - cell "党群党支部" [ref=f15e162]
+              - cell "未开始" [ref=f15e163]
+              - cell "2026-08-02" [ref=f15e165]
+              - cell [ref=f15e166]
+            - row [ref=f15e167] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e168]
+              - cell "必须完成" [ref=f15e169]
+              - cell "信息工程部党支部" [ref=f15e170]
+              - cell "未开始" [ref=f15e171]
+              - cell "2026-08-02" [ref=f15e173]
+              - cell [ref=f15e174]
+            - row [ref=f15e175] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e176]
+              - cell "必须完成" [ref=f15e177]
+              - cell "德玛西亚测试党支部" [ref=f15e178]
+              - cell "未开始" [ref=f15e179]
+              - cell "2026-08-02" [ref=f15e181]
+              - cell [ref=f15e182]
+            - row [ref=f15e183] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e184]
+              - cell "必须完成" [ref=f15e185]
+              - cell "艾欧尼亚测试党支部" [ref=f15e186]
+              - cell "未开始" [ref=f15e187]
+              - cell "2026-08-02" [ref=f15e189]
+              - cell [ref=f15e190]
+            - row [ref=f15e191] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e192]
+              - cell "必须完成" [ref=f15e193]
+              - cell "皮尔特沃夫测试党支部" [ref=f15e194]
+              - cell "未开始" [ref=f15e195]
+              - cell "2026-08-02" [ref=f15e197]
+              - cell [ref=f15e198]
+            - row [ref=f15e199] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e200]
+              - cell "必须完成" [ref=f15e201]
+              - cell "祖安测试党支部" [ref=f15e202]
+              - cell "未开始" [ref=f15e203]
+              - cell "2026-08-02" [ref=f15e205]
+              - cell [ref=f15e206]
+            - row [ref=f15e207] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e208]
+              - cell "必须完成" [ref=f15e209]
+              - cell "诺克萨斯测试党支部" [ref=f15e210]
+              - cell "未开始" [ref=f15e211]
+              - cell "2026-08-02" [ref=f15e213]
+              - cell [ref=f15e214]
+            - row [ref=f15e215] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e216]
+              - cell "必须完成" [ref=f15e217]
+              - cell "第一党支部" [ref=f15e218]
+              - cell "未开始" [ref=f15e219]
+              - cell "2026-08-02" [ref=f15e221]
+              - cell [ref=f15e222]
+            - row [ref=f15e223] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e224]
+              - cell "必须完成" [ref=f15e225]
+              - cell "第二党支部" [ref=f15e226]
+              - cell "未开始" [ref=f15e227]
+              - cell "2026-08-02" [ref=f15e229]
+              - cell [ref=f15e230]
+            - row [ref=f15e231] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e232]
+              - cell "必须完成" [ref=f15e233]
+              - cell "机关党支部" [ref=f15e234]
+              - cell "未开始" [ref=f15e235]
+              - cell "2026-08-02" [ref=f15e237]
+              - cell [ref=f15e238]
+            - row [ref=f15e239] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e240]
+              - cell "必须完成" [ref=f15e241]
+              - cell "青年党员突击队党支部" [ref=f15e242]
+              - cell "未开始" [ref=f15e243]
+              - cell "2026-08-02" [ref=f15e245]
+              - cell [ref=f15e246]
+            - row [ref=f15e247] [cursor=pointer]:
+              - cell "三会一课质量提升" [ref=f15e248]
+              - cell "必须完成" [ref=f15e249]
+              - cell "工程项目党支部" [ref=f15e250]
+              - cell "未开始" [ref=f15e251]
+              - cell "2026-08-02" [ref=f15e253]
+              - cell [ref=f15e254]
+    - button "取消" [ref=f15e256] [cursor=pointer]

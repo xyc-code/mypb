@@ -213,9 +213,10 @@ tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '表单编号',hid
 tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '申请日期',hidden:false, name: 'REQUST_DATE',align:'left',  width: '150px'});
 tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '党支部ID',hidden:true, name: 'PARTY_ID',align:'left',  width: '150px'});
 tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '申请人',hidden:false, name: 'USER_NAME',align:'left',  width: '150px'});
-tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '申请人所在党支部',hidden:false, name: 'PARTY_NAME',align:'left',  width: '150px'});
-tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '申请人所在单位',hidden:false, name: 'DEPT_NAME',align:'left',  width: '150px'});
-tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '召开党员大会时间', formatter:format, hidden:false, name: 'ELECTION_TIME',align:'center',  width: '150px'});
+tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '选举党组织名称',hidden:false, name: 'PARTY_NAME_NEW',align:'left',  width: '150px'});
+tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '申请人所在党支部',hidden:true, name: 'PARTY_NAME',align:'left',  width: '150px'});
+tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '申请人所在单位',hidden:true, name: 'DEPT_NAME',align:'left',  width: '150px'});
+tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '召开党员大会时间', formatter:format, hidden:true, name: 'ELECTION_TIME',align:'center',  width: '150px'});
 tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '应参加有选举权人数',hidden:true, name: 'PARTY_YINGGAI',align:'right',  width: '150px'});
 tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '实际参加有选举权人数',hidden:true, name: 'PARTY_SHIJI',align:'right',  width: '150px'});
 tablecmtablef6a85f27b4afd04f3d28f27274cc1c329439.push({label: '创建人IP',hidden:true, name: 'LAST_UPDATE_IP',align:'left',  width: '150px'});
@@ -258,6 +259,7 @@ function tablef6a85f27b4afd04f3d28f27274cc1c329439searchWF(){
 }
 ;$(document).ready(function(){ 
 
+tablef6a85f27b4afd04f3d28f27274cc1c329439LoadComplete.addEvent(function(data){$("#tableToolbarButton800742366e828241c8a8bf2fb55adf28a412").css("display","");});
 $("#tablef6a85f27b4afd04f3d28f27274cc1c329439").jqGrid({ 
     	   url: './eform/bpmsEformDataOptionsController/dataOperating/selectTableComponentData/948e83e3828f72f301829f5ab2be579a/tablef6a85f27b4afd04f3d28f27274cc1c329439/Y/V1',
         mtype: 'POST', 
