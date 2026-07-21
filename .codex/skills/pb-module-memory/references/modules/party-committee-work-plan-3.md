@@ -678,3 +678,11 @@
 - Party delete is limited to root tasks owned by the current party user/current personnel node. Deleting a party root physically removes its full task subtree and related feedback/attachments/todos; party cannot delete an office/staff-owned root task.
 - Frontend delete visibility and `canDelete`, plus backend `deleteTask`, all include `PARTY_SENDER`. Frontend cache version: `20260721_party_delete_import_47`.
 - Regression verification deleted a PARTY -> DEPT -> OFFICE task subtree, asserted all three task rows were gone, and confirmed party deletion of an office-owned root remained rejected. JS/static checks, JDK 8 compile, and the full DM verifier passed with `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`.
+
+## 2026-07-21 Intranet Full-Rebuild Package
+
+- Release directory: `D:\pb-release\内网部署-党委计划3.0-单SQL重建-20260721-105821`.
+- Scope is 党委计划 3.0 only: 14 current source/runtime/XML/SQL files covering the 3.0 controller/service/constants/portal-todo closure, JSP/JS/CSS, runtime mapper XML, and one full-rebuild SQL.
+- The only database script is `党委计划3.0\db\dw_work_plan_3_full_rebuild.sql`: 7 conditional table drops, 7 table creates, and 13 indexes (11 normal plus 2 unique). It intentionally deletes existing 3.0 and `PB_PORTAL_BUSINESS_TODO` test data before rebuilding.
+- Excluded: `.class`, incremental/base/import SQL, environment configuration, test scripts/data, `.learnings`, and the party-organization-transfer listener.
+- Coverage check matched all 14 candidates with zero missing files; package hashes match the current workspace, JS syntax passed, and no `.class` files are present.
