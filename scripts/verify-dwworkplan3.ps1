@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 $requiredFiles = @(
   'db/dw_work_plan_3.sql',
   'db/dw_work_plan_3_full_rebuild.sql',
+  'db/dw_work_plan_3_patch_20260721_remove_work_category.sql',
   'src/avicit/pb/dwworkplan3/controller/DwWorkPlan3Controller.java',
   'src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java',
   'src/avicit/pb/dwworkplan3/dto/DwWorkPlan3Constants.java',
@@ -76,6 +77,43 @@ foreach ($text in $staleReceiverTexts) {
 
 $servicePath = Join-Path $Root 'src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java'
 $service = Get-Content -Raw -Encoding UTF8 -LiteralPath $servicePath
+$categorySources = @(
+  @{ Name = 'service'; Content = $service },
+  @{ Name = 'javascript'; Content = $js },
+  @{ Name = 'jsp'; Content = $jsp },
+  @{ Name = 'base sql'; Content = $sql },
+  @{ Name = 'full rebuild sql'; Content = $fullRebuildSql }
+)
+foreach ($source in $categorySources) {
+  if ($source.Content -match 'WORK_CATEGORY|workCategory|工作分类') {
+    throw "Removed work-category field remains in $($source.Name)."
+  }
+}
+if ($js -notmatch 'dw-task-content-cell' -or
+    $css -notmatch '\.dw-task-content-cell[\s\S]*?white-space:\s*pre-wrap' -or
+    $css -notmatch '\.dw-task-content-cell[\s\S]*?overflow-wrap:\s*anywhere') {
+  throw 'Task-list work content must wrap long text safely.'
+}
+if ($service -notmatch 'confirmAndForwardFeedback' -or
+    $service -notmatch 'byDepartmentStatus' -or
+    $service -notmatch 'result\.put\("summary"') {
+  throw 'Editable combined feedback review or the new statistics contract is missing.'
+}
+if ($js -notmatch 'var levels = \["OFFICE", "STAFF"\]' -or
+    $service -notmatch 'TASK_LEVEL in \(\?,\?\)') {
+  throw 'The level bar chart must contain office and staff only.'
+}
+$importContracts = @(
+  'private static final String[] IMPORT_HEADERS = new String[]{',
+  'setCellValue(i == 4 ? receiverLabel : IMPORT_HEADERS[i])',
+  'setDefaultColumnStyle(3, dateStyle)',
+  'boolean receiverHeader = i == 4'
+)
+foreach ($importContract in $importContracts) {
+  if ($service.IndexOf($importContract, [System.StringComparison]::Ordinal) -lt 0) {
+    throw "Import template generation and parsing contract is missing: $importContract"
+  }
+}
 if ($service -match "(?i)nvl\([^\r\n]*,''\)\s*(?:=|<>)\s*''") {
   throw "Dameng empty-string compatibility: use IS NULL/IS NOT NULL instead of comparing NVL(column,'') with ''."
 }

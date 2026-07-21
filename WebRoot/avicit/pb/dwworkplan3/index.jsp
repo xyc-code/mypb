@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260716_person_tree_collapsed_43">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260721_feedback_stats_50">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -79,7 +79,7 @@ String importlibs = "common,form,fileupload";
             <tr>
               <th class="dw-check-col"><input type="checkbox" id="dwSelectAll"></th>
               <th>任务标题</th>
-              <th>工作分类</th>
+              <th>工作内容</th>
               <th>层级</th>
               <th>下发人</th>
               <th>接收人</th>
@@ -166,18 +166,14 @@ String importlibs = "common,form,fileupload";
       </div>
       <div class="dw-grid dw-grid-stats">
         <section class="dw-panel">
-          <div class="dw-panel-head"><h2>状态分布</h2></div>
+          <div class="dw-panel-head"><h2>部门状态分布</h2></div>
           <div id="dwStatusChart" class="dw-chart"></div>
         </section>
         <section class="dw-panel">
-          <div class="dw-panel-head"><h2>层级推进</h2></div>
+          <div class="dw-panel-head"><h2>两级任务数量</h2></div>
           <div id="dwLevelChart" class="dw-chart"></div>
         </section>
-        <section class="dw-panel">
-          <div class="dw-panel-head"><h2>逾期层级</h2></div>
-          <div id="dwOverdueChart" class="dw-chart"></div>
-        </section>
-        <section class="dw-panel">
+        <section class="dw-panel dw-stats-recent-panel">
           <div class="dw-panel-head"><h2>最近任务</h2></div>
           <div class="dw-table-wrap">
             <table class="dw-table" id="dwRecentTable">
@@ -185,7 +181,7 @@ String importlibs = "common,form,fileupload";
               <tr>
                 <th>层级</th>
                 <th>标题</th>
-                <th>工作分类</th>
+                <th>工作内容</th>
                 <th>接收人</th>
                 <th>状态</th>
                 <th>期限</th>
@@ -222,9 +218,6 @@ String importlibs = "common,form,fileupload";
         </label>
         <label class="dw-span-2">任务标题
           <input id="dwTaskTitle" class="dw-input" type="text">
-        </label>
-        <label>工作分类
-          <input id="dwTaskWorkCategory" class="dw-input" type="text">
         </label>
         <label>截止时间
           <input id="dwTaskDeadline" class="dw-input" type="date">
@@ -289,7 +282,6 @@ String importlibs = "common,form,fileupload";
               <th>行号</th>
               <th>状态</th>
               <th>任务标题</th>
-              <th>工作分类</th>
               <th>工作目标</th>
               <th>工作内容</th>
               <th>截止日期</th>
@@ -298,7 +290,7 @@ String importlibs = "common,form,fileupload";
             </tr>
             </thead>
             <tbody id="dwImportPreviewBody">
-            <tr><td colspan="9"><div class="dw-empty">请选择 Excel 后上传校验</div></td></tr>
+            <tr><td colspan="8"><div class="dw-empty">请选择 Excel 后上传校验</div></td></tr>
             </tbody>
           </table>
         </div>
@@ -464,6 +456,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260721_party_delete_import_47"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260721_feedback_stats_50"></script>
 </body>
 </html>

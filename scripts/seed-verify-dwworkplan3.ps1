@@ -21,9 +21,17 @@ import avicit.pb.dwworkplan3.dto.DwWorkPlan3Constants;
 import avicit.pb.dwworkplan3.service.DwWorkPlan3Service;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -80,6 +88,7 @@ public class DwWorkPlan3BusinessVerifier {
         HttpServletRequest partyReq = request(PARTY, "DW3 Party");
         HttpServletRequest deptReq = request(DEPT, "DW3 Dept");
         HttpServletRequest officeReq = request(OFFICE, "DW3 Office");
+        HttpServletRequest otherOfficeReq = request(OTHER_OFFICE, "DW3 Other Office");
         HttpServletRequest staffReq = request(STAFF, "DW3 Staff");
         HttpServletRequest staff2Req = request(STAFF2, "DW3 Staff2");
         HttpServletRequest leaderAdminReq = request(LEADER_ADMIN, "DW3 Leader Admin");
@@ -158,6 +167,7 @@ public class DwWorkPlan3BusinessVerifier {
         assertContainsNode(service.listPersonTree(), staffNode, "person/list after save");
         assertContainsNode(service.listReceivers(officeReq), staffNode, "person/receivers for office");
         assertContainsNode(service.listReceivers(partyReq), deptNode, "person/receivers for party");
+        assertImportTemplate(service, officeReq);
 
         Map<String, Object> unconfiguredUser = service.currentUser(request(STRANGER, "DW3 Stranger"));
         assertSuccess(unconfiguredUser, "unconfigured current user");
@@ -230,10 +240,36 @@ public class DwWorkPlan3BusinessVerifier {
         assertEquals(DwWorkPlan3Constants.LEVEL_OFFICE, officeTaskFromDept.get("TASK_LEVEL"), "department dispatch child level");
         assertEquals(OFFICE, officeTaskFromDept.get("RECEIVER_ID"), "department dispatch receiver");
         assertEquals(DwWorkPlan3Constants.STATUS_TODO, officeTaskFromDept.get("STATUS"), "department dispatch child status");
+        assertSuccess(service.acceptTask(officeTaskFromDeptId, officeReq), "office accepts department task");
+        String ordinaryStaffTaskId = id(service.dispatchChild(params(
+                "parentId", officeTaskFromDeptId,
+                "personNodeId", staffNode,
+                "receiverId", STAFF,
+                "title", "DW3 test ordinary feedback review",
+                "content", "Ordinary staff feedback review under a non-root office task.",
+                "planDeadline", "2026-09-30"
+        ), officeReq));
+        assertSuccess(service.acceptTask(ordinaryStaffTaskId, staffReq), "staff accepts ordinary review task");
+        String returnedFeedback = id(service.submitFeedback(params(
+                "taskId", ordinaryStaffTaskId,
+                "content", "Original content must survive a return."
+        ), staffReq));
+        assertSuccess(service.returnFeedback(returnedFeedback, "Return without saving reviewer draft.", officeReq), "office returns staff feedback");
+        assertEquals("Original content must survive a return.", jdbc.queryForObject(
+                "select FEEDBACK_CONTENT from DYN_DW_PLAN3_FEEDBACK where ID=?", String.class, returnedFeedback),
+                "return keeps original staff feedback content");
+        String retriedFeedback = id(service.submitFeedback(params(
+                "taskId", ordinaryStaffTaskId,
+                "content", "Staff retry before office correction."
+        ), staffReq));
+        String ordinaryEditedContent = "Staff retry corrected by direct office director.";
+        assertSuccess(service.confirmFeedback(retriedFeedback, ordinaryEditedContent, officeReq), "ordinary confirm saves reviewed content");
+        assertEquals(ordinaryEditedContent, jdbc.queryForObject(
+                "select FEEDBACK_CONTENT from DYN_DW_PLAN3_FEEDBACK where ID=?", String.class, retriedFeedback),
+                "ordinary confirm persisted reviewed content");
         String partyImportRow = jsonRows(params(
                 "rowNumber", "2",
                 "title", "DW3 test party import",
-                "workCategory", "DW3 party import",
                 "targetDesc", "Party import targets a direct department minister.",
                 "content", "Party imports a task for its direct department child.",
                 "planDeadline", "2026-11-05",
@@ -252,6 +288,7 @@ public class DwWorkPlan3BusinessVerifier {
         assertMissingTask(jdbc, partyRootId, "party delete removed root task");
         assertMissingTask(jdbc, deptTaskId, "party delete removed department child task");
         assertMissingTask(jdbc, officeTaskFromDeptId, "party delete removed office child task");
+        assertMissingTask(jdbc, ordinaryStaffTaskId, "party delete removed staff child task");
         assertFailure(service.saveRootTask(params(
                 "title", "DW3 test dept should not create",
                 "content", "Department minister confirms only.",
@@ -261,7 +298,6 @@ public class DwWorkPlan3BusinessVerifier {
         String rootId = id(service.saveRootTask(params(
                 "batchId", batchId,
                 "title", "DW3 test office root task",
-                "workCategory", "DW3 category",
                 "targetDesc", "Office starts, staff executes, department confirms.",
                 "content", "Office creates a task and dispatches directly to staff.",
                 "planDeadline", "2026-09-30",
@@ -274,7 +310,6 @@ public class DwWorkPlan3BusinessVerifier {
                 "id", rootId,
                 "batchId", batchId,
                 "title", "DW3 test office root task",
-                "workCategory", "DW3 category",
                 "targetDesc", "Office starts, staff executes, department confirms.",
                 "content", "Office creates a task and dispatches directly to staff.",
                 "planDeadline", "2026-09-30",
@@ -302,14 +337,27 @@ public class DwWorkPlan3BusinessVerifier {
                 "content", "Staff feedback: completed."
         ), staffReq));
         assertStatus(jdbc, staffTaskId, DwWorkPlan3Constants.STATUS_PENDING_CONFIRM);
-        assertSuccess(service.confirmFeedback(staffFeedback, officeReq), "office confirms staff feedback");
+        assertFailure(service.confirmFeedback(staffFeedback, "Unauthorized department edit.", deptReq), "department cannot edit staff feedback");
+        assertFailure(service.confirmFeedback(staffFeedback, "Unauthorized party edit.", partyReq), "party cannot edit staff feedback");
+        assertFailure(service.confirmFeedback(staffFeedback, "Unauthorized other-office edit.", otherOfficeReq), "other office cannot edit staff feedback");
+        assertFailure(service.confirmAndForwardFeedback(staffFeedback, "Invalid target must roll back.", STRANGER, officeReq), "invalid department target is rejected");
+        assertStatus(jdbc, staffTaskId, DwWorkPlan3Constants.STATUS_PENDING_CONFIRM);
+        assertEquals("Staff feedback: completed.", jdbc.queryForObject(
+                "select FEEDBACK_CONTENT from DYN_DW_PLAN3_FEEDBACK where ID=?", String.class, staffFeedback),
+                "invalid combined review leaves staff feedback unchanged");
+        String editedStaffFeedback = "Staff feedback: typo corrected by office director.";
+        Map<String, Object> combinedFeedback = service.confirmAndForwardFeedback(staffFeedback, editedStaffFeedback, DEPT, officeReq);
+        assertSuccess(combinedFeedback, "office confirms and forwards staff feedback");
+        assertEquals("Y", combinedFeedback.get("forwarded"), "combined feedback forwarded flag");
         assertStatus(jdbc, staffTaskId, DwWorkPlan3Constants.STATUS_COMPLETED);
-        assertStatus(jdbc, rootId, DwWorkPlan3Constants.STATUS_DOING);
-        String officeFeedback = id(service.submitFeedback(params(
-                "taskId", rootId,
-                "content", "Office feedback: all staff feedback confirmed."
-        ), officeReq));
         assertStatus(jdbc, rootId, DwWorkPlan3Constants.STATUS_PENDING_CONFIRM);
+        assertEquals(editedStaffFeedback, jdbc.queryForObject(
+                "select FEEDBACK_CONTENT from DYN_DW_PLAN3_FEEDBACK where ID=?", String.class, staffFeedback),
+                "office-edited staff feedback content");
+        String officeFeedback = String.valueOf(combinedFeedback.get("feedbackId"));
+        assertEquals(editedStaffFeedback, jdbc.queryForObject(
+                "select FEEDBACK_CONTENT from DYN_DW_PLAN3_FEEDBACK where ID=?", String.class, officeFeedback),
+                "forwarded department feedback content");
         List<Map<String, Object>> rootFeedbackRows = service.listFeedback(rootId, deptReq);
         if (rootFeedbackRows.isEmpty()) {
             throw new IllegalStateException("Office upward feedback should create department confirmation feedback.");
@@ -483,7 +531,6 @@ public class DwWorkPlan3BusinessVerifier {
         String externalImportRow = jsonRows(params(
                 "rowNumber", "2",
                 "title", "DW3 test external import should fail",
-                "workCategory", "DW3 import",
                 "targetDesc", "External staff must be blocked.",
                 "content", "This row points outside the current office.",
                 "planDeadline", "2026-11-01",
@@ -495,7 +542,6 @@ public class DwWorkPlan3BusinessVerifier {
         String validImportRow = jsonRows(params(
                 "rowNumber", "2",
                 "title", "DW3 test valid import",
-                "workCategory", "DW3 import",
                 "targetDesc", "Current office staff can be imported.",
                 "content", "This row points to current office staff.",
                 "planDeadline", "2026-11-05",
@@ -550,8 +596,10 @@ public class DwWorkPlan3BusinessVerifier {
         if (!service.listPersonTree(staffReq).isEmpty()) {
             throw new IllegalStateException("Staff should not see person tree maintenance data.");
         }
-        assertSuccess(service.stats(partyReq, batchId), "party stats");
-        assertSuccess(service.stats(deptReq, batchId), "department stats");
+        Map<String, Object> partyStats = service.stats(partyReq, batchId);
+        assertStatsContract(partyStats, jdbc, batchId, deptNode);
+        Map<String, Object> departmentStats = service.stats(deptReq, batchId);
+        assertSuccess(departmentStats, "department stats");
 
         int taskCount = jdbc.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?)", Integer.class, PARTY, DEPT, OFFICE, STAFF, STAFF2);
         int feedbackCount = jdbc.queryForObject("select count(1) from DYN_DW_PLAN3_FEEDBACK where CREATED_BY in (?,?,?,?,?)", Integer.class, PARTY, DEPT, OFFICE, STAFF, STAFF2);
@@ -992,6 +1040,42 @@ public class DwWorkPlan3BusinessVerifier {
         }
     }
 
+    private static void assertStatsContract(Map<String, Object> result, JdbcTemplate jdbc, String batchId, String deptNode) {
+        assertSuccess(result, "party stats contract");
+        Map<String, Object> summary = (Map<String, Object>) result.get("summary");
+        if (summary == null) {
+            throw new IllegalStateException("stats summary is missing");
+        }
+        Integer expectedTotal = jdbc.queryForObject(
+                "select count(1) from DYN_DW_PLAN3_TASK where BATCH_ID=? and PARENT_ID is null and TASK_LEVEL=?",
+                Integer.class, batchId, DwWorkPlan3Constants.LEVEL_OFFICE);
+        assertEquals(String.valueOf(expectedTotal), summary.get("TOTAL"), "office-root stats total");
+        List<Map<String, Object>> departments = (List<Map<String, Object>>) result.get("byDepartmentStatus");
+        boolean departmentFound = false;
+        for (Map<String, Object> row : departments) {
+            if (deptNode.equals(String.valueOf(row.get("DEPT_NODE_ID")))) {
+                departmentFound = true;
+            }
+        }
+        if (!departmentFound) {
+            throw new IllegalStateException("department status stats did not include the office root's department");
+        }
+        List<Map<String, Object>> levels = (List<Map<String, Object>>) result.get("byLevel");
+        for (Map<String, Object> row : levels) {
+            String level = String.valueOf(row.get("TASK_LEVEL"));
+            if (!DwWorkPlan3Constants.LEVEL_OFFICE.equals(level)
+                    && !DwWorkPlan3Constants.LEVEL_STAFF.equals(level)) {
+                throw new IllegalStateException("level chart must include OFFICE and STAFF only: " + level);
+            }
+        }
+        List<Map<String, Object>> recent = (List<Map<String, Object>>) result.get("recent");
+        for (Map<String, Object> row : recent) {
+            if (row.get("PARENT_ID") != null || !DwWorkPlan3Constants.LEVEL_OFFICE.equals(String.valueOf(row.get("TASK_LEVEL")))) {
+                throw new IllegalStateException("recent stats must contain office root tasks only");
+            }
+        }
+    }
+
     private static void assertSuccessCount(Map<String, Object> result, String step, int expectedCount) {
         assertSuccess(result, step);
         int actual = Integer.parseInt(String.valueOf(result.get("count")));
@@ -1065,6 +1149,40 @@ public class DwWorkPlan3BusinessVerifier {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
+    }
+
+    private static void assertImportTemplate(DwWorkPlan3Service service, HttpServletRequest request) throws Exception {
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        final ServletOutputStream output = new ServletOutputStream() {
+            public void write(int value) {
+                bytes.write(value);
+            }
+        };
+        HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(
+                DwWorkPlan3BusinessVerifier.class.getClassLoader(),
+                new Class[]{HttpServletResponse.class},
+                new InvocationHandler() {
+                    public Object invoke(Object proxy, Method method, Object[] args) {
+                        if ("getOutputStream".equals(method.getName())) {
+                            return output;
+                        }
+                        return defaultValue(method.getReturnType());
+                    }
+                });
+        service.downloadImportTemplate(response, request);
+        Workbook workbook = WorkbookFactory.create(new ByteArrayInputStream(bytes.toByteArray()));
+        Sheet sheet = workbook.getSheetAt(0);
+        Row header = sheet.getRow(0);
+        String[] expected = new String[]{
+                "\u4efb\u52a1\u6807\u9898", "\u5de5\u4f5c\u76ee\u6807", "\u5de5\u4f5c\u5185\u5bb9",
+                "\u622a\u6b62\u65e5\u671f", "\u63a5\u6536\u79d1\u5458", "\u5907\u6ce8"
+        };
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], header.getCell(i).getStringCellValue(), "import template header " + (i + 1));
+        }
+        if (header.getCell(expected.length) != null) {
+            throw new IllegalStateException("import template must contain exactly six task columns");
+        }
     }
 
     private static HttpServletRequest request(String userId, String userName) {

@@ -337,10 +337,24 @@ public class DwWorkPlan3Controller {
     @RequestMapping(value = "api/feedback/confirm", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> confirmFeedback(@RequestParam(value = "feedbackId", required = false) final String feedbackId,
+                                               @RequestParam(value = "content", required = false) final String content,
                                                final HttpServletRequest request) {
         return call(new Action() {
             public Object run() {
-                return dwWorkPlanService.confirmFeedback(feedbackId, request);
+                return dwWorkPlanService.confirmFeedback(feedbackId, content, request);
+            }
+        });
+    }
+
+    @RequestMapping(value = "api/feedback/confirmAndForward", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> confirmAndForwardFeedback(@RequestParam(value = "feedbackId", required = false) final String feedbackId,
+                                                         @RequestParam(value = "content", required = false) final String content,
+                                                         @RequestParam(value = "targetUserId", required = false) final String targetUserId,
+                                                         final HttpServletRequest request) {
+        return call(new Action() {
+            public Object run() {
+                return dwWorkPlanService.confirmAndForwardFeedback(feedbackId, content, targetUserId, request);
             }
         });
     }

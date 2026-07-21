@@ -55,7 +55,7 @@ public class DwWorkPlan3Service {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String TASK_ATTACHMENT_ELEMENT_ID = "dwTaskAttachment";
     private static final String FEEDBACK_ATTACHMENT_ELEMENT_ID = "dwFeedbackAttachment";
-    private static final String[] IMPORT_HEADERS = new String[]{"任务标题", "工作分类", "工作目标", "工作内容", "截止日期", "接收科员", "备注"};
+    private static final String[] IMPORT_HEADERS = new String[]{"任务标题", "工作目标", "工作内容", "截止日期", "接收科员", "备注"};
     private static final String IMPORT_SHEET_NAME = "任务填写";
     private static final String LEADER_VIEW_ROLE_NAME = "党委一级管理员";
     private static final String PLATFORM_ADMIN_ROLE_NAME = "平台管理员";
@@ -262,7 +262,6 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> saveRootTask(Map<String, String> p, HttpServletRequest request) {
-        ensureTaskWorkCategoryColumn();
         String userId = loginUser(request);
         Map<String, Object> currentNode = currentUserNode(request);
         if (currentNode == null) {
@@ -286,19 +285,19 @@ public class DwWorkPlan3Service {
             id = ComUtil.getId();
             jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
                             "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
-                            "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,WORK_CATEGORY,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
+                            "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
                             "SENDER_ID,SENDER_NAME,RECEIVER_ID,RECEIVER_NAME,PERSON_NODE_ID,DRAFT_DEPT_NODE_ID,DRAFT_DEPT_USER_ID,DRAFT_DEPT_NAME,ATTACHMENT_ID,DISPATCH_TIME) " +
-                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
+                            "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
                     id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
                     value(p, "batchId"), null, id, taskLevel, value(p, "title"),
-                    emptyToNull(value(p, "workCategory")), emptyToNull(value(p, "content")), emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")),
+                    emptyToNull(value(p, "content")), emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")),
                     status, userId, nodeUserName, userId, nodeUserName, string(currentNode.get("ID")),
                     draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId);
         } else {
             jdbcTemplate.update("update DYN_DW_PLAN3_TASK set LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=?," +
-                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,WORK_CATEGORY=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
+                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
                             "where ID=? and PARENT_ID is null and TASK_LEVEL=? and STATUS=? and RECEIVER_ID=? and (PERSON_NODE_ID=? or (PERSON_NODE_ID is null and TASK_LEVEL=?))",
-                    userId, request.getRemoteAddr(), value(p, "batchId"), value(p, "title"), emptyToNull(value(p, "workCategory")), emptyToNull(value(p, "content")),
+                    userId, request.getRemoteAddr(), value(p, "batchId"), value(p, "title"), emptyToNull(value(p, "content")),
                     emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")), draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId,
                     id, taskLevel, status, userId, string(currentNode.get("ID")), taskLevel);
         }
@@ -383,7 +382,6 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> dispatchChild(Map<String, String> p, HttpServletRequest request) {
-        ensureTaskWorkCategoryColumn();
         String userId = loginUser(request);
         Map<String, Object> currentNode = currentUserNode(request);
         if (currentNode == null) {
@@ -436,13 +434,12 @@ public class DwWorkPlan3Service {
         String id = ComUtil.getId();
         jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
                         "ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY," +
-                        "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,WORK_CATEGORY,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
+                        "BATCH_ID,PARENT_ID,ROOT_ID,TASK_LEVEL,TITLE,CONTENT,TARGET_DESC,PLAN_DEADLINE,STATUS," +
                         "SENDER_ID,SENDER_NAME,RECEIVER_ID,RECEIVER_NAME,PERSON_NODE_ID,ATTACHMENT_ID,DISPATCH_TIME) " +
-                        "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
+                        "values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate)",
                 id, loginUser(request), loginUser(request), request.getRemoteAddr(), orgIdentity(request),
                 parent.get("BATCH_ID"), parentId, parent.get("ROOT_ID"), nextLevel,
                 defaultValue(value(p, "title"), string(parent.get("TITLE"))),
-                emptyToNull(defaultValue(value(p, "workCategory"), string(parent.get("WORK_CATEGORY")))),
                 emptyToNull(defaultValue(value(p, "content"), string(parent.get("CONTENT")))),
                 emptyToNull(defaultValue(value(p, "targetDesc"), string(parent.get("TARGET_DESC")))),
                 date(defaultValue(value(p, "planDeadline"), dateString(parent.get("PLAN_DEADLINE")))),
@@ -695,26 +692,90 @@ public class DwWorkPlan3Service {
     }
 
     public Map<String, Object> confirmFeedback(String feedbackId, HttpServletRequest request) {
+        return confirmFeedback(feedbackId, null, request);
+    }
+
+    public Map<String, Object> confirmFeedback(String feedbackId, String content, HttpServletRequest request) {
         Map<String, Object> feedback = queryOne("select f.*,t.SENDER_ID,t.PARENT_ID,t.TITLE,t.TASK_LEVEL,t.PERSON_NODE_ID from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID where f.ID=?", feedbackId);
-        String taskId = string(feedback.get("TASK_ID"));
         if (!canConfirmFeedback(feedback, request)) {
             return failure("\u53ea\u6709\u4efb\u52a1\u4e0b\u53d1\u4eba\u53ef\u4ee5\u786e\u8ba4\u53cd\u9988");
         }
         if (!DwWorkPlan3Constants.FEEDBACK_PENDING.equals(string(feedback.get("CONFIRM_RESULT")))) {
             return failure("\u8be5\u53cd\u9988\u5df2\u7ecf\u5904\u7406\uff0c\u4e0d\u80fd\u91cd\u590d\u786e\u8ba4");
         }
-        String completeDetail = string(feedback.get("FEEDBACK_CONTENT"));
+        String reviewedContent;
+        try {
+            reviewedContent = reviewedFeedbackContent(feedback, content, request);
+        } catch (IllegalArgumentException e) {
+            return failure(e.getMessage());
+        }
+        confirmFeedbackRecord(feedback, reviewedContent, request);
+        return success();
+    }
+
+    @Transactional
+    public Map<String, Object> confirmAndForwardFeedback(String feedbackId, String content, String targetUserId,
+                                                         HttpServletRequest request) {
+        Map<String, Object> feedback = queryOne("select f.*,t.SENDER_ID,t.PARENT_ID,t.TITLE,t.TASK_LEVEL,t.PERSON_NODE_ID from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID where f.ID=?", feedbackId);
+        if (!DwWorkPlan3Constants.FEEDBACK_PENDING.equals(string(feedback.get("CONFIRM_RESULT")))) {
+            return failure("\u8be5\u53cd\u9988\u5df2\u7ecf\u5904\u7406\uff0c\u4e0d\u80fd\u91cd\u590d\u786e\u8ba4");
+        }
+        if (!canEditStaffFeedback(feedback, request)) {
+            return failure("\u53ea\u6709\u76f4\u5c5e\u5ba4\u4e3b\u4efb\u53ef\u4ee5\u4fee\u6539\u79d1\u5458\u53cd\u9988\u5e76\u5411\u4e0a\u7ea7\u53cd\u9988");
+        }
+        String parentTaskId = string(feedback.get("PARENT_ID"));
+        Map<String, Object> parentTask = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", parentTaskId);
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (!isDepartmentConfirmationTask(parentTask)
+                || !loginUser(request).equals(string(parentTask.get("RECEIVER_ID")))
+                || !taskMatchesCurrentNode(parentTask, currentNode)) {
+            return failure("\u53ea\u6709\u5ba4\u4e3b\u4efb\u81ea\u5df1\u521b\u5efa\u7684\u6839\u4efb\u52a1\u53ef\u4ee5\u5728\u901a\u8fc7\u540e\u76f4\u63a5\u5411\u90e8\u95e8\u53cd\u9988");
+        }
+        Integer otherOpenChildren = jdbcTemplate.queryForObject(
+                "select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=? and ID<>? and STATUS<>?",
+                Integer.class, parentTaskId, feedback.get("TASK_ID"), DwWorkPlan3Constants.STATUS_COMPLETED);
+        if (otherOpenChildren != null && otherOpenChildren > 0) {
+            return failure("\u8fd8\u6709\u5176\u4ed6\u4e0b\u7ea7\u4efb\u52a1\u672a\u5b8c\u6210\uff0c\u6682\u4e0d\u80fd\u5411\u4e0a\u7ea7\u53cd\u9988");
+        }
+        String reviewedContent;
+        try {
+            reviewedContent = reviewedFeedbackContent(feedback, content, request);
+            Map<String, String> targetParams = new HashMap<String, String>();
+            targetParams.put("targetUserId", targetUserId);
+            resolveFeedbackTarget(parentTask, targetParams);
+        } catch (IllegalArgumentException e) {
+            return failure(e.getMessage());
+        }
+        confirmFeedbackRecord(feedback, reviewedContent, request);
+        Map<String, String> forwardParams = new HashMap<String, String>();
+        forwardParams.put("taskId", parentTaskId);
+        forwardParams.put("content", reviewedContent);
+        forwardParams.put("targetUserId", targetUserId);
+        Map<String, Object> forwarded = submitFeedback(forwardParams, request);
+        if (!"success".equals(forwarded.get("flag"))) {
+            throw new IllegalArgumentException(string(forwarded.get("errorMsg")));
+        }
+        Map<String, Object> result = success();
+        result.put("forwarded", "Y");
+        result.put("parentTaskId", parentTaskId);
+        result.put("childFeedbackId", feedbackId);
+        result.put("feedbackId", forwarded.get("id"));
+        return result;
+    }
+
+    private void confirmFeedbackRecord(Map<String, Object> feedback, String reviewedContent, HttpServletRequest request) {
+        String feedbackId = string(feedback.get("ID"));
+        String taskId = string(feedback.get("TASK_ID"));
         String confirmUserName = currentUserNodeDisplayName(request);
-        jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set CONFIRM_RESULT=?,CONFIRM_USER_ID=?,CONFIRM_USER_NAME=?,CONFIRM_TIME=sysdate," +
+        jdbcTemplate.update("update DYN_DW_PLAN3_FEEDBACK set FEEDBACK_CONTENT=?,CONFIRM_RESULT=?,CONFIRM_USER_ID=?,CONFIRM_USER_NAME=?,CONFIRM_TIME=sysdate," +
                         "LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                DwWorkPlan3Constants.FEEDBACK_CONFIRMED, loginUser(request), confirmUserName, loginUser(request),
+                emptyToNull(reviewedContent), DwWorkPlan3Constants.FEEDBACK_CONFIRMED, loginUser(request), confirmUserName, loginUser(request),
                 request.getRemoteAddr(), feedbackId);
         jdbcTemplate.update("update DYN_DW_PLAN3_TASK set STATUS=?,COMPLETE_TIME=sysdate,COMPLETE_DETAIL=?,RETURN_REASON=null,LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=? where ID=?",
-                DwWorkPlan3Constants.STATUS_COMPLETED, emptyToNull(completeDetail), loginUser(request), request.getRemoteAddr(), taskId);
-        syncParentAfterChildDone(taskId, emptyToNull(completeDetail), string(feedback.get("ATTACHMENT_ID")), request);
+                DwWorkPlan3Constants.STATUS_COMPLETED, emptyToNull(reviewedContent), loginUser(request), request.getRemoteAddr(), taskId);
+        syncParentAfterChildDone(taskId, emptyToNull(reviewedContent), string(feedback.get("ATTACHMENT_ID")), request);
         syncPortalTodo(taskId, request);
         syncPortalTodo(string(feedback.get("PARENT_ID")), request);
-        return success();
     }
 
     public Map<String, Object> returnFeedback(String feedbackId, String reason, HttpServletRequest request) {
@@ -844,11 +905,15 @@ public class DwWorkPlan3Service {
         args.add(loginUser(request));
         args.add(DwWorkPlan3Constants.LEVEL_OFFICE);
         args.add(loginUser(request));
+        args.add(DwWorkPlan3Constants.LEVEL_STAFF);
+        args.add(loginUser(request));
         args.addAll(taskIds);
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "select f.*,t.TITLE TASK_TITLE,t.TASK_LEVEL TASK_LEVEL,t.SENDER_ID TASK_SENDER_ID,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
-                        "case when (t.PARENT_ID is null and t.TASK_LEVEL=? and ((f.TARGET_USER_ID is not null and f.TARGET_USER_ID=?) or (f.TARGET_USER_ID is null and exists(select 1 from DYN_DW_PLAN3_PERSON_TREE office_node join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID where office_node.ID=t.PERSON_NODE_ID and " + userMatchSql("dept_node.USER_ID") + ")))) or (not (t.PARENT_ID is null and t.TASK_LEVEL=?) and t.SENDER_ID=?) then 'Y' else 'N' end CAN_CONFIRM " +
+                "select f.*,t.TITLE TASK_TITLE,t.TASK_LEVEL TASK_LEVEL,t.PARENT_ID TASK_PARENT_ID,t.SENDER_ID TASK_SENDER_ID,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
+                        "case when (t.PARENT_ID is null and t.TASK_LEVEL=? and ((f.TARGET_USER_ID is not null and f.TARGET_USER_ID=?) or (f.TARGET_USER_ID is null and exists(select 1 from DYN_DW_PLAN3_PERSON_TREE office_node join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID where office_node.ID=t.PERSON_NODE_ID and " + userMatchSql("dept_node.USER_ID") + ")))) or (not (t.PARENT_ID is null and t.TASK_LEVEL=?) and t.SENDER_ID=?) then 'Y' else 'N' end CAN_CONFIRM," +
+                        "case when t.TASK_LEVEL=? and t.SENDER_ID=? then 'Y' else 'N' end CAN_EDIT," +
+                        "case when t.TASK_LEVEL='STAFF' and exists(select 1 from DYN_DW_PLAN3_TASK parent_task where parent_task.ID=t.PARENT_ID and parent_task.PARENT_ID is null and parent_task.TASK_LEVEL='OFFICE') then 'Y' else 'N' end CAN_FORWARD " +
                         "from DYN_DW_PLAN3_FEEDBACK f join DYN_DW_PLAN3_TASK t on f.TASK_ID=t.ID " +
                         "where f.TASK_ID in (" + placeholders + ") and nvl(f.CONFIRM_RESULT,'PENDING')<>? " +
                         "order by nvl(f.FEEDBACK_TIME,f.CREATION_DATE), f.CREATION_DATE, f.ID",
@@ -1516,13 +1581,13 @@ public class DwWorkPlan3Service {
         Sheet taskSheet = workbook.createSheet(IMPORT_SHEET_NAME);
         Row header = taskSheet.createRow(0);
         for (int i = 0; i < IMPORT_HEADERS.length; i++) {
-            header.createCell(i).setCellValue(i == 5 ? receiverLabel : IMPORT_HEADERS[i]);
+            header.createCell(i).setCellValue(i == 4 ? receiverLabel : IMPORT_HEADERS[i]);
             taskSheet.setColumnWidth(i, i == 0 ? 9000 : 5200);
         }
         CellStyle dateStyle = workbook.createCellStyle();
         DataFormat dataFormat = workbook.createDataFormat();
         dateStyle.setDataFormat(dataFormat.getFormat("yyyy-mm-dd"));
-        taskSheet.setDefaultColumnStyle(4, dateStyle);
+        taskSheet.setDefaultColumnStyle(3, dateStyle);
 
         Sheet receiverSheet = workbook.createSheet(receiverLabel + "参考");
         Row receiverHeader = receiverSheet.createRow(0);
@@ -1659,7 +1724,7 @@ public class DwWorkPlan3Service {
         }
         for (int i = 0; i < IMPORT_HEADERS.length; i++) {
             String actual = cellText(header.getCell(i));
-            boolean receiverHeader = i == 5 && ("接收科员".equals(actual) || "接收部长".equals(actual));
+            boolean receiverHeader = i == 4 && ("接收科员".equals(actual) || "接收部长".equals(actual));
             if (!receiverHeader && !IMPORT_HEADERS[i].equals(actual)) {
                 return "Excel 表头不正确，请使用下载的导入模板";
             }
@@ -1678,12 +1743,11 @@ public class DwWorkPlan3Service {
             Map<String, String> row = new HashMap<String, String>();
             row.put("rowNumber", String.valueOf(i + 1));
             row.put("title", cellText(excelRow.getCell(0)));
-            row.put("workCategory", cellText(excelRow.getCell(1)));
-            row.put("targetDesc", cellText(excelRow.getCell(2)));
-            row.put("content", cellText(excelRow.getCell(3)));
-            row.put("planDeadline", cellDateText(excelRow.getCell(4)));
-            row.put("deptName", cellText(excelRow.getCell(5)));
-            row.put("remark", cellText(excelRow.getCell(6)));
+            row.put("targetDesc", cellText(excelRow.getCell(1)));
+            row.put("content", cellText(excelRow.getCell(2)));
+            row.put("planDeadline", cellDateText(excelRow.getCell(3)));
+            row.put("deptName", cellText(excelRow.getCell(4)));
+            row.put("remark", cellText(excelRow.getCell(5)));
             rows.add(row);
         }
         return rows;
@@ -1709,7 +1773,6 @@ public class DwWorkPlan3Service {
             List<String> errors = new ArrayList<String>();
             List<String> warnings = new ArrayList<String>();
             String title = value(source, "title");
-            String workCategory = value(source, "workCategory");
             String content = value(source, "content");
             String targetDesc = value(source, "targetDesc");
             String planDeadline = normalizeImportDate(value(source, "planDeadline"));
@@ -1718,7 +1781,6 @@ public class DwWorkPlan3Service {
 
             row.put("rowNumber", defaultValue(value(source, "rowNumber"), String.valueOf(rows.size() + 2)));
             row.put("title", title);
-            row.put("workCategory", workCategory);
             row.put("content", content);
             row.put("targetDesc", targetDesc);
             row.put("planDeadline", planDeadline);
@@ -1884,7 +1946,6 @@ public class DwWorkPlan3Service {
             Map<String, String> row = new HashMap<String, String>();
             row.put("rowNumber", string(raw.get("rowNumber")));
             row.put("title", string(raw.get("title")));
-            row.put("workCategory", string(raw.get("workCategory")));
             row.put("content", string(raw.get("content")));
             row.put("targetDesc", string(raw.get("targetDesc")));
             row.put("planDeadline", string(raw.get("planDeadline")));
@@ -1900,7 +1961,6 @@ public class DwWorkPlan3Service {
         Map<String, String> p = new HashMap<String, String>();
         p.put("batchId", batchId);
         p.put("title", string(row.get("title")));
-        p.put("workCategory", string(row.get("workCategory")));
         p.put("content", importContent(row));
         p.put("targetDesc", string(row.get("targetDesc")));
         p.put("planDeadline", string(row.get("planDeadline")));
@@ -1996,38 +2056,69 @@ public class DwWorkPlan3Service {
 
     public Map<String, Object> stats(HttpServletRequest request, String batchId) {
         Map<String, Object> result = success();
-        StringBuilder where = new StringBuilder();
-        List<Object> args = new ArrayList<Object>();
         String userId = loginUser(request);
         Map<String, Object> currentNode = currentUserNode(request);
         boolean leaderViewer = currentNode == null && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
-        boolean party = currentNode != null && DwWorkPlan3Constants.ROLE_PARTY.equals(string(currentNode.get("ROLE_CODE")));
+
+        StringBuilder rootWhere = new StringBuilder(" where t.PARENT_ID is null and t.TASK_LEVEL=?");
+        List<Object> rootArgs = new ArrayList<Object>();
+        rootArgs.add(DwWorkPlan3Constants.LEVEL_OFFICE);
         if (StringUtils.isNotBlank(batchId)) {
-            where.append(" where BATCH_ID=?");
-            args.add(batchId);
+            rootWhere.append(" and t.BATCH_ID=?");
+            rootArgs.add(batchId);
         }
-        if (currentNode == null && !leaderViewer) {
-            where.append(where.length() == 0 ? " where " : " and ");
-            where.append("1=0");
-        } else if (currentNode != null && !party) {
-            List<String> subtreeIds = subtreeNodeIds(string(currentNode.get("ID")));
-            where.append(where.length() == 0 ? " where " : " and ");
-            if (subtreeIds.isEmpty()) {
-                where.append("1=0");
-            } else {
-                where.append("PERSON_NODE_ID in (");
-                appendPlaceholders(where, subtreeIds.size());
-                where.append(")");
-                args.addAll(subtreeIds);
-            }
+        appendVisibleTaskScope(rootWhere, "t", currentNode, rootArgs, leaderViewer);
+
+        result.put("summary", jdbcTemplate.queryForMap(
+                "select count(1) TOTAL," +
+                        "sum(case when t.STATUS=? then 1 else 0 end) COMPLETED," +
+                        "sum(case when t.STATUS=? then 1 else 0 end) PENDING_CONFIRM," +
+                        "sum(case when t.PLAN_DEADLINE<sysdate and t.STATUS<>? then 1 else 0 end) OVERDUE " +
+                        "from DYN_DW_PLAN3_TASK t" + rootWhere,
+                prependArgs(rootArgs, DwWorkPlan3Constants.STATUS_COMPLETED,
+                        DwWorkPlan3Constants.STATUS_PENDING_CONFIRM, DwWorkPlan3Constants.STATUS_COMPLETED)));
+
+        result.put("byDepartmentStatus", jdbcTemplate.queryForList(
+                "select nvl(tree_dept.ID,nvl(feedback_dept.ID,'UNASSIGNED')) DEPT_NODE_ID," +
+                        "nvl(tree_dept.NODE_NAME,nvl(feedback_dept.NODE_NAME,'\u672a\u5f52\u5c5e\u90e8\u95e8')) DEPT_NAME," +
+                        "t.STATUS,count(1) CNT " +
+                        "from DYN_DW_PLAN3_TASK t " +
+                        "left join DYN_DW_PLAN3_PERSON_TREE office_node on office_node.ID=t.PERSON_NODE_ID " +
+                        "left join DYN_DW_PLAN3_PERSON_TREE tree_dept on tree_dept.ID=office_node.PARENT_ID and tree_dept.ROLE_CODE='DEPT_MINISTER' " +
+                        "left join (select TASK_ID,max(TARGET_PERSON_NODE_ID) TARGET_PERSON_NODE_ID from DYN_DW_PLAN3_FEEDBACK " +
+                        "where TARGET_PERSON_NODE_ID is not null group by TASK_ID) feedback_target on feedback_target.TASK_ID=t.ID " +
+                        "left join DYN_DW_PLAN3_PERSON_TREE feedback_dept on feedback_dept.ID=feedback_target.TARGET_PERSON_NODE_ID " +
+                        rootWhere +
+                        " group by nvl(tree_dept.ID,nvl(feedback_dept.ID,'UNASSIGNED'))," +
+                        "nvl(tree_dept.NODE_NAME,nvl(feedback_dept.NODE_NAME,'\u672a\u5f52\u5c5e\u90e8\u95e8')),t.STATUS " +
+                        "order by DEPT_NAME,t.STATUS",
+                rootArgs.toArray()));
+
+        StringBuilder levelWhere = new StringBuilder(" where t.TASK_LEVEL in (?,?)");
+        List<Object> levelArgs = new ArrayList<Object>();
+        levelArgs.add(DwWorkPlan3Constants.LEVEL_OFFICE);
+        levelArgs.add(DwWorkPlan3Constants.LEVEL_STAFF);
+        if (StringUtils.isNotBlank(batchId)) {
+            levelWhere.append(" and t.BATCH_ID=?");
+            levelArgs.add(batchId);
         }
-        result.put("byStatus", jdbcTemplate.queryForList("select STATUS,count(1) CNT from DYN_DW_PLAN3_TASK" + where + " group by STATUS", args.toArray()));
-        result.put("byLevel", jdbcTemplate.queryForList("select TASK_LEVEL,STATUS,count(1) CNT from DYN_DW_PLAN3_TASK" + where + " group by TASK_LEVEL,STATUS", args.toArray()));
-        String overdueWhere = where.length() == 0 ? " where " : where + " and ";
-        result.put("overdue", jdbcTemplate.queryForList("select TASK_LEVEL,count(1) CNT from DYN_DW_PLAN3_TASK" + overdueWhere +
-                "PLAN_DEADLINE<sysdate and STATUS<>'COMPLETED' group by TASK_LEVEL", args.toArray()));
-        result.put("recent", listTasks(request, batchId, null));
+        appendVisibleTaskScope(levelWhere, "t", currentNode, levelArgs, leaderViewer);
+        result.put("byLevel", jdbcTemplate.queryForList(
+                "select t.TASK_LEVEL,count(1) CNT from DYN_DW_PLAN3_TASK t" + levelWhere +
+                        " group by t.TASK_LEVEL order by t.TASK_LEVEL", levelArgs.toArray()));
+        result.put("recent", jdbcTemplate.queryForList(
+                "select t.* from DYN_DW_PLAN3_TASK t" + rootWhere + " order by t.CREATION_DATE desc,t.ID desc",
+                rootArgs.toArray()));
         return result;
+    }
+
+    private Object[] prependArgs(List<Object> tail, Object first, Object second, Object third) {
+        List<Object> args = new ArrayList<Object>();
+        args.add(first);
+        args.add(second);
+        args.add(third);
+        args.addAll(tail);
+        return args.toArray();
     }
 
     private boolean allChildrenCompleted(String taskId) {
@@ -2145,6 +2236,41 @@ public class DwWorkPlan3Service {
             return currentUserInParentDeptNode(string(feedback.get("PERSON_NODE_ID")), loginUser(request));
         }
         return loginUser(request).equals(string(feedback.get("SENDER_ID")));
+    }
+
+    private String reviewedFeedbackContent(Map<String, Object> feedback, String requestedContent,
+                                           HttpServletRequest request) {
+        String originalContent = string(feedback.get("FEEDBACK_CONTENT"));
+        if (StringUtils.isBlank(requestedContent)) {
+            if (StringUtils.isBlank(originalContent)) {
+                throw new IllegalArgumentException("\u53cd\u9988\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a");
+            }
+            return originalContent;
+        }
+        String reviewedContent = requestedContent.trim();
+        if (!reviewedContent.equals(originalContent) && !canEditStaffFeedback(feedback, request)) {
+            throw new IllegalArgumentException("\u53ea\u6709\u76f4\u5c5e\u5ba4\u4e3b\u4efb\u53ef\u4ee5\u4fee\u6539\u79d1\u5458\u53cd\u9988\u5185\u5bb9");
+        }
+        return reviewedContent;
+    }
+
+    private boolean canEditStaffFeedback(Map<String, Object> feedback, HttpServletRequest request) {
+        if (feedback == null || !DwWorkPlan3Constants.LEVEL_STAFF.equals(string(feedback.get("TASK_LEVEL")))) {
+            return false;
+        }
+        String userId = loginUser(request);
+        Map<String, Object> currentNode = currentUserNode(request);
+        if (currentNode == null
+                || !DwWorkPlan3Constants.ROLE_OFFICE.equals(string(currentNode.get("ROLE_CODE")))
+                || !userId.equals(string(feedback.get("SENDER_ID")))) {
+            return false;
+        }
+        String parentTaskId = string(feedback.get("PARENT_ID"));
+        if (StringUtils.isBlank(parentTaskId)) {
+            return false;
+        }
+        Map<String, Object> parentTask = queryOne("select * from DYN_DW_PLAN3_TASK where ID=?", parentTaskId);
+        return taskMatchesCurrentNode(parentTask, currentNode);
     }
 
     private boolean isDepartmentConfirmationTask(Map<String, Object> task) {
@@ -2977,23 +3103,6 @@ public class DwWorkPlan3Service {
     private void ensurePersonUserColumnLength() {
         ensureColumnLength("DYN_DW_PLAN3_PERSON_TREE", "USER_ID", 1000);
         ensureColumnLength("DYN_DW_PLAN3_PERSON_TREE", "USER_NAME", 1000);
-    }
-
-    private void ensureTaskWorkCategoryColumn() {
-        try {
-            List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                    "select DATA_LENGTH from USER_TAB_COLUMNS where TABLE_NAME=? and COLUMN_NAME=?",
-                    "DYN_DW_PLAN3_TASK", "WORK_CATEGORY");
-            if (rows.isEmpty()) {
-                jdbcTemplate.execute("ALTER TABLE DYN_DW_PLAN3_TASK ADD WORK_CATEGORY VARCHAR2(100)");
-                return;
-            }
-            int length = Integer.parseInt(string(rows.get(0).get("DATA_LENGTH")));
-            if (length < 100) {
-                jdbcTemplate.execute("ALTER TABLE DYN_DW_PLAN3_TASK MODIFY WORK_CATEGORY VARCHAR2(100)");
-            }
-        } catch (Exception ignored) {
-        }
     }
 
     private void ensureFeedbackTargetColumns() {

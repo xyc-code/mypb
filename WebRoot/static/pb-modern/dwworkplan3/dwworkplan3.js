@@ -80,6 +80,7 @@
     initialPersonNodeId: "",
     feedbackMode: "feedback",
     feedbackTargetRequired: false,
+    feedbackById: {},
     currentView: "plans",
     charts: {}
   };
@@ -597,7 +598,7 @@
     var html = '<tr data-task-id="' + esc(id) + '" class="' + $.trim(rowClass) + '">';
     html += '<td><input class="dw-row-check" type="checkbox" value="' + esc(id) + '"' + (state.selectedTaskIds[id] ? " checked" : "") + "></td>";
     html += '<td>' + taskTreeCell(task, depth, children.length, expanded, notice) + "</td>";
-    html += "<td>" + esc(text(task.WORK_CATEGORY) || "-") + "</td>";
+    html += '<td class="dw-task-content-cell">' + esc(text(task.CONTENT) || "-") + "</td>";
     html += "<td>" + esc(levelLabel(text(task.TASK_LEVEL))) + "</td>";
     html += "<td>" + esc(text(task.SENDER_NAME) || "-") + "</td>";
     html += "<td>" + esc(taskReceiverName(task) || "-") + "</td>";
@@ -645,7 +646,7 @@
       if (!keyword) {
         return true;
       }
-      return (text(task.TITLE) + " " + text(task.WORK_CATEGORY) + " " + text(task.RECEIVER_NAME) + " " + text(task.SENDER_NAME)).toLowerCase().indexOf(keyword) >= 0;
+      return (text(task.TITLE) + " " + text(task.CONTENT) + " " + text(task.RECEIVER_NAME) + " " + text(task.SENDER_NAME)).toLowerCase().indexOf(keyword) >= 0;
     });
   }
 
@@ -771,7 +772,6 @@
   function fillTaskModal(task) {
     $("#dwTaskId").val(text(task.ID));
     $("#dwTaskTitle").val(text(task.TITLE));
-    $("#dwTaskWorkCategory").val(text(task.WORK_CATEGORY));
     $("#dwTaskContent").val(text(task.CONTENT));
     $("#dwTaskTarget").val(text(task.TARGET_DESC));
     $("#dwTaskDeadline").val(dateOnly(task.PLAN_DEADLINE));
@@ -784,7 +784,7 @@
   }
 
   function legacyResetTaskModalUnused() {
-    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskWorkCategory,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
+    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
     resetPlatformUploader("dwTaskAttachment");
     setDefaultTaskDate();
   }
@@ -976,7 +976,7 @@
     );
     var html = "";
     if (!rows.length) {
-      html = '<tr><td colspan="9"><div class="dw-empty">请选择 Excel 后上传校验</div></td></tr>';
+      html = '<tr><td colspan="8"><div class="dw-empty">请选择 Excel 后上传校验</div></td></tr>';
     } else {
       $.each(rows, function (_, row) {
         var rowClass = text(row.status) === "ERROR" ? "dw-import-row-error" : text(row.status) === "WARN" ? "dw-import-row-warn" : "";
@@ -984,7 +984,6 @@
         html += "<td>" + esc(text(row.rowNumber)) + "</td>";
         html += "<td>" + importStatusBadge(row) + "</td>";
         html += "<td>" + esc(text(row.title) || "-") + "</td>";
-        html += "<td>" + esc(text(row.workCategory) || "-") + "</td>";
         html += "<td>" + esc(text(row.targetDesc) || "-") + "</td>";
         html += "<td>" + esc(text(row.content) || "-") + "</td>";
         html += "<td>" + esc(text(row.planDeadline) || "-") + "</td>";
@@ -1516,7 +1515,6 @@
       year: $.trim($("#dwTaskYear").val()),
       quarter: $("#dwTaskQuarter").val(),
       title: $.trim($("#dwTaskTitle").val()),
-      workCategory: $.trim($("#dwTaskWorkCategory").val()),
       content: $.trim($("#dwTaskContent").val()),
       targetDesc: $.trim($("#dwTaskTarget").val()),
       planDeadline: $("#dwTaskDeadline").val(),
@@ -1737,7 +1735,6 @@
       html += detailItem("截止时间", dateOnly(task.PLAN_DEADLINE) || "-");
       html += detailItem("下发人", text(task.SENDER_NAME) || "-");
       html += detailItem("接收人", text(task.RECEIVER_NAME) || "-");
-      html += detailItem("工作分类", text(task.WORK_CATEGORY) || "-");
       html += detailItem("工作目标", text(task.TARGET_DESC) || "-");
       html += detailItem("工作内容", text(task.CONTENT) || "-");
       html += "</div><h2 style=\"margin:18px 0 10px\">反馈记录</h2>";
@@ -2038,34 +2035,16 @@
   }
 
   function renderStats(data) {
-    var statusRows = data.byStatus || [];
+    var summary = data.summary || {};
+    var departmentRows = data.byDepartmentStatus || [];
     var levelRows = data.byLevel || [];
-    var overdueRows = data.overdue || [];
     var recentRows = data.recent || [];
-    var total = 0;
-    var done = 0;
-    var pending = 0;
-    var overdue = 0;
-    $.each(statusRows, function (_, row) {
-      var cnt = number(row.CNT);
-      total += cnt;
-      if (text(row.STATUS) === "COMPLETED") {
-        done += cnt;
-      }
-      if (text(row.STATUS) === "PENDING_CONFIRM") {
-        pending += cnt;
-      }
-    });
-    $.each(overdueRows, function (_, row) {
-      overdue += number(row.CNT);
-    });
-    $("#dwKpiTotal").text(total);
-    $("#dwKpiDone").text(done);
-    $("#dwKpiPending").text(pending);
-    $("#dwKpiOverdue").text(overdue);
-    renderStatusChart(statusRows);
+    $("#dwKpiTotal").text(number(summary.TOTAL));
+    $("#dwKpiDone").text(number(summary.COMPLETED));
+    $("#dwKpiPending").text(number(summary.PENDING_CONFIRM));
+    $("#dwKpiOverdue").text(number(summary.OVERDUE));
+    renderStatusChart(departmentRows);
     renderLevelChart(levelRows);
-    renderOverdueChart(overdueRows);
     renderRecent(recentRows);
   }
 
@@ -2085,16 +2064,45 @@
     if (!instance) {
       return;
     }
+    var departmentTotals = {};
+    var departmentNames = [];
+    var statusData = [];
+    $.each(rows, function (_, row) {
+      var departmentId = text(row.DEPT_NODE_ID) || "UNASSIGNED";
+      var departmentName = text(row.DEPT_NAME) || "\u672a\u5f52\u5c5e\u90e8\u95e8";
+      if (!departmentTotals.hasOwnProperty(departmentId)) {
+        departmentTotals[departmentId] = { name: departmentName, value: 0 };
+        departmentNames.push(departmentId);
+      }
+      departmentTotals[departmentId].value += number(row.CNT);
+      statusData.push({
+        name: departmentName + " / " + statusLabel(text(row.STATUS)),
+        value: number(row.CNT)
+      });
+    });
+    var departmentData = $.map(departmentNames, function (id) {
+      return departmentTotals[id];
+    });
     instance.setOption({
       tooltip: { trigger: "item" },
       color: ["#b91c1c", "#dc2626", "#f97316", "#15803d", "#64748b", "#991b1b"],
-      series: [{
-        type: "pie",
-        radius: ["42%", "68%"],
-        data: $.map(rows, function (row) {
-          return { name: statusLabel(text(row.STATUS)), value: number(row.CNT) };
-        })
-      }]
+      series: [
+        {
+          name: "\u90e8\u95e8\u4efb\u52a1",
+          type: "pie",
+          selectedMode: "single",
+          radius: [0, "34%"],
+          label: { position: "inner", fontSize: 12 },
+          data: departmentData
+        },
+        {
+          name: "\u90e8\u95e8\u72b6\u6001",
+          type: "pie",
+          radius: ["46%", "72%"],
+          label: { formatter: "{b}: {c}" },
+          data: statusData
+        }
+      ]
     });
   }
 
@@ -2103,42 +2111,24 @@
     if (!instance) {
       return;
     }
-    var levels = ["PARTY", "DEPT", "OFFICE", "STAFF"];
-    var statuses = ["TODO", "DOING", "WAIT_CHILD", "PENDING_CONFIRM", "COMPLETED", "RETURNED"];
+    var levels = ["OFFICE", "STAFF"];
     var data = {};
     $.each(rows, function (_, row) {
-      data[text(row.TASK_LEVEL) + "_" + text(row.STATUS)] = number(row.CNT);
+      data[text(row.TASK_LEVEL)] = number(row.CNT);
     });
-    instance.setOption({
-      tooltip: { trigger: "axis" },
-      legend: { top: 0 },
-      grid: { left: 42, right: 20, bottom: 28, top: 44 },
-      xAxis: { type: "category", data: $.map(levels, levelLabel) },
-      yAxis: { type: "value", minInterval: 1 },
-      series: $.map(statuses, function (status) {
-        return {
-          name: statusLabel(status),
-          type: "bar",
-          stack: "total",
-          data: $.map(levels, function (level) {
-            return data[level + "_" + status] || 0;
-          })
-        };
-      })
-    });
-  }
-
-  function renderOverdueChart(rows) {
-    var instance = chart("dwOverdueChart");
-    if (!instance) {
-      return;
-    }
     instance.setOption({
       tooltip: { trigger: "axis" },
       grid: { left: 42, right: 20, bottom: 28, top: 24 },
-      xAxis: { type: "category", data: $.map(rows, function (row) { return levelLabel(text(row.TASK_LEVEL)); }) },
+      xAxis: { type: "category", data: $.map(levels, levelLabel) },
       yAxis: { type: "value", minInterval: 1 },
-      series: [{ type: "bar", itemStyle: { color: "#b91c1c" }, data: $.map(rows, function (row) { return number(row.CNT); }) }]
+      series: [{
+        name: "\u4efb\u52a1\u6570\u91cf",
+        type: "bar",
+        barMaxWidth: 64,
+        itemStyle: { color: "#b91c1c" },
+        label: { show: true, position: "top" },
+        data: $.map(levels, function (level) { return data[level] || 0; })
+      }]
     });
   }
 
@@ -2148,8 +2138,8 @@
       html = '<tr><td colspan="6"><div class="dw-empty">暂无任务</div></td></tr>';
     } else {
       $.each(rows.slice(0, 8), function (_, row) {
-        html += "<tr><td>" + esc(levelLabel(text(row.TASK_LEVEL))) + "</td><td>" + esc(text(row.TITLE)) + "</td><td>" +
-          esc(text(row.WORK_CATEGORY) || "-") + "</td><td>" + esc(text(row.RECEIVER_NAME) || "-") + "</td><td>" + statusBadge(text(row.STATUS)) + "</td><td>" +
+        html += "<tr><td>" + esc(levelLabel(text(row.TASK_LEVEL))) + "</td><td>" + esc(text(row.TITLE)) + '</td><td class="dw-task-content-cell">' +
+          esc(text(row.CONTENT) || "-") + "</td><td>" + esc(text(row.RECEIVER_NAME) || "-") + "</td><td>" + statusBadge(text(row.STATUS)) + "</td><td>" +
           esc(dateOnly(row.PLAN_DEADLINE) || "-") + "</td></tr>";
       });
     }
@@ -2814,7 +2804,7 @@
   }
 
   function resetTaskModal() {
-    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskWorkCategory,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
+    $("#dwTaskId,#dwTaskParentId,#dwTaskTitle,#dwTaskContent,#dwTaskTarget,#dwTaskDeadline,#dwTaskAttachmentId,#dwTaskFileName").val("");
     $("#dwTaskParentAttachmentWrap").hide();
     resetPlatformUploader("dwTaskParentAttachment");
     resetPlatformUploader("dwTaskAttachment");
@@ -2967,7 +2957,6 @@
     html += '<div class="dw-detail-meta-row">';
     html += detailItem("\u5c42\u7ea7", levelLabel(text(task.TASK_LEVEL)), "dw-detail-compact-item dw-detail-level-item");
     html += detailItem("\u72b6\u6001", statusLabel(text(task.STATUS)), "dw-detail-compact-item dw-detail-status-item");
-    html += detailItem("\u5de5\u4f5c\u5206\u7c7b", text(task.WORK_CATEGORY) || "-", "dw-detail-compact-item dw-detail-category-item");
     html += detailItem("\u622a\u6b62\u65f6\u95f4", dateOnly(task.PLAN_DEADLINE) || "-", "dw-detail-compact-item dw-detail-deadline-item");
     html += detailItem("\u4e0b\u53d1\u4eba", text(task.SENDER_NAME) || "-", "dw-detail-compact-item dw-detail-person-item");
     html += detailItem("\u63a5\u6536\u4eba", text(task.RECEIVER_NAME) || "-", "dw-detail-compact-item dw-detail-person-item");
@@ -2983,7 +2972,9 @@
       return '<div class="dw-empty">\u6682\u65e0\u53cd\u9988</div>';
     }
     var html = '<div class="dw-feedback-chain">';
+    state.feedbackById = {};
     $.each(rows, function (index, row) {
+      state.feedbackById[text(row.ID)] = row;
       var result = text(row.CONFIRM_RESULT);
       var returnReason = text(row.RETURN_REASON);
       var attachment = feedbackAttachmentButton(row);
@@ -3006,15 +2997,24 @@
         html += '<span class="dw-feedback-reviewer"><b>\u5ba1\u6838\u65f6\u95f4</b>' + esc(reviewTime || "-") + "</span>";
       }
       html += "</div>";
-      html += '<div class="dw-feedback-content-block"><span class="dw-feedback-content-label">\u53cd\u9988\u5185\u5bb9</span>' +
-        '<div class="dw-feedback-cell-text">' + esc(text(row.FEEDBACK_CONTENT) || "-") + "</div></div>";
+      var editable = text(row.CONFIRM_RESULT) === "PENDING" && text(row.CAN_CONFIRM) === "Y" &&
+        text(row.CAN_EDIT) === "Y" && isOffice() && text(row.TASK_LEVEL) === "STAFF";
+      html += '<div class="dw-feedback-content-block"><span class="dw-feedback-content-label">\u53cd\u9988\u5185\u5bb9</span>';
+      if (editable) {
+        html += '<textarea class="dw-textarea dw-feedback-review-editor" id="dwFeedbackEdit_' + esc(text(row.ID)) + '">' +
+          esc(text(row.FEEDBACK_CONTENT)) + "</textarea>";
+      } else {
+        html += '<div class="dw-feedback-cell-text">' + esc(text(row.FEEDBACK_CONTENT) || "-") + "</div>";
+      }
+      html += "</div>";
       if (returnReason) {
         html += '<div class="dw-feedback-return-block"><span class="dw-feedback-content-label">\u9000\u56de\u539f\u56e0</span>' +
           '<div class="dw-feedback-cell-text">' + esc(returnReason) + "</div></div>";
       }
       html += '<div class="dw-feedback-card-actions">';
       if (text(row.CONFIRM_RESULT) === "PENDING" && text(row.CAN_CONFIRM) === "Y") {
-        html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-pass" data-feedback-action="confirm" data-feedback-id="' + esc(text(row.ID)) + '">\u901a\u8fc7</button>';
+        var confirmLabel = editable && text(row.CAN_FORWARD) === "Y" ? "\u901a\u8fc7\u5e76\u5411\u4e0a\u53cd\u9988" : "\u901a\u8fc7";
+        html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-pass" data-feedback-action="confirm" data-feedback-id="' + esc(text(row.ID)) + '">' + confirmLabel + "</button>";
         html += '<button type="button" class="dw-btn dw-task-action-btn dw-action-return" data-feedback-action="return" data-feedback-id="' + esc(text(row.ID)) + '">\u9000\u56de</button>';
       }
       html += "</div></div></article>";
@@ -3149,17 +3149,89 @@
 
   function handleFeedbackAction(action, id) {
     if (action === "confirm") {
-      confirmBox("\u786e\u5b9a\u901a\u8fc7\u8be5\u53cd\u9988\u5417\uff1f\u901a\u8fc7\u540e\u5c06\u56de\u586b\u5230\u4e0a\u7ea7\u53cd\u9988\u5185\u5bb9\u3002", function () {
-        api("api/feedback/confirm", { feedbackId: id }).done(function () {
-          closeModal("dwDetailModal");
-          closeModal("dwFeedbackModal");
-          message("\u53cd\u9988\u5df2\u901a\u8fc7");
-          afterTaskChanged();
-        }).fail(showError);
-      });
+      var row = state.feedbackById[id] || {};
+      var $editor = $("#dwFeedbackEdit_" + id);
+      var content = $editor.length ? $.trim($editor.val()) : text(row.FEEDBACK_CONTENT);
+      if (!content) {
+        message("\u53cd\u9988\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a");
+        return;
+      }
+      if (text(row.CAN_FORWARD) === "Y") {
+        prepareConfirmAndForward(row, content);
+      } else {
+        confirmBox("\u786e\u5b9a\u901a\u8fc7\u8be5\u53cd\u9988\u5417\uff1f", function () {
+          submitFeedbackReview("api/feedback/confirm", { feedbackId: id, content: content }, "\u53cd\u9988\u5df2\u901a\u8fc7");
+        });
+      }
     } else if (action === "return") {
       returnFeedbackBox(id);
     }
+  }
+
+  function prepareConfirmAndForward(row, content) {
+    api("api/feedback/targets", { taskId: text(row.TASK_PARENT_ID) }).done(function (res) {
+      var targets = res.rows || [];
+      if (!targets.length) {
+        message("\u4e0a\u7ea7\u90e8\u95e8\u8282\u70b9\u672a\u7ed1\u5b9a\u786e\u8ba4\u4eba");
+        return;
+      }
+      if (targets.length === 1) {
+        confirmBox("\u786e\u5b9a\u901a\u8fc7\u5e76\u5c06\u4fee\u6539\u540e\u7684\u53cd\u9988\u76f4\u63a5\u63d0\u4ea4\u7ed9\u90e8\u95e8\u5417\uff1f", function () {
+          confirmAndForward(row, content, text(targets[0].USER_ID));
+        });
+        return;
+      }
+      openForwardTargetBox(row, content, targets);
+    }).fail(showError);
+  }
+
+  function openForwardTargetBox(row, content, targets) {
+    if (!(window.layer && layer.open)) {
+      message("\u5e73\u53f0\u5f39\u7a97\u672a\u52a0\u8f7d");
+      return;
+    }
+    var options = '<option value="">\u8bf7\u9009\u62e9\u90e8\u95e8\u786e\u8ba4\u4eba</option>';
+    $.each(targets, function (_, target) {
+      options += '<option value="' + esc(text(target.USER_ID)) + '">' +
+        esc(text(target.NODE_NAME) + " - " + (text(target.USER_NAME) || text(target.USER_ID))) + "</option>";
+    });
+    layer.open({
+      type: 1,
+      title: "\u901a\u8fc7\u5e76\u5411\u4e0a\u53cd\u9988",
+      area: ["460px", "280px"],
+      skin: "dw-layer-dialog dw-forward-layer",
+      content: '<div class="dw-forward-dialog">' +
+        '<div class="dw-forward-dialog-note">\u79d1\u5458\u53cd\u9988\u901a\u8fc7\u540e\uff0c\u5c06\u4f7f\u7528\u5ba1\u6838\u540e\u7684\u5185\u5bb9\u76f4\u63a5\u63d0\u4ea4\u7ed9\u90e8\u95e8\u786e\u8ba4\u4eba\u3002</div>' +
+        '<label class="dw-forward-dialog-field"><span>\u90e8\u95e8\u786e\u8ba4\u4eba</span>' +
+        '<select id="dwForwardTarget" class="dw-forward-dialog-select">' + options + "</select></label></div>",
+      btn: ["\u901a\u8fc7\u5e76\u63d0\u4ea4", "\u53d6\u6d88"],
+      yes: function (index) {
+        var targetUserId = $("#dwForwardTarget").val();
+        if (!targetUserId) {
+          message("\u8bf7\u9009\u62e9\u90e8\u95e8\u786e\u8ba4\u4eba");
+          return;
+        }
+        layer.close(index);
+        confirmAndForward(row, content, targetUserId);
+      }
+    });
+  }
+
+  function confirmAndForward(row, content, targetUserId) {
+    submitFeedbackReview("api/feedback/confirmAndForward", {
+      feedbackId: text(row.ID),
+      content: content,
+      targetUserId: targetUserId
+    }, "\u53cd\u9988\u5df2\u901a\u8fc7\u5e76\u63d0\u4ea4\u7ed9\u90e8\u95e8");
+  }
+
+  function submitFeedbackReview(url, payload, successMessage) {
+    api(url, payload).done(function () {
+      closeModal("dwDetailModal");
+      closeModal("dwFeedbackModal");
+      message(successMessage);
+      afterTaskChanged();
+    }).fail(showError);
   }
 
   function returnFeedbackBox(id) {
