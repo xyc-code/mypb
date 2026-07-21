@@ -41,6 +41,10 @@ public class DwWorkPlan3BusinessVerifier {
     private static final String STAFF2 = "DW3_STAFF2";
     private static final String OTHER_STAFF = "DW3_OTHER_STAFF";
     private static final String STRANGER = "DW3_STRANGER";
+    private static final String LEADER_ADMIN = "DW3_LEADER_ADMIN";
+    private static final String PLATFORM_ADMIN = "DW3_PLATFORM_ADMIN";
+    private static final String LEADER_ADMIN_ROLE = "DW3_ROLE_LEADER_ADMIN";
+    private static final String PLATFORM_ADMIN_ROLE = "DW3_ROLE_PLATFORM_ADMIN";
     private static final String PARTY_NODE = "DW3_NODE_PARTY";
     private static final String GRASSROOT_BIZ = "DW3_GRASS_BIZ";
     private static final String GRASSROOT_FREE_BIZ = "DW3_GRASS_FREE_BIZ";
@@ -78,6 +82,8 @@ public class DwWorkPlan3BusinessVerifier {
         HttpServletRequest officeReq = request(OFFICE, "DW3 Office");
         HttpServletRequest staffReq = request(STAFF, "DW3 Staff");
         HttpServletRequest staff2Req = request(STAFF2, "DW3 Staff2");
+        HttpServletRequest leaderAdminReq = request(LEADER_ADMIN, "DW3 Leader Admin");
+        HttpServletRequest platformAdminReq = request(PLATFORM_ADMIN, "DW3 Platform Admin");
 
         seedPartyRoot(jdbc);
         String partyNode = PARTY_NODE;
@@ -94,7 +100,7 @@ public class DwWorkPlan3BusinessVerifier {
                 "parentId", deptNode,
                 "nodeName", "DW3 Test Office",
                 "userId", OFFICE,
-                "userName", "DW3 Office",
+                "userName", "DW3 Office(" + OFFICE + ")",
                 "roleCode", DwWorkPlan3Constants.ROLE_OFFICE,
                 "sortNo", "1",
                 "enabled", "Y"
@@ -112,7 +118,7 @@ public class DwWorkPlan3BusinessVerifier {
                 "parentId", officeNode,
                 "nodeName", "DW3 Test Staff2",
                 "userId", STAFF2,
-                "userName", "DW3 Staff2",
+                "userName", "DW3 Staff2(" + STAFF2 + ")",
                 "roleCode", DwWorkPlan3Constants.ROLE_STAFF,
                 "sortNo", "2",
                 "enabled", "Y"
@@ -136,11 +142,22 @@ public class DwWorkPlan3BusinessVerifier {
                 "enabled", "Y"
         ), partyReq));
 
+        seedPersonTreeAdminRoles(jdbc);
+        assertPersonTreeAdmin(service, jdbc, leaderAdminReq, officeNode, "LEADER");
+        assertPersonTreeAdmin(service, jdbc, platformAdminReq, officeNode, "PLATFORM");
+        assertFailure(service.savePerson(params(
+                "parentId", officeNode,
+                "nodeName", "DW3 Test Staff Unauthorized",
+                "userId", "DW3_UNAUTHORIZED",
+                "userName", "DW3 Unauthorized",
+                "roleCode", DwWorkPlan3Constants.ROLE_STAFF,
+                "sortNo", "99",
+                "enabled", "Y"
+        ), staffReq), "staff cannot maintain person tree through backend");
+
         assertContainsNode(service.listPersonTree(), staffNode, "person/list after save");
         assertContainsNode(service.listReceivers(officeReq), staffNode, "person/receivers for office");
-        if (!service.listReceivers(partyReq).isEmpty()) {
-            throw new IllegalStateException("Party sender should not get dispatch receivers in office-start mode.");
-        }
+        assertContainsNode(service.listReceivers(partyReq), deptNode, "person/receivers for party");
 
         Map<String, Object> unconfiguredUser = service.currentUser(request(STRANGER, "DW3 Stranger"));
         assertSuccess(unconfiguredUser, "unconfigured current user");
@@ -153,19 +170,94 @@ public class DwWorkPlan3BusinessVerifier {
             throw new IllegalStateException("Unconfigured user was written into DYN_DW_PLAN3_PERSON_TREE.");
         }
 
-        assertFailure(service.createBatch("2026", "Q3", partyReq), "party batch create should be read-only");
-        assertFailure(service.saveRootTask(params(
-                "title", "DW3 test party should not create",
-                "content", "Party is read-only in office-start mode.",
+        String batchId = id(service.createBatch("2026", "Q3", partyReq));
+        String partyRootId = id(service.saveRootTask(params(
+                "batchId", batchId,
+                "title", "DW3 test party root task",
+                "content", "Party creates a root task and dispatches it to a direct department child.",
+                "planDeadline", "2026-09-30",
+                "personNodeId", deptNode,
+                "receiverId", DEPT
+        ), partyReq));
+        Map<String, Object> partyRoot = jdbc.queryForMap("select TASK_LEVEL,STATUS from DYN_DW_PLAN3_TASK where ID=?", partyRootId);
+        assertEquals(DwWorkPlan3Constants.LEVEL_PARTY, partyRoot.get("TASK_LEVEL"), "party root task level");
+        assertEquals(DwWorkPlan3Constants.STATUS_DRAFT, partyRoot.get("STATUS"), "party root draft status");
+        boolean partyCrossLevelRejected = false;
+        try {
+            Map<String, Object> crossLevelResult = service.dispatchChild(params(
+                    "parentId", partyRootId,
+                    "personNodeId", officeNode,
+                    "receiverId", OFFICE,
+                    "title", "DW3 test party cross-level dispatch",
+                    "content", "Party must not skip the department level.",
+                    "planDeadline", "2026-09-30"
+            ), partyReq);
+            partyCrossLevelRejected = "failure".equals(String.valueOf(crossLevelResult.get("flag")));
+        } catch (IllegalArgumentException expected) {
+            partyCrossLevelRejected = true;
+        }
+        if (!partyCrossLevelRejected) {
+            throw new IllegalStateException("party cannot dispatch across levels should fail");
+        }
+        String deptTaskId = id(service.directDispatchRoot(params(
+                "id", partyRootId,
+                "batchId", batchId,
+                "title", "DW3 test party root task",
+                "content", "Party creates a root task and dispatches it to a direct department child.",
+                "planDeadline", "2026-09-30",
+                "personNodeId", deptNode,
+                "receiverId", DEPT
+        ), partyReq));
+        Map<String, Object> deptTask = jdbc.queryForMap(
+                "select PARENT_ID,TASK_LEVEL,RECEIVER_ID,STATUS from DYN_DW_PLAN3_TASK where ID=?", deptTaskId);
+        assertEquals(partyRootId, deptTask.get("PARENT_ID"), "party dispatch child parent");
+        assertEquals(DwWorkPlan3Constants.LEVEL_DEPT, deptTask.get("TASK_LEVEL"), "party dispatch child level");
+        assertEquals(DEPT, deptTask.get("RECEIVER_ID"), "party dispatch receiver");
+        assertEquals(DwWorkPlan3Constants.STATUS_TODO, deptTask.get("STATUS"), "party dispatch child status");
+        assertContainsNode(service.listReceivers(deptReq), officeNode, "person/receivers for department minister");
+        assertSuccess(service.acceptTask(deptTaskId, deptReq), "department minister accepts party task");
+        String officeTaskFromDeptId = id(service.dispatchChild(params(
+                "parentId", deptTaskId,
+                "personNodeId", officeNode,
+                "receiverId", OFFICE,
+                "title", "DW3 test department dispatch",
+                "content", "Department minister dispatches an accepted task to a direct office director.",
                 "planDeadline", "2026-09-30"
-        ), partyReq), "party root create should be read-only");
+        ), deptReq));
+        Map<String, Object> officeTaskFromDept = jdbc.queryForMap(
+                "select PARENT_ID,TASK_LEVEL,RECEIVER_ID,STATUS from DYN_DW_PLAN3_TASK where ID=?", officeTaskFromDeptId);
+        assertEquals(deptTaskId, officeTaskFromDept.get("PARENT_ID"), "department dispatch child parent");
+        assertEquals(DwWorkPlan3Constants.LEVEL_OFFICE, officeTaskFromDept.get("TASK_LEVEL"), "department dispatch child level");
+        assertEquals(OFFICE, officeTaskFromDept.get("RECEIVER_ID"), "department dispatch receiver");
+        assertEquals(DwWorkPlan3Constants.STATUS_TODO, officeTaskFromDept.get("STATUS"), "department dispatch child status");
+        String partyImportRow = jsonRows(params(
+                "rowNumber", "2",
+                "title", "DW3 test party import",
+                "workCategory", "DW3 party import",
+                "targetDesc", "Party import targets a direct department minister.",
+                "content", "Party imports a task for its direct department child.",
+                "planDeadline", "2026-11-05",
+                "deptName", "DW3 Dept"
+        ));
+        assertSuccessCount(service.saveImportDrafts(partyImportRow, "2026", "Q3", partyReq), "party import draft", 1);
+        Map<String, Object> partyImportDispatch = service.directDispatchImport(partyImportRow, "2026", "Q3", partyReq);
+        assertSuccessCount(partyImportDispatch, "party import direct dispatch", 1);
+        String importedDeptTaskId = String.valueOf(((List) partyImportDispatch.get("ids")).get(0));
+        Map<String, Object> importedDeptTask = jdbc.queryForMap(
+                "select TASK_LEVEL,RECEIVER_ID,STATUS from DYN_DW_PLAN3_TASK where ID=?", importedDeptTaskId);
+        assertEquals(DwWorkPlan3Constants.LEVEL_DEPT, importedDeptTask.get("TASK_LEVEL"), "party import child level");
+        assertEquals(DEPT, importedDeptTask.get("RECEIVER_ID"), "party import receiver");
+        assertEquals(DwWorkPlan3Constants.STATUS_TODO, importedDeptTask.get("STATUS"), "party import child status");
+        assertSuccess(service.deleteTask(partyRootId, partyReq), "party deletes own root task subtree");
+        assertMissingTask(jdbc, partyRootId, "party delete removed root task");
+        assertMissingTask(jdbc, deptTaskId, "party delete removed department child task");
+        assertMissingTask(jdbc, officeTaskFromDeptId, "party delete removed office child task");
         assertFailure(service.saveRootTask(params(
                 "title", "DW3 test dept should not create",
                 "content", "Department minister confirms only.",
                 "planDeadline", "2026-09-30"
         ), deptReq), "department root create should be read-only");
 
-        String batchId = id(service.createBatch("2026", "Q3", officeReq));
         String rootId = id(service.saveRootTask(params(
                 "batchId", batchId,
                 "title", "DW3 test office root task",
@@ -177,15 +269,6 @@ public class DwWorkPlan3BusinessVerifier {
                 "receiverId", STAFF
         ), officeReq));
         assertStatus(jdbc, rootId, DwWorkPlan3Constants.STATUS_DRAFT);
-        assertFailure(service.directDispatchRoot(params(
-                "id", rootId,
-                "batchId", batchId,
-                "title", "DW3 test office root task",
-                "content", "Party must not direct dispatch.",
-                "planDeadline", "2026-09-30",
-                "personNodeId", staffNode,
-                "receiverId", STAFF
-        ), partyReq), "party direct dispatch should be read-only");
 
         String staffTaskId = id(service.directDispatchRoot(params(
                 "id", rootId,
@@ -248,7 +331,7 @@ public class DwWorkPlan3BusinessVerifier {
                 "personNodeId", staffNode,
                 "receiverId", STAFF
         ), officeReq));
-        assertFailure(service.deleteTask(draftRoot, partyReq), "party delete should be read-only");
+        assertFailure(service.deleteTask(draftRoot, partyReq), "party cannot delete office root task");
         assertFailure(service.deleteTask(draftRoot, deptReq), "department delete should be read-only");
         assertSuccess(service.deleteTask(draftRoot, officeReq), "office deletes own draft");
         assertMissingTask(jdbc, draftRoot, "office delete removed draft task");
@@ -270,7 +353,7 @@ public class DwWorkPlan3BusinessVerifier {
         seedGrassrootExternalData(jdbc);
         List<Map<String, Object>> grassrootBusinesses = service.listGrassrootBusinessTree(staffReq);
         assertContainsExternalRow(grassrootBusinesses, GRASSROOT_BIZ, "grassroot business tree");
-        assertMissingExternalRow(grassrootBusinesses, GRASSROOT_INVALID_BIZ, "invalid completion type business");
+        assertContainsExternalRow(grassrootBusinesses, GRASSROOT_INVALID_BIZ, "all named businesses include nonstandard completion type");
         List<Map<String, Object>> grassrootOrganizations = service.listGrassrootPartyOrgTree(staffReq);
         assertContainsExternalRow(grassrootOrganizations, GRASSROOT_ORG, "grassroot party organization tree");
         assertContainsExternalRow(grassrootOrganizations, GRASSROOT_UNION_ORG, "grassroot union organization tree");
@@ -290,12 +373,6 @@ public class DwWorkPlan3BusinessVerifier {
                 "planDeadline", "2026-11-20"
         ), staffReq));
         assertStatus(jdbc, staffGrassrootRoot, DwWorkPlan3Constants.STATUS_DOING);
-        assertFailure(service.saveGrassrootDispatch(params(
-                "taskId", staffGrassrootRoot,
-                "businessTreeId", GRASSROOT_INVALID_BIZ,
-                "partyOrgIds", GRASSROOT_ORG,
-                "deadline", "2026-11-20"
-        ), staffReq), "save grassroot dispatch rejects invalid completion type");
         assertSuccessCount(service.saveGrassrootDispatch(params(
                 "taskId", staffGrassrootRoot,
                 "businessTreeId", GRASSROOT_BIZ,
@@ -321,9 +398,9 @@ public class DwWorkPlan3BusinessVerifier {
         String grassrootsTaskId = assertGrassrootDispatched(grassrootDispatchedRows, GRASSROOT_BIZ, "d", GRASSROOT_ORG);
         String grassrootsUnionTaskId = assertGrassrootDispatched(grassrootDispatchedRows, GRASSROOT_BIZ, "g", GRASSROOT_UNION_ORG);
         String grassrootsYouthTaskId = assertGrassrootDispatched(grassrootDispatchedRows, GRASSROOT_BIZ, "t", GRASSROOT_YOUTH_ORG);
-        assertGrassrootReceiveTask(jdbc, grassrootsTaskId, staffGrassrootRoot, GRASSROOT_ORG, "DW3 Grassroot Party Org", GRASSROOT_FZR, GRASSROOT_JSR);
-        assertGrassrootReceiveTask(jdbc, grassrootsUnionTaskId, staffGrassrootRoot, GRASSROOT_UNION_ORG, "DW3 Grassroot Union Org", GRASSROOT_UNION_FZR, GRASSROOT_UNION_JSR);
-        assertGrassrootReceiveTask(jdbc, grassrootsYouthTaskId, staffGrassrootRoot, GRASSROOT_YOUTH_ORG, "DW3 Grassroot Youth Org", GRASSROOT_YOUTH_FZR, GRASSROOT_YOUTH_FZR);
+        assertGrassrootReceiveTask(jdbc, grassrootsTaskId, GRASSROOT_ORG, "DW3 Grassroot Party Org", GRASSROOT_FZR, GRASSROOT_JSR);
+        assertGrassrootReceiveTask(jdbc, grassrootsUnionTaskId, GRASSROOT_UNION_ORG, "DW3 Grassroot Union Org", GRASSROOT_UNION_FZR, GRASSROOT_UNION_JSR);
+        assertGrassrootReceiveTask(jdbc, grassrootsYouthTaskId, GRASSROOT_YOUTH_ORG, "DW3 Grassroot Youth Org", GRASSROOT_YOUTH_FZR, GRASSROOT_YOUTH_FZR);
         assertFailure(service.dispatchGrassroot(staffGrassrootRoot, "", staffReq), "duplicate grassroot dispatch should have no pending rows");
         assertSuccessCount(service.saveGrassrootDispatch(params(
                 "taskId", staffGrassrootRoot,
@@ -345,7 +422,7 @@ public class DwWorkPlan3BusinessVerifier {
                 "select ID from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID=? and PARTY_ORG_ID=?",
                 String.class, staffGrassrootRoot, GRASSROOT_ORG_MISSING);
         assertSuccess(service.deleteGrassrootDispatch(failedGrassrootId, staffReq), "delete failed grassroot row before completion");
-        jdbc.update("update DYN_ZBRWB set RWZT='\u5df2\u5b8c\u6210' where YWSJ_ID=?", staffGrassrootRoot);
+        jdbc.update("update DYN_ZBRWB set RWZT='\u5df2\u5b8c\u6210' where ID in (?,?,?)", grassrootsTaskId, grassrootsUnionTaskId, grassrootsYouthTaskId);
         Map<String, Object> completedGrassrootProgress = service.listGrassrootDispatch(staffGrassrootRoot, staffReq);
         assertGrassrootSummary(completedGrassrootProgress, 3, 3, 0, 0, 3, 3);
         Map<String, Object> staffGrassrootTask = rowById(service.listTasks(staffReq, staffBatchId, ""), staffGrassrootRoot);
@@ -377,6 +454,32 @@ public class DwWorkPlan3BusinessVerifier {
         assertStatus(jdbc, staffFreeRoot, DwWorkPlan3Constants.STATUS_COMPLETED);
         assertSuccess(service.listGrassrootDispatch(staffFreeRoot, staffReq), "completed free task can view grassroot progress");
 
+        String staffNonstandardRoot = id(service.saveRootTask(params(
+                "batchId", staffBatchId,
+                "title", "DW3 test staff nonstandard grassroot task",
+                "content", "Nonstandard completion type remains selectable and nonblocking.",
+                "planDeadline", "2026-11-23"
+        ), staffReq));
+        assertSuccessCount(service.saveGrassrootDispatch(params(
+                "taskId", staffNonstandardRoot,
+                "businessTreeId", GRASSROOT_INVALID_BIZ,
+                "partyOrgIds", GRASSROOT_ORG,
+                "deadline", "2026-11-23"
+        ), staffReq), "save nonstandard grassroot business", 1);
+        assertSuccessCount(service.dispatchGrassroot(staffNonstandardRoot, "", staffReq), "dispatch nonstandard grassroot business", 1);
+        Map<String, Object> nonstandardList = service.listGrassrootDispatch(staffNonstandardRoot, staffReq);
+        String nonstandardTaskId = assertGrassrootDispatched((List<Map<String, Object>>) nonstandardList.get("rows"), GRASSROOT_INVALID_BIZ, "d", GRASSROOT_ORG);
+        Map<String, Object> nonstandardReceiveTask = jdbc.queryForMap("select FK_COL_ID,WCLX,YWSJ_ID from DYN_ZBRWB where ID=?", nonstandardTaskId);
+        assertEquals(GRASSROOT_INVALID_BIZ, nonstandardReceiveTask.get("FK_COL_ID"), "nonstandard business FK mapping");
+        assertEquals("\u6708\u5ea6", nonstandardReceiveTask.get("WCLX"), "nonstandard completion type preserved");
+        if (!blank(nonstandardReceiveTask.get("YWSJ_ID"))) {
+            throw new IllegalStateException("DYN_ZBRWB.YWSJ_ID must stay empty for 3.0 grassroot dispatch.");
+        }
+        assertSuccess(service.completeSelfTask(params(
+                "id", staffNonstandardRoot,
+                "content", "Nonstandard grassroot work does not block."
+        ), staffReq), "nonstandard grassroot task does not block staff completion");
+
         String externalImportRow = jsonRows(params(
                 "rowNumber", "2",
                 "title", "DW3 test external import should fail",
@@ -384,7 +487,7 @@ public class DwWorkPlan3BusinessVerifier {
                 "targetDesc", "External staff must be blocked.",
                 "content", "This row points outside the current office.",
                 "planDeadline", "2026-11-01",
-                "deptName", "DW3 Test Other Staff"
+                "deptName", "DW3 Other Staff"
         ));
         assertFailure(service.saveImportDrafts(externalImportRow, "2026", "Q3", officeReq), "import draft should reject staff outside current office");
         assertFailure(service.directDispatchImport(externalImportRow, "2026", "Q3", officeReq), "import direct dispatch should reject staff outside current office");
@@ -396,11 +499,46 @@ public class DwWorkPlan3BusinessVerifier {
                 "targetDesc", "Current office staff can be imported.",
                 "content", "This row points to current office staff.",
                 "planDeadline", "2026-11-05",
-                "deptName", "DW3 Test Staff2",
+                "deptName", "DW3 Staff2",
+                "deptNodeId", staff2Node,
                 "receiverLogin", "OLD_LOGIN_COLUMN_MUST_BE_IGNORED"
         ));
-        assertSuccessCount(service.saveImportDrafts(validImportRow, "2026", "Q3", officeReq), "valid import draft", 1);
-        assertSuccessCount(service.directDispatchImport(validImportRow, "2026", "Q3", officeReq), "valid import direct dispatch", 1);
+        Map<String, Object> validImportDraft = service.saveImportDrafts(validImportRow, "2026", "Q3", officeReq);
+        assertSuccessCount(validImportDraft, "valid import draft", 1);
+        Map<String, Object> validImportDispatch = service.directDispatchImport(validImportRow, "2026", "Q3", officeReq);
+        assertSuccessCount(validImportDispatch, "valid import direct dispatch", 1);
+        String importedStaffTaskId = String.valueOf(((List) validImportDispatch.get("ids")).get(0));
+        String importedReceiverName = jdbc.queryForObject(
+                "select RECEIVER_NAME from DYN_DW_PLAN3_TASK where ID=?", String.class, importedStaffTaskId);
+        if (!"DW3 Staff2".equals(importedReceiverName)) {
+            throw new IllegalStateException("imported staff task receiver name must match the pure Excel name: " + importedReceiverName);
+        }
+
+        String nodeNameImportRow = jsonRows(params(
+                "rowNumber", "3",
+                "title", "DW3 test node name import should fail",
+                "planDeadline", "2026-11-06",
+                "deptName", "DW3 Test Staff2"
+        ));
+        assertFailure(service.directDispatchImport(nodeNameImportRow, "2026", "Q3", officeReq), "import must not match personnel node name");
+
+        String selfImportRow = jsonRows(params(
+                "rowNumber", "4",
+                "title", "DW3 test office self import",
+                "content", "Office director sends the imported task to themself.",
+                "planDeadline", "2026-11-07",
+                "deptName", "DW3 Office"
+        ));
+        Map<String, Object> selfImportResult = service.directDispatchImport(selfImportRow, "2026", "Q3", officeReq);
+        assertSuccessCount(selfImportResult, "office self import direct send", 1);
+        List selfImportIds = (List) selfImportResult.get("ids");
+        String selfImportTaskId = String.valueOf(selfImportIds.get(0));
+        Map<String, Object> selfImportTask = jdbc.queryForMap("select * from DYN_DW_PLAN3_TASK where ID=?", selfImportTaskId);
+        assertEquals(DwWorkPlan3Constants.STATUS_DOING, selfImportTask.get("STATUS"), "office self import status");
+        assertEquals(OFFICE, selfImportTask.get("RECEIVER_ID"), "office self import receiver");
+        assertEquals(officeNode, selfImportTask.get("PERSON_NODE_ID"), "office self import personnel node");
+        Integer selfImportChildren = jdbc.queryForObject("select count(1) from DYN_DW_PLAN3_TASK where PARENT_ID=?", Integer.class, selfImportTaskId);
+        assertEquals("0", selfImportChildren, "office self import must not create a child task");
 
         List<Map<String, Object>> partyTasks = service.listTasks(partyReq, batchId, "");
         if (partyTasks.isEmpty()) {
@@ -434,7 +572,7 @@ public class DwWorkPlan3BusinessVerifier {
     }
 
     private static void clean(JdbcTemplate jdbc) {
-        jdbc.update("delete from DYN_ZBRWB where YWSJ_ID in (select ID from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%') or ID like 'DW3_GRASSROOT_TASK%'", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
+        jdbc.update("delete from DYN_ZBRWB where ID in (select GRASSROOT_TASK_ID from DYN_DW_PLAN3_GRASSROOT_DISPATCH where GRASSROOT_TASK_ID is not null and (CREATED_BY in (?,?,?,?,?,?) or TASK_ID in (select ID from DYN_DW_PLAN3_TASK where TITLE like 'DW3 test%'))) or ID like 'DW3_GRASSROOT_TASK%'", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_GRASSROOT_DISPATCH where TASK_ID in (select ID from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%') or CREATED_BY in (?,?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER, PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_FEEDBACK where TASK_ID in (select ID from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%')", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
         jdbc.update("delete from DYN_DW_PLAN3_TASK where CREATED_BY in (?,?,?,?,?,?) or TITLE like 'DW3 test%'", PARTY, DEPT, OFFICE, STAFF, STAFF2, STRANGER);
@@ -448,6 +586,8 @@ public class DwWorkPlan3BusinessVerifier {
         jdbc.update("delete from DYN_TRADE_UNION_ORGANIZA where ID=?", GRASSROOT_UNION_ORG);
         jdbc.update("delete from LEAGUE_ORGANIZATION where ID=?", GRASSROOT_YOUTH_ORG);
         jdbc.update("delete from DYN_ZBJHYWS where ID in (?,?,?)", GRASSROOT_BIZ, GRASSROOT_FREE_BIZ, GRASSROOT_INVALID_BIZ);
+        jdbc.update("delete from SYS_USER_ROLE where ID in ('DW3_UR_LEADER_ADMIN','DW3_UR_PLATFORM_ADMIN')");
+        jdbc.update("delete from SYS_ROLE where ID in (?,?)", LEADER_ADMIN_ROLE, PLATFORM_ADMIN_ROLE);
         try {
             jdbc.update("delete from SYS_MSG where RECV_USER in (?,?,?,?,?)", PARTY, DEPT, OFFICE, STAFF, STAFF2);
         } catch (Exception ignored) {
@@ -457,6 +597,52 @@ public class DwWorkPlan3BusinessVerifier {
     private static void seedPartyRoot(JdbcTemplate jdbc) {
         jdbc.update("insert into DYN_DW_PLAN3_PERSON_TREE(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,PARENT_ID,NODE_NAME,USER_ID,USER_NAME,ROLE_CODE,SORT_NO,ENABLED,REMARK) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?)",
                 PARTY_NODE, PARTY, PARTY, "127.0.0.1", "ORG_ROOT", null, "DW3 Test Party", PARTY, "DW3 Party", DwWorkPlan3Constants.ROLE_PARTY, 1, "Y", "DW3 test seeded root");
+    }
+
+    private static void seedPersonTreeAdminRoles(JdbcTemplate jdbc) {
+        jdbc.update("insert into SYS_ROLE(ID,ROLE_NAME,ROLE_CODE,ROLE_TYPE,SYS_APPLICATION_ID,VALID_FLAG,LAST_UPDATE_DATE,LAST_UPDATED_BY,CREATION_DATE,CREATED_BY,LAST_UPDATE_IP,VERSION,ORG_IDENTITY) values(?,?,?,?,?,?,sysdate,?,sysdate,?,?,0,?)",
+                LEADER_ADMIN_ROLE, "\u515a\u59d4\u4e00\u7ea7\u7ba1\u7406\u5458", "DW3_LEADER_ADMIN", "0", "1", "1", STRANGER, STRANGER, "127.0.0.1", "ORG_ROOT");
+        jdbc.update("insert into SYS_ROLE(ID,ROLE_NAME,ROLE_CODE,ROLE_TYPE,SYS_APPLICATION_ID,VALID_FLAG,LAST_UPDATE_DATE,LAST_UPDATED_BY,CREATION_DATE,CREATED_BY,LAST_UPDATE_IP,VERSION,ORG_IDENTITY) values(?,?,?,?,?,?,sysdate,?,sysdate,?,?,0,?)",
+                PLATFORM_ADMIN_ROLE, "\u5e73\u53f0\u7ba1\u7406\u5458", "DW3_PLATFORM_ADMIN", "0", "1", "1", STRANGER, STRANGER, "127.0.0.1", "ORG_ROOT");
+        jdbc.update("insert into SYS_USER_ROLE(ID,SYS_ROLE_ID,SYS_USER_ID,LAST_UPDATE_DATE,LAST_UPDATED_BY,CREATION_DATE,CREATED_BY,LAST_UPDATE_IP,VERSION,ORG_IDENTITY) values(?,?,?,sysdate,?,sysdate,?,?,0,?)",
+                "DW3_UR_LEADER_ADMIN", LEADER_ADMIN_ROLE, LEADER_ADMIN, STRANGER, STRANGER, "127.0.0.1", "ORG_ROOT");
+        jdbc.update("insert into SYS_USER_ROLE(ID,SYS_ROLE_ID,SYS_USER_ID,LAST_UPDATE_DATE,LAST_UPDATED_BY,CREATION_DATE,CREATED_BY,LAST_UPDATE_IP,VERSION,ORG_IDENTITY) values(?,?,?,sysdate,?,sysdate,?,?,0,?)",
+                "DW3_UR_PLATFORM_ADMIN", PLATFORM_ADMIN_ROLE, PLATFORM_ADMIN, STRANGER, STRANGER, "127.0.0.1", "ORG_ROOT");
+    }
+
+    private static void assertPersonTreeAdmin(DwWorkPlan3Service service, JdbcTemplate jdbc, HttpServletRequest request,
+                                              String officeNode, String suffix) {
+        Map<String, Object> current = service.currentUser(request);
+        assertEquals("true", current.get("personTreeEditable"), suffix + " admin person-tree permission");
+        assertEquals("true", current.get("adminViewer"), suffix + " admin remains business viewer only");
+        assertFailure(service.createBatch("2027", "Q1", request), suffix + " admin cannot create business tasks");
+        assertContainsNode(service.listPersonTree(request), officeNode, suffix + " admin full person tree");
+        String nodeId = id(service.savePerson(params(
+                "parentId", officeNode,
+                "nodeName", "DW3 Test Admin Leaf " + suffix,
+                "userId", "DW3_ADMIN_LEAF_" + suffix,
+                "userName", "DW3 Admin Leaf " + suffix,
+                "roleCode", DwWorkPlan3Constants.ROLE_STAFF,
+                "sortNo", "90",
+                "enabled", "Y"
+        ), request));
+        assertContainsNode(service.listPersonTree(request), nodeId, suffix + " admin add person node");
+        assertSuccess(service.savePerson(params(
+                "id", nodeId,
+                "parentId", officeNode,
+                "nodeName", "DW3 Test Admin Leaf Edited " + suffix,
+                "userId", "DW3_ADMIN_LEAF_" + suffix,
+                "userName", "DW3 Admin Leaf " + suffix,
+                "roleCode", DwWorkPlan3Constants.ROLE_STAFF,
+                "sortNo", "90",
+                "enabled", "Y"
+        ), request), suffix + " admin edit person node");
+        assertEquals("DW3 Test Admin Leaf Edited " + suffix,
+                jdbc.queryForObject("select NODE_NAME from DYN_DW_PLAN3_PERSON_TREE where ID=?", String.class, nodeId),
+                suffix + " admin edited node name");
+        assertSuccess(service.disablePerson(nodeId, request), suffix + " admin delete person node");
+        Integer remaining = jdbc.queryForObject("select count(1) from DYN_DW_PLAN3_PERSON_TREE where ID=?", Integer.class, nodeId);
+        assertEquals("0", remaining, suffix + " admin deleted person node");
     }
 
     private static void ensureGrassrootExternalTables(JdbcTemplate jdbc) {
@@ -505,7 +691,7 @@ public class DwWorkPlan3BusinessVerifier {
         jdbc.update("insert into DYN_ZBJHYWS(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 GRASSROOT_FREE_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Grassroot Free Business", "d", "DW3-BIZ-FREE", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u81ea\u7531\u5b8c\u6210", "1", "1", 2, 2, "002", null);
         jdbc.update("insert into DYN_ZBJHYWS(ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,CREATED_DEPT,YWMC,YWLX,YWBH,BD_ID,BDBH,ST_ID,ST_BM,SFCZBD,WCLX,VALID_FLAG,TREE_LEAF,TREE_LEVEL,TREE_SORT,TREE_SORTS,PARENT_ID) values(?,?,sysdate,?,sysdate,?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                GRASSROOT_INVALID_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Invalid Completion Business", "d", "DW3-BIZ-INVALID", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u6708\u5ea6", "1", "1", 2, 3, "003", null);
+                GRASSROOT_INVALID_BIZ, STAFF, STAFF, "127.0.0.1", "ORG_ROOT", "DW3_DEPT", "DW3 Invalid Completion Business", "d", "DW3-BIZ-INVALID", "DW3_FORM_ID", "DW3_FORM_CODE", "DW3_VIEW_ID", "DW3_VIEW_CODE", "\u662f", "\u6708\u5ea6", "0", "1", 2, 3, "003", null);
         insertPartyOrganization(jdbc, GRASSROOT_ORG, "DW3 Grassroot Party Org" + GRASSROOT_ORG, "001");
         insertPartyOrganization(jdbc, GRASSROOT_ORG_MISSING, "DW3 Grassroot Missing Org", "002");
         insertPartyOrganization(jdbc, GRASSROOT_INVALID_ORG, "002001", "003");
@@ -648,11 +834,13 @@ public class DwWorkPlan3BusinessVerifier {
         return null;
     }
 
-    private static void assertGrassrootReceiveTask(JdbcTemplate jdbc, String grassrootTaskId, String sourceTaskId,
-                                                   String orgId, String orgName, String principalUserId, String receiverUserId) {
+    private static void assertGrassrootReceiveTask(JdbcTemplate jdbc, String grassrootTaskId,
+                                                    String orgId, String orgName, String principalUserId, String receiverUserId) {
         Map<String, Object> row = jdbc.queryForMap("select * from DYN_ZBRWB where ID=?", grassrootTaskId);
         assertEquals(GRASSROOT_BIZ, row.get("FK_COL_ID"), "DYN_ZBRWB.FK_COL_ID should point to DYN_ZBJHYWS.ID");
-        assertEquals(sourceTaskId, row.get("YWSJ_ID"), "DYN_ZBRWB.YWSJ_ID should keep the 3.0 task id");
+        if (!blank(row.get("YWSJ_ID"))) {
+            throw new IllegalStateException("DYN_ZBRWB.YWSJ_ID must stay empty for 3.0 grassroot dispatch.");
+        }
         assertEquals("\u672a\u5f00\u59cb", row.get("RWZT"), "grassroot receive task status");
         assertEquals("\u5426", row.get("SFGLRW"), "grassroot receive task relation flag");
         assertEquals(orgId, row.get("DZZID"), "grassroot target organization id");

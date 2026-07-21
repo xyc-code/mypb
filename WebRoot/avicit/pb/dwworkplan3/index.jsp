@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260710_grassroot_layout_39">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260716_person_tree_collapsed_43">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -59,7 +59,7 @@ String importlibs = "common,form,fileupload";
         <button type="button" class="dw-btn dw-btn-ghost" id="dwClearSelectionBtn">清空选中</button>
         <button type="button" class="dw-btn dw-btn-ghost dw-page-action dw-action-plans" id="dwDownloadImportTemplateBtn">下载导入模板</button>
         <button type="button" class="dw-btn dw-btn-ghost dw-page-action dw-action-plans" id="dwImportBtn">批量导入</button>
-        <button type="button" class="dw-btn dw-btn-primary dw-page-action dw-action-plans" id="dwBatchDispatchBtn">批量下发</button>
+        <button type="button" class="dw-btn dw-btn-primary dw-page-action dw-action-plans" id="dwBatchDispatchBtn">批量发送</button>
         <button type="button" class="dw-btn dw-btn-danger" id="dwBatchDeleteBtn">批量删除</button>
       </div>
       <div class="dw-kpis" id="dwPlanKpis">
@@ -246,8 +246,8 @@ String importlibs = "common,form,fileupload";
       <div class="dw-modal-foot">
         <button type="button" class="dw-btn dw-btn-ghost" data-close-modal="dwTaskModal">取消</button>
         <button type="button" class="dw-btn dw-btn-ghost" id="dwTaskSaveDraftBtn">保存草稿</button>
-        <button type="button" class="dw-btn dw-btn-primary" id="dwTaskDirectDispatchBtn">直接下发</button>
-        <button type="button" class="dw-btn dw-btn-primary" id="dwTaskDispatchBtn">确认下发</button>
+        <button type="button" class="dw-btn dw-btn-primary" id="dwTaskDirectDispatchBtn">直接发送</button>
+        <button type="button" class="dw-btn dw-btn-primary" id="dwTaskDispatchBtn">确认发送</button>
       </div>
     </section>
   </div>
@@ -306,7 +306,7 @@ String importlibs = "common,form,fileupload";
       <div class="dw-modal-foot">
         <button type="button" class="dw-btn dw-btn-ghost" data-close-modal="dwImportModal">取消</button>
         <button type="button" class="dw-btn dw-btn-ghost" id="dwImportSaveDraftsBtn" disabled>保存为草稿</button>
-        <button type="button" class="dw-btn dw-btn-primary" id="dwImportDispatchBtn" disabled>批量下发</button>
+        <button type="button" class="dw-btn dw-btn-primary" id="dwImportDispatchBtn" disabled>批量发送</button>
       </div>
     </section>
   </div>
@@ -464,6 +464,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260710_grassroot_layout_39"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260721_party_delete_import_47"></script>
 </body>
 </html>

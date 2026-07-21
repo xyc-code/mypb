@@ -601,3 +601,80 @@
 - The script intentionally does not touch shared tables such as `DYN_ZBRWB`, `DYN_ZBJHYWS`, party, union, or youth organization/member tables, and does not import the old personnel tree.
 - Validation: 7 drop blocks, 7 table definitions, and 13 indexes found; every recreated table structure matches the latest base SQL; PB mandatory audit-field check passed.
 - Replacement package rule: include only `db/dw_work_plan_3_full_rebuild.sql`; exclude the base SQL, all incremental patch SQL files, and `dw_work_plan_3_import_person_tree.sql` to prevent accidental duplicate execution.
+
+## 2026-07-14 Dameng Empty-String Compatibility Pitfall
+
+- Intranet feedback confirmation returned `CAN_CONFIRM=N` even though the root office task, pending feedback, target user ID, current user ID, compiled class, and Tomcat deployment path were all correct.
+- Root cause: the intranet Dameng compatibility mode treats `''` as `NULL`. Therefore predicates such as `nvl(column,'')<>''` and `nvl(column,'')=''` evaluate through a comparison with `NULL` and do not reliably represent non-null/null checks. The local database compatibility mode differed, which hid the defect locally.
+- Mandatory rule for this module: use `column is not null` and `column is null` for SQL null checks. Do not use `nvl(column,'')<>''` or `nvl(column,'')=''` anywhere in 3.0 SQL.
+- Fixed all occurrences in `DwWorkPlan3Service`: two pending-notice target checks and the two `CAN_CONFIRM` target/fallback checks.
+- `scripts/verify-dwworkplan3.ps1` now fails if this unsafe predicate pattern is reintroduced.
+- Diagnostic proof from the intranet debugger: `select case when nvl('x','')<>'' then 'Y' else 'N' end from dual` returned `N`.
+
+## 2026-07-14 Business Search, Import, And Personnel Administration
+
+- Grassroot dispatch still writes `DYN_ZBRWB.FK_COL_ID` from `DYN_ZBJHYWS.ID`, but must leave `DYN_ZBRWB.YWSJ_ID` empty. Runtime completion tracking uses `DYN_DW_PLAN3_GRASSROOT_DISPATCH.GRASSROOT_TASK_ID -> DYN_ZBRWB.ID`.
+- The grassroot business picker returns every `DYN_ZBJHYWS` row whose `YWMC` is nonblank, regardless of `VALID_FLAG` or `WCLX`. Only exact `WCLX='必须完成'` blocks completion; every other completion type is nonblocking and is preserved as stored.
+- Excel `接收科员` matches the bound `USER_NAME` of direct staff under the current office, never the personnel node ID/name. The current office director's own bound name is also accepted and creates an `OFFICE` self task without a child task.
+- Buttons containing `下发` use `发送`; domain labels such as `下发人` and `党委计划下发者` remain unchanged.
+- Runtime access must never create or import a personnel-tree root. The consolidated rebuild SQL creates an empty `DYN_DW_PLAN3_PERSON_TREE`; the historical one-time import SQL remains excluded from intranet packages.
+- Platform roles named `党委一级管理员` or `平台管理员` have full add/edit/delete access to the 3.0 personnel tree through a dedicated `personTreeEditable` permission. They remain read-only for tasks, feedback, dispatch, and other business actions unless separately configured in the personnel tree.
+- Verification must cover all named businesses, nonstandard completion types, empty `DYN_ZBRWB.YWSJ_ID`, user-name import matching, office self import, no automatic root creation, both administrator roles, and staff backend denial.
+- Verification on 2026-07-14: JDK 8 compilation, JS syntax, and `scripts/verify-dwworkplan3.ps1` passed. The full Dameng verifier passed twice with `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`, including an inactive `WCLX=月度` business, empty `DYN_ZBRWB.YWSJ_ID`, completion lookup through `GRASSROOT_TASK_ID`, node-name rejection, bound-user-name import, office self import, both administrator roles performing add/edit/delete, administrator task denial, staff person-tree denial, and no root bootstrap. Tomcat/Redis restarted; login returned 200, the unauthenticated 3.0 entry returned 302, and the versioned JS returned 200. Playwright as office user `910020` verified `批量发送`, `直接发送`, and the import `批量发送` button with zero 3.0 console errors or warnings.
+
+## 2026-07-14 Dynamic Send Label And Import Reference Names
+
+- Task-row actions are rendered dynamically in `taskActions(...)`; the dispatch action label must be `发送`. Verification scans both JSP button markup and JavaScript `actionBtn(...)` calls so a dynamic `下发` button cannot be missed again.
+- The import template's `接收科员参考` sheet is generated from `importReceiverChoices(request)` and contains unique, nonblank bound `userName` values only, including the current office director's self-send option.
+- Personnel-tree node names and platform login names must never be written to the import reference sheet or appended in parentheses. Import candidate maps no longer carry a `loginName` field.
+- Frontend asset cache version: `20260714_send_name_only_41`.
+
+## 2026-07-15 Import Stored-Name Suffix Pitfall
+
+- PB personnel selection may persist `DYN_DW_PLAN3_PERSON_TREE.USER_NAME` as `姓名(登录名)`, even though the field is named `USER_NAME`.
+- Import must display and match the pure staff name. `importReceiverName(...)` removes only a trailing ASCII/full-width parenthesized suffix that exactly equals the bound user's platform login name.
+- This normalization applies to both direct staff and the current office director self-send choice. It does not rewrite personnel-tree data or change non-import task/person displays.
+- Regression coverage stores office/staff names with login suffixes while importing with pure names; the pre-fix verifier failed at valid import validation.
+
+## 2026-07-15 Import Preview-To-Persist Revalidation Pitfall
+
+- Import preview returns resolved `deptNodeId` together with `deptName`, and the frontend submits the full preview row to save/direct-dispatch.
+- Revalidation must always match the submitted pure `deptName`; it must not prefer the returned `deptNodeId` and then compare that ID to candidate names.
+- After name validation, the backend resolves and overwrites the trusted node/user IDs again. Regression coverage submits a preview-shaped row containing both fields.
+
+## 2026-07-15 Imported Receiver Display And Persistence
+
+- Office root tasks remain owned by the office director for workflow/permission purposes, while `DRAFT_DEPT_NAME` stores the intended staff receiver selected in Excel.
+- The task-list receiver column must prefer `DRAFT_DEPT_NAME` so imported drafts and dispatched root rows visibly match the Excel receiver.
+- Import passes the validated pure `receiverName` into child dispatch. The created staff task must not repopulate `RECEIVER_NAME` from the personnel-tree value containing `(登录名)`.
+- Regression coverage asserts that the persisted imported staff task receiver name exactly equals the pure Excel name. Frontend cache version: `20260715_import_receiver_42`.
+
+## 2026-07-16 Personnel Tree Default Collapse
+
+- Personnel-tree nodes are collapsed on first load. A node expands only after the user clicks its toggle or uses `展开全部`.
+- Reloading personnel data preserves explicit expand/collapse choices for existing nodes; newly loaded nodes start collapsed.
+- Frontend cache version: `20260716_person_tree_collapsed_43`.
+
+## 2026-07-21 Party Sender Root Task Permission
+
+- `PARTY_SENDER` can create a batch and a PARTY-level root task, save it as `DRAFT`, edit that draft, and send it to a directly attached `DEPT_MINISTER` personnel-tree node.
+- Party sending reuses the normal direct-child hierarchy validation. Party-to-office/staff cross-level sending remains forbidden; `DEPT_MINISTER` still cannot create a root task.
+- Top-level bulk dispatch remains office-director-only. `PARTY_SENDER` and `OFFICE_DIRECTOR` can both download, preview, save, and directly send Excel imports; party import receivers are direct `DEPT_MINISTER` children.
+- Backend changes: `DwWorkPlan3Service.listReceivers`, `directDispatchRoot`, `dispatchChild`, and `canCreateRootTaskRole` now include `PARTY_SENDER` where required.
+- Frontend changes: create/edit/send permission checks include `PARTY_SENDER`; the party receiver label is `接收部长`; fixed staff-only receiver prompts were changed to neutral receiver wording; the JSP asset version was bumped to `20260721_party_sender_import_45`.
+- Party-downloaded Excel templates use `接收部长` and `接收部长参考`; office templates retain `接收科员`. Import validation accepts both receiver headers for compatibility with already downloaded templates.
+- Verification: the old read-only assertion first failed at the party receiver list, and the new import assertion then failed with `只有室主任可以使用批量导入`, proving both regression baselines. After implementation, JS syntax, `scripts/verify-dwworkplan3.ps1`, JDK 8 compilation into `WebRoot/WEB-INF/classes`, and the DM business verifier passed. The DM verifier returned `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`, including PARTY root level/status, DEPT child parent/level/receiver/status, cross-level rejection, party import draft, and party import direct-dispatch checks.
+
+## 2026-07-21 Department Minister Child Dispatch
+
+- `DEPT_MINISTER` still cannot create a root task. After accepting a PARTY task, the minister can send that existing task to one directly attached `OFFICE_DIRECTOR`; cross-level receivers remain rejected.
+- Role-based child dispatch must stay aligned in three places: frontend `canDispatch`, backend `listReceivers`, and backend `dispatchChild`. Omitting the department role from any one of them produces either a missing button, an empty receiver list, or a backend rejection.
+- The department receiver label is `接收室主任`. Frontend cache version: `20260721_dept_dispatch_46`.
+- Regression verification covers PARTY send to DEPT, department receiver-list scope, department accept, and DEPT send to an `OFFICE/TODO` child. JDK 8 compile, JS/static checks, and the full DM verifier passed with `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`.
+
+## 2026-07-21 Party Delete And Import Actions
+
+- `PARTY_SENDER` sees both `删除` and `批量导入` on the plan page. Import includes template download, preview, save drafts, and direct send to ministers.
+- Party delete is limited to root tasks owned by the current party user/current personnel node. Deleting a party root physically removes its full task subtree and related feedback/attachments/todos; party cannot delete an office/staff-owned root task.
+- Frontend delete visibility and `canDelete`, plus backend `deleteTask`, all include `PARTY_SENDER`. Frontend cache version: `20260721_party_delete_import_47`.
+- Regression verification deleted a PARTY -> DEPT -> OFFICE task subtree, asserted all three task rows were gone, and confirmed party deletion of an office-owned root remained rejected. JS/static checks, JDK 8 compile, and the full DM verifier passed with `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`.

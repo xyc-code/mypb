@@ -6,6 +6,7 @@ $ErrorActionPreference = 'Stop'
 
 $requiredFiles = @(
   'db/dw_work_plan_3.sql',
+  'db/dw_work_plan_3_full_rebuild.sql',
   'src/avicit/pb/dwworkplan3/controller/DwWorkPlan3Controller.java',
   'src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java',
   'src/avicit/pb/dwworkplan3/dto/DwWorkPlan3Constants.java',
@@ -29,6 +30,7 @@ if ($missing.Count -gt 0) {
 
 $sqlPath = Join-Path $Root 'db/dw_work_plan_3.sql'
 $sql = Get-Content -Raw -Encoding UTF8 -LiteralPath $sqlPath
+$fullRebuildSql = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $Root 'db/dw_work_plan_3_full_rebuild.sql')
 $tables = @('DYN_DW_PLAN3_BATCH','DYN_DW_PLAN3_TASK','DYN_DW_PLAN3_FEEDBACK','DYN_DW_PLAN3_PERSON_TREE','DYN_DW_PLAN3_ATTACHMENT','DYN_DW_PLAN3_GRASSROOT_DISPATCH')
 $auditColumns = @(
   'ID VARCHAR2(50)',
@@ -74,6 +76,54 @@ foreach ($text in $staleReceiverTexts) {
 
 $servicePath = Join-Path $Root 'src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java'
 $service = Get-Content -Raw -Encoding UTF8 -LiteralPath $servicePath
+if ($service -match "(?i)nvl\([^\r\n]*,''\)\s*(?:=|<>)\s*''") {
+  throw "Dameng empty-string compatibility: use IS NULL/IS NOT NULL instead of comparing NVL(column,'') with ''."
+}
+if ($service -match 'insert into DYN_ZBRWB\([\s\S]*?YWSJ_ID') {
+  throw '3.0 grassroot dispatch must not write DYN_ZBRWB.YWSJ_ID.'
+}
+if ($service -match "DYN_ZBJHYWS where nvl\(VALID_FLAG" -or $service -match 'WCLX\s+in\s*\(') {
+  throw 'Grassroot business search must return every DYN_ZBJHYWS row with a nonblank business name.'
+}
+if ($service -notmatch 'deptInput\.equals\(receiver\.get\("userName"\)\)' -or
+    $service -notmatch 'selfReceiver' -or
+    $service -match 'deptInput\.equals\(nodeName\)' -or
+    $service -match 'String deptInput\s*=\s*defaultValue\(value\(source, "deptNodeId"\)') {
+  throw 'Import receiver validation must match current-office personnel by bound user name and support the office director themself.'
+}
+if ($service -notmatch 'PLATFORM_ADMIN_ROLE_NAME\s*=' -or
+    $service -notmatch 'hasPlatformRole\(userId, LEADER_VIEW_ROLE_NAME\)\s*\|\|\s*hasPlatformRole\(userId, PLATFORM_ADMIN_ROLE_NAME\)' -or
+    $service -notmatch 'personTreeEditable' -or
+    $service -notmatch 'canMaintainPersonTree') {
+  throw 'Both platform administrator roles must have an explicit, backend-enforced person-tree maintenance permission.'
+}
+if ($service -match 'ensureBootstrapRoot|bootstrapRoot' -or
+    $fullRebuildSql -match '(?i)insert\s+into\s+DYN_DW_PLAN3_PERSON_TREE') {
+  throw '3.0 must not automatically initialize or seed a personnel-tree root.'
+}
+$dispatchText = ([string][char]19979 + [char]21457)
+if ($jsp -match ('<button[^>]*>[^<]*' + [regex]::Escape($dispatchText) + '[^<]*</button>') -or
+    $js -match ('actionBtn\([^\r\n]*["'']' + [regex]::Escape($dispatchText) + '["'']') -or
+    $js -match 'actionBtn\([^\r\n]*["'']\\u4e0b\\u53d1["'']') {
+  throw 'Visible button labels must use 发送 instead of 下发.'
+}
+if ($service -notmatch 'for\s*\(Map<String, String> receiver\s*:\s*importReceiverChoices\(request\)\)' -or
+    $service -notmatch 'receiver\.get\("userName"\)' -or
+    $service -notmatch 'importReceiverName' -or
+    $service -match 'put\("loginName"') {
+  throw 'Import template receiver reference must contain unique bound user names only, without login names.'
+}
+if ($js -notmatch 'function canMaintainPersonTree' -or $js -notmatch 'personTreeEditable') {
+  throw 'Frontend person-tree controls must use the dedicated personTreeEditable permission.'
+}
+if ($js -notmatch 'function taskReceiverName' -or
+    $js -notmatch 'task\.DRAFT_DEPT_NAME') {
+  throw 'Task receiver display must prefer the imported/draft target staff name.'
+}
+if ($js -notmatch 'expandedPersonIds\[text\(row\.ID\)\]\s*=\s*false' -or
+    $js -notmatch 'expandedPersonIds\[id\]\s*===\s*true') {
+  throw 'Personnel tree nodes must be collapsed by default and expand only after an explicit user action.'
+}
 $removedImportColumns = @(
   ([string][char]25509 + [char]25910 + [char]20154 + [char]22995 + [char]21517),
   ([string][char]25509 + [char]25910 + [char]20154 + [char]30331 + [char]24405 + [char]21517)
@@ -134,11 +184,10 @@ if ($service -notmatch 'PARTY_ORGAN_MEMBER' -or $service -notmatch 'DYN_TU_ORGAN
 }
 
 $mustComplete = ([string][char]24517 + [char]39035 + [char]23436 + [char]25104)
-$freeComplete = ([string][char]33258 + [char]30001 + [char]23436 + [char]25104)
 if ($js -notmatch 'function grassrootCompleteType' -or
     -not $service.Contains($mustComplete) -or
-    -not $service.Contains($freeComplete)) {
-  throw 'Grassroot dispatch completion type must be restricted to required completion or free completion.'
+    $js -match 'completeType ===') {
+  throw 'Grassroot dispatch must preserve every completion type and only treat required completion as blocking.'
 }
 
 if ($grassrootDemo -match '\\u6708\\u5ea6' -or
