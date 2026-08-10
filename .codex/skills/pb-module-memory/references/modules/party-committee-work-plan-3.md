@@ -6,7 +6,7 @@
 - Memory file: `.codex/skills/pb-module-memory/references/modules/party-committee-work-plan-3.md`
 - Status: local-verified
 - Owner/requester: xyc
-- Last updated: 2026-07-13
+- Last updated: 2026-07-22
 - Non-negotiable isolation rule: 党委计划 3.0 是全新的独立模块，必须始终与之前做的党委计划下发模块没有任何关系；运行期不得复用旧 `avicit/pb/dwworkplan` 后端命名空间、旧接口、旧表 `DYN_DW_PLAN_*`、旧菜单或旧业务闭环；允许在 3.0 自有 JSP/JS/CSS/Service/SQL 中复刻旧版页面形态、交互和表结构。
 
 ## Business
@@ -698,3 +698,37 @@
 - Follow-up display rule: the task-level bar chart excludes department tasks and shows only office and staff. Its title is `两级任务数量`; frontend cache version is `20260721_feedback_stats_50`.
 - Prepared intranet release `D:\pb-release\内网部署-党委计划3.0-工作内容反馈统计-20260721-163906`. It uses the established complete 14-file 3.0/portal-todo impact closure and contains only `db/dw_work_plan_3_full_rebuild.sql` for database execution. The incremental category-removal patch remains in Git for non-destructive upgrades but is intentionally excluded from this single-SQL rebuild package.
 - Verification: category column count was `0` after the local migration; JS syntax, module static checks, both audit-field SQL checks, and JDK 8 compilation into `WebRoot/WEB-INF/classes` passed. The full DM verifier returned `DWWORKPLAN3_BUSINESS_OK` with `testDataCleanup=OK`, including real XLSX headers, unauthorized edit rejection, return preserving original content, ordinary confirmation saving reviewed content, invalid-target no-mutation, combined upward feedback, root KPI/department/level statistics, and cleanup. Tomcat 7 and Redis restarted; login and versioned JS/CSS returned 200. Playwright as office user `910020` measured 1280px table `clientWidth=1223` and `scrollWidth=1223`, verified long-content wrapping and visible operations, visually checked the styled confirmer dialog, and confirmed painted nested-pie/bar canvases with no overdue chart.
+
+## 2026-07-22 Import Entity Decoding And Staff Task Visibility
+
+- New Excel imports may contain nested HTML entities such as `&amp;ldquo;`. Import validation decodes at most two HTML-entity layers for title, target, content, and remark before preview and persistence. Existing database rows are not rewritten.
+- A `STAFF` task is visible only to its staff owner and that staff node's direct `OFFICE_DIRECTOR`. Party senders, department ministers, platform leader viewers, other office directors, and other staff must not receive it from `api/task/list`.
+- The visibility change is limited to the work-plan task list. It does not change the existing root-only statistics contract and does not remove the task table's `层级` column.
+- The pre-existing statistics bar color remains light blue `#60a5fa`; frontend asset cache version is `20260722_stats_blue_52`.
+- Verification: JS syntax and `scripts/verify-dwworkplan3.ps1` passed. The full Dameng verifier returned `DWWORKPLAN3_BUSINESS_OK` and `testDataCleanup=OK`; it checked actual XLSX preview decoding, decoded persistence, owner/direct-office visibility, and denial for party, department, leader viewer, other office, and other staff. `DwWorkPlan3Service` compiled into `WebRoot/WEB-INF/classes`; Tomcat 7 and Redis restarted; login and versioned JS/CSS returned 200 and the unauthenticated 3.0 entry returned 302.
+
+## 2026-08-10 Global View And Personnel Role Switching
+
+- A user with platform role `党委一级管理员` may also have one or more enabled 3.0 personnel-tree nodes. The 3.0 role selector now includes `全局查看` plus each personnel-tree role; switching to a tree node restores that role's scoped task and operation permissions.
+- Global view uses the internal request marker `__GLOBAL_VIEW__`, accepted only when the session user has the valid `党委一级管理员` platform role. It is read-only for task business actions and keeps the existing personnel-tree administration permission for administrators.
+- The backend returns `globalViewer` independently from `adminViewer`; `adminViewer` remains the no-personnel-node compatibility state. Do not treat an empty `currentNodeId` as global because it falls back to the user's top personnel node.
+
+## 2026-08-10 Ordinary Todo, Office Self-Completion, And Import Punctuation
+
+- Party-plan portal todos use ordinary priority (`0`); they are not urgent notifications.
+- An `OFFICE_DIRECTOR` may select the synthetic receiver `SELF_RECEIVER=Y` when creating a root task. The frontend clears receiver node/user IDs for this option, and the backend saves only the office root without creating a staff child task. Staff self-created roots retain the existing direct-save behavior.
+- Import text is HTML-entity decoded (up to two layers) and repairs common UTF-8/GBK mojibake patterns before validation and persistence, covering punctuation such as full-width quotes and em dashes.
+- Frontend cache version: `20260810_global_view_self_task_54`.
+
+## 2026-08-10 Display Entity Decoding
+
+- The shared frontend `esc()` now decodes up to two layers of common/numeric HTML entities before escaping. This prevents stored `&#39;`, `&quot;`, and similar punctuation entities from appearing literally while preserving HTML safety.
+- Frontend cache version: `20260810_global_view_self_task_entity_55`.
+
+## 2026-08-10 Draft Form Entity Decoding
+
+- Draft edit and dispatch dialogs decode task title, content, and target before placing values in form fields. The task payload decodes those fields again so saving an old draft permanently removes residual entities.
+- Platform administrators without personnel-tree roles retain their existing viewer compatibility; only the party first-level administrator receives the new switchable global-view marker.
+- The office self receiver is sourced once from `listReceivers(...)` for both form selection and Excel import, preventing duplicate-name validation errors.
+- Full DM8 verification returned `DWWORKPLAN3_BUSINESS_OK` with `testDataCleanup=OK` after both compatibility fixes.
+- Frontend cache version: `20260810_global_view_self_task_entity_form_57`.

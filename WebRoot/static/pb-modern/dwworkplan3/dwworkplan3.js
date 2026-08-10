@@ -51,11 +51,13 @@
     DEPT_MINISTER: "OFFICE_DIRECTOR",
     OFFICE_DIRECTOR: "STAFF"
   };
+  var GLOBAL_VIEW_NODE_ID = "__GLOBAL_VIEW__";
 
   var state = {
     user: null,
     roles: [],
     currentNodeId: "",
+    globalView: false,
     persons: [],
     personById: {},
     expandedPersonIds: {},
@@ -136,6 +138,7 @@
     $("#dwRefreshBtn").on("click", loadAll);
     $("#dwRoleSelect").on("change", function () {
       state.currentNodeId = this.value;
+      state.globalView = this.value === GLOBAL_VIEW_NODE_ID;
       state.selectedTaskIds = {};
       if (isStaff() && state.currentView !== "plans") {
         state.currentView = "plans";
@@ -343,6 +346,10 @@
       state.user = res;
       state.roles = res.roles || [];
       state.currentNodeId = initialRoleId() || state.currentNodeId || (state.roles[0] && text(state.roles[0].ID));
+      if (!state.currentNodeId && res.globalViewer) {
+        state.currentNodeId = GLOBAL_VIEW_NODE_ID;
+      }
+      state.globalView = state.currentNodeId === GLOBAL_VIEW_NODE_ID;
       renderRoleSelect();
       renderCurrentRole();
       updateCreateButton();
@@ -443,11 +450,15 @@
 
   function renderRoleSelect() {
     var html = "";
-    if (isViewerOnly()) {
+    if (state.user && state.user.globalViewer) {
+      html = '<option value="' + GLOBAL_VIEW_NODE_ID + '"' + (state.globalView ? " selected" : "") + ">\u5168\u5c40\u67e5\u770b</option>";
+    }
+    if (!html && state.user && state.user.adminViewer) {
       html = '<option value="">\u5168\u5c40\u67e5\u770b</option>';
-    } else if (!state.roles.length) {
+    }
+    if (!state.roles.length && !html) {
       html = '<option value="">未配置人员节点</option>';
-    } else {
+    } else if (state.roles.length) {
       $.each(state.roles, function (_, row) {
         var id = text(row.ID);
         html += '<option value="' + esc(id) + '"' + (id === state.currentNodeId ? " selected" : "") + ">" +
@@ -536,11 +547,13 @@
       $.each(userIds, function (index, userId) {
         var userName = userNames[index] || userId;
         var selected = text(row.ID) === text(selectedId) && (!selectedUserId || text(userId) === text(selectedUserId)) && !selectedDone;
+        var selfReceiver = text(row.SELF_RECEIVER) === "Y";
         if (selected) {
           selectedDone = true;
         }
         options += '<option value="' + esc(text(row.ID)) + '"' + (selected ? " selected" : "") +
-          ' data-user-id="' + esc(text(userId)) + '">' + esc(text(row.NODE_NAME) + " - " + text(userName)) + "</option>";
+          ' data-user-id="' + esc(text(userId)) + '" data-self-receiver="' + (selfReceiver ? "Y" : "N") + '">' +
+          esc(text(row.NODE_NAME) + " - " + text(userName) + (selfReceiver ? "（本人完成）" : "")) + "</option>";
       });
     });
     $("#dwTaskReceiver").html(options);
@@ -771,9 +784,9 @@
 
   function fillTaskModal(task) {
     $("#dwTaskId").val(text(task.ID));
-    $("#dwTaskTitle").val(text(task.TITLE));
-    $("#dwTaskContent").val(text(task.CONTENT));
-    $("#dwTaskTarget").val(text(task.TARGET_DESC));
+    $("#dwTaskTitle").val(decodeHtmlEntities(task.TITLE));
+    $("#dwTaskContent").val(decodeHtmlEntities(task.CONTENT));
+    $("#dwTaskTarget").val(decodeHtmlEntities(task.TARGET_DESC));
     $("#dwTaskDeadline").val(dateOnly(task.PLAN_DEADLINE));
     $("#dwTaskAttachmentId").val(text(task.ATTACHMENT_ID));
     if (task.BATCH_ID && state.batchById[text(task.BATCH_ID)]) {
@@ -1508,22 +1521,24 @@
   }
 
   function taskPayload() {
-    var receiverId = $("#dwTaskReceiver option:selected").attr("data-user-id") || "";
+    var selectedReceiver = $("#dwTaskReceiver option:selected");
+    var selfReceiver = selectedReceiver.attr("data-self-receiver") === "Y";
+    var receiverId = selfReceiver ? "" : (selectedReceiver.attr("data-user-id") || "");
     var payload = {
       id: $("#dwTaskId").val(),
       currentNodeId: state.currentNodeId,
       year: $.trim($("#dwTaskYear").val()),
       quarter: $("#dwTaskQuarter").val(),
-      title: $.trim($("#dwTaskTitle").val()),
-      content: $.trim($("#dwTaskContent").val()),
-      targetDesc: $.trim($("#dwTaskTarget").val()),
+      title: decodeHtmlEntities($.trim($("#dwTaskTitle").val())),
+      content: decodeHtmlEntities($.trim($("#dwTaskContent").val())),
+      targetDesc: decodeHtmlEntities($.trim($("#dwTaskTarget").val())),
       planDeadline: $("#dwTaskDeadline").val(),
       attachmentId: $("#dwTaskAttachmentId").val(),
-      personNodeId: $("#dwTaskReceiver").val(),
+      personNodeId: selfReceiver ? "" : $("#dwTaskReceiver").val(),
       receiverId: receiverId,
-      draftDeptNodeId: $("#dwTaskReceiver").val(),
+      draftDeptNodeId: selfReceiver ? "" : $("#dwTaskReceiver").val(),
       draftDeptUserId: receiverId,
-      draftDeptName: $("#dwTaskReceiver option:selected").text()
+      draftDeptName: selfReceiver ? "" : selectedReceiver.text()
     };
     if (!payload.year || !payload.quarter || !payload.title || !payload.planDeadline) {
       message("请填写年度、季度、任务标题和截止时间");
@@ -2125,7 +2140,7 @@
         name: "\u4efb\u52a1\u6570\u91cf",
         type: "bar",
         barMaxWidth: 64,
-        itemStyle: { color: "#b91c1c" },
+        itemStyle: { color: "#60a5fa" },
         label: { show: true, position: "top" },
         data: $.map(levels, function (level) { return data[level] || 0; })
       }]
@@ -2458,6 +2473,9 @@
   }
 
   function currentNode() {
+    if (state.globalView) {
+      return null;
+    }
     if (state.personById[state.currentNodeId]) {
       return state.personById[state.currentNodeId];
     }
@@ -2509,7 +2527,7 @@
   }
 
   function isViewerOnly() {
-    return !!(state.user && state.user.adminViewer) && !state.roles.length;
+    return !!(state.user && (state.user.adminViewer || (state.user.globalViewer && state.globalView)));
   }
 
   function canMaintainPersonTree() {
@@ -3471,12 +3489,39 @@
   }
 
   function esc(value) {
-    return text(value)
+    return decodeHtmlEntities(value)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  function decodeHtmlEntities(value) {
+    var decoded = text(value);
+    for (var i = 0; i < 2; i++) {
+      var next = decoded.replace(/&(#(?:x[0-9a-f]+|\d+)|amp|lt|gt|quot|apos|nbsp|ldquo|rdquo|lsquo|rsquo|mdash|ndash|hellip|middot|bull);/gi, function (_, entity) {
+        var lower = entity.toLowerCase();
+        var punctuation = {
+          ldquo: "\u201c", rdquo: "\u201d", lsquo: "\u2018", rsquo: "\u2019",
+          mdash: "\u2014", ndash: "\u2013", hellip: "\u2026", middot: "\u00b7", bull: "\u2022"
+        };
+        if (lower === "amp") { return "&"; }
+        if (lower === "lt") { return "<"; }
+        if (lower === "gt") { return ">"; }
+        if (lower === "quot") { return "\""; }
+        if (lower === "apos") { return "'"; }
+        if (lower === "nbsp") { return "\u00a0"; }
+        if (punctuation[lower]) { return punctuation[lower]; }
+        var code = lower.charAt(1) === "x" ? parseInt(lower.substring(2), 16) : parseInt(lower.substring(1), 10);
+        return isNaN(code) ? _ : String.fromCharCode(code);
+      });
+      if (next === decoded) {
+        break;
+      }
+      decoded = next;
+    }
+    return decoded;
   }
 
   function text(value) {

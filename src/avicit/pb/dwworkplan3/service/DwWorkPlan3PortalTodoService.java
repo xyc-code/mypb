@@ -160,7 +160,7 @@ public class DwWorkPlan3PortalTodoService {
                 .sourceModule(SOURCE_MODULE)
                 .businessId(string(task.get("ID")))
                 .taskType(TASK_TYPE)
-                .priority("1")
+                .priority("0")
                 .sender(string(task.get("SENDER_ID")), string(task.get("SENDER_NAME")))
                 .targetUrl(targetUrl(task, personNodeId))
                 .audit(currentUser(request), remoteAddr(request), orgIdentity(request));

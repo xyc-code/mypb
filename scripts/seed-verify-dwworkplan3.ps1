@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -397,6 +401,13 @@ public class DwWorkPlan3BusinessVerifier {
                 "content", "Staff completed self task."
         ), staffReq), "staff direct complete");
         assertStatus(jdbc, staffRoot, DwWorkPlan3Constants.STATUS_COMPLETED);
+        assertTaskVisible(service.listTasks(staffReq, staffBatchId, ""), staffRoot, "staff sees own self-created task");
+        assertTaskVisible(service.listTasks(officeReq, staffBatchId, ""), staffRoot, "direct office sees staff self-created task");
+        assertTaskHidden(service.listTasks(partyReq, staffBatchId, ""), staffRoot, "party cannot see staff self-created task");
+        assertTaskHidden(service.listTasks(deptReq, staffBatchId, ""), staffRoot, "department cannot see staff self-created task");
+        assertTaskHidden(service.listTasks(otherOfficeReq, staffBatchId, ""), staffRoot, "other office cannot see staff self-created task");
+        assertTaskHidden(service.listTasks(staff2Req, staffBatchId, ""), staffRoot, "other staff cannot see staff self-created task");
+        assertTaskHidden(service.listTasks(leaderAdminReq, staffBatchId, ""), staffRoot, "leader viewer cannot see staff self-created task");
 
         seedGrassrootExternalData(jdbc);
         List<Map<String, Object>> grassrootBusinesses = service.listGrassrootBusinessTree(staffReq);
@@ -543,7 +554,7 @@ public class DwWorkPlan3BusinessVerifier {
                 "rowNumber", "2",
                 "title", "DW3 test valid import",
                 "targetDesc", "Current office staff can be imported.",
-                "content", "This row points to current office staff.",
+                "content", "This row uses &amp;ldquo;quoted&amp;rdquo; content.",
                 "planDeadline", "2026-11-05",
                 "deptName", "DW3 Staff2",
                 "deptNodeId", staff2Node,
@@ -559,6 +570,9 @@ public class DwWorkPlan3BusinessVerifier {
         if (!"DW3 Staff2".equals(importedReceiverName)) {
             throw new IllegalStateException("imported staff task receiver name must match the pure Excel name: " + importedReceiverName);
         }
+        assertEquals("This row uses \u201cquoted\u201d content.", jdbc.queryForObject(
+                "select CONTENT from DYN_DW_PLAN3_TASK where ID=?", String.class, importedStaffTaskId),
+                "imported task content decodes nested HTML entities");
 
         String nodeNameImportRow = jsonRows(params(
                 "rowNumber", "3",
@@ -854,6 +868,23 @@ public class DwWorkPlan3BusinessVerifier {
             }
         }
         throw new IllegalStateException("row not found: " + id);
+    }
+
+    private static void assertTaskVisible(List<Map<String, Object>> rows, String id, String label) {
+        for (Map<String, Object> row : rows) {
+            if (id.equals(String.valueOf(row.get("ID")))) {
+                return;
+            }
+        }
+        throw new IllegalStateException(label + ": task was hidden");
+    }
+
+    private static void assertTaskHidden(List<Map<String, Object>> rows, String id, String label) {
+        for (Map<String, Object> row : rows) {
+            if (id.equals(String.valueOf(row.get("ID")))) {
+                throw new IllegalStateException(label + ": task was visible");
+            }
+        }
     }
 
     private static String assertGrassrootDispatched(List<Map<String, Object>> rows, String businessId, String orgType, String partyOrgId) {
@@ -1183,6 +1214,35 @@ public class DwWorkPlan3BusinessVerifier {
         if (header.getCell(expected.length) != null) {
             throw new IllegalStateException("import template must contain exactly six task columns");
         }
+        Row entityRow = sheet.createRow(1);
+        entityRow.createCell(0).setCellValue("DW3 entity import preview");
+        entityRow.createCell(1).setCellValue("Target &amp;ldquo;quoted&amp;rdquo;");
+        entityRow.createCell(2).setCellValue("Content &amp;ldquo;quoted&amp;rdquo;");
+        entityRow.createCell(3).setCellValue("2026-12-01");
+        entityRow.createCell(4).setCellValue("DW3 Staff");
+        entityRow.createCell(5).setCellValue("Remark &amp;ldquo;quoted&amp;rdquo;");
+        final ByteArrayOutputStream importBytes = new ByteArrayOutputStream();
+        workbook.write(importBytes);
+        MultipartFile file = new MultipartFile() {
+            public String getName() { return "file"; }
+            public String getOriginalFilename() { return "dw3-entity.xlsx"; }
+            public String getContentType() { return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; }
+            public boolean isEmpty() { return false; }
+            public long getSize() { return importBytes.size(); }
+            public byte[] getBytes() { return importBytes.toByteArray(); }
+            public InputStream getInputStream() { return new ByteArrayInputStream(importBytes.toByteArray()); }
+            public void transferTo(File destination) throws java.io.IOException {
+                FileOutputStream out = new FileOutputStream(destination);
+                try { out.write(importBytes.toByteArray()); } finally { out.close(); }
+            }
+        };
+        Map<String, Object> preview = service.previewImport(file, "2026", "Q3", request);
+        assertSuccess(preview, "entity import preview");
+        List<Map<String, Object>> previewRows = (List<Map<String, Object>>) preview.get("rows");
+        if (previewRows.size() != 1) {
+            throw new IllegalStateException("entity import preview row count: " + previewRows.size());
+        }
+        assertEquals("Content \u201cquoted\u201d", previewRows.get(0).get("content"), "xlsx preview decodes nested HTML entities");
     }
 
     private static HttpServletRequest request(String userId, String userName) {

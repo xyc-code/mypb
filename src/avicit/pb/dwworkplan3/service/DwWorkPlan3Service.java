@@ -9,6 +9,7 @@ import avicit.platform6.modules.system.sysfileupload.domain.SysFileUpload;
 import avicit.platform6.modules.system.sysfileupload.service.SwfUploadService;
 import avicit.pb.dwworkplan3.dto.DwWorkPlan3Constants;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -30,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,6 +62,7 @@ public class DwWorkPlan3Service {
     private static final String IMPORT_SHEET_NAME = "任务填写";
     private static final String LEADER_VIEW_ROLE_NAME = "党委一级管理员";
     private static final String PLATFORM_ADMIN_ROLE_NAME = "平台管理员";
+    private static final String GLOBAL_VIEW_NODE_ID = "__GLOBAL_VIEW__";
 
     public Map<String, Object> currentUser(HttpServletRequest request) {
         String userId = loginUser(request);
@@ -66,13 +70,15 @@ public class DwWorkPlan3Service {
                 "select * from DYN_DW_PLAN3_PERSON_TREE where " + userMatchSql("USER_ID") + " and ENABLED='Y' order by SORT_NO, CREATION_DATE",
                 userId);
         boolean personTreeAdmin = isPersonTreeAdmin(userId);
+        boolean globalViewer = hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
         boolean adminViewer = roles.isEmpty() && personTreeAdmin;
         Map<String, Object> result = success();
         result.put("userId", userId);
         result.put("userName", userName(userId));
         result.put("roles", roles);
         result.put("adminViewer", adminViewer);
-        result.put("viewAll", adminViewer);
+        result.put("globalViewer", globalViewer);
+        result.put("viewAll", adminViewer || globalViewer);
         result.put("personTreeEditable", personTreeAdmin || hasMaintainablePersonRole(roles));
         return result;
     }
@@ -320,12 +326,16 @@ public class DwWorkPlan3Service {
                 && !DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode)) {
             return failure("\u53ea\u6709\u515a\u59d4\u8ba1\u5212\u4e0b\u53d1\u8005\u548c\u5ba4\u4e3b\u4efb\u53ef\u4ee5\u76f4\u63a5\u53d1\u9001\u4efb\u52a1");
         }
-        if (StringUtils.isBlank(defaultValue(value(p, "draftDeptNodeId"), value(p, "personNodeId")))
-                || StringUtils.isBlank(defaultValue(value(p, "draftDeptUserId"), value(p, "receiverId")))) {
+        boolean selfTask = isSelfRootTask(roleCode, p);
+        if (!selfTask && (StringUtils.isBlank(defaultValue(value(p, "draftDeptNodeId"), value(p, "personNodeId")))
+                || StringUtils.isBlank(defaultValue(value(p, "draftDeptUserId"), value(p, "receiverId"))))) {
             return failure("\u8bf7\u9009\u62e9\u63a5\u6536\u5bf9\u8c61");
         }
         Map<String, Object> saved = saveRootTask(p, request);
         if (!"success".equals(saved.get("flag"))) {
+            return saved;
+        }
+        if (selfTask) {
             return saved;
         }
         p.put("parentId", string(saved.get("id")));
@@ -862,6 +872,12 @@ public class DwWorkPlan3Service {
         }
         Map<String, Object> currentNode = currentUserNode(request);
         boolean leaderViewer = currentNode == null && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME);
+        String roleCode = currentNode == null ? "" : string(currentNode.get("ROLE_CODE"));
+        if (leaderViewer || DwWorkPlan3Constants.ROLE_PARTY.equals(roleCode)
+                || DwWorkPlan3Constants.ROLE_DEPT.equals(roleCode)) {
+            sql.append(" and t.TASK_LEVEL<>?");
+            args.add(DwWorkPlan3Constants.LEVEL_STAFF);
+        }
         if (currentNode == null && !leaderViewer) {
             sql.append(" and 1=0");
         } else if (currentNode != null && !DwWorkPlan3Constants.ROLE_PARTY.equals(string(currentNode.get("ROLE_CODE")))) {
@@ -1023,8 +1039,15 @@ public class DwWorkPlan3Service {
         if (StringUtils.isBlank(nextRole)) {
             return Collections.emptyList();
         }
-        return jdbcTemplate.queryForList("select * from DYN_DW_PLAN3_PERSON_TREE where PARENT_ID=? and ROLE_CODE=? and ENABLED='Y' order by SORT_NO, CREATION_DATE",
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "select * from DYN_DW_PLAN3_PERSON_TREE where PARENT_ID=? and ROLE_CODE=? and ENABLED='Y' order by SORT_NO, CREATION_DATE",
                 node.get("ID"), nextRole);
+        if (DwWorkPlan3Constants.ROLE_OFFICE.equals(roleCode)) {
+            Map<String, Object> self = new HashMap<String, Object>(node);
+            self.put("SELF_RECEIVER", "Y");
+            rows.add(0, self);
+        }
+        return rows;
     }
 
     public List<Map<String, Object>> listGrassrootBusinessTree(HttpServletRequest request) {
@@ -1772,12 +1795,12 @@ public class DwWorkPlan3Service {
             Map<String, Object> row = new HashMap<String, Object>();
             List<String> errors = new ArrayList<String>();
             List<String> warnings = new ArrayList<String>();
-            String title = value(source, "title");
-            String content = value(source, "content");
-            String targetDesc = value(source, "targetDesc");
+            String title = decodeImportHtmlEntities(value(source, "title"));
+            String content = decodeImportHtmlEntities(value(source, "content"));
+            String targetDesc = decodeImportHtmlEntities(value(source, "targetDesc"));
             String planDeadline = normalizeImportDate(value(source, "planDeadline"));
             String deptInput = value(source, "deptName");
-            String remark = value(source, "remark");
+            String remark = decodeImportHtmlEntities(value(source, "remark"));
 
             row.put("rowNumber", defaultValue(value(source, "rowNumber"), String.valueOf(rows.size() + 2)));
             row.put("title", title);
@@ -1857,19 +1880,7 @@ public class DwWorkPlan3Service {
     }
 
     private List<Map<String, String>> importReceiverChoices(HttpServletRequest request) {
-        List<Map<String, String>> result = receiverChoices(listReceivers(request));
-        Map<String, Object> currentNode = currentUserNode(request);
-        if (currentNode != null && DwWorkPlan3Constants.ROLE_OFFICE.equals(string(currentNode.get("ROLE_CODE")))) {
-            String userId = loginUser(request);
-            Map<String, String> self = new HashMap<String, String>();
-            self.put("nodeId", string(currentNode.get("ID")));
-            self.put("nodeName", string(currentNode.get("NODE_NAME")));
-            self.put("userId", userId);
-            self.put("userName", importReceiverName(userNameFromPersonNode(currentNode, userId), userId));
-            self.put("selfReceiver", "Y");
-            result.add(self);
-        }
-        return result;
+        return receiverChoices(listReceivers(request));
     }
 
     private boolean canImportTasks(HttpServletRequest request) {
@@ -1889,6 +1900,7 @@ public class DwWorkPlan3Service {
     private List<Map<String, String>> receiverChoices(List<Map<String, Object>> receivers) {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>();
         for (Map<String, Object> receiver : receivers) {
+            String selfReceiver = "Y".equals(string(receiver.get("SELF_RECEIVER"))) ? "Y" : "N";
             List<String> userIds = splitPersonList(string(receiver.get("USER_ID")));
             List<String> userNames = splitPersonList(string(receiver.get("USER_NAME")));
             if (userIds.isEmpty()) {
@@ -1897,7 +1909,7 @@ public class DwWorkPlan3Service {
                 item.put("nodeName", string(receiver.get("NODE_NAME")));
                 item.put("userId", "");
                 item.put("userName", "");
-                item.put("selfReceiver", "N");
+                item.put("selfReceiver", selfReceiver);
                 result.add(item);
                 continue;
             }
@@ -1909,7 +1921,7 @@ public class DwWorkPlan3Service {
                 item.put("userId", userId);
                 String storedName = i < userNames.size() ? userNames.get(i) : "";
                 item.put("userName", importReceiverName(storedName, userId));
-                item.put("selfReceiver", "N");
+                item.put("selfReceiver", selfReceiver);
                 result.add(item);
             }
         }
@@ -1986,6 +1998,74 @@ public class DwWorkPlan3Service {
             return "备注：" + remark;
         }
         return content + "\n\n备注：" + remark;
+    }
+
+    private String decodeImportHtmlEntities(String value) {
+        String decoded = value;
+        for (int i = 0; i < 2 && StringUtils.isNotBlank(decoded); i++) {
+            String next = StringEscapeUtils.unescapeHtml(decoded);
+            if (decoded.equals(next)) {
+                break;
+            }
+            decoded = next;
+        }
+        return repairImportedText(decoded);
+    }
+
+    private String repairImportedText(String value) {
+        if (StringUtils.isBlank(value)) {
+            return value;
+        }
+        if (containsAny(value, "â", "ï", "ð", "Â")) {
+            String repaired = new String(value.getBytes(Charset.forName("ISO-8859-1")), StandardCharsets.UTF_8);
+            if (isBetterDecodedText(value, repaired)) {
+                return repaired;
+            }
+        }
+        if (containsAny(value, "澶", "锛", "鈥", "绾", "鍏")) {
+            String repaired = new String(value.getBytes(Charset.forName("GBK")), StandardCharsets.UTF_8);
+            if (isBetterDecodedText(value, repaired)) {
+                return repaired;
+            }
+        }
+        return value;
+    }
+
+    private boolean containsAny(String value, String... markers) {
+        for (String marker : markers) {
+            if (value.indexOf(marker) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isBetterDecodedText(String original, String candidate) {
+        return candidate.indexOf('\ufffd') < 0
+                && countCjk(candidate) >= countCjk(original)
+                && countMojibake(candidate) < countMojibake(original);
+    }
+
+    private int countCjk(String value) {
+        int count = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch >= '\u4e00' && ch <= '\u9fff') {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int countMojibake(String value) {
+        int count = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch == '\ufffd' || ch == 'â' || ch == 'ï' || ch == '澶' || ch == '锛' || ch == '鈥') {
+                count++;
+            }
+        }
+        return count;
     }
 
     private String cellText(Cell cell) {
@@ -2553,6 +2633,9 @@ public class DwWorkPlan3Service {
     }
 
     private Map<String, Object> currentUserNode(String userId, String nodeId) {
+        if (GLOBAL_VIEW_NODE_ID.equals(nodeId) && hasPlatformRole(userId, LEADER_VIEW_ROLE_NAME)) {
+            return null;
+        }
         if (StringUtils.isNotBlank(nodeId)) {
             List<Map<String, Object>> rows = jdbcTemplate.queryForList(
                     "select * from DYN_DW_PLAN3_PERSON_TREE where ID=? and ENABLED='Y' and " + userMatchSql("USER_ID"),

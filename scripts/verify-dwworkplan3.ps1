@@ -103,6 +103,13 @@ if ($js -notmatch 'var levels = \["OFFICE", "STAFF"\]' -or
     $service -notmatch 'TASK_LEVEL in \(\?,\?\)') {
   throw 'The level bar chart must contain office and staff only.'
 }
+if ($service -notmatch 'decodeImportHtmlEntities' -or
+    $service -notmatch 'StringEscapeUtils\.unescapeHtml') {
+  throw 'New imports must decode nested HTML entities before persistence.'
+}
+if ($service -notmatch 'ROLE_DEPT\.equals\(roleCode\)[\s\S]*?TASK_LEVEL<>\?[\s\S]*?LEVEL_STAFF') {
+  throw 'Party and department viewers must not see staff-level tasks.'
+}
 $importContracts = @(
   'private static final String[] IMPORT_HEADERS = new String[]{',
   'setCellValue(i == 4 ? receiverLabel : IMPORT_HEADERS[i])',

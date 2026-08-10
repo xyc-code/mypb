@@ -11,7 +11,7 @@ String importlibs = "common,form,fileupload";
   <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
   </jsp:include>
-  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260721_feedback_stats_50">
+  <link rel="stylesheet" href="static/pb-modern/dwworkplan3/dwworkplan3.css?v=20260810_global_view_self_task_entity_form_57">
 </head>
 <body>
 <div class="pb-modern-page pb-dwworkplan3-page" id="dwWorkPlan3Root">
@@ -456,6 +456,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260721_feedback_stats_50"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260810_global_view_self_task_entity_form_57"></script>
 </body>
 </html>
