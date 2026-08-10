@@ -732,3 +732,11 @@
 - The office self receiver is sourced once from `listReceivers(...)` for both form selection and Excel import, preventing duplicate-name validation errors.
 - Full DM8 verification returned `DWWORKPLAN3_BUSINESS_OK` with `testDataCleanup=OK` after both compatibility fixes.
 - Frontend cache version: `20260810_global_view_self_task_entity_form_57`.
+
+## 2026-08-10 Intranet Incremental Package
+
+- Release directory: `D:\pb-release\内网部署-党委计划3.0-全局查看本人任务标点修复-20260810-141614`.
+- ZIP: `D:\pb-release\内网部署-党委计划3.0-全局查看本人任务标点修复-20260810-141614.zip`.
+- Package is based on local commit `a0a90617c6d7e31015cbe752421d5dafc3251347`; the user explicitly authorized packaging without a successful GitHub push because outbound port 443 was unavailable.
+- Incremental impact closure contains four runtime files: `index.jsp`, `dwworkplan3.js`, `DwWorkPlan3Service.java`, and `DwWorkPlan3PortalTodoService.java`. No SQL or platform configuration is required.
+- Directory and ZIP coverage checks both matched 4 of 4 candidates with zero missing files. Runtime file hashes match the tested workspace, and the package contains no `.class` files.
