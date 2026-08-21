@@ -179,10 +179,9 @@ public class GroupDataSyncService {
         StringBuilder where = new StringBuilder(" where ORG_IDENTITY=?");
         List<Object> args = new ArrayList<Object>();
         args.add(orgIdentity);
-        if ("deleted".equalsIgnoreCase(status)) {
-            where.append(" and nvl(").append(flagColumn).append(",'0')='1'");
-        } else if (!"all".equalsIgnoreCase(status)) {
-            where.append(" and nvl(").append(flagColumn).append(",'0')='0'");
+        where.append(" and nvl(").append(flagColumn).append(",'0')='0'");
+        if ("organization".equalsIgnoreCase(type)) {
+            where.append(" and nvl(DZZ_PARTY_ORGANIZATION_CATEGORY,'') not in ('5','党小组')");
         }
         appendAccessFilter(where, args, type, orgIdentity, userId);
         if (StringUtils.isNotBlank(keyword)) {

@@ -116,7 +116,7 @@ String importlibs = "common,form";
         <div class="tab-pane active" id="groupSyncMemberPanel">
             <div class="group-sync-toolbar">
                 <input type="text" class="form-control input-sm" id="memberKeyword" placeholder="姓名或身份证号">
-                <select class="group-sync-status-filter" id="memberStatus" aria-label="党员数据状态"><option value="active">有效数据</option><option value="all">全部状态</option></select>
+                <select class="group-sync-status-filter" id="memberStatus" aria-label="党员数据状态"><option value="active">有效数据</option></select>
                 <button type="button" class="group-sync-action" data-list-type="member"><i class="fa fa-search"></i> 查询</button>
                 <button type="button" class="group-sync-action" data-add-type="member"><i class="fa fa-plus"></i> 新增</button>
                 <button type="button" class="group-sync-action" id="memberEdit"><i class="fa fa-pencil"></i> 编辑</button>
@@ -137,7 +137,7 @@ String importlibs = "common,form";
             </div>
             <div class="group-sync-toolbar">
                 <input type="text" class="form-control input-sm" id="organizationKeyword" placeholder="组织名称或编码">
-                <select class="group-sync-status-filter" id="organizationStatus" aria-label="党组织数据状态"><option value="active">有效数据</option><option value="all">全部状态</option></select>
+                <select class="group-sync-status-filter" id="organizationStatus" aria-label="党组织数据状态"><option value="active">有效数据</option></select>
                 <button type="button" class="group-sync-action" data-list-type="organization"><i class="fa fa-search"></i> 查询</button>
                 <button type="button" class="group-sync-action" data-add-type="organization"><i class="fa fa-plus"></i> 新增</button>
                 <button type="button" class="group-sync-action" id="organizationEdit"><i class="fa fa-pencil"></i> 编辑</button>
@@ -316,7 +316,14 @@ String importlibs = "common,form";
             var value = row && row[field[0]] != null ? row[field[0]] : '';
             var readonly = field[0].indexOf('UNIQUE_ID') >= 0 || field[0].indexOf('DELETE_FLAG') >= 0 || field[0].indexOf('UPDATE_TIMESTAMP') >= 0 || field[0].indexOf('OPERATING_PARTY_ORGANIZATION') >= 0 || field[0] === 'DZZ_PARTY_ORGANIZATION_MEMBER_COUNT';
             var dateClass = dateFields[field[0]] ? ' group-sync-date-picker' : '';
-            html += '<label>' + esc(field[1]) + '<input class="form-control input-sm' + dateClass + '" name="' + field[0] + '" value="' + esc(dateFields[field[0]] ? normalizeDate(value) : value) + '"' + (readonly || dateFields[field[0]] ? ' readonly="readonly"' : '') + '></label>';
+            if (field[0] === 'DY_GENDER') {
+                var genderValue = String(value == null ? '' : value);
+                if (genderValue === '男') { genderValue = '1'; }
+                if (genderValue === '女') { genderValue = '2'; }
+                html += '<label>' + esc(field[1]) + '<select class="form-control input-sm" name="DY_GENDER"><option value="">请选择</option><option value="1"' + (genderValue === '1' ? ' selected="selected"' : '') + '>男</option><option value="2"' + (genderValue === '2' ? ' selected="selected"' : '') + '>女</option></select></label>';
+            } else {
+                html += '<label>' + esc(field[1]) + '<input class="form-control input-sm' + dateClass + '" name="' + field[0] + '" value="' + esc(dateFields[field[0]] ? normalizeDate(value) : value) + '"' + (readonly || dateFields[field[0]] ? ' readonly="readonly"' : '') + '></label>';
+            }
         });
         $('#groupSyncFields').html(html);
         if ($.fn.datepicker) { $('.group-sync-date-picker').datepicker({ dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true }); }
