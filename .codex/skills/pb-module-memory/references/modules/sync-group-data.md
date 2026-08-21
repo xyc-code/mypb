@@ -148,3 +148,12 @@
 - Backend permission enforcement uses platform roles `党委一级管理员` and `平台管理员`. Other users can only export/import organizations linked through `PARTY_ORGAN_MEMBER.USER_ID -> PARTY_ID`.
 - JSP delete and immediate-sync actions now use inline second-click confirmation rather than `window.confirm`. Business date fields use the platform date picker and are read-only for keyboard entry; system timestamps remain read-only.
 - Verified with JDK 8 compilation, real authenticated browser login, inline confirmation without mutation, ZIP download, workbook sheet/date/protection inspection, successful ZIP re-import, and an import-override persistence test across a full sync. The temporary override test value was restored afterward.
+
+## Intranet Fixes (2026-08-21)
+
+- Intranet timestamps are normalized on read for list/detail/log responses and parsed from 10-digit seconds or 13-digit milliseconds on save/import; this fixes edit forms that previously submitted timestamp values back into date fields.
+- Member and organization lists now use server-side pagination with a default page size of 20 and a maximum of 200 per request.
+- `db/group_data_sync.sql` uses wider string columns, and `db/group_sync_physical_delete_patch.sql` provides the ALTER TABLE migration for existing installations. The migration first physically removes rows already marked deleted.
+- Single and batch deletes now physically delete records. Deleting an organization also physically deletes its mirror members; sync cleanup physically deletes source rows missing from the current batch. The old delete-flag columns remain only for compatibility with existing data and SQL.
+- Organization ZIP exports no longer enable worksheet protection; visible exported cells are editable in Excel. Hidden technical columns remain hidden.
+- Intranet deployment must execute the base schema for fresh installs or the physical-delete/column-width patch for existing installs. Do not execute the patch without reviewing the destructive DELETE statements against the target database.

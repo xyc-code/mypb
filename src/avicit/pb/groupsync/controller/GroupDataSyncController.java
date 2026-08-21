@@ -39,9 +39,11 @@ public class GroupDataSyncController {
     public Map<String, Object> list(@RequestParam("type") String type,
                                     @RequestParam(value = "keyword", required = false) String keyword,
                                     @RequestParam(value = "status", required = false) String status,
+                                    @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                    @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
                                     HttpServletRequest request) {
         try {
-            return rows(service.list(type, keyword, status, orgIdentity(request), loginUser(request)));
+            return service.list(type, keyword, status, page, pageSize, orgIdentity(request), loginUser(request));
         } catch (Exception ex) {
             return failure(ex);
         }
@@ -79,7 +81,7 @@ public class GroupDataSyncController {
                                       HttpServletRequest request) {
         try {
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("flag", service.logicalDelete(type, id, request) > 0 ? "success" : "failure");
+            map.put("flag", service.physicalDelete(type, id, request) > 0 ? "success" : "failure");
             return map;
         } catch (Exception ex) {
             return failure(ex);
@@ -94,7 +96,7 @@ public class GroupDataSyncController {
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("flag", "success");
-            map.put("deleted", service.logicalDeleteBatch(type, ids, request));
+            map.put("deleted", service.physicalDeleteBatch(type, ids, request));
             return map;
         } catch (Exception ex) {
             return failure(ex);

@@ -64,6 +64,9 @@ String importlibs = "common,form";
         .group-sync-table tbody tr:hover { background: #f4faf9; cursor: pointer; }
         .group-sync-table input[type="checkbox"] { width: 15px; height: 15px; margin: 0; accent-color: #1c8c87; vertical-align: middle; }
         .group-sync-empty { color: #8b98a5; text-align: center !important; padding: 58px !important; }
+        .group-sync-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 10px 0 0; color: #71808c; font-size: 12px; }
+        .group-sync-pagination button { min-width: 64px; height: 30px; padding: 0 10px; border: 1px solid #cbd6df; border-radius: 4px; background: #fff; color: #3d4b57; }
+        .group-sync-pagination button[disabled] { cursor: not-allowed; opacity: .5; }
         .group-sync-form { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 10px 14px; }
         .group-sync-form label { display: flex; flex-direction: column; gap: 4px; color: #52606d; font-size: 12px; }
         .group-sync-form label input { width: 100%; }
@@ -112,14 +115,15 @@ String importlibs = "common,form";
         <div class="tab-pane active" id="groupSyncMemberPanel">
             <div class="group-sync-toolbar">
                 <input type="text" class="form-control input-sm" id="memberKeyword" placeholder="姓名或身份证号">
-                <select class="group-sync-status-filter" id="memberStatus" aria-label="党员数据状态"><option value="active">有效数据</option><option value="deleted">已删除</option><option value="all">全部状态</option></select>
+                <select class="group-sync-status-filter" id="memberStatus" aria-label="党员数据状态"><option value="active">有效数据</option><option value="all">全部状态</option></select>
                 <button type="button" class="group-sync-action" data-list-type="member"><i class="fa fa-search"></i> 查询</button>
                 <button type="button" class="group-sync-action" data-add-type="member"><i class="fa fa-plus"></i> 新增</button>
                 <button type="button" class="group-sync-action" id="memberEdit"><i class="fa fa-pencil"></i> 编辑</button>
-                <button type="button" class="group-sync-action group-sync-action-danger" id="memberDelete"><i class="fa fa-trash-o"></i> 逻辑删除</button>
+                <button type="button" class="group-sync-action group-sync-action-danger" id="memberDelete"><i class="fa fa-trash-o"></i> 物理删除</button>
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="memberSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="memberTable"></table></div></div>
+            <div class="group-sync-pagination" id="memberPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><button type="button" data-page-action="next">下一页</button></div>
         </div>
         <div class="tab-pane" id="groupSyncOrgPanel">
             <div class="group-sync-toolbar group-sync-transfer-toolbar">
@@ -132,14 +136,15 @@ String importlibs = "common,form";
             </div>
             <div class="group-sync-toolbar">
                 <input type="text" class="form-control input-sm" id="organizationKeyword" placeholder="组织名称或编码">
-                <select class="group-sync-status-filter" id="organizationStatus" aria-label="党组织数据状态"><option value="active">有效数据</option><option value="deleted">已删除</option><option value="all">全部状态</option></select>
+                <select class="group-sync-status-filter" id="organizationStatus" aria-label="党组织数据状态"><option value="active">有效数据</option><option value="all">全部状态</option></select>
                 <button type="button" class="group-sync-action" data-list-type="organization"><i class="fa fa-search"></i> 查询</button>
                 <button type="button" class="group-sync-action" data-add-type="organization"><i class="fa fa-plus"></i> 新增</button>
                 <button type="button" class="group-sync-action" id="organizationEdit"><i class="fa fa-pencil"></i> 编辑</button>
-                <button type="button" class="group-sync-action group-sync-action-danger" id="organizationDelete"><i class="fa fa-trash-o"></i> 逻辑删除</button>
+                <button type="button" class="group-sync-action group-sync-action-danger" id="organizationDelete"><i class="fa fa-trash-o"></i> 物理删除</button>
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="organizationSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="organizationTable"></table></div></div>
+            <div class="group-sync-pagination" id="organizationPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><button type="button" data-page-action="next">下一页</button></div>
         </div>
         <div class="tab-pane" id="groupSyncLogPanel">
             <div class="group-sync-toolbar"><button type="button" class="group-sync-action" id="groupSyncLogRefresh"><i class="fa fa-refresh"></i> 刷新批次</button></div>
@@ -184,6 +189,7 @@ String importlibs = "common,form";
     var api = '<%=request.getContextPath()%>/platform/avicit/pb/groupsync/groupSyncController';
     var currentType = 'member';
     var selected = { member: [], organization: [] };
+    var pageState = { member: { page: 1, pageSize: 20, total: 0 }, organization: { page: 1, pageSize: 20, total: 0 } };
     var logRows = [];
     var fields = {
         member: [
@@ -205,6 +211,14 @@ String importlibs = "common,form";
         $('#' + (type === 'member' ? 'memberSelectionCount' : 'organizationSelectionCount')).text(count ? ('已选择 ' + count + ' 条') : '未选择');
         $('#selectedCount').text(count);
     }
+    function renderPager(type) {
+        var state = pageState[type];
+        var pages = Math.max(1, Math.ceil(state.total / state.pageSize));
+        var pager = $('#' + (type === 'member' ? 'memberPagination' : 'organizationPagination'));
+        pager.find('.group-sync-page-info').text(state.total + ' 条，第 ' + state.page + ' / ' + pages + ' 页');
+        pager.find('[data-page-action="prev"]').prop('disabled', state.page <= 1);
+        pager.find('[data-page-action="next"]').prop('disabled', state.page >= pages);
+    }
     function renderTable(type, rows) {
         var table = $('#' + (type === 'member' ? 'memberTable' : 'organizationTable'));
         var html = '<thead><tr><th><input type="checkbox" class="group-sync-select-all" aria-label="全选"></th>';
@@ -220,6 +234,7 @@ String importlibs = "common,form";
         selected[type] = [];
         updateSelectionCount(type);
         $('#' + (type === 'member' ? 'memberCount' : 'organizationCount')).text(rows.length);
+        renderPager(type);
         table.off('.groupSync');
         table.on('change.groupSync', '.group-sync-row-check', function () {
             $(this).closest('tr').toggleClass('selected', this.checked);
@@ -240,12 +255,18 @@ String importlibs = "common,form";
             $(this).find('.group-sync-row-check').prop('checked', function (_, value) { return !value; }).trigger('change');
         });
     }
-    function load(type) {
+    function load(type, page) {
         currentType = type;
         var prefix = type === 'member' ? 'member' : 'organization';
+        if (page != null) { pageState[type].page = page; }
         var keyword = $('#' + prefix + 'Keyword').val();
         var status = $('#' + prefix + 'Status').val();
-        post('/api/list', { type: type, keyword: keyword, status: status }, function (res) { renderTable(type, res.rows || []); });
+        var state = pageState[type];
+        post('/api/list', { type: type, keyword: keyword, status: status, page: state.page, pageSize: state.pageSize }, function (res) {
+            state.total = parseInt(res.total, 10) || 0;
+            state.page = parseInt(res.page, 10) || 1;
+            renderTable(type, res.rows || []);
+        });
     }
     function editSelected(type) {
         if (selected[type].length !== 1) { message(selected[type].length ? '编辑时请只选择一条记录' : '请先选择一条记录'); return; }
@@ -254,8 +275,8 @@ String importlibs = "common,form";
     function deleteSelected(type) {
         if (!selected[type].length) { message('请先选择要删除的记录'); return; }
         var ids = $.map(selected[type], function (row) { return row.ID; });
-        confirmAction('确认逻辑删除', '将把已选中的 ' + ids.length + ' 条记录标记为已删除，数据仍保留在系统中。', function () {
-            post('/api/deleteBatch', { type: type, ids: ids.join(',') }, function () { selected[type] = []; load(type); message('已完成逻辑删除'); });
+        confirmAction('确认物理删除', '将永久删除已选中的 ' + ids.length + ' 条记录及其关联党员数据，删除后不可恢复。', function () {
+            post('/api/deleteBatch', { type: type, ids: ids.join(',') }, function () { selected[type] = []; load(type, pageState[type].page); message('已完成物理删除'); });
         });
     }
     function message(text) { if (window.layer && layer.msg) { layer.msg(text); } else { alert(text); } }
@@ -269,7 +290,14 @@ String importlibs = "common,form";
             done();
         }
     }
-    function normalizeDate(value) { var text = value == null ? '' : String(value); return text.length >= 10 ? text.substring(0, 10) : text; }
+    function normalizeDate(value) {
+        if (value == null || value === '') { return ''; }
+        if (/^\d{10,13}$/.test(String(value))) {
+            var timestamp = Number(value); if (String(value).length === 10) { timestamp *= 1000; }
+            var date = new Date(timestamp); if (!isNaN(date.getTime())) { return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2); }
+        }
+        var text = String(value); return text.length >= 10 ? text.substring(0, 10) : text;
+    }
     function downloadBase64(base64, fileName) {
         var binary = atob(base64), bytes = new Uint8Array(binary.length);
         for (var i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
@@ -314,22 +342,22 @@ String importlibs = "common,form";
         $('#groupSyncLogDetailMessage').text(errorText(row.ERROR_MESSAGE) || '本批次没有异常明细。');
         $('#groupSyncLogDetailDialog').modal('show');
     }
-    function loadLogs() { post('/api/logs', {}, function (res) { logRows = res.rows || []; var html = '<thead><tr><th>批次</th><th>开始时间</th><th>结束时间</th><th>状态</th><th>总数</th><th>成功</th><th>失败</th><th>逻辑删除</th><th>异常摘要</th><th>操作</th></tr></thead><tbody>'; $.each(logRows, function (index, row) { html += '<tr><td>' + esc(row.ID) + '</td><td>' + esc(row.BATCH_START_TIME) + '</td><td>' + esc(row.BATCH_END_TIME) + '</td><td>' + esc(row.STATUS) + '</td><td>' + esc(row.TOTAL_COUNT) + '</td><td>' + esc(row.SUCCESS_COUNT) + '</td><td>' + esc(row.ERROR_COUNT) + '</td><td>' + esc(row.DELETED_COUNT) + '</td><td class="group-sync-log-summary" title="' + esc(errorText(row.ERROR_MESSAGE)) + '">' + esc(errorSummary(row.ERROR_MESSAGE)) + '</td><td><button type="button" class="btn btn-link btn-xs group-sync-log-detail-button" data-log-index="' + index + '">查看详情</button></td></tr>'; }); if (!logRows.length) { html += '<tr><td colspan="10" class="group-sync-empty">暂无同步批次</td></tr>'; } html += '</tbody>'; $('#groupSyncLogTable').html(html); }); }
+    function loadLogs() { post('/api/logs', {}, function (res) { logRows = res.rows || []; var html = '<thead><tr><th>批次</th><th>开始时间</th><th>结束时间</th><th>状态</th><th>总数</th><th>成功</th><th>失败</th><th>物理删除</th><th>异常摘要</th><th>操作</th></tr></thead><tbody>'; $.each(logRows, function (index, row) { html += '<tr><td>' + esc(row.ID) + '</td><td>' + esc(row.BATCH_START_TIME) + '</td><td>' + esc(row.BATCH_END_TIME) + '</td><td>' + esc(row.STATUS) + '</td><td>' + esc(row.TOTAL_COUNT) + '</td><td>' + esc(row.SUCCESS_COUNT) + '</td><td>' + esc(row.ERROR_COUNT) + '</td><td>' + esc(row.DELETED_COUNT) + '</td><td class="group-sync-log-summary" title="' + esc(errorText(row.ERROR_MESSAGE)) + '">' + esc(errorSummary(row.ERROR_MESSAGE)) + '</td><td><button type="button" class="btn btn-link btn-xs group-sync-log-detail-button" data-log-index="' + index + '">查看详情</button></td></tr>'; }); if (!logRows.length) { html += '<tr><td colspan="10" class="group-sync-empty">暂无同步批次</td></tr>'; } html += '</tbody>'; $('#groupSyncLogTable').html(html); }); }
 
     $(function () {
         load('member');
-        $('[data-list-type]').on('click', function () { load($(this).attr('data-list-type')); });
+        $('[data-list-type]').on('click', function () { load($(this).attr('data-list-type'), 1); });
         $('[data-add-type]').on('click', function () { openEditor($(this).attr('data-add-type'), null); });
         $('#memberEdit').on('click', function () { editSelected('member'); });
         $('#organizationEdit').on('click', function () { editSelected('organization'); });
         $('#memberDelete').on('click', function () { deleteSelected('member'); });
         $('#organizationDelete').on('click', function () { deleteSelected('organization'); });
-        $('#memberStatus, #organizationStatus').on('change', function () { load($(this).attr('id') === 'memberStatus' ? 'member' : 'organization'); });
+        $('#memberStatus, #organizationStatus').on('change', function () { load($(this).attr('id') === 'memberStatus' ? 'member' : 'organization', 1); });
         $('#groupSyncSave').on('click', function () { var data = $('#groupSyncForm').serializeArray(); data.push({ name: 'type', value: currentType }); post('/api/save', $.param(data), function () { $('#groupSyncEditDialog').modal('hide'); load(currentType); }); });
         $('#groupSyncRun').off('click').on('click', function () {
-            confirmAction('确认立即同步', '将按当前平台源数据执行一次全量同步，目标表中的手工导入覆盖值会继续保留。', function () {
+            confirmAction('确认立即同步', '将按当前平台源数据执行一次全量同步，缺失的目标数据会直接物理删除，目标表中的手工导入覆盖值会继续保留。', function () {
                 $('#groupSyncStatus').text('同步中...');
-                post('/api/sync', {}, function (res) { var data = res.data || {}; $('#groupSyncStatus').text('完成：成功 ' + (data.success || 0) + '，失败 ' + (data.errors || 0) + '，逻辑删除 ' + (data.deleted || 0)); load('member'); load('organization'); loadLogs(); });
+                post('/api/sync', {}, function (res) { var data = res.data || {}; $('#groupSyncStatus').text('完成：成功 ' + (data.success || 0) + '，失败 ' + (data.errors || 0) + '，物理删除 ' + (data.deleted || 0)); load('member', 1); load('organization', 1); loadLogs(); });
             });
         });
         function exportZip(type) {
@@ -357,6 +385,13 @@ String importlibs = "common,form";
             }).fail(function () { message('导入请求失败'); }).always(function () { $(input).val(''); });
         }
         $('#organizationImportFile').on('change', function () { importFile(this, 'organizationImportStatus'); });
+        $('[data-page-action]').on('click', function () {
+            var type = $(this).closest('.group-sync-pagination').attr('id').indexOf('member') === 0 ? 'member' : 'organization';
+            var state = pageState[type];
+            var pages = Math.max(1, Math.ceil(state.total / state.pageSize));
+            var nextPage = $(this).attr('data-page-action') === 'next' ? state.page + 1 : state.page - 1;
+            if (nextPage >= 1 && nextPage <= pages) { load(type, nextPage); }
+        });
         $('#groupSyncLogRefresh').on('click', loadLogs);
         $('#groupSyncLogTable').on('click', '.group-sync-log-detail-button', function () { openLogDetail(logRows[parseInt($(this).attr('data-log-index'), 10)]); });
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (event) { var type = $(event.target).data('type'); if (type === 'logs') { loadLogs(); } else { load(type); } });

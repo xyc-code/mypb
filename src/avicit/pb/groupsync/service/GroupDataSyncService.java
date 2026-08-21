@@ -170,29 +170,47 @@ public class GroupDataSyncService {
         return types;
     }
 
-    public List<Map<String, Object>> list(String type, String keyword, String status,
-                                          String orgIdentity, String userId) {
+    public Map<String, Object> list(String type, String keyword, String status, int page, int pageSize,
+                                    String orgIdentity, String userId) {
         String table = tableFor(type);
         String nameColumn = "member".equals(type) ? "DY_NAME" : "DZZ_PARTY_ORGANIZATION_FULL_NAME";
         String codeColumn = "member".equals(type) ? "DY_ID_NUMBER" : "DZZ_PARTY_ORGANIZATION_ENCODING";
         String flagColumn = "member".equals(type) ? "DY_DELETE_FLAG" : "DZZ_DELETE_FLAG";
-        StringBuilder sql = new StringBuilder("select * from ").append(table)
-                .append(" where ORG_IDENTITY=?");
+        StringBuilder where = new StringBuilder(" where ORG_IDENTITY=?");
         List<Object> args = new ArrayList<Object>();
         args.add(orgIdentity);
         if ("deleted".equalsIgnoreCase(status)) {
-            sql.append(" and nvl(").append(flagColumn).append(",'0')='1'");
+            where.append(" and nvl(").append(flagColumn).append(",'0')='1'");
         } else if (!"all".equalsIgnoreCase(status)) {
-            sql.append(" and nvl(").append(flagColumn).append(",'0')='0'");
+            where.append(" and nvl(").append(flagColumn).append(",'0')='0'");
         }
-        appendAccessFilter(sql, args, type, orgIdentity, userId);
+        appendAccessFilter(where, args, type, orgIdentity, userId);
         if (StringUtils.isNotBlank(keyword)) {
-            sql.append(" and (").append(nameColumn).append(" like ? or ").append(codeColumn).append(" like ?)");
+            where.append(" and (").append(nameColumn).append(" like ? or ").append(codeColumn).append(" like ?)");
             args.add("%" + keyword.trim() + "%");
             args.add("%" + keyword.trim() + "%");
         }
-        sql.append(" order by LAST_UPDATE_DATE desc");
-        return jdbcTemplate.queryForList(sql.toString(), args.toArray());
+        int safePage = Math.max(page, 1);
+        int safePageSize = Math.min(Math.max(pageSize, 1), 200);
+        int from = (safePage - 1) * safePageSize;
+        int to = from + safePageSize;
+        Number totalValue = jdbcTemplate.queryForObject("select count(1) from " + table + where, Number.class, args.toArray());
+        List<Object> pageArgs = new ArrayList<Object>(args);
+        pageArgs.add(Integer.valueOf(from));
+        pageArgs.add(Integer.valueOf(to));
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "select * from (select t.*, row_number() over(order by t.LAST_UPDATE_DATE desc) RN from "
+                        + table + " t" + where + ") where RN>? and RN<=?", pageArgs.toArray());
+        for (Map<String, Object> row : rows) {
+            row.remove("RN");
+            formatDateFields(row, "member".equalsIgnoreCase(type) ? MEMBER_FIELDS : ORG_FIELDS);
+        }
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("rows", rows);
+        result.put("total", totalValue == null ? Integer.valueOf(0) : totalValue.intValue());
+        result.put("page", Integer.valueOf(safePage));
+        result.put("pageSize", Integer.valueOf(safePageSize));
+        return result;
     }
 
     public Map<String, Object> get(String type, String id, String orgIdentity, String userId) {
@@ -201,6 +219,7 @@ public class GroupDataSyncService {
                 "select * from " + table + " where ID=? and ORG_IDENTITY=?", id, orgIdentity);
         if (rows.isEmpty()) { return null; }
         assertTargetAccess(type, rows.get(0), orgIdentity, userId);
+        formatDateFields(rows.get(0), "member".equalsIgnoreCase(type) ? MEMBER_FIELDS : ORG_FIELDS);
         return rows.get(0);
     }
 
@@ -293,59 +312,33 @@ public class GroupDataSyncService {
         return get(type, id, orgIdentity, userId);
     }
 
-    public int logicalDelete(String type, String id, HttpServletRequest request) {
+    public int physicalDelete(String type, String id, HttpServletRequest request) {
         String table = tableFor(type);
         String orgIdentity = currentOrgIdentity(request);
-        String userId = currentUser(request);
-        Map<String, Object> target = get(type, id, orgIdentity, userId);
+        Map<String, Object> target = get(type, id, orgIdentity, currentUser(request));
         if (target == null) { return 0; }
-        String flagColumn = "member".equals(type) ? "DY_DELETE_FLAG" : "DZZ_DELETE_FLAG";
-        return jdbcTemplate.update("update " + table + " set " + flagColumn
-                + "='1', LAST_UPDATED_BY=?, LAST_UPDATE_DATE=?, LAST_UPDATE_IP=?, VERSION=NVL(VERSION,0)+1"
-                + ", SYNC_STATE='MANUAL' where ID=? and ORG_IDENTITY=?",
-                userId, new Timestamp(System.currentTimeMillis()), request == null ? "" : request.getRemoteAddr(),
-                id, orgIdentity);
+        if ("organization".equalsIgnoreCase(type)) {
+            jdbcTemplate.update("delete from " + MEMBER_TABLE + " where ORG_IDENTITY=? and DY_PARTY_ORGANIZATION_UNIQUE_ID=?",
+                    orgIdentity, target.get("DZZ_PARTY_ORGANIZATION_UNIQUE_ID"));
+        }
+        return jdbcTemplate.update("delete from " + table + " where ID=? and ORG_IDENTITY=?", id, orgIdentity);
     }
 
     @Transactional
-    public int logicalDeleteBatch(String type, String ids, HttpServletRequest request) {
+    public int physicalDeleteBatch(String type, String ids, HttpServletRequest request) {
         String[] values = StringUtils.split(ids, ',');
         if (values == null || values.length == 0) {
             return 0;
         }
-        String table = tableFor(type);
-        String flagColumn = "member".equals(type) ? "DY_DELETE_FLAG" : "DZZ_DELETE_FLAG";
-        StringBuilder placeholders = new StringBuilder();
-        List<Object> args = new ArrayList<Object>();
+        int deleted = 0;
         for (String value : values) {
             String id = trim(value);
             if (StringUtils.isBlank(id)) {
                 continue;
             }
-            if (!isAdministrator(currentUser(request))) {
-                Map<String, Object> target = get(type, id, currentOrgIdentity(request), currentUser(request));
-                if (target == null) { continue; }
-            }
-            if (placeholders.length() > 0) {
-                placeholders.append(',');
-            }
-            placeholders.append('?');
-            args.add(id);
+            deleted += physicalDelete(type, id, request);
         }
-        if (placeholders.length() == 0) {
-            return 0;
-        }
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        List<Object> orderedArgs = new ArrayList<Object>();
-        orderedArgs.add(currentUser(request));
-        orderedArgs.add(now);
-        orderedArgs.add(request == null ? "" : request.getRemoteAddr());
-        orderedArgs.addAll(args);
-        orderedArgs.add(currentOrgIdentity(request));
-        String sql = "update " + table + " set " + flagColumn
-                + "='1', LAST_UPDATED_BY=?, LAST_UPDATE_DATE=?, LAST_UPDATE_IP=?, VERSION=NVL(VERSION,0)+1"
-                + ", SYNC_STATE='MANUAL' where ID in (" + placeholders + ") and ORG_IDENTITY=?";
-        return jdbcTemplate.update(sql, orderedArgs.toArray());
+        return deleted;
     }
 
     @Transactional
@@ -433,7 +426,7 @@ public class GroupDataSyncService {
                     markError(ORG_TABLE, ORG_SOURCE, string(source.get("ID")), batchId, ex.getMessage(), orgIdentity, userId, now);
                 }
             }
-            deleted += markMissing(ORG_TABLE, "DZZ_DELETE_FLAG", ORG_SOURCE, batchId, orgIdentity, userId, now);
+            deleted += markMissing(ORG_TABLE, ORG_SOURCE, batchId, orgIdentity);
 
             List<Map<String, Object>> members = jdbcTemplate.queryForList(
                     "select m.*, u.NAME USER_NAME, u.MOBILE USER_MOBILE, p.PARTY_NAME PARTY_NAME "
@@ -505,7 +498,7 @@ public class GroupDataSyncService {
                     markError(MEMBER_TABLE, MEMBER_SOURCE, string(source.get("ID")), batchId, ex.getMessage(), orgIdentity, userId, now);
                 }
             }
-            deleted += markMissing(MEMBER_TABLE, "DY_DELETE_FLAG", MEMBER_SOURCE, batchId, orgIdentity, userId, now);
+            deleted += markMissing(MEMBER_TABLE, MEMBER_SOURCE, batchId, orgIdentity);
             String status = errors == 0 ? "SUCCESS" : (success == 0 ? "FAILED" : "PARTIAL");
             finishLog(batchId, status, total, success, errors, deleted, errorMessage.toString(), now);
         } catch (Exception ex) {
@@ -528,6 +521,12 @@ public class GroupDataSyncService {
                 + " where ORG_IDENTITY=? order by BATCH_START_TIME desc", orgIdentity);
         for (Map<String, Object> row : rows) {
             Object error = row.get("ERROR_MESSAGE");
+            if (row.get("BATCH_START_TIME") != null) {
+                row.put("BATCH_START_TIME", formatDate("UPDATE_TIMESTAMP", row.get("BATCH_START_TIME")));
+            }
+            if (row.get("BATCH_END_TIME") != null) {
+                row.put("BATCH_END_TIME", formatDate("UPDATE_TIMESTAMP", row.get("BATCH_END_TIME")));
+            }
             if (error instanceof Clob) {
                 try {
                     Clob clob = (Clob) error;
@@ -601,7 +600,7 @@ public class GroupDataSyncService {
                 entryName = safeName + "_" + suffix++ + "_集团党建数据.xlsx";
             }
             XSSFWorkbook workbook = new XSSFWorkbook();
-            writeSheet(workbook, "党组织信息", ORG_FIELDS, organization, null, uid, "organization", dictionaries, true);
+            writeSheet(workbook, "党组织信息", ORG_FIELDS, organization, null, uid, "organization", dictionaries, false);
             List<Map<String, Object>> members = jdbcTemplate.queryForList("select * from " + MEMBER_TABLE
                     + " where ORG_IDENTITY=? and nvl(DY_DELETE_FLAG,'0')='0' and DY_PARTY_ORGANIZATION_UNIQUE_ID=?"
                     + " order by DY_NAME", orgIdentity, uid);
@@ -671,7 +670,7 @@ public class GroupDataSyncService {
             ensureOrganizationAccess(organization, userId);
             String safeName = fileName(string(organization.get("DZZ_PARTY_ORGANIZATION_SHORT_NAME")));
             XSSFWorkbook workbook = new XSSFWorkbook();
-            writeSheet(workbook, "党组织信息", ORG_FIELDS, organization, null, entry.getKey(), "member", dictionaries, true);
+            writeSheet(workbook, "党组织信息", ORG_FIELDS, organization, null, entry.getKey(), "member", dictionaries, false);
             writeSheet(workbook, "党员信息", MEMBER_FIELDS, null, entry.getValue(), entry.getKey(), "member", dictionaries, false);
             ByteArrayOutputStream workbookBytes = new ByteArrayOutputStream();
             workbook.write(workbookBytes);
@@ -951,12 +950,10 @@ public class GroupDataSyncService {
         }
     }
 
-    private int markMissing(String table, String flagColumn, String sourceTable, String batchId,
-                            String orgIdentity, String userId, Date now) {
-        return jdbcTemplate.update("update " + table + " set " + flagColumn + "='1', SYNC_STATE='DELETED', "
-                + "LAST_UPDATED_BY=?, LAST_UPDATE_DATE=?, LAST_UPDATE_IP=?, VERSION=NVL(VERSION,0)+1 "
-                + "where ORG_IDENTITY=? and SYNC_SOURCE_TABLE=? and nvl(SYNC_BATCH_ID,'-')<>? and nvl(" + flagColumn + ",'0')='0'",
-                userId, new Timestamp(now.getTime()), "", orgIdentity, sourceTable, batchId);
+    private int markMissing(String table, String sourceTable, String batchId, String orgIdentity) {
+        return jdbcTemplate.update("delete from " + table
+                + " where ORG_IDENTITY=? and SYNC_SOURCE_TABLE=? and nvl(SYNC_BATCH_ID,'-')<>?",
+                orgIdentity, sourceTable, batchId);
     }
 
     private void markError(String table, String sourceTable, String sourceId, String batchId, String message,
@@ -1118,6 +1115,31 @@ public class GroupDataSyncService {
         return value.trim();
     }
 
+    private void formatDateFields(Map<String, Object> row, String[] fields) {
+        for (String field : fields) {
+            if (isDateField(field) && row.containsKey(field) && row.get(field) != null) {
+                row.put(field, formatDate(field, row.get(field)));
+            }
+        }
+    }
+
+    private String formatDate(String field, Object value) {
+        Date dateValue;
+        if (value instanceof Date) {
+            dateValue = (Date) value;
+        } else if (value instanceof Number) {
+            long timestamp = ((Number) value).longValue();
+            if (Math.abs(timestamp) < 100000000000L) {
+                timestamp *= 1000L;
+            }
+            dateValue = new Date(timestamp);
+        } else {
+            return String.valueOf(value);
+        }
+        String pattern = field.indexOf("UPDATE_TIMESTAMP") >= 0 ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd";
+        return new SimpleDateFormat(pattern).format(dateValue);
+    }
+
     private void writeSheet(XSSFWorkbook workbook, String sheetName, String[] fields,
                             Map<String, Object> organization, List<Map<String, Object>> members, String orgUid,
                             String exportMode, Map<String, Map<String, String>> dictionaries,
@@ -1168,7 +1190,6 @@ public class GroupDataSyncService {
         addDictionaryValidation(workbook, sheet, fields, dictionaries, members == null ? 1 : members.size() + 20);
         sheet.createFreezePane(0, 1);
         for (int i = 0; i < fields.length; i++) { sheet.autoSizeColumn(i); }
-        sheet.protectSheet("pb");
     }
 
     private void writeRow(XSSFSheet sheet, int rowIndex, String[] fields, Map<String, Object> row,
@@ -1460,12 +1481,20 @@ public class GroupDataSyncService {
     }
 
     private Date parseDate(String text) {
+        String normalized = text == null ? "" : text.trim();
+        if (normalized.matches("\\d{10,13}")) {
+            long timestamp = Long.parseLong(normalized);
+            if (normalized.length() == 10) {
+                timestamp *= 1000L;
+            }
+            return new Date(timestamp);
+        }
         String[] patterns = new String[] {"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd"};
         for (String pattern : patterns) {
             try {
                 SimpleDateFormat format = new SimpleDateFormat(pattern);
                 format.setLenient(false);
-                return format.parse(text.trim());
+                return format.parse(normalized);
             } catch (ParseException ignore) {
                 // try next supported format
             }
