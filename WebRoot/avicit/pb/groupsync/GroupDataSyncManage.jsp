@@ -66,6 +66,7 @@ String importlibs = "common,form";
         .group-sync-empty { color: #8b98a5; text-align: center !important; padding: 58px !important; }
         .group-sync-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 10px 0 0; color: #71808c; font-size: 12px; }
         .group-sync-pagination button { min-width: 64px; height: 30px; padding: 0 10px; border: 1px solid #cbd6df; border-radius: 4px; background: #fff; color: #3d4b57; }
+        .group-sync-pagination select { height: 30px; padding: 0 8px; border: 1px solid #cbd6df; border-radius: 4px; background: #fff; color: #3d4b57; }
         .group-sync-pagination button[disabled] { cursor: not-allowed; opacity: .5; }
         .group-sync-form { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 10px 14px; }
         .group-sync-form label { display: flex; flex-direction: column; gap: 4px; color: #52606d; font-size: 12px; }
@@ -123,7 +124,7 @@ String importlibs = "common,form";
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="memberSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="memberTable"></table></div></div>
-            <div class="group-sync-pagination" id="memberPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><button type="button" data-page-action="next">下一页</button></div>
+            <div class="group-sync-pagination" id="memberPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><label>每页 <select class="group-sync-page-size" aria-label="党员每页条数"><option value="20">20</option><option value="50">50</option><option value="100">100</option><option value="200">200</option></select> 条</label><button type="button" data-page-action="next">下一页</button></div>
         </div>
         <div class="tab-pane" id="groupSyncOrgPanel">
             <div class="group-sync-toolbar group-sync-transfer-toolbar">
@@ -144,7 +145,7 @@ String importlibs = "common,form";
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="organizationSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="organizationTable"></table></div></div>
-            <div class="group-sync-pagination" id="organizationPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><button type="button" data-page-action="next">下一页</button></div>
+            <div class="group-sync-pagination" id="organizationPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><label>每页 <select class="group-sync-page-size" aria-label="党组织每页条数"><option value="20">20</option><option value="50">50</option><option value="100">100</option><option value="200">200</option></select> 条</label><button type="button" data-page-action="next">下一页</button></div>
         </div>
         <div class="tab-pane" id="groupSyncLogPanel">
             <div class="group-sync-toolbar"><button type="button" class="group-sync-action" id="groupSyncLogRefresh"><i class="fa fa-refresh"></i> 刷新批次</button></div>
@@ -391,6 +392,11 @@ String importlibs = "common,form";
             var pages = Math.max(1, Math.ceil(state.total / state.pageSize));
             var nextPage = $(this).attr('data-page-action') === 'next' ? state.page + 1 : state.page - 1;
             if (nextPage >= 1 && nextPage <= pages) { load(type, nextPage); }
+        });
+        $('.group-sync-page-size').on('change', function () {
+            var type = $(this).closest('.group-sync-pagination').attr('id').indexOf('member') === 0 ? 'member' : 'organization';
+            pageState[type].pageSize = parseInt($(this).val(), 10) || 20;
+            load(type, 1);
         });
         $('#groupSyncLogRefresh').on('click', loadLogs);
         $('#groupSyncLogTable').on('click', '.group-sync-log-detail-button', function () { openLogDetail(logRows[parseInt($(this).attr('data-log-index'), 10)]); });
