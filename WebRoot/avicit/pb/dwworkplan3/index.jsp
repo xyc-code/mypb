@@ -55,7 +55,7 @@ String importlibs = "common,form,fileupload";
           <option value="COMPLETED">已完成</option>
           <option value="RETURNED">已退回</option>
         </select>
-        <input id="dwFilterKeyword" class="dw-input dw-keyword" type="text" placeholder="搜索标题、接收人、下发人">
+        <input id="dwFilterKeyword" class="dw-input dw-keyword" type="text" placeholder="搜索标题、工作内容、接收人、下发人">
         <button type="button" class="dw-btn dw-btn-ghost" id="dwClearSelectionBtn">清空选中</button>
         <button type="button" class="dw-btn dw-btn-ghost dw-page-action dw-action-plans" id="dwDownloadImportTemplateBtn">下载导入模板</button>
         <button type="button" class="dw-btn dw-btn-ghost dw-page-action dw-action-plans" id="dwImportBtn">批量导入</button>

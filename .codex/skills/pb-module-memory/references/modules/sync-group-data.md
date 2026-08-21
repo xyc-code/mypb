@@ -1,0 +1,149 @@
+# Module Memory: sync-group-data
+
+## Identity
+
+- Module name: 同步集团数据
+- Memory file: `.codex/skills/pb-module-memory/references/modules/sync-group-data.md`
+- Status: developing (local verification complete; external transport and platform Quartz/menu registration remain manual)
+- Owner/requester: user
+- Last updated: 2026-08-20
+
+## Business
+
+- Goal: 将 `PARTY_MEMBER`、`PARTY_ORGANIZATION` 映射为集团党建数据标准表，首期只维护本地镜像，不实现集团推送或跨库访问。
+- Users/roles: 党建平台管理员、集团数据维护人员。
+- Main workflow: 首次全量同步或页面手动同步 -> 组织按层级 Upsert -> 党员 Upsert -> 缺失/失效源记录逻辑删除 -> 记录批次结果与异常。
+- Important rules:
+  - 源表是唯一准源，人工修改镜像表会在下一次同步被覆盖。
+  - 目标 `ID` 首次生成 32 位无连字符 UUID，并永久保留；`SYNC_SOURCE_ID` 用于匹配源表记录。
+  - 有效行入库，问题行隔离；组织父级缺失、必填字段缺失和员工编码格式错误写入批次异常。
+  - 页面删除为逻辑删除；同步恢复时重新置为有效。
+- Out of scope: 集团接口、文件交换、跨库访问、集团标准码表转换。
+
+## PB Low-Code Surface
+
+- Forms: `WebRoot/avicit/pb/groupsync/GroupDataSyncManage.jsp`，表单字段由前端白名单动态生成。
+- Views: `platform/avicit/pb/groupsync/groupSyncController/toManage`。
+- Workflows: none。
+- Menus: 不自动创建，平台管理员手工关联 JSP 地址。
+- Permissions: 首期沿用模块访问权限；后续可为 `api/save`、`api/delete`、`api/sync` 单独配置权限。
+- Dictionaries/config: 党组织职务使用 `PARTY_POST`，公司名称取平台根党组织名称；集团码表尚未接入。
+- Manual platform steps: 执行 `db/group_data_sync.sql`；注册 Bean `groupDataSyncJob` 为 Quartz 每日 `02:00` 任务；配置菜单指向 `toManage`。
+
+## Data
+
+- Tables:
+  - `DYN_DY_PARTY_MEMBER`
+  - `DYN_DZZ_PARTY_ORGANIZATION`
+  - `DYN_GROUP_SYNC_LOG`
+  - Sources: `PARTY_MEMBER`, `PARTY_ORGANIZATION`, `PARTY_ORGAN_MEMBER`, `SYS_USER`, `SYS_LOOKUP_V`
+- Required audit fields checked: yes (all three new tables use the required eight columns first)
+- SQL/migration notes: `db/group_data_sync.sql` uses Dameng/Oracle-compatible `VARCHAR2`/`DATE`/`NUMBER`; `DATETIME` display fields are stored as `DATE`.
+- Data backfill or cleanup: first manual sync is full; no physical cleanup.
+- Risky DB assumptions:
+  - `PARTY_MEMBER.STATUS='1'` and `PARTY_ORGANIZATION.VALID_FLAG='1'` are treated as active.
+  - `SYS_USER.MOBILE` exists in the current platform schema.
+  - `PARTY_POST` lookup names contain `书记`/`副书记`; codes `0/1/2` are fallback matches.
+
+## Files
+
+- JSP/JS/CSS: `WebRoot/avicit/pb/groupsync/GroupDataSyncManage.jsp`.
+- Java/classes:
+  - `src/avicit/pb/groupsync/service/GroupDataSyncService.java`
+  - `src/avicit/pb/groupsync/controller/GroupDataSyncController.java`
+  - `src/avicit/pb/groupsync/job/GroupDataSyncJob.java`
+- Mapper XML: none; service uses whitelisted `JdbcTemplate` SQL.
+- Properties/config touched: none; Quartz registration is a platform manual step.
+- Generated or uploaded assets: none.
+
+## Pitfalls And Decisions
+
+- Pitfalls:
+  - Do not use target generated UUID as a new value on every run; it must remain stable.
+  - Do not allow arbitrary table/column names from HTTP parameters; controller passes a type and service resolves a fixed whitelist.
+  - Do not physically delete rows because the group standard needs deletion state and source recovery.
+- Debug notes: page status and batch log expose total/success/error/deleted counts; row errors are capped before writing to the CLOB.
+- Rejected approaches: group push/API integration in the first release; daily full-table drop/rebuild; using source IDs as group IDs.
+- User preferences: provide the JSP address and let the user link the menu manually; do not auto-create menus.
+
+## Verification
+
+- Local URL/menu path: `platform/avicit/pb/groupsync/groupSyncController/toManage` (requires login and menu association).
+- Test data: existing `PARTY_MEMBER` / `PARTY_ORGANIZATION`; add one invalid source row for isolation testing.
+- Checks performed: `db/group_data_sync.sql` executed successfully in local DM8 `DJ` schema; PB audit-field checker passed; JDK 8 compilation passed into `WebRoot/WEB-INF/classes`; Tomcat and Redis restarted; `/pb/login` returned HTTP 200; unauthenticated module access returned HTTP 302 to the login page; authenticated browser smoke test loaded the JSP tabs and API data.
+- Runtime verification: manual sync completed twice with `success=176`, `errors=12`, `deleted=0`; target counts remained `DYN_DY_PARTY_MEMBER=173` (173 distinct group IDs) and `DYN_DZZ_PARTY_ORGANIZATION=3` (3 distinct group IDs), proving repeat sync did not duplicate rows. The 12 isolated errors were recorded in `DYN_GROUP_SYNC_LOG.ERROR_MESSAGE`: 5 target-column string truncation rows, 6 rows missing organization `ID`/`PARTY_CODE`/`PARTY_NAME`, and 1 row whose parent organization was not synchronized.
+- Runtime fix: corrected the sync-log insert placeholder count from 17 to 16 to match its 16 columns; recompiled and restarted Tomcat before the successful rerun.
+- Schema comments: added table and column comments for all 46 columns of `DYN_DY_PARTY_MEMBER` and all 35 columns of `DYN_DZZ_PARTY_ORGANIZATION`; verified the comments in DM8 data dictionary views. DM8 local comment execution must use its expected GBK input encoding even though the source SQL file remains UTF-8.
+- Known gaps: exact group code dictionaries and formal external table names are not yet integrated.
+
+## Recent UI Change
+
+- The member and organization lists now use row checkboxes with a header select-all checkbox.
+- The edit action requires exactly one selected row; the delete action submits all selected IDs to `api/deleteBatch`.
+- Batch deletion remains logical deletion and is restricted by the fixed `member`/`organization` table whitelist and the current `ORG_IDENTITY`.
+- Fixed the apparent batch-delete failure: deletion succeeded, but the original list query included `*_DELETE_FLAG=1` rows. `api/list` now defaults to `status=active`, and also supports `deleted` and `all`; logically deleted rows therefore disappear from the default list while remaining auditable.
+- The page now provides active/deleted/all filters, selected-row counts, summary counts, sticky headers, scrollable table viewports, responsive toolbars, and a module-local workbench style. No frontend framework or shared platform asset was added, and global/login/eform/BPM styles remain untouched.
+- Real browser verification (authenticated Playwright): selected all 173 member rows, batch response reported `deleted=173`, active list became 0, and deleted filter returned 173; selected all 3 organization rows, UI displayed `已选择 3 条`, and active list became 0 after deletion. The final recovery sync reported `success=176`, `errors=12`, `deleted=0`, restoring 173 active members and 3 active organizations. Browser console contained no errors or warnings; desktop and 390x844 mobile layouts had no overlapping controls.
+- Static/runtime verification: JDK 8 compilation passed for the controller/service, JSP inline JavaScript parsed with Node.js, `git diff --check` passed, frontend conflict scan returned zero warnings, Tomcat/Redis/DM8 health checks passed, and `/pb/login` returned HTTP 200.
+- Log-detail verification: the authenticated browser opened the `同步批次` tab and clicked `查看详情`; the modal displayed batch metadata, a readable failure-cause summary, and the complete escaped raw exception text. The latest local partial batch has 12 isolated organization errors: 5 target-column string truncation errors (the target organization encoding column is `VARCHAR2(12)`), 6 rows missing `ID`/`PARTY_CODE`/`PARTY_NAME`, and 1 row whose parent organization was not synchronized. Browser console reported 0 errors and 0 warnings.
+
+## Intranet Handoff
+
+- Package path: pending.
+- Files to copy: SQL script, compiled classes, controller/service/job classes, JSP, module memory.
+- SQL/platform config to migrate: execute `db/group_data_sync.sql`; create Quartz job `groupDataSyncJob` with cron `0 0 2 * * ?`; link menu to `toManage`.
+- Files/config not to copy: local test data, logs, screenshots, `.playwright-cli` artifacts.
+- Intranet sync date: pending.
+- Baseline update status: developing.
+
+## Final Verification (2026-08-18)
+
+- Seed verification remains 15 organizations, one root, no invalid or orphan parent rows, and every organization has secretary/deputy test personnel.
+- Recompiled touched classes with JDK 8, restarted Tomcat/Redis, and `/pb/login` returned HTTP 200.
+- Manual full sync after restart returned `total=188`, `success=188`, `errors=0`, `deleted=0`; repeat sync kept the same mirror row counts.
+- Fresh authenticated exports: organization ZIP contains 15 workbooks; member ZIP contains 5 workbooks grouped by organization. Workbooks have Chinese visible headers, hidden dictionary/technical columns, Chinese dictionary validation lists, and `yyyy-mm-dd` Excel date cells including locked timestamps.
+- Valid member import with Chinese gender and date imported 35 rows, stored platform code `2`, and stored the edited date. A subsequent full sync retained the imported override. Invalid Chinese dictionary input returned an error report with filename and row number. A legacy English-header workbook imported successfully.
+- Browser smoke checks passed at desktop and 390x844 mobile viewports with zero console errors/warnings; frontend conflict scan remained zero warnings.
+- Import/export UX is unified: only the organization tab exposes ZIP import/export; each workbook still contains the read-only organization sheet and editable member sheet. The old member-tab buttons were removed from the JSP. The backend keeps the fixed member export branch only for backward compatibility and does not expose it in the page.
+
+## Pre-Intranet Bug Audit (2026-08-20)
+
+- Rechecked the groupsync controller/service/job with JDK 8 compilation, `git diff --check`, JSP inline JavaScript parsing, frontend conflict scanning, and PB runtime health checks.
+- Fixed ZIP export filename collisions: duplicate or blank organization short names now receive deterministic numeric suffixes instead of duplicate ZIP entry names.
+- Restarted the project with the PB Tomcat 7 starter after the service recompilation; DM8, Redis, Tomcat 7 and `/pb/login` returned healthy results. Unauthenticated module access still redirects to login.
+- Existing authenticated browser regression evidence remains valid: full sync twice (`total=188`, `success=188`, `errors=0`, `deleted=0`), 15 organizations, 173 members, no duplicate mirror rows, unified organization ZIP import/export, strict date validation, permissions, and zero browser console warnings/errors.
+- No code-level blocker found in the audited module. Intranet deployment still requires executing the schema SQL once, copying the compiled groupsync classes/JSP, linking the menu, registering the `groupDataSyncJob` Quartz cron, and confirming the group's official table names, dictionaries, governance fields, and collection frequency.
+
+## 2026-08-21 Intranet Delivery Preparation
+
+- Source-only release closure: `WebRoot/avicit/pb/groupsync/GroupDataSyncManage.jsp`, the groupsync controller/service/Quartz job under `src/avicit/pb/groupsync/`, and `db/group_data_sync.sql` plus `db/group_sync_override_patch.sql`.
+- Do not deliver `scripts/SeedGroupSyncTestData.java` or `scripts/seed-group-sync-test-data.ps1`; they are local verification tools only.
+- Before enabling the module in intranet, execute the schema SQL in order, configure the menu URL `platform/avicit/pb/groupsync/groupSyncController/toManage`, and register Quartz bean `groupDataSyncJob` with cron `0 0 2 * * ?`. Confirm the official group table/dictionary/governance contract before any external transport is added.
+
+## Next Time
+
+- Read first: this file, `db/group_data_sync.sql`, `GroupDataSyncService.java`。
+- Likely change points: field mapping in `GroupDataSyncService`, group code conversion, Quartz job parameters, JSP field metadata。
+- Do not touch without confirmation: source `PARTY_MEMBER`/`PARTY_ORGANIZATION` schemas, external group transport, physical deletion behavior。
+
+## Group Document Gap Review (2026-08-18)
+
+- The page now exposes one unified import/export entry under the organization tab. Each organization workbook contains both the organization sheet and member sheet; the member tab has no separate import/export buttons.
+- The group document also requires source/reference tables to use `PULL`, receiving tables to use `PUSH`, and an `LXX_` domain-group identifier. The current local mirror uses `DYN_*` names because the group-side formal transport/table contract has not been supplied.
+- The document requires required fields to be non-null, foreign-key relationships to be valid, and enumerations to transmit both standard code and display value. Local sync validates core required fields and organization hierarchy, but official group dictionaries and a formal code/value transport contract are still pending.
+- The document requires every collected table to include `secret_level`, `security_level`, and `important_level`. These three governance fields are not in the current mirror tables and must be confirmed with the group before production integration.
+- The organization table is marked as monthly collection in the document, while the current local Quartz design is daily at `02:00`; the production schedule must be confirmed with the group.
+- The current release does not implement group API push, file transfer, cross-database access, or data-center ingestion. It is a tested local mirror and maintenance module, not a complete end-to-end group integration.
+- Intranet deployment still requires running `db/group_data_sync.sql`, copying the JSP and compiled classes, linking the menu, registering Quartz, and verifying source schema/dictionary/role assumptions. Local seed/test-data scripts must not be deployed to production.
+
+## Import And Export Update (2026-08-17)
+
+- National/group standard code dictionaries are explicitly deferred until the user supplies the official code table. Existing platform codes remain unchanged and no codes are fabricated.
+- Added `DYN_GROUP_SYNC_OVERRIDE` with the mandatory eight PB audit fields first. It stores field-level Excel import overrides so source synchronization continues to refresh non-overridden fields without erasing organization-maintained values.
+- Export endpoint: `api/exportZip`. Administrators can export all active organizations or a selected subset. Each organization produces one `.xlsx` in the ZIP with `党组织信息` and `党员信息` sheets.
+- Import endpoint: `api/import`. It accepts `.xlsx` and `.zip`; each workbook is validated independently so one invalid organization file does not block other files. Invalid files return a generated Excel error report.
+- Export workbooks use true Excel date cells with `yyyy-MM-dd`, hidden and locked identity columns, locked computed/system fields, protected sheets, a frozen header row, and 20 editable blank member rows for organizations that need to add members.
+- Imported edits and new members are persisted in the mirror tables; existing row edits also write field-level overrides. Excel import never deletes existing rows.
+- Backend permission enforcement uses platform roles `党委一级管理员` and `平台管理员`. Other users can only export/import organizations linked through `PARTY_ORGAN_MEMBER.USER_ID -> PARTY_ID`.
+- JSP delete and immediate-sync actions now use inline second-click confirmation rather than `window.confirm`. Business date fields use the platform date picker and are read-only for keyboard entry; system timestamps remain read-only.
+- Verified with JDK 8 compilation, real authenticated browser login, inline confirmation without mutation, ZIP download, workbook sheet/date/protection inspection, successful ZIP re-import, and an import-override persistence test across a full sync. The temporary override test value was restored afterward.

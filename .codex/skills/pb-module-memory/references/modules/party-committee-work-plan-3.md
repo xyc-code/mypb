@@ -740,3 +740,26 @@
 - Package is based on local commit `a0a90617c6d7e31015cbe752421d5dafc3251347`; the user explicitly authorized packaging without a successful GitHub push because outbound port 443 was unavailable.
 - Incremental impact closure contains four runtime files: `index.jsp`, `dwworkplan3.js`, `DwWorkPlan3Service.java`, and `DwWorkPlan3PortalTodoService.java`. No SQL or platform configuration is required.
 - Directory and ZIP coverage checks both matched 4 of 4 candidates with zero missing files. Runtime file hashes match the tested workspace, and the package contains no `.class` files.
+
+## 2026-08-18 Generic Portal Todo Methods
+
+- `PortalBusinessTodoService` now exposes `addTodo(Todo)` and `completeTodo(sourceModule, businessId, updatedBy, lastUpdateIp, closeReason)` for all non-BPM business modules. Both methods return affected row counts and return `0` when parameters are incomplete, the table is unavailable, or persistence fails.
+- `addTodo` remains idempotent on `SOURCE_MODULE + BUSINESS_ID + BUSINESS_SCENE + RECEIVER_ID`; repeat calls refresh and reactivate the existing row, clear close information, and default blank priority to ordinary `0`.
+- `completeTodo` closes every active receiver/scene row for one source module and business ID. The existing `createOrUpdateTodo` and `closeByBusiness` signatures delegate to the new methods, preserving the compiled 3.0 integration contract.
+- Every `Todo` field and fluent input, plus both generic method signatures, has Chinese JavaDoc. The API has no `HttpServletRequest` dependency and can be called from controllers, services, listeners, and scheduled jobs.
+- Verification: JDK 8 compilation into `WebRoot/WEB-INF/classes` passed. A temporary DM8 verifier returned `PORTAL_BUSINESS_TODO_COMMON_METHODS_OK` after checking required-field rejection, first insert, same-key refresh without duplication, default priority, multi-scene close count, source/business isolation, repeat close, reopen after close, active portal visibility, and cleanup.
+
+## 2026-08-20 Self Dispatch Draft And Deadline Priority
+
+- Office self-receiver root tasks carry empty draft receiver node/user fields. The frontend must preserve `selfReceiver=Y`; normal receiver validation must require both node and user fields, while self dispatch bypasses only that validation.
+- `saveAsDraft=Y` keeps an office self root in `DRAFT`. Direct dispatch from a saved self draft transitions the existing root to `DOING` without creating a child task. The task-list `发送` action for a self root must open the direct-dispatch form and preselect the synthetic self receiver; ordinary office-to-staff sending continues through `dispatchChild`.
+- Active portal todos (`TODO`, `DOING`, `RETURNED`, `PENDING_CONFIRM`) calculate priority from `PLAN_DEADLINE`: remaining calendar days `<=5` or overdue uses `2`, otherwise `0`. Draft, wait-child, and completed tasks do not create active todos.
+- Verification on 2026-08-20: account `910034` (远古恐惧) completed real-page self draft/direct dispatch, staff draft/dispatch/take-back, empty-receiver validation, and content-only search. Database states matched `DRAFT`, `DOING`, `WAIT_CHILD`, `TODO`, and restored `DOING`; test task cleanup returned zero rows. `DWWORKPLAN3_BUSINESS_OK`, JS syntax, static checks, JDK 8 compile, and priority boundary checks passed.
+
+## 2026-08-21 Intranet Delivery Preparation
+
+- Incremental scope: office self-receiver roots can remain `DRAFT` when explicitly saved, then reopen through the send action with the synthetic self receiver preselected; normal dispatch still requires both receiver node and user. The task keyword prompt now explicitly includes work content.
+- Portal todos use deadline priority: active tasks due within five calendar days (including overdue) are priority `2`; other active tasks are priority `0`.
+- The generic portal-todo API is delivered with this 3.0 release: `PortalBusinessTodoService.addTodo(...)` and `completeTodo(...)` are idempotent/count-returning public methods, while the existing 3.0 integration remains compatible.
+- Release source closure: `WebRoot/avicit/pb/dwworkplan3/index.jsp`, `WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`, `src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java`, `src/avicit/pb/dwworkplan3/service/DwWorkPlan3PortalTodoService.java`, and `src/avicit/ims/oa/todo/service/PortalBusinessTodoService.java`.
+- No new 3.0 SQL or platform configuration is required for this incremental change. The intranet must already have the 3.0 tables and `PB_PORTAL_BUSINESS_TODO` from the prior release.

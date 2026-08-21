@@ -12,6 +12,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -160,10 +164,21 @@ public class DwWorkPlan3PortalTodoService {
                 .sourceModule(SOURCE_MODULE)
                 .businessId(string(task.get("ID")))
                 .taskType(TASK_TYPE)
-                .priority("0")
+                .priority(priorityFor(task))
                 .sender(string(task.get("SENDER_ID")), string(task.get("SENDER_NAME")))
                 .targetUrl(targetUrl(task, personNodeId))
                 .audit(currentUser(request), remoteAddr(request), orgIdentity(request));
+    }
+
+    private String priorityFor(Map<String, Object> task) {
+        Object deadline = task == null ? null : task.get("PLAN_DEADLINE");
+        if (!(deadline instanceof java.util.Date)) {
+            return "0";
+        }
+        LocalDate dueDate = Instant.ofEpochMilli(((java.util.Date) deadline).getTime())
+                .atZone(ZoneId.systemDefault()).toLocalDate();
+        long remainingDays = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        return remainingDays <= 5 ? "2" : "0";
     }
 
     private String targetPersonNodeId(Map<String, Object> task, String scene) {

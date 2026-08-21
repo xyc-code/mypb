@@ -759,7 +759,9 @@
     $("#dwTaskSaveDraftBtn").text("保存草稿").show();
     $("#dwTaskDirectDispatchBtn").toggle(!isStaff());
     $("#dwTaskDispatchBtn").hide();
-    renderReceiverSelect(text(task.DRAFT_DEPT_NODE_ID), text(task.DRAFT_DEPT_USER_ID));
+    var selfDraft = isSelfRootTask(task);
+    renderReceiverSelect(selfDraft ? state.currentNodeId : text(task.DRAFT_DEPT_NODE_ID),
+      selfDraft ? currentUserId() : text(task.DRAFT_DEPT_USER_ID));
     initTaskUploader(text(task.ID));
     openModal("dwTaskModal");
   }
@@ -814,6 +816,7 @@
     if (!payload) {
       return;
     }
+    payload.saveAsDraft = "Y";
     api("api/batch/create", currentNodeParams({ year: payload.year, quarter: payload.quarter })).done(function (res) {
       payload.batchId = res.id;
       api("api/task/saveRoot", payload).done(function (saved) {
@@ -830,7 +833,7 @@
     if (!payload) {
       return;
     }
-    if (!isStaff() && !payload.personNodeId) {
+    if (payload.selfReceiver !== "Y" && (!payload.personNodeId || !payload.receiverId)) {
       message("请选择接收对象");
       return;
     }
@@ -1538,7 +1541,8 @@
       receiverId: receiverId,
       draftDeptNodeId: selfReceiver ? "" : $("#dwTaskReceiver").val(),
       draftDeptUserId: receiverId,
-      draftDeptName: selfReceiver ? "" : selectedReceiver.text()
+      draftDeptName: selfReceiver ? "" : selectedReceiver.text(),
+      selfReceiver: selfReceiver ? "Y" : "N"
     };
     if (!payload.year || !payload.quarter || !payload.title || !payload.planDeadline) {
       message("请填写年度、季度、任务标题和截止时间");
@@ -2538,6 +2542,13 @@
     return state.user ? text(state.user.userId) : "";
   }
 
+  function isSelfRootTask(task) {
+    return !!task && !text(task.PARENT_ID) &&
+      text(task.TASK_LEVEL) === "OFFICE" &&
+      text(task.RECEIVER_ID) === currentUserId() &&
+      !text(task.DRAFT_DEPT_NODE_ID) && !text(task.DRAFT_DEPT_USER_ID);
+  }
+
   function personRoleAllowsMulti(roleCode) {
     return text(roleCode) === "DEPT_MINISTER" || text(roleCode) === "OFFICE_DIRECTOR";
   }
@@ -2576,6 +2587,9 @@
     }
     if (!taskMatchesCurrentNode(task)) {
       return false;
+    }
+    if (isSelfRootTask(task)) {
+      return text(task.STATUS) === "DRAFT";
     }
     if (text(task.TASK_LEVEL) === "STAFF") {
       return false;
@@ -2800,6 +2814,10 @@
     var task = findTask(id);
     if (!task || !canDispatch(task)) {
       message("\u5f53\u524d\u72b6\u6001\u4e0d\u80fd\u4e0b\u53d1");
+      return;
+    }
+    if (isSelfRootTask(task)) {
+      openEditTask(id);
       return;
     }
     resetTaskModal();

@@ -282,11 +282,13 @@ public class DwWorkPlan3Service {
             return failure("\u5f53\u524d\u4eba\u5458\u6811\u89d2\u8272\u4e0d\u80fd\u65b0\u5efa\u4efb\u52a1");
         }
         boolean selfTask = isSelfRootTask(roleCode, p);
+        boolean saveAsDraft = "Y".equalsIgnoreCase(value(p, "saveAsDraft"));
         String id = value(p, "id");
         String attachmentId = emptyToNull(value(p, "attachmentId"));
         Map<String, String> draftDept = selfTask ? emptyDraftReceiver() : draftDeptParams(p, request, currentNode);
         String nodeUserName = userNameFromPersonNode(currentNode, userId);
-        String status = selfTask ? DwWorkPlan3Constants.STATUS_DOING : DwWorkPlan3Constants.STATUS_DRAFT;
+        String status = saveAsDraft ? DwWorkPlan3Constants.STATUS_DRAFT
+                : (selfTask ? DwWorkPlan3Constants.STATUS_DOING : DwWorkPlan3Constants.STATUS_DRAFT);
         if (StringUtils.isBlank(id)) {
             id = ComUtil.getId();
             jdbcTemplate.update("insert into DYN_DW_PLAN3_TASK(" +
@@ -301,11 +303,11 @@ public class DwWorkPlan3Service {
                     draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId);
         } else {
             jdbcTemplate.update("update DYN_DW_PLAN3_TASK set LAST_UPDATED_BY=?,LAST_UPDATE_DATE=sysdate,LAST_UPDATE_IP=?," +
-                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
+                            "BATCH_ID=nvl(?,BATCH_ID),TITLE=?,CONTENT=?,TARGET_DESC=?,PLAN_DEADLINE=?,STATUS=?,DRAFT_DEPT_NODE_ID=?,DRAFT_DEPT_USER_ID=?,DRAFT_DEPT_NAME=?,ATTACHMENT_ID=? " +
                             "where ID=? and PARENT_ID is null and TASK_LEVEL=? and STATUS=? and RECEIVER_ID=? and (PERSON_NODE_ID=? or (PERSON_NODE_ID is null and TASK_LEVEL=?))",
                     userId, request.getRemoteAddr(), value(p, "batchId"), value(p, "title"), emptyToNull(value(p, "content")),
-                    emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")), draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId,
-                    id, taskLevel, status, userId, string(currentNode.get("ID")), taskLevel);
+                    emptyToNull(value(p, "targetDesc")), date(value(p, "planDeadline")), status, draftDept.get("nodeId"), draftDept.get("userId"), draftDept.get("name"), attachmentId,
+                    id, taskLevel, DwWorkPlan3Constants.STATUS_DRAFT, userId, string(currentNode.get("ID")), taskLevel);
         }
         bindAttachment(attachmentId, id, "ROOT_TASK", request);
         if (selfTask) {
