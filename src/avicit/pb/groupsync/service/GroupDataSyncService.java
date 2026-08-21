@@ -191,16 +191,22 @@ public class GroupDataSyncService {
             args.add("%" + keyword.trim() + "%");
         }
         int safePage = Math.max(page, 1);
-        int safePageSize = Math.min(Math.max(pageSize, 1), 200);
-        int from = (safePage - 1) * safePageSize;
-        int to = from + safePageSize;
+        int safePageSize = pageSize <= 0 ? 0 : Math.min(pageSize, 200);
         Number totalValue = jdbcTemplate.queryForObject("select count(1) from " + table + where, Number.class, args.toArray());
-        List<Object> pageArgs = new ArrayList<Object>(args);
-        pageArgs.add(Integer.valueOf(from));
-        pageArgs.add(Integer.valueOf(to));
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "select * from (select t.*, row_number() over(order by t.LAST_UPDATE_DATE desc) RN from "
-                        + table + " t" + where + ") where RN>? and RN<=?", pageArgs.toArray());
+        List<Map<String, Object>> rows;
+        if (safePageSize == 0) {
+            rows = jdbcTemplate.queryForList("select * from " + table + where + " order by LAST_UPDATE_DATE desc",
+                    args.toArray());
+        } else {
+            int from = (safePage - 1) * safePageSize;
+            int to = from + safePageSize;
+            List<Object> pageArgs = new ArrayList<Object>(args);
+            pageArgs.add(Integer.valueOf(from));
+            pageArgs.add(Integer.valueOf(to));
+            rows = jdbcTemplate.queryForList(
+                    "select * from (select t.*, row_number() over(order by t.LAST_UPDATE_DATE desc) RN from "
+                            + table + " t" + where + ") where RN>? and RN<=?", pageArgs.toArray());
+        }
         for (Map<String, Object> row : rows) {
             row.remove("RN");
             formatDateFields(row, "member".equalsIgnoreCase(type) ? MEMBER_FIELDS : ORG_FIELDS);

@@ -124,7 +124,7 @@ String importlibs = "common,form";
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="memberSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="memberTable"></table></div></div>
-            <div class="group-sync-pagination" id="memberPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><label>每页 <select class="group-sync-page-size" aria-label="党员每页条数"><option value="20">20</option><option value="50">50</option><option value="100">100</option><option value="200">200</option></select> 条</label><button type="button" data-page-action="next">下一页</button></div>
+            <div class="group-sync-pagination" id="memberPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><label>每页 <select class="group-sync-page-size" aria-label="党员每页条数"><option value="20">20</option><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="0">全部</option></select> 条</label><button type="button" data-page-action="next">下一页</button></div>
         </div>
         <div class="tab-pane" id="groupSyncOrgPanel">
             <div class="group-sync-toolbar group-sync-transfer-toolbar">
@@ -145,7 +145,7 @@ String importlibs = "common,form";
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="organizationSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="organizationTable"></table></div></div>
-            <div class="group-sync-pagination" id="organizationPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><label>每页 <select class="group-sync-page-size" aria-label="党组织每页条数"><option value="20">20</option><option value="50">50</option><option value="100">100</option><option value="200">200</option></select> 条</label><button type="button" data-page-action="next">下一页</button></div>
+            <div class="group-sync-pagination" id="organizationPagination"><button type="button" data-page-action="prev">上一页</button><span class="group-sync-page-info"></span><label>每页 <select class="group-sync-page-size" aria-label="党组织每页条数"><option value="20">20</option><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="0">全部</option></select> 条</label><button type="button" data-page-action="next">下一页</button></div>
         </div>
         <div class="tab-pane" id="groupSyncLogPanel">
             <div class="group-sync-toolbar"><button type="button" class="group-sync-action" id="groupSyncLogRefresh"><i class="fa fa-refresh"></i> 刷新批次</button></div>
@@ -214,7 +214,7 @@ String importlibs = "common,form";
     }
     function renderPager(type) {
         var state = pageState[type];
-        var pages = Math.max(1, Math.ceil(state.total / state.pageSize));
+        var pages = state.pageSize === 0 ? 1 : Math.max(1, Math.ceil(state.total / state.pageSize));
         var pager = $('#' + (type === 'member' ? 'memberPagination' : 'organizationPagination'));
         pager.find('.group-sync-page-info').text(state.total + ' 条，第 ' + state.page + ' / ' + pages + ' 页');
         pager.find('[data-page-action="prev"]').prop('disabled', state.page <= 1);
@@ -389,7 +389,7 @@ String importlibs = "common,form";
         $('[data-page-action]').on('click', function () {
             var type = $(this).closest('.group-sync-pagination').attr('id').indexOf('member') === 0 ? 'member' : 'organization';
             var state = pageState[type];
-            var pages = Math.max(1, Math.ceil(state.total / state.pageSize));
+            var pages = state.pageSize === 0 ? 1 : Math.max(1, Math.ceil(state.total / state.pageSize));
             var nextPage = $(this).attr('data-page-action') === 'next' ? state.page + 1 : state.page - 1;
             if (nextPage >= 1 && nextPage <= pages) { load(type, nextPage); }
         });
