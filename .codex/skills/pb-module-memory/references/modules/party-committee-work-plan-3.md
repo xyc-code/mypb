@@ -763,3 +763,4 @@
 - The generic portal-todo API is delivered with this 3.0 release: `PortalBusinessTodoService.addTodo(...)` and `completeTodo(...)` are idempotent/count-returning public methods, while the existing 3.0 integration remains compatible.
 - Release source closure: `WebRoot/avicit/pb/dwworkplan3/index.jsp`, `WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`, `src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java`, `src/avicit/pb/dwworkplan3/service/DwWorkPlan3PortalTodoService.java`, and `src/avicit/ims/oa/todo/service/PortalBusinessTodoService.java`.
 - No new 3.0 SQL or platform configuration is required for this incremental change. The intranet must already have the 3.0 tables and `PB_PORTAL_BUSINESS_TODO` from the prior release.
+- Delivery package: `D:\pb-release\内网部署-党委计划3.0-集团数据同步-通用消息接口-20260821-082500` and its same-name ZIP. Both coverage checks matched all 11 deployment candidates; no `.class` files were included.

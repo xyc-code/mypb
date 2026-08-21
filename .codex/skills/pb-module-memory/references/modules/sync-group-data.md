@@ -119,6 +119,7 @@
 - Source-only release closure: `WebRoot/avicit/pb/groupsync/GroupDataSyncManage.jsp`, the groupsync controller/service/Quartz job under `src/avicit/pb/groupsync/`, and `db/group_data_sync.sql` plus `db/group_sync_override_patch.sql`.
 - Do not deliver `scripts/SeedGroupSyncTestData.java` or `scripts/seed-group-sync-test-data.ps1`; they are local verification tools only.
 - Before enabling the module in intranet, execute the schema SQL in order, configure the menu URL `platform/avicit/pb/groupsync/groupSyncController/toManage`, and register Quartz bean `groupDataSyncJob` with cron `0 0 2 * * ?`. Confirm the official group table/dictionary/governance contract before any external transport is added.
+- Delivery package: `D:\pb-release\内网部署-党委计划3.0-集团数据同步-通用消息接口-20260821-082500` and its same-name ZIP. Both coverage checks matched all 11 deployment candidates; no `.class` files were included.
 
 ## Next Time
 
