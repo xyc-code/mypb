@@ -43,7 +43,10 @@ public class GroupDataSyncController {
                                     @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
                                     HttpServletRequest request) {
         try {
-            return service.list(type, keyword, status, page, pageSize, orgIdentity(request), loginUser(request));
+            Map<String, Object> result = service.list(type, keyword, status, page, pageSize,
+                    orgIdentity(request), loginUser(request));
+            result.put("flag", "success");
+            return result;
         } catch (Exception ex) {
             return failure(ex);
         }
