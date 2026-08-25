@@ -57,6 +57,8 @@ curl.exe --fail-with-body --noproxy "*" -i "http://<host>/pb/platform/avicit/pb/
 
 验收要求：HTTP 200、`Content-Type` 为 JSON、不是登录页 HTML；`pageSize=201` 返回值必须被限制为 200；非法 `type` 或非法 `updatedAfter` 必须返回可读 JSON 错误；分页结果只能包含正式表字段，不得出现 PB 审计/映射字段。
 
+若正式表未安装，四条接口必须返回 `errorCode=FORMAL_SCHEMA_NOT_READY` 和“集团正式表尚未安装，请执行初始化脚本并联系 DBA”，不得出现 DM8 SQL、类名或堆栈；页面统计显示“未就绪”。
+
 ## 4. 同步测试
 
 1. 准备一组有效父组织、子组织和党员 fixture，其中员工编码使用带前导零的字符串，例如 `00001234`。
