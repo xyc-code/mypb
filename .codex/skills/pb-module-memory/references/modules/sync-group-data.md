@@ -96,6 +96,16 @@
 - Intranet sync date: pending.
 - Baseline update status: developing.
 
+## Formal FINEDB Refactor (2026-08-25)
+
+- Formal targets from screenshots: `FINEDB.PULL_D12_PTY_MBR_BASIC_INFO` (PK `RYJBXX_GROUP_EMPLOYEE_COPE`, `VARCHAR(8)`) and `FINEDB.PULL_D12_PTY_ORG_BASIC_INFO` (PK `DZZ_PARTY_ORGANIZATION_UNIQUE_ID`, `VARCHAR(32)`). Formal columns retain screenshot lengths and NOT NULL rules; no PB audit fields are added to formal tables.
+- PB metadata tables are `DYN_GROUP_SYNC_ID_MAP`, `DYN_GROUP_SYNC_REJECT`, and `DYN_GROUP_SYNC_LOG`; all new PB tables begin with the eight mandatory audit columns.
+- New service: `GroupFormalDataSyncService`; organization rows are processed before members, source IDs map to stable target UIDs, root parent uses `00000000000000000000000000000000`, and child parents resolve through ID_MAP. Same-JVM sync lock is enabled.
+- REST: `api/rest/page`, `api/rest/sync`, `api/rest/logs`, `api/rest/health`; page size is clamped to 200, fixed ordering is update timestamp plus formal PK, and caller IP is logged. `formalSync` requires administrator role. Old DYN edit/import/export/list APIs return a readable deprecation response; JSP controls are read-only/hidden and list/sync use formal endpoints.
+- Validation rejects null/overlong values and missing parent/member organization with explicit `DYN_GROUP_SYNC_REJECT` rows. Full-batch deletion is intentionally not enabled until production ID_MAP comparison and complete-batch proof are confirmed; incremental/partial/system-failure batches never delete.
+- Verification: JDK8 compile passed for formal service/controller/job; formal SQL audit check passed; DM8 is healthy but local `FINEDB.PULL_D12_*` tables are absent (real sync/browser formal data tests remain unverified until schema is installed). Upgrade SQL is a manual backup/rename/rollback guide and is not a table DDL input to the audit checker.
+- External acceptance prerequisites: local DM8 has no `FINEDB` user/schema and therefore cannot install the screenshot-defined formal tables under the service's production-qualified names; the production DBA must create/authorize `FINEDB` and execute the fresh/upgrade SQL. Local Shiro dynamically loads filter chains and unauthenticated health/page/logs requests redirect to login; the intranet gateway/platform administrator must whitelist the three paths for approved source IPs (no Token) before JSON/IP-log acceptance.
+
 ## Final Verification (2026-08-18)
 
 - Seed verification remains 15 organizations, one root, no invalid or orphan parent rows, and every organization has secretary/deputy test personnel.

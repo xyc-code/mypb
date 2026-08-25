@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import avicit.pb.groupsync.service.GroupDataSyncService;
+import avicit.pb.groupsync.service.GroupFormalDataSyncService;
 import avicit.platform6.core.quartz.IBusinessJob;
 
 /**
@@ -23,6 +24,9 @@ public class GroupDataSyncJob implements IBusinessJob {
     private GroupDataSyncService service;
 
     @Autowired
+    private GroupFormalDataSyncService formalService;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public void task() throws Exception {
@@ -34,7 +38,7 @@ public class GroupDataSyncJob implements IBusinessJob {
                 continue;
             }
             try {
-                service.sync(String.valueOf(value), "GROUP_SYNC_JOB", "SCHEDULED");
+                formalService.sync(String.valueOf(value), "GROUP_SYNC_JOB", "SCHEDULED", null, "127.0.0.1");
             } catch (Exception ex) {
                 LOGGER.error("集团数据同步任务执行失败，ORG_IDENTITY=" + value, ex);
             }
