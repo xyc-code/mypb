@@ -22,9 +22,40 @@ public class GroupFormalDataSyncService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    public static class FormalSchemaNotReadyException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+        public FormalSchemaNotReadyException() { super("集团正式表尚未安装，请执行初始化脚本并联系 DBA"); }
+    }
+
+    public static boolean isFormalSchemaNotReady(Throwable error) {
+        Throwable current = error;
+        while (current != null) {
+            String message = current.getMessage();
+            if (message != null) {
+                String text = message.toLowerCase();
+                if (text.contains("无效模式名") || text.contains("invalid schema") || text.contains("表或视图不存在")
+                        || text.contains("table or view does not exist") || text.contains("对象不存在")
+                        || text.contains("object does not exist")) { return true; }
+            }
+            current = current.getCause();
+        }
+        return error instanceof FormalSchemaNotReadyException;
+    }
+
+    public void ensureFormalSchemaReady() {
+        try {
+            jdbcTemplate.queryForObject("select count(1) from " + MEMBER_TABLE, Number.class);
+            jdbcTemplate.queryForObject("select count(1) from " + ORG_TABLE, Number.class);
+        } catch (RuntimeException ex) {
+            if (isFormalSchemaNotReady(ex)) { throw new FormalSchemaNotReadyException(); }
+            throw ex;
+        }
+    }
+
     public Map<String, Object> sync(String orgIdentity, String executor, String trigger, Date updatedAfter,
                                     String callIp) {
         synchronized (SYNC_LOCK) {
+            ensureFormalSchemaReady();
             String batchId = java.util.UUID.randomUUID().toString().replace("-", "");
             int success = 0;
             int errors = 0;
@@ -96,6 +127,7 @@ public class GroupFormalDataSyncService {
     }
 
     public Map<String, Object> page(String type, int page, int pageSize, Date updatedAfter, String callIp) {
+        ensureFormalSchemaReady();
         if (!"member".equalsIgnoreCase(type) && !"organization".equalsIgnoreCase(type)) {
             throw new IllegalArgumentException("type 必须为 member 或 organization");
         }
@@ -115,8 +147,10 @@ public class GroupFormalDataSyncService {
     }
 
     public Map<String, Object> logs(String orgIdentity, int limit) {
+        ensureFormalSchemaReady();
         int safeLimit = Math.min(Math.max(1, limit), 100);
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("select * from (select ID,BATCH_START_TIME,BATCH_END_TIME,STATUS,TOTAL_COUNT,SUCCESS_COUNT,ERROR_COUNT,DELETED_COUNT,ERROR_MESSAGE from DYN_GROUP_SYNC_LOG where ORG_IDENTITY=? order by BATCH_START_TIME desc) where rownum<=?", orgIdentity, safeLimit);
+        for (Map<String, Object> row : rows) { row.put("ERROR_MESSAGE", safeMessage(text(row.get("ERROR_MESSAGE")))); }
         List<Map<String, Object>> rejects = jdbcTemplate.queryForList("select * from (select ID,BATCH_ID,SOURCE_TABLE,SOURCE_ID,REASON_CODE,DETAIL_MESSAGE from DYN_GROUP_SYNC_REJECT where ORG_IDENTITY=? order by CREATION_DATE desc) where rownum<=?", orgIdentity, safeLimit);
         Map<String, Object> result = new HashMap<String, Object>(); result.put("rows", rows); result.put("rejects", rejects); return result;
     }
@@ -142,6 +176,15 @@ public class GroupFormalDataSyncService {
         }
         if (!result.containsKey("DZZ_PARTY_ORGANIZATION_CONTACT_NAME")) { throw new IllegalArgumentException("党组织联系人缺失（PARTY_POST/有效组织成员）"); }
         return result;
+    }
+
+    private String safeMessage(String value) {
+        if (value == null || value.length() == 0) { return ""; }
+        if (value.toLowerCase().contains("sql") || value.toLowerCase().contains("preparedstatement")
+                || value.toLowerCase().contains("exception") || value.contains("无效模式名")) {
+            return "同步失败，详细原因已记录在服务器日志，请联系管理员";
+        }
+        return value.length() > 500 ? value.substring(0, 500) : value;
     }
     private void upsert(String table, String key, Map<String, Object> values) { List<String> c = new ArrayList<String>(values.keySet()); List<Object> v = new ArrayList<Object>(); for (String x : c) v.add(values.get(x)); StringBuilder set = new StringBuilder(); for (String x : c) { if (set.length() > 0) set.append(","); if (!x.equals(key)) set.append(x).append("=?"); } List<Object> update = new ArrayList<Object>(); for (String x : c) if (!x.equals(key)) update.add(values.get(x)); update.add(values.get(key)); int n = jdbcTemplate.update("update " + table + " set " + set + " where " + key + "=?", update.toArray()); if (n == 0) { StringBuilder q = new StringBuilder(); for (int i=0;i<c.size();i++) { if (i>0) q.append(","); q.append("?"); } jdbcTemplate.update("insert into " + table + " (" + join(c, ",") + ") values (" + q + ")", v.toArray()); } }
     private void mapSource(String org, String st, String sid, String tt, String tk, String user, String ip) { jdbcTemplate.update("delete from DYN_GROUP_SYNC_ID_MAP where ORG_IDENTITY=? and SOURCE_TABLE=? and SOURCE_ID=?", org, st, sid); jdbcTemplate.update("insert into DYN_GROUP_SYNC_ID_MAP (ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,SOURCE_TABLE,SOURCE_ID,TARGET_TABLE,TARGET_KEY) values (?,?,?,?,?,?,?,?,?,?,?,?)", java.util.UUID.randomUUID().toString().replace("-", ""), user, new Date(), user, new Date(), ip, 1, org, st, sid, tt, tk); }

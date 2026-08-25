@@ -172,9 +172,12 @@ public class GroupDataSyncController {
     @ResponseBody
     public Map<String, Object> formalHealth(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("flag", "success"); result.put("service", "group-formal-sync");
-        result.put("ip", request.getRemoteAddr()); result.put("timestamp", new Date());
-        return result;
+        try {
+            formalService.ensureFormalSchemaReady();
+            result.put("flag", "success"); result.put("service", "group-formal-sync");
+            result.put("formalSchema", "READY"); result.put("ip", request.getRemoteAddr()); result.put("timestamp", new Date());
+            return result;
+        } catch (Exception ex) { return failure(ex); }
     }
 
     @RequestMapping(value = "api/rest/logs", method = RequestMethod.GET)
@@ -247,7 +250,13 @@ public class GroupDataSyncController {
     private Map<String, Object> failure(Exception ex) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("flag", "failure");
-        result.put("errorMsg", StringUtils.defaultIfBlank(ex.getMessage(), ex.toString()));
+        if (avicit.pb.groupsync.service.GroupFormalDataSyncService.isFormalSchemaNotReady(ex)) {
+            result.put("errorCode", "FORMAL_SCHEMA_NOT_READY");
+            result.put("errorMsg", "集团正式表尚未安装，请执行初始化脚本并联系 DBA");
+        } else {
+            result.put("errorCode", "GROUP_SYNC_ERROR");
+            result.put("errorMsg", "集团同步服务暂时不可用，请联系管理员");
+        }
         return result;
     }
 

@@ -155,7 +155,7 @@ String importlibs = "common,form";
                     <div><span>执行人</span><strong id="groupSyncLogDetailExecutor"></strong></div>
                 </div>
                 <div class="group-sync-log-cause"><strong>失败原因：</strong><span id="groupSyncLogDetailCause"></span></div>
-                <div class="group-sync-log-raw-label">原始异常明细</div>
+                <div class="group-sync-log-raw-label">错误说明</div>
                 <pre class="group-sync-log-detail" id="groupSyncLogDetailMessage"></pre>
             </div>
             <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">关闭</button></div>
@@ -185,7 +185,8 @@ String importlibs = "common,form";
     };
 
     function esc(value) { return $('<div/>').text(value == null ? '' : value).html(); }
-    function request(method, path, data, done) { $.ajax({ url: api + path, type: method, data: data || {}, dataType: 'json' }).done(function (res) { if (res.flag !== 'success') { message(res.errorMsg || '操作失败'); return; } done(res); }).fail(function (xhr) { message('请求失败（HTTP ' + xhr.status + '），请检查登录状态或服务日志'); }); }
+    function formalNotReady() { $('#memberCount, #organizationCount').text('未就绪'); $('#memberTable, #organizationTable').html('<tbody><tr><td class="group-sync-empty">集团正式表尚未安装，请执行初始化脚本并联系 DBA</td></tr></tbody>'); $('#groupSyncStatus').text('正式表未就绪'); }
+    function request(method, path, data, done) { $.ajax({ url: api + path, type: method, data: data || {}, dataType: 'json' }).done(function (res) { if (res.flag !== 'success') { if (res.errorCode === 'FORMAL_SCHEMA_NOT_READY') { formalNotReady(); } message(res.errorMsg || '操作失败'); return; } done(res); }).fail(function (xhr) { message(xhr.status === 302 ? '登录状态已失效，请重新登录' : '请求失败（HTTP ' + xhr.status + '），请联系管理员'); }); }
     function updateSelectionCount(type) {
         var count = selected[type].length;
         $('#' + (type === 'member' ? 'memberSelectionCount' : 'organizationSelectionCount')).text(count ? ('已选择 ' + count + ' 条') : '未选择');
@@ -267,7 +268,7 @@ String importlibs = "common,form";
         if (text.indexOf('党组织缺少 ID、PARTY_CODE 或 PARTY_NAME') >= 0) { causes.push('源党组织缺少必填字段 ID、PARTY_CODE 或 PARTY_NAME'); }
         if (text.indexOf('上级党组织尚未同步') >= 0) { causes.push('源党组织的上级组织不在本批次有效同步结果中'); }
         if (text.indexOf('党员缺少 ID 或姓名') >= 0) { causes.push('源党员缺少必填字段 ID 或姓名'); }
-        if (!causes.length && text) { causes.push('数据库写入或字段转换异常，请查看原始异常明细'); }
+        if (!causes.length && text) { causes.push('同步处理失败，请联系管理员查看服务器日志'); }
         return causes;
     }
     function errorSummary(value) { var causes = errorCauses(value); return causes.length ? causes.join('；') : '无异常'; }
