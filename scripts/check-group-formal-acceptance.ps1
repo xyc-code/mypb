@@ -1,6 +1,7 @@
 param(
   [string]$BaseUrl = 'http://127.0.0.1:8080/pb',
-  [string]$OutputPath = 'D:\pb-release\group-formal-acceptance.json'
+  [string]$OutputPath = 'D:\pb-release\group-formal-acceptance.json',
+  [string]$CookieHeader = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,6 +23,7 @@ $handler = New-Object System.Net.Http.HttpClientHandler
 $handler.AllowAutoRedirect = $false
 $client = New-Object System.Net.Http.HttpClient($handler)
 $client.Timeout = [TimeSpan]::FromSeconds(20)
+if ($CookieHeader) { $client.DefaultRequestHeaders.Add('Cookie', $CookieHeader) }
 foreach ($check in $checks) {
   $httpStatus = $null
   try {

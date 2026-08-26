@@ -58,11 +58,12 @@ String importlibs = "common,form";
         .group-sync-table-wrap { max-height: calc(100vh - 330px); overflow: auto; }
         .group-sync-table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; }
         .group-sync-table th, .group-sync-table td { border-bottom: 1px solid #edf1f4; padding: 10px 12px; text-align: left; white-space: nowrap; }
+        .group-sync-table th:first-child, .group-sync-table td:first-child { width: 42px; min-width: 42px; padding-right: 8px; padding-left: 12px; text-align: center; }
         .group-sync-table th { position: sticky; top: 0; z-index: 1; background: #f7f9fb; color: #52606d; font-size: 12px; font-weight: 700; }
         .group-sync-table td { color: #354552; font-size: 13px; }
         .group-sync-table tbody tr.selected { background: #e6f4f2; }
         .group-sync-table tbody tr:hover { background: #f4faf9; cursor: pointer; }
-        .group-sync-table input[type="checkbox"] { width: 15px; height: 15px; margin: 0; accent-color: #1c8c87; vertical-align: middle; }
+        .group-sync-table input[type="checkbox"] { display: inline-block; width: auto; height: auto; margin: 0; vertical-align: middle; cursor: pointer; }
         .group-sync-empty { color: #8b98a5; text-align: center !important; padding: 58px !important; }
         .group-sync-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 10px 0 0; color: #71808c; font-size: 12px; }
         .group-sync-pagination button { min-width: 64px; height: 30px; padding: 0 10px; border: 1px solid #cbd6df; border-radius: 4px; background: #fff; color: #3d4b57; }
@@ -118,6 +119,9 @@ String importlibs = "common,form";
                 <input type="text" class="form-control input-sm" id="memberKeyword" placeholder="姓名或身份证号">
                 <select class="group-sync-status-filter" id="memberStatus" aria-label="党员数据状态"><option value="active">有效数据</option></select>
                 <button type="button" class="group-sync-action" data-list-type="member"><i class="fa fa-search"></i> 查询</button>
+                <button type="button" class="group-sync-action" data-add-type="member"><i class="fa fa-plus"></i> 新增</button>
+                <button type="button" class="group-sync-action" id="memberEdit"><i class="fa fa-pencil"></i> 编辑</button>
+                <button type="button" class="group-sync-action group-sync-action-danger" id="memberDelete"><i class="fa fa-trash-o"></i> 物理删除</button>
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="memberSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="memberTable"></table></div></div>
@@ -126,11 +130,19 @@ String importlibs = "common,form";
         <div class="tab-pane" id="groupSyncOrgPanel">
             <div class="group-sync-toolbar group-sync-transfer-toolbar">
                 <span class="group-sync-action-label">集团数据文件</span>
+                <div class="group-sync-action-group">
+                    <button type="button" class="group-sync-action group-sync-action-primary" id="organizationExport"><i class="fa fa-download"></i> 导出集团数据 ZIP</button>
+                    <label class="group-sync-action group-sync-file-button"><i class="fa fa-upload"></i> 导入集团数据 Excel/ZIP<input type="file" id="organizationImportFile" accept=".xlsx,.zip" hidden></label>
+                </div>
+                <span class="group-sync-import-status" id="organizationImportStatus"></span>
             </div>
             <div class="group-sync-toolbar">
                 <input type="text" class="form-control input-sm" id="organizationKeyword" placeholder="组织名称或编码">
                 <select class="group-sync-status-filter" id="organizationStatus" aria-label="党组织数据状态"><option value="active">有效数据</option></select>
                 <button type="button" class="group-sync-action" data-list-type="organization"><i class="fa fa-search"></i> 查询</button>
+                <button type="button" class="group-sync-action" data-add-type="organization"><i class="fa fa-plus"></i> 新增</button>
+                <button type="button" class="group-sync-action" id="organizationEdit"><i class="fa fa-pencil"></i> 编辑</button>
+                <button type="button" class="group-sync-action group-sync-action-danger" id="organizationDelete"><i class="fa fa-trash-o"></i> 物理删除</button>
                 <span class="group-sync-toolbar-spacer"></span><span class="group-sync-selection-count" id="organizationSelectionCount">未选择</span>
             </div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="organizationTable"></table></div></div>
@@ -139,6 +151,16 @@ String importlibs = "common,form";
         <div class="tab-pane" id="groupSyncLogPanel">
             <div class="group-sync-toolbar"><button type="button" class="group-sync-action" id="groupSyncLogRefresh"><i class="fa fa-refresh"></i> 刷新批次</button></div>
             <div class="group-sync-panel"><div class="group-sync-table-wrap"><table class="group-sync-table" id="groupSyncLogTable"></table></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="groupSyncEditDialog" tabindex="-1">
+    <div class="modal-dialog group-sync-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title" id="groupSyncDialogTitle">编辑</h4></div>
+            <div class="modal-body"><form id="groupSyncForm"><input type="hidden" name="ID" id="groupSyncId"><div class="group-sync-form" id="groupSyncFields"></div></form></div>
+            <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">取消</button><button type="button" class="btn btn-primary" id="groupSyncSave">保存</button></div>
         </div>
     </div>
 </div>
@@ -155,7 +177,7 @@ String importlibs = "common,form";
                     <div><span>执行人</span><strong id="groupSyncLogDetailExecutor"></strong></div>
                 </div>
                 <div class="group-sync-log-cause"><strong>失败原因：</strong><span id="groupSyncLogDetailCause"></span></div>
-                <div class="group-sync-log-raw-label">错误说明</div>
+                <div class="group-sync-log-raw-label">原始异常明细</div>
                 <pre class="group-sync-log-detail" id="groupSyncLogDetailMessage"></pre>
             </div>
             <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">关闭</button></div>
@@ -173,20 +195,19 @@ String importlibs = "common,form";
     var logRows = [];
     var fields = {
         member: [
-            ['DY_JBXX_GROUP_EMPLOYEE_CODE','集团员工编码'],['DY_COMPANY_NAME','企业名称'],['DY_NAME','姓名'],['DY_GENDER','性别'],['DY_ID_NUMBER','公民身份号码'],['DY_BIRTH_DATE','出生日期'],['DY_EDUCATION_LEVEL','学历'],['DY_DEGREE','学位'],['DY_ETHNICITY','民族'],['DY_JOB_POSITION','工作岗位'],['DY_NEW_SOCIAL_STRATUM_TYPE','新社会阶层类型'],['DY_PROFESSIONAL_POSITION','从事专业技术职务'],['DY_IS_MIGRANT_WORKER','是否农民工'],['DY_MOBILE_NUMBER','手机号码'],['DY_AFFILIATED_BRANCH','组织关系所在党支部'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_JOINT_BRANCH_UNIT','联合支部所在单位'],['DY_HOUSEHOLD_LOCATION','户籍所在地'],['DY_CURRENT_ADDRESS','现居住地'],['DY_PARTY_ENTRY_DATE','入党日期'],['DY_PARTY_REGULARIZATION_DATE','转正日期'],['DY_PARTY_YEARS','党龄'],['DY_PARTY_YEARS_CORRECTION','党龄校正值'],['DY_ENTRY_SYSTEM_TYPE','进入本信息系统类型'],['DY_ENTRY_SYSTEM_DATE','进入本信息系统日期'],['DY_ENTRY_SYSTEM_OPERATING_PARTY_ID','进入本信息系统操作党组织唯一标识'],['DY_EXIT_SYSTEM_TYPE','离开本信息系统类型'],['DY_EXIT_SYSTEM_DATE','离开本信息系统日期'],['DY_EXIT_SYSTEM_OPERATING_PARTY_ID','离开本信息系统操作党组织唯一标识'],['DY_DELETE_FLAG','删除标识'],['DY_UPDATE_TIMESTAMP','更新时间戳'],['DY_OPERATING_PARTY_ORGANIZATION','操作党组织']
+            ['DY_JBXX_GROUP_EMPLOYEE_CODE','集团员工编码'],['DY_COMPANY_NAME','企业名称'],['DY_NAME','姓名'],['DY_GENDER','性别'],['DY_ID_NUMBER','公民身份号码'],['DY_BIRTH_DATE','出生日期'],['DY_EDUCATION_LEVEL','学历'],['DY_DEGREE','学位'],['DY_ETHNICITY','民族'],['DY_JOB_POSITION','工作岗位'],['DY_NEW_SOCIAL_STRATUM_TYPE','新社会阶层类型'],['DY_PROFESSIONAL_POSITION','从事专业技术职务'],['DY_IS_MIGRANT_WORKER','是否农民工'],['DY_MOBILE_NUMBER','手机号码'],['DY_AFFILIATED_BRANCH','组织关系所在党支部'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_JOINT_BRANCH_UNIT','联合支部所在单位'],['DY_HOUSEHOLD_LOCATION','户籍所在地'],['DY_CURRENT_ADDRESS','现居住地'],['DY_PARTY_ENTRY_DATE','入党日期'],['DY_PARTY_REGULARIZATION_DATE','转正日期'],['DY_PARTY_YEARS','党龄'],['DY_PARTY_YEARS_CORRECTION','党龄校正值'],['DY_ENTRY_SYSTEM_TYPE','进入本信息系统类型'],['DY_ENTRY_SYSTEM_DATE','进入本信息系统日期'],['DY_ENTRY_SYSTEM_OPERATING_PARTY_ID','进入本信息系统操作党组织唯一标识'],['DY_EXIT_SYSTEM_TYPE','离开本信息系统类型'],['DY_EXIT_SYSTEM_DATE','离开本信息系统日期'],['DY_EXIT_SYSTEM_OPERATING_PARTY_ID','离开本信息系统操作党组织唯一标识'],['DY_UPDATE_TIMESTAMP','更新时间戳'],['DY_OPERATING_PARTY_ORGANIZATION','操作党组织']
         ],
         organization: [
-            ['DZZ_COMPANY_NAME','企业名称'],['DZZ_UPPER_PARTY_ORGANIZATION_UNIQUE_ID','上一级党组织唯一标识'],['DZZ_PARTY_ORGANIZATION_ENCODING','党组织编码'],['DZZ_PARTY_ORGANIZATION_FULL_NAME','党组织全称'],['DZZ_PARTY_ORGANIZATION_SHORT_NAME','党组织简称'],['DZZ_PARTY_ORGANIZATION_CATEGORY','组织类别'],['DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE','成立日期'],['DZZ_PARTY_ORGANIZATION_MEMBER_COUNT','党组织党员人数'],['DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE','联系人编码'],['DZZ_PARTY_ORGANIZATION_CONTACT_NAME','联系人'],['DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE','联系电话'],['DZZ_PARTY_ORGANIZATION_UNIT_SITUATION','党组织所在单位情况'],['DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA','所在行政区划'],['DZZ_DISPLAY_ORDER','显示排序'],['DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME','批准成立的上级党组织全称'],['DZZ_DELETE_FLAG','删除标识'],['DZZ_UPDATE_TIMESTAMP','更新时间戳'],['DZZ_PARTY_BRANCH_STANDARDIZATION_CATEGORY','党支部标准化规范化建设类别'],['DZZ_OPERATING_PARTY_ORGANIZATION','操作党组织'],['DZZ_PARTY_ORGANIZATION_SECRETARY_NAME','党组织书记'],['DZZ_PARTY_ORGANIZATION_DEPUTY_SECRETARY_NAME','党组织副书记']
+            ['DZZ_COMPANY_NAME','企业名称'],['DZZ_UPPER_PARTY_ORGANIZATION_UNIQUE_ID','上一级党组织唯一标识'],['DZZ_PARTY_ORGANIZATION_ENCODING','党组织编码'],['DZZ_PARTY_ORGANIZATION_FULL_NAME','党组织全称'],['DZZ_PARTY_ORGANIZATION_SHORT_NAME','党组织简称'],['DZZ_PARTY_ORGANIZATION_CATEGORY','组织类别'],['DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE','成立日期'],['DZZ_PARTY_ORGANIZATION_MEMBER_COUNT','党组织党员人数'],['DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE','联系人编码'],['DZZ_PARTY_ORGANIZATION_CONTACT_NAME','联系人'],['DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE','联系电话'],['DZZ_PARTY_ORGANIZATION_UNIT_SITUATION','党组织所在单位情况'],['DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA','所在行政区划'],['DZZ_DISPLAY_ORDER','显示排序'],['DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME','批准成立的上级党组织全称'],['DZZ_DELETE_FLAG','删除标识'],['DZZ_UPDATE_TIMESTAMP','更新时间戳'],['DZZ_PARTY_BRANCH_STANDARDIZATION_CATEGORY','党支部标准化规范化建设类别'],['DZZ_OPERATING_PARTY_ORGANIZATION','操作党组织']
         ]
     };
     var displayColumns = {
-        member: [['DY_NAME','姓名'],['DY_ID_NUMBER','身份证号'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_MOBILE_NUMBER','手机号'],['DY_DELETE_FLAG','删除标识'],['SYNC_STATE','同步状态']],
-        organization: [['DZZ_PARTY_ORGANIZATION_FULL_NAME','党组织全称'],['DZZ_PARTY_ORGANIZATION_ENCODING','组织编码'],['DZZ_PARTY_ORGANIZATION_CATEGORY','组织类别'],['DZZ_PARTY_ORGANIZATION_CONTACT_NAME','联系人'],['DZZ_DELETE_FLAG','删除标识'],['SYNC_STATE','同步状态']]
+        member: [['DY_NAME','姓名'],['DY_ID_NUMBER','身份证号'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_MOBILE_NUMBER','手机号']],
+        organization: [['DZZ_PARTY_ORGANIZATION_FULL_NAME','党组织全称'],['DZZ_PARTY_ORGANIZATION_ENCODING','组织编码'],['DZZ_PARTY_ORGANIZATION_CATEGORY','组织类别'],['DZZ_PARTY_ORGANIZATION_CONTACT_NAME','联系人'],['DZZ_DELETE_FLAG','删除标识']]
     };
 
     function esc(value) { return $('<div/>').text(value == null ? '' : value).html(); }
-    function formalNotReady() { $('#memberCount, #organizationCount').text('未就绪'); $('#memberTable, #organizationTable').html('<tbody><tr><td class="group-sync-empty">集团正式表尚未安装，请执行初始化脚本并联系 DBA</td></tr></tbody>'); $('#groupSyncStatus').text('正式表未就绪'); }
-    function request(method, path, data, done) { $.ajax({ url: api + path, type: method, data: data || {}, dataType: 'json' }).done(function (res) { if (res.flag !== 'success') { if (res.errorCode === 'FORMAL_SCHEMA_NOT_READY') { formalNotReady(); } message(res.errorMsg || '操作失败'); return; } done(res); }).fail(function (xhr) { message(xhr.status === 302 ? '登录状态已失效，请重新登录' : '请求失败（HTTP ' + xhr.status + '），请联系管理员'); }); }
+    function post(path, data, done) { $.post(api + path, data || {}, function (res) { if (res.flag !== 'success') { message(res.errorMsg || '操作失败'); return; } done(res); }, 'json').fail(function () { message('请求失败，请检查登录状态或服务日志'); }); }
     function updateSelectionCount(type) {
         var count = selected[type].length;
         $('#' + (type === 'member' ? 'memberSelectionCount' : 'organizationSelectionCount')).text(count ? ('已选择 ' + count + ' 条') : '未选择');
@@ -208,13 +229,13 @@ String importlibs = "common,form";
         if (!rows.length) { html += '<tr><td colspan="' + (displayColumns[type].length + 1) + '" class="group-sync-empty">暂无数据</td></tr>'; }
         $.each(rows, function (index, row) {
             html += '<tr data-index="' + index + '"><td><input type="checkbox" class="group-sync-row-check" aria-label="选择"></td>';
-            $.each(displayColumns[type], function (_, col) { html += '<td>' + esc(row[col[0]]) + '</td>'; });
+            $.each(displayColumns[type], function (_, col) { html += '<td>' + esc(formatCellValue(col[0], row[col[0]])) + '</td>'; });
             html += '</tr>';
         });
         table.html(html).data('rows', rows);
         selected[type] = [];
         updateSelectionCount(type);
-        $('#' + (type === 'member' ? 'memberCount' : 'organizationCount')).text(rows.length);
+        $('#' + (type === 'member' ? 'memberCount' : 'organizationCount')).text(pageState[type].total);
         renderPager(type);
         table.off('.groupSync');
         table.on('change.groupSync', '.group-sync-row-check', function () {
@@ -243,10 +264,21 @@ String importlibs = "common,form";
         var keyword = $('#' + prefix + 'Keyword').val();
         var status = $('#' + prefix + 'Status').val();
         var state = pageState[type];
-        request('GET', '/api/rest/page', { type: type, page: state.page, pageSize: state.pageSize }, function (res) {
+        post('/api/list', { type: type, keyword: keyword, status: status, page: state.page, pageSize: state.pageSize }, function (res) {
             state.total = parseInt(res.total, 10) || 0;
             state.page = parseInt(res.page, 10) || 1;
             renderTable(type, res.rows || []);
+        });
+    }
+    function editSelected(type) {
+        if (selected[type].length !== 1) { message(selected[type].length ? '编辑时请只选择一条记录' : '请先选择一条记录'); return; }
+        openEditor(type, selected[type][0]);
+    }
+    function deleteSelected(type) {
+        if (!selected[type].length) { message('请先选择要删除的记录'); return; }
+        var ids = $.map(selected[type], function (row) { return row.ID; });
+        confirmAction('确认物理删除', '将永久删除已选中的 ' + ids.length + ' 条记录及其关联党员数据，删除后不可恢复。', function () {
+            post('/api/deleteBatch', { type: type, ids: ids.join(',') }, function () { selected[type] = []; load(type, pageState[type].page); message('已完成物理删除'); });
         });
     }
     function message(text) { if (window.layer && layer.msg) { layer.msg(text); } else { alert(text); } }
@@ -260,6 +292,58 @@ String importlibs = "common,form";
             done();
         }
     }
+    function normalizeDate(value) {
+        if (value == null || value === '') { return ''; }
+        if (/^\d{10,13}$/.test(String(value))) {
+            var timestamp = Number(value); if (String(value).length === 10) { timestamp *= 1000; }
+            var date = new Date(timestamp); if (!isNaN(date.getTime())) { return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2); }
+        }
+        var text = String(value); return text.length >= 10 ? text.substring(0, 10) : text;
+    }
+    function normalizeTimestamp(value) {
+        if (value == null || value === '') { return ''; }
+        var numeric = /^\d{10,13}$/.test(String(value)) ? Number(value) : NaN;
+        if (!isNaN(numeric)) { if (String(value).length === 10) { numeric *= 1000; } }
+        var date = !isNaN(numeric) ? new Date(numeric) : new Date(String(value).replace(' ', 'T'));
+        if (isNaN(date.getTime())) { return String(value); }
+        return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
+    }
+    function formatCellValue(field, value) {
+        if (field === 'DY_UPDATE_TIMESTAMP' || field === 'DZZ_UPDATE_TIMESTAMP') { return normalizeTimestamp(value); }
+        if (dateFields[field]) { return normalizeDate(value); }
+        return value == null ? '' : String(value);
+    }
+    function downloadBase64(base64, fileName) {
+        var binary = atob(base64), bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
+        var url = URL.createObjectURL(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+        $('<a></a>').attr({ href: url, download: fileName }).appendTo('body')[0].click();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+    var dateFields = { DY_BIRTH_DATE: true, DY_PARTY_ENTRY_DATE: true, DY_PARTY_REGULARIZATION_DATE: true, DY_ENTRY_SYSTEM_DATE: true, DY_EXIT_SYSTEM_DATE: true, DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE: true };
+    function openEditor(type, row) {
+        currentType = type;
+        $('#groupSyncDialogTitle').text(row ? '编辑' : '新增');
+        $('#groupSyncId').val(row ? (row.ID || '') : '');
+        var html = '';
+        $.each(fields[type], function (_, field) {
+            var value = row && row[field[0]] != null ? row[field[0]] : '';
+            var readonly = field[0].indexOf('UNIQUE_ID') >= 0 || field[0].indexOf('DELETE_FLAG') >= 0 || field[0].indexOf('OPERATING_PARTY_ORGANIZATION') >= 0 || field[0] === 'DZZ_PARTY_ORGANIZATION_MEMBER_COUNT';
+            var dateClass = dateFields[field[0]] ? ' group-sync-date-picker' : '';
+            if (field[0] === 'DY_GENDER') {
+                var genderValue = String(value == null ? '' : value);
+                if (genderValue === '男') { genderValue = '1'; }
+                if (genderValue === '女') { genderValue = '2'; }
+                html += '<label>' + esc(field[1]) + '<select class="form-control input-sm" name="DY_GENDER"><option value="">请选择</option><option value="1"' + (genderValue === '1' ? ' selected="selected"' : '') + '>男</option><option value="2"' + (genderValue === '2' ? ' selected="selected"' : '') + '>女</option></select></label>';
+            } else {
+                var displayValue = dateFields[field[0]] ? normalizeDate(value) : ((field[0] === 'DY_UPDATE_TIMESTAMP' || field[0] === 'DZZ_UPDATE_TIMESTAMP') ? normalizeDate(value) : value);
+                html += '<label>' + esc(field[1]) + '<input class="form-control input-sm' + dateClass + '" name="' + field[0] + '" value="' + esc(displayValue) + '"' + (readonly || dateFields[field[0]] ? ' readonly="readonly"' : '') + '></label>';
+            }
+        });
+        $('#groupSyncFields').html(html);
+        if ($.fn.datepicker) { $('.group-sync-date-picker').datepicker({ dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true }); }
+        $('#groupSyncEditDialog').modal('show');
+    }
     function errorText(value) { return value == null ? '' : String(value); }
     function errorCauses(value) {
         var text = errorText(value);
@@ -268,7 +352,7 @@ String importlibs = "common,form";
         if (text.indexOf('党组织缺少 ID、PARTY_CODE 或 PARTY_NAME') >= 0) { causes.push('源党组织缺少必填字段 ID、PARTY_CODE 或 PARTY_NAME'); }
         if (text.indexOf('上级党组织尚未同步') >= 0) { causes.push('源党组织的上级组织不在本批次有效同步结果中'); }
         if (text.indexOf('党员缺少 ID 或姓名') >= 0) { causes.push('源党员缺少必填字段 ID 或姓名'); }
-        if (!causes.length && text) { causes.push('同步处理失败，请联系管理员查看服务器日志'); }
+        if (!causes.length && text) { causes.push('数据库写入或字段转换异常，请查看原始异常明细'); }
         return causes;
     }
     function errorSummary(value) { var causes = errorCauses(value); return causes.length ? causes.join('；') : '无异常'; }
@@ -281,20 +365,49 @@ String importlibs = "common,form";
         $('#groupSyncLogDetailMessage').text(errorText(row.ERROR_MESSAGE) || '本批次没有异常明细。');
         $('#groupSyncLogDetailDialog').modal('show');
     }
-    function loadLogs() { request('GET', '/api/rest/logs', {}, function (res) { logRows = res.rows || []; var html = '<thead><tr><th>批次</th><th>开始时间</th><th>结束时间</th><th>状态</th><th>总数</th><th>成功</th><th>失败</th><th>删除</th><th>拒绝/异常</th></tr></thead><tbody>'; $.each(logRows, function (index, row) { html += '<tr><td>' + esc(row.ID) + '</td><td>' + esc(row.BATCH_START_TIME) + '</td><td>' + esc(row.BATCH_END_TIME) + '</td><td>' + esc(row.STATUS) + '</td><td>' + esc(row.TOTAL_COUNT) + '</td><td>' + esc(row.SUCCESS_COUNT) + '</td><td>' + esc(row.ERROR_COUNT) + '</td><td>' + esc(row.DELETED_COUNT) + '</td><td class="group-sync-log-summary">' + esc(errorSummary(row.ERROR_MESSAGE)) + '</td></tr>'; }); if (!logRows.length) { html += '<tr><td colspan="9" class="group-sync-empty">暂无同步批次</td></tr>'; } html += '</tbody>'; $('#groupSyncLogTable').html(html); }); }
+    function loadLogs() { post('/api/logs', {}, function (res) { logRows = res.rows || []; var html = '<thead><tr><th>批次</th><th>开始时间</th><th>结束时间</th><th>状态</th><th>总数</th><th>成功</th><th>失败</th><th>物理删除</th><th>异常摘要</th><th>操作</th></tr></thead><tbody>'; $.each(logRows, function (index, row) { html += '<tr><td>' + esc(row.ID) + '</td><td>' + esc(row.BATCH_START_TIME) + '</td><td>' + esc(row.BATCH_END_TIME) + '</td><td>' + esc(row.STATUS) + '</td><td>' + esc(row.TOTAL_COUNT) + '</td><td>' + esc(row.SUCCESS_COUNT) + '</td><td>' + esc(row.ERROR_COUNT) + '</td><td>' + esc(row.DELETED_COUNT) + '</td><td class="group-sync-log-summary" title="' + esc(errorText(row.ERROR_MESSAGE)) + '">' + esc(errorSummary(row.ERROR_MESSAGE)) + '</td><td><button type="button" class="btn btn-link btn-xs group-sync-log-detail-button" data-log-index="' + index + '">查看详情</button></td></tr>'; }); if (!logRows.length) { html += '<tr><td colspan="10" class="group-sync-empty">暂无同步批次</td></tr>'; } html += '</tbody>'; $('#groupSyncLogTable').html(html); }); }
 
     $(function () {
-        $('#groupSyncLogRefresh').hide();
         load('member');
         $('[data-list-type]').on('click', function () { load($(this).attr('data-list-type'), 1); });
+        $('[data-add-type]').on('click', function () { openEditor($(this).attr('data-add-type'), null); });
+        $('#memberEdit').on('click', function () { editSelected('member'); });
+        $('#organizationEdit').on('click', function () { editSelected('organization'); });
+        $('#memberDelete').on('click', function () { deleteSelected('member'); });
+        $('#organizationDelete').on('click', function () { deleteSelected('organization'); });
         $('#memberStatus, #organizationStatus').on('change', function () { load($(this).attr('id') === 'memberStatus' ? 'member' : 'organization', 1); });
-        $('#groupSyncSave').off('click');
+        $('#groupSyncSave').on('click', function () { var data = $('#groupSyncForm').serializeArray(); data.push({ name: 'type', value: currentType }); post('/api/save', $.param(data), function () { $('#groupSyncEditDialog').modal('hide'); load(currentType); }); });
         $('#groupSyncRun').off('click').on('click', function () {
-            confirmAction('确认立即同步', '将按当前平台源数据执行同步；失败或不完整批次不会删除正式表数据。', function () {
+            confirmAction('确认立即同步', '将按当前平台源数据执行一次全量同步，缺失的目标数据会直接物理删除，目标表中的手工导入覆盖值会继续保留。', function () {
                 $('#groupSyncStatus').text('同步中...');
-                request('POST', '/api/rest/sync', {}, function (res) { var data = res.data || {}; $('#groupSyncStatus').text('完成：成功 ' + (data.success || 0) + '，失败 ' + (data.errors || 0)); load('member', 1); load('organization', 1); loadLogs(); });
+                post('/api/sync', {}, function (res) { var data = res.data || {}; $('#groupSyncStatus').text('完成：成功 ' + (data.success || 0) + '，失败 ' + (data.errors || 0) + '，物理删除 ' + (data.deleted || 0)); load('member', 1); load('organization', 1); loadLogs(); });
             });
         });
+        function exportZip(type) {
+            var prefix = type === 'member' ? 'member' : 'organization';
+            var ids = $.map(selected[type], function (row) { return row.ID; });
+            var form = $('<form method="post" target="_blank"></form>').attr('action', api + '/api/exportZip');
+            form.append($('<input type="hidden" name="type">').val(type));
+            form.append($('<input type="hidden" name="ids">').val(ids.join(',')));
+            form.append($('<input type="hidden" name="keyword">').val($('#' + prefix + 'Keyword').val()));
+            form.append($('<input type="hidden" name="status">').val($('#' + prefix + 'Status').val()));
+            form.appendTo('body').submit().remove();
+        }
+        $('#organizationExport').on('click', function () { exportZip('organization'); });
+        function importFile(input, statusId) {
+            if (!input.files || !input.files.length) { return; }
+            var file = input.files[0];
+            var formData = new FormData(); formData.append('file', file);
+            $('#' + statusId).text('导入中...');
+            $.ajax({ url: api + '/api/import', type: 'POST', data: formData, processData: false, contentType: false, dataType: 'json' }).done(function (res) {
+                if (res.flag !== 'success') { message(res.errorMsg || '导入失败'); return; }
+                var data = res.data || {}; $('#' + statusId).text('完成：导入 ' + (data.imported || 0) + ' 条，失败文件 ' + (data.failedFiles || 0) + ' 个');
+                if (data.errors && data.errors.length) { message(data.errors.join('\n')); }
+                if (data.errorReportBase64) { downloadBase64(data.errorReportBase64, '集团数据导入错误报告.xlsx'); }
+                load('organization'); load('member');
+            }).fail(function () { message('导入请求失败'); }).always(function () { $(input).val(''); });
+        }
+        $('#organizationImportFile').on('change', function () { importFile(this, 'organizationImportStatus'); });
         $('[data-page-action]').on('click', function () {
             var type = $(this).closest('.group-sync-pagination').attr('id').indexOf('member') === 0 ? 'member' : 'organization';
             var state = pageState[type];
@@ -304,7 +417,8 @@ String importlibs = "common,form";
         });
         $('.group-sync-page-size').on('change', function () {
             var type = $(this).closest('.group-sync-pagination').attr('id').indexOf('member') === 0 ? 'member' : 'organization';
-            pageState[type].pageSize = parseInt($(this).val(), 10) || 20;
+            var selectedSize = parseInt($(this).val(), 10);
+            pageState[type].pageSize = isNaN(selectedSize) ? 20 : selectedSize;
             load(type, 1);
         });
         $('#groupSyncLogRefresh').on('click', loadLogs);

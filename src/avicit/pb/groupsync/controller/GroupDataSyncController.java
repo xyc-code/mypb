@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import avicit.pb.groupsync.service.GroupDataSyncService;
+import avicit.pb.groupsync.service.GroupFormalDataSyncService;
 import avicit.platform6.api.session.SessionHelper;
 
 /** 同步集团数据管理入口。菜单由平台管理员按 toManage 地址手工关联。 */
@@ -30,7 +31,6 @@ import avicit.platform6.api.session.SessionHelper;
 public class GroupDataSyncController {
     @Autowired
     private GroupDataSyncService service;
-
     @Autowired
     private avicit.pb.groupsync.service.GroupFormalDataSyncService formalService;
 
@@ -47,17 +47,14 @@ public class GroupDataSyncController {
                                     @RequestParam(value = "page", required = false, defaultValue = "1") int page,
                                     @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
                                     HttpServletRequest request) {
-        return deprecated();
-        /*
         try {
-            Map<String, Object> result = service.list(type, keyword, status, page, pageSize,
+            Map<String, Object> result = formalService.list(type, keyword, status, page, pageSize,
                     orgIdentity(request), loginUser(request));
             result.put("flag", "success");
             return result;
         } catch (Exception ex) {
             return failure(ex);
         }
-        */
     }
 
     @RequestMapping(value = "api/get", method = RequestMethod.POST)
@@ -65,30 +62,24 @@ public class GroupDataSyncController {
     public Map<String, Object> get(@RequestParam("type") String type,
                                    @RequestParam("id") String id,
                                    HttpServletRequest request) {
-        return deprecated();
-        /*
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("flag", "success");
-             map.put("data", service.get(type, id, orgIdentity(request), loginUser(request)));
+             map.put("data", formalService.get(type, id, orgIdentity(request), loginUser(request)));
             return map;
         } catch (Exception ex) {
             return failure(ex);
         }
-        */
     }
 
     @RequestMapping(value = "api/save", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> save(@RequestParam("type") String type, HttpServletRequest request) {
-        return deprecated();
-        /*
         try {
-            return data(service.save(type, params(request), request));
+            return data(formalService.save(type, params(request), request));
         } catch (Exception ex) {
             return failure(ex);
         }
-        */
     }
 
     @RequestMapping(value = "api/delete", method = RequestMethod.POST)
@@ -96,16 +87,13 @@ public class GroupDataSyncController {
     public Map<String, Object> delete(@RequestParam("type") String type,
                                       @RequestParam("id") String id,
                                       HttpServletRequest request) {
-        return deprecated();
-        /*
         try {
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("flag", service.physicalDelete(type, id, request) > 0 ? "success" : "failure");
+            map.put("flag", formalService.physicalDelete(type, id, request) > 0 ? "success" : "failure");
             return map;
         } catch (Exception ex) {
             return failure(ex);
         }
-        */
     }
 
     @RequestMapping(value = "api/deleteBatch", method = RequestMethod.POST)
@@ -113,17 +101,14 @@ public class GroupDataSyncController {
     public Map<String, Object> deleteBatch(@RequestParam("type") String type,
                                            @RequestParam("ids") String ids,
                                            HttpServletRequest request) {
-        return deprecated();
-        /*
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("flag", "success");
-            map.put("deleted", service.physicalDeleteBatch(type, ids, request));
+            map.put("deleted", formalService.physicalDeleteBatch(type, ids, request));
             return map;
         } catch (Exception ex) {
             return failure(ex);
         }
-        */
     }
 
     @RequestMapping(value = "api/sync", method = RequestMethod.POST)
@@ -131,81 +116,66 @@ public class GroupDataSyncController {
     public Map<String, Object> sync(HttpServletRequest request) {
         try {
             service.assertAdministrator(loginUser(request));
-            return data(service.sync(orgIdentity(request), loginUser(request), "MANUAL"));
+            return data(formalService.sync(orgIdentity(request), loginUser(request), "MANUAL", null, request.getRemoteAddr()));
         } catch (Exception ex) {
             return failure(ex);
         }
-    }
-
-    /** 数据中心只读分页接口；按内网白名单开放，记录调用 IP。 */
-    @RequestMapping(value = "api/rest/page", method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String, Object> formalPage(@RequestParam("type") String type,
-                                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                          @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
-                                          @RequestParam(value = "updatedAfter", required = false) String updatedAfter,
-                                          HttpServletRequest request) {
-        try {
-            Date since = parseDate(updatedAfter);
-            Map<String, Object> result = formalService.page(type, page, pageSize, since, request.getRemoteAddr());
-            result.put("flag", "success");
-            return result;
-        } catch (Exception ex) {
-            return failure(ex);
-        }
-    }
-
-    @RequestMapping(value = "api/rest/sync", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> formalSync(@RequestParam(value = "updatedAfter", required = false) String updatedAfter,
-                                          HttpServletRequest request) {
-        try {
-            service.assertAdministrator(loginUser(request));
-            Date since = parseDate(updatedAfter);
-            return data(formalService.sync(orgIdentity(request), loginUser(request), "MANUAL", since, request.getRemoteAddr()));
-        } catch (Exception ex) {
-            return failure(ex);
-        }
-    }
-
-    @RequestMapping(value = "api/rest/health", method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String, Object> formalHealth(HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<String, Object>();
-        try {
-            formalService.ensureFormalSchemaReady();
-            result.put("flag", "success"); result.put("service", "group-formal-sync");
-            result.put("formalSchema", "READY"); result.put("ip", request.getRemoteAddr()); result.put("timestamp", new Date());
-            return result;
-        } catch (Exception ex) { return failure(ex); }
-    }
-
-    @RequestMapping(value = "api/rest/logs", method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String, Object> formalLogs(@RequestParam(value = "limit", required = false, defaultValue = "50") int limit,
-                                          HttpServletRequest request) {
-        try { Map<String, Object> result = formalService.logs(orgIdentity(request), limit); result.put("flag", "success"); return result; }
-        catch (Exception ex) { return failure(ex); }
-    }
-
-    private Date parseDate(String value) throws Exception {
-        if (StringUtils.isBlank(value)) { return null; }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setLenient(false);
-        return format.parse(value);
     }
 
     @RequestMapping(value = "api/logs", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> logs(HttpServletRequest request) {
-        return deprecated();
-        /*
         try {
-            return rows(service.logs(orgIdentity(request)));
+            return rows(formalService.logs(orgIdentity(request)));
         } catch (Exception ex) {
             return failure(ex);
         }
-        */
+    }
+
+    @RequestMapping(value = "api/rest/page", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> formalPage(@RequestParam("type") String type, @RequestParam(value="page",defaultValue="1") int page,
+                                         @RequestParam(value="pageSize",defaultValue="20") int pageSize,
+                                         @RequestParam(value="updatedAfter",required=false) String updatedAfter, HttpServletRequest request) {
+        try { Map<String,Object> result = formalService.page(type,page,pageSize,parseDate(updatedAfter),request.getRemoteAddr()); result.put("flag","success"); return result; }
+        catch (Exception ex) { return failure(ex); }
+    }
+
+    @RequestMapping(value = "api/rest/member", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> formalMembers(@RequestParam(value="updatedAfter",required=false) String updatedAfter,
+                                            HttpServletRequest request) {
+        try { Map<String,Object> result = formalService.all("member", parseDate(updatedAfter), request.getRemoteAddr()); result.put("flag","success"); return result; }
+        catch (Exception ex) { return failure(ex); }
+    }
+
+    @RequestMapping(value = "api/rest/organization", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> formalOrganizations(@RequestParam(value="updatedAfter",required=false) String updatedAfter,
+                                                 HttpServletRequest request) {
+        try { Map<String,Object> result = formalService.all("organization", parseDate(updatedAfter), request.getRemoteAddr()); result.put("flag","success"); return result; }
+        catch (Exception ex) { return failure(ex); }
+    }
+
+    @RequestMapping(value = "api/rest/health", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> formalHealth(HttpServletRequest request) {
+        try { formalService.ensureFormalSchemaReady(); Map<String,Object> r=new HashMap<String,Object>(); r.put("flag","success"); r.put("service","group-formal-sync"); r.put("formalSchema","READY"); r.put("ip",request.getRemoteAddr()); return r; }
+        catch (Exception ex) { return failure(ex); }
+    }
+
+    @RequestMapping(value = "api/rest/logs", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> formalLogs(@RequestParam(value="limit",defaultValue="50") int limit, HttpServletRequest request) {
+        try { Map<String,Object> r=new HashMap<String,Object>(); r.put("flag","success"); r.putAll(formalService.logs(orgIdentity(request),limit)); return r; }
+        catch (Exception ex) { return failure(ex); }
+    }
+
+    @RequestMapping(value = "api/rest/sync", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> formalSync(@RequestParam(value="updatedAfter",required=false) String updatedAfter, HttpServletRequest request) {
+        try { service.assertAdministrator(loginUser(request)); return data(formalService.sync(orgIdentity(request),loginUser(request),"MANUAL",parseDate(updatedAfter),request.getRemoteAddr())); }
+        catch (Exception ex) { return failure(ex); }
     }
 
     @RequestMapping(value = "api/exportZip", method = RequestMethod.POST)
@@ -214,13 +184,34 @@ public class GroupDataSyncController {
                           @RequestParam(value = "keyword", required = false) String keyword,
                           @RequestParam(value = "status", required = false, defaultValue = "active") String status,
                           HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.sendError(HttpServletResponse.SC_GONE, "旧 DYN 导出接口已停用");
+        try {
+            byte[] content = formalService.exportZip(type, ids, keyword, status);
+            response.reset();
+            response.setContentType("application/zip");
+            String downloadName = "member".equalsIgnoreCase(type) ? "集团党员数据.zip" : "集团党组织数据.zip";
+            response.setHeader("Content-Disposition", "attachment;filename*=UTF-8''" + java.net.URLEncoder.encode(downloadName, "UTF-8").replace("+", "%20"));
+            response.getOutputStream().write(content);
+            response.getOutputStream().flush();
+        } catch (Exception ex) {
+            response.reset();
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            response.setContentType("application/json;charset=UTF-8");
+            if (GroupFormalDataSyncService.isFormalSchemaNotReady(ex)) {
+                response.getWriter().write("{\"flag\":\"failure\",\"errorCode\":\"FORMAL_SCHEMA_NOT_READY\",\"errorMsg\":\"集团正式表尚未安装，请执行初始化脚本并联系 DBA\"}");
+            } else {
+                response.getWriter().write("{\"flag\":\"failure\",\"errorCode\":\"GROUP_SYNC_ERROR\",\"errorMsg\":\"集团同步服务暂时不可用，请联系管理员\"}");
+            }
+        }
     }
 
     @RequestMapping(value = "api/import", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> importFile(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        return deprecated();
+        try {
+            return data(formalService.importFile(file, request.getRemoteAddr()));
+        } catch (Exception ex) {
+            return failure(ex);
+        }
     }
 
     private Map<String, String> params(HttpServletRequest request) {
@@ -250,22 +241,12 @@ public class GroupDataSyncController {
     private Map<String, Object> failure(Exception ex) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("flag", "failure");
-        if (avicit.pb.groupsync.service.GroupFormalDataSyncService.isFormalSchemaNotReady(ex)) {
-            result.put("errorCode", "FORMAL_SCHEMA_NOT_READY");
-            result.put("errorMsg", "集团正式表尚未安装，请执行初始化脚本并联系 DBA");
-        } else {
-            result.put("errorCode", "GROUP_SYNC_ERROR");
-            result.put("errorMsg", "集团同步服务暂时不可用，请联系管理员");
-        }
+        if (avicit.pb.groupsync.service.GroupFormalDataSyncService.isFormalSchemaNotReady(ex)) { result.put("errorCode", "FORMAL_SCHEMA_NOT_READY"); result.put("errorMsg", "集团正式表尚未安装，请执行初始化脚本并联系 DBA"); }
+        else { result.put("errorCode", "GROUP_SYNC_ERROR"); result.put("errorMsg", "集团同步服务暂时不可用，请联系管理员"); }
         return result;
     }
 
-    private Map<String, Object> deprecated() {
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("flag", "failure");
-        result.put("errorMsg", "旧 DYN 集团镜像接口已停用，请使用正式表只读分页和同步接口");
-        return result;
-    }
+    private Date parseDate(String value) throws Exception { if (StringUtils.isBlank(value)) return null; SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); f.setLenient(false); return f.parse(value); }
 
     private String orgIdentity(HttpServletRequest request) {
         return StringUtils.defaultIfBlank(SessionHelper.getCurrentOrgIdentity(request), "1");

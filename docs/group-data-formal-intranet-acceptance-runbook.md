@@ -85,7 +85,7 @@ select * from DYN_GROUP_SYNC_ID_MAP where SOURCE_TABLE in ('PARTY_ORGANIZATION',
 - 登录态打开 `toManage` 页面。
 - 桌面和 390x844 移动视图均能加载正式组织/党员分页。
 - 点击“同步批次”调用 `GET api/rest/logs` 并展示成功数、失败数和拒绝原因。
-- 页面不存在新增、编辑、删除、导入、导出操作。
+- 原维护面仍提供新增、编辑、单条/批量物理删除及组织 ZIP 导入导出；验收必须使用具备集团同步菜单权限的管理员账号逐项回归。
 - 浏览器控制台错误数为 0。
 
 ## 6. 回填模板
