@@ -144,6 +144,13 @@
 - Likely change points: field mapping in `GroupDataSyncService`, group code conversion, Quartz job parameters, JSP field metadata。
 - Do not touch without confirmation: source `PARTY_MEMBER`/`PARTY_ORGANIZATION` schemas, external group transport, physical deletion behavior。
 
+## Packaging Incident And Permanent Rule (2026-08-26)
+
+- Incident: the JSP in a package was the newest committed file but still issued the retired `api/list` request. The formal Controller contract used `api/rest/page` (GET), so the intranet page reported a generic service failure when retired DYN-table access was unavailable.
+- Permanent packaging rule: “latest commit” is not “latest accepted behavior”. Before every intranet package, run an authenticated browser/network smoke test and compare each observed page request (path, context path, HTTP method, status, and JSON body) with the current Controller contract. Search the package for retired endpoint strings and old DYN-table routes; any reachable mismatch blocks delivery.
+- The PB context path is environment-specific (for example `/V6R343`); JSP must derive it from `request.getContextPath()`. Documentation must not substitute `/pb` as a literal production context.
+- A source-only Java package must explicitly include JDK8 compilation into `WebRoot/WEB-INF/classes` and a Tomcat restart/health check. Do not call it directly runnable until those steps and the route smoke test pass.
+
 ## Group Document Gap Review (2026-08-18)
 
 - The page now exposes one unified import/export entry under the organization tab. Each organization workbook contains both the organization sheet and member sheet; the member tab has no separate import/export buttons.

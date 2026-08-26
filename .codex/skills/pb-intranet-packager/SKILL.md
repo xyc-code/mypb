@@ -25,14 +25,15 @@ Use this project-local skill only for the PB project. It creates an intranet del
 6. Generate a focused package for only the requested module(s). Use `scripts/create-pb-release.ps1` only when its output can be limited to the requested scope; otherwise create a focused package manually.
 7. Run `scripts/check-package-coverage.ps1` against the release package and the candidate/impact-closure list. Missing required files are blocking; do not finish or hand off the package while any expected file is absent.
 8. Review the generated package under `D:\pb-release\<timestamp>\` and compare it against the impact-closure list. Do not finish if a required file is absent.
-9. Tell the user:
+9. Run a final runtime route audit against the tested page before handoff. For JSP modules, inspect browser/network or server access logs and verify every page request returns the intended current Controller endpoint and HTTP method. Search the packaged JSP/JS for retired endpoint strings (for example `api/list`, `api/logs`, or retired DYN-table routes) and fail the package if they remain reachable or are inconsistent with the current service contract. A latest Git commit is not sufficient evidence of latest accepted behavior.
+10. Tell the user:
    - the package path,
    - module folders under `按模块分开\`,
    - files to copy,
    - files intentionally excluded,
    - blocking warnings,
    - DB or platform-config items needing manual migration.
-10. Do not update the baseline unless the user explicitly says the intranet sync is complete.
+11. Do not update the baseline unless the user explicitly says the intranet sync is complete.
 
 ## Commands
 
@@ -75,4 +76,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\.codex\skills\pb-intranet-
 - Do not package `db\imp_exp.dmp`.
 - Do not treat changed `.java` without changed `.class` as blocking; the intranet compiles Java from source.
 - Treat DB/schema/menu/permission/form/process changes as manual migration work, not file-only deployment.
+- A package is blocked when the deployed page still calls a retired endpoint or when the final browser/network check has not verified the current route, method, context path, and JSON response. Do not label a source-only package as runtime-ready without recording the required JDK compile and Tomcat restart steps.
 
