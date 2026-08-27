@@ -19,8 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import avicit.pb.groupsync.service.GroupDataSyncService;
 import avicit.pb.groupsync.service.GroupFormalDataSyncService;
 import avicit.platform6.api.session.SessionHelper;
 
@@ -29,10 +30,9 @@ import avicit.platform6.api.session.SessionHelper;
 @Scope("prototype")
 @RequestMapping("avicit/pb/groupsync/groupSyncController")
 public class GroupDataSyncController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupDataSyncController.class);
     @Autowired
-    private GroupDataSyncService service;
-    @Autowired
-    private avicit.pb.groupsync.service.GroupFormalDataSyncService formalService;
+    private GroupFormalDataSyncService formalService;
 
     @RequestMapping(value = "toManage")
     public ModelAndView toManage() {
@@ -115,7 +115,7 @@ public class GroupDataSyncController {
     @ResponseBody
     public Map<String, Object> sync(HttpServletRequest request) {
         try {
-            service.assertAdministrator(loginUser(request));
+            formalService.assertAdministrator(loginUser(request));
             return data(formalService.sync(orgIdentity(request), loginUser(request), "MANUAL", null, request.getRemoteAddr()));
         } catch (Exception ex) {
             return failure(ex);
@@ -174,7 +174,7 @@ public class GroupDataSyncController {
     @RequestMapping(value = "api/rest/sync", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> formalSync(@RequestParam(value="updatedAfter",required=false) String updatedAfter, HttpServletRequest request) {
-        try { service.assertAdministrator(loginUser(request)); return data(formalService.sync(orgIdentity(request),loginUser(request),"MANUAL",parseDate(updatedAfter),request.getRemoteAddr())); }
+        try { formalService.assertAdministrator(loginUser(request)); return data(formalService.sync(orgIdentity(request),loginUser(request),"MANUAL",parseDate(updatedAfter),request.getRemoteAddr())); }
         catch (Exception ex) { return failure(ex); }
     }
 
@@ -240,7 +240,10 @@ public class GroupDataSyncController {
 
     private Map<String, Object> failure(Exception ex) {
         Map<String, Object> result = new HashMap<String, Object>();
+        String requestId = java.util.UUID.randomUUID().toString().replace("-", "");
+        LOGGER.error("group-sync request failed, requestId=" + requestId, ex);
         result.put("flag", "failure");
+        result.put("requestId", requestId);
         if (avicit.pb.groupsync.service.GroupFormalDataSyncService.isFormalSchemaNotReady(ex)) { result.put("errorCode", "FORMAL_SCHEMA_NOT_READY"); result.put("errorMsg", "集团正式表尚未安装，请执行初始化脚本并联系 DBA"); }
         else { result.put("errorCode", "GROUP_SYNC_ERROR"); result.put("errorMsg", "集团同步服务暂时不可用，请联系管理员"); }
         return result;

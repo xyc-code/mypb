@@ -207,7 +207,7 @@ String importlibs = "common,form";
     };
 
     function esc(value) { return $('<div/>').text(value == null ? '' : value).html(); }
-    function post(path, data, done) { $.post(api + path, data || {}, function (res) { if (res.flag !== 'success') { message(res.errorMsg || '操作失败'); return; } done(res); }, 'json').fail(function () { message('请求失败，请检查登录状态或服务日志'); }); }
+    function post(path, data, done) { $.post(api + path, data || {}, function (res) { if (res.flag !== 'success') { message((res.errorMsg || '操作失败') + (res.requestId ? '（请求编号：' + res.requestId + '）' : '')); return; } done(res); }, 'json').fail(function () { message('请求失败，请检查登录状态或服务日志'); }); }
     function updateSelectionCount(type) {
         var count = selected[type].length;
         $('#' + (type === 'member' ? 'memberSelectionCount' : 'organizationSelectionCount')).text(count ? ('已选择 ' + count + ' 条') : '未选择');
@@ -311,6 +311,7 @@ String importlibs = "common,form";
     function formatCellValue(field, value) {
         if (field === 'DY_UPDATE_TIMESTAMP' || field === 'DZZ_UPDATE_TIMESTAMP') { return normalizeTimestamp(value); }
         if (dateFields[field]) { return normalizeDate(value); }
+        if (field === 'DY_IS_MIGRANT_WORKER') { return String(value) === '1' || String(value) === '是' ? '是' : '否'; }
         return value == null ? '' : String(value);
     }
     function downloadBase64(base64, fileName) {
@@ -348,7 +349,7 @@ String importlibs = "common,form";
     function errorCauses(value) {
         var text = errorText(value);
         var causes = [];
-        if (text.indexOf('字符串截断') >= 0) { causes.push('目标字段长度不足（当前日志中包含党组织编码超过 DZZ_PARTY_ORGANIZATION_ENCODING 的 12 位限制）'); }
+        if (text.indexOf('字符串截断') >= 0) { causes.push('目标字段长度不足（党组织编码超过 DZZ_PARTY_ORGANIZATION_ENCODING 的 100 位限制）'); }
         if (text.indexOf('党组织缺少 ID、PARTY_CODE 或 PARTY_NAME') >= 0) { causes.push('源党组织缺少必填字段 ID、PARTY_CODE 或 PARTY_NAME'); }
         if (text.indexOf('上级党组织尚未同步') >= 0) { causes.push('源党组织的上级组织不在本批次有效同步结果中'); }
         if (text.indexOf('党员缺少 ID 或姓名') >= 0) { causes.push('源党员缺少必填字段 ID 或姓名'); }
@@ -400,7 +401,7 @@ String importlibs = "common,form";
             var formData = new FormData(); formData.append('file', file);
             $('#' + statusId).text('导入中...');
             $.ajax({ url: api + '/api/import', type: 'POST', data: formData, processData: false, contentType: false, dataType: 'json' }).done(function (res) {
-                if (res.flag !== 'success') { message(res.errorMsg || '导入失败'); return; }
+                if (res.flag !== 'success') { message((res.errorMsg || '导入失败') + (res.requestId ? '（请求编号：' + res.requestId + '）' : '')); return; }
                 var data = res.data || {}; $('#' + statusId).text('完成：导入 ' + (data.imported || 0) + ' 条，失败文件 ' + (data.failedFiles || 0) + ' 个');
                 if (data.errors && data.errors.length) { message(data.errors.join('\n')); }
                 if (data.errorReportBase64) { downloadBase64(data.errorReportBase64, '集团数据导入错误报告.xlsx'); }

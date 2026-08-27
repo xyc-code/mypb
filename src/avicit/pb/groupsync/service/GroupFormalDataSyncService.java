@@ -2,6 +2,7 @@ package avicit.pb.groupsync.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,10 @@ public class GroupFormalDataSyncService {
     private static final int MAX_PAGE_SIZE = 200;
     private static final String ROOT_PARENT_UID = "00000000000000000000000000000000";
     private static final Object SYNC_LOCK = new Object();
+    private static final String PARTY_ADMIN_ROLE = "党委一级管理员";
+    private static final String PLATFORM_ADMIN_ROLE = "平台管理员";
+    private static final String EDUCATION_DICT_M_ID = "HI000000000000000007";
+    private static final String DEGREE_DICT_M_ID = "HI000000000000000008";
     private static final Map<String, String> LOOKUP_TYPES = new LinkedHashMap<String, String>();
     static {
         LOOKUP_TYPES.put("DY_GENDER", "PLATFORM_SEX");
@@ -100,16 +105,14 @@ public class GroupFormalDataSyncService {
                 jdbcTemplate.update("insert into DYN_GROUP_SYNC_LOG (ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,BATCH_START_TIME,STATUS,TOTAL_COUNT,SUCCESS_COUNT,ERROR_COUNT,DELETED_COUNT,TRIGGER_TYPE,EXECUTOR_ID,CALL_IP,INCREMENTAL_FROM) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         batchId, executor, new Date(), executor, new Date(), callIp, 1, orgIdentity, new Date(), "RUNNING", 0, 0, 0, 0, trigger, executor, callIp, updatedAfter);
                 Map<String, String> organizations = new HashMap<String, String>();
-                List<Map<String, Object>> orgRows = sourceRows("select p.*, (select count(1) from PARTY_MEMBER m where m.PARTY_ID=p.ID and nvl(m.STATUS,'1')='1') MEMBER_COUNT, (select pp.PARTY_NAME from PARTY_ORGANIZATION pp where pp.ID=p.PARENT_ID) PARENT_NAME from PARTY_ORGANIZATION p where p.ORG_IDENTITY=? and nvl(p.VALID_FLAG,'1')='1'" + since(updatedAfter, "p") + " order by p.TREE_LEVEL,p.TREE_SORTS,p.TREE_SORT", orgIdentity, updatedAfter);
+                List<Map<String, Object>> orgRows = sourceRows("select p.*, (select count(1) from PARTY_MEMBER m where m.PARTY_ID=p.ID and nvl(m.STATUS,'1')='1') MEMBER_COUNT, (select pp.PARTY_NAME from PARTY_ORGANIZATION pp where pp.ID=p.PARENT_ID) PARENT_NAME from PARTY_ORGANIZATION p where p.ORG_IDENTITY=? and nvl(p.VALID_FLAG,'1')='1' and nvl(p.ATTRIBUTE_01,'') not in ('5','党小组')" + since(updatedAfter, "p") + " order by p.TREE_LEVEL,p.TREE_SORTS,p.TREE_SORT", orgIdentity, updatedAfter);
                 for (Map<String, Object> row : orgRows) {
                     try {
                         String sourceId = text(row.get("ID"));
                         String key = require(sourceId, "组织ID");
                         String sourceParent = text(row.get("PARENT_ID"));
                         String parent = sourceParent.length() == 0 || "-1".equals(sourceParent) ? ROOT_PARENT_UID : findMapped(orgIdentity, "PARTY_ORGANIZATION", sourceParent);
-                        if (parent.length() == 0) {
-                            throw new IllegalArgumentException("组织父级缺失");
-                        }
+                        if (parent.length() == 0) { parent = ROOT_PARENT_UID; }
                         String targetUid = findMapped(orgIdentity, "PARTY_ORGANIZATION", sourceId);
                         if (targetUid.length() == 0) { targetUid = java.util.UUID.randomUUID().toString().replace("-", ""); }
                         Map<String, Object> target = organization(row, targetUid, parent);
@@ -117,9 +120,9 @@ public class GroupFormalDataSyncService {
                             target.put("DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME", text(row.get("PARTY_NAME")));
                         }
                         target.putAll(contact(sourceId));
+                        applyOrganizationDefaults(target);
                         translateLookupValues(target);
                         validate(target, organizationLimits());
-                        requireValues(target, new String[]{"DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE","DZZ_PARTY_ORGANIZATION_MEMBER_COUNT","DZZ_DISPLAY_ORDER","DZZ_DELETE_FLAG"});
                         upsert(ORG_TABLE, "DZZ_PARTY_ORGANIZATION_UNIQUE_ID", target);
                         mapSource(orgIdentity, "PARTY_ORGANIZATION", sourceId, ORG_TABLE, targetUid, executor, callIp);
                         organizations.put(sourceId, targetUid);
@@ -136,12 +139,14 @@ public class GroupFormalDataSyncService {
                         String sourceId = require(text(row.get("ID")), "党员ID");
                         String employeeCode = text(row.get("USER_CODE"));
                         if (employeeCode.trim().length() == 0) { employeeCode = "UNKNOWN"; }
-                        if (employeeCode.length() > 8) { throw new IllegalArgumentException("集团员工编码超长"); }
                         String partyId = text(row.get("PARTY_ID"));
                         String partyUid = organizations.get(partyId);
                         if (partyUid == null || partyUid.length() == 0) { partyUid = findMapped(orgIdentity, "PARTY_ORGANIZATION", partyId); }
                         if (partyUid == null || partyUid.length() == 0) { partyUid = ROOT_PARENT_UID; }
+                        Map<String, String> education = educationAndDegree(employeeCode);
                         Map<String, Object> target = member(row, employeeCode, partyUid);
+                        target.put("DY_EDUCATION_LEVEL", education.get("education"));
+                        target.put("DY_DEGREE", education.get("degree"));
                         applyMemberDefaults(target, sourceId);
                         translateLookupValues(target);
                         upsert(MEMBER_TABLE, "RYJBXX_GROUP_EMPLOYEE_COPE", target);
@@ -252,8 +257,8 @@ public class GroupFormalDataSyncService {
         for (Map.Entry<String,String> e : params.entrySet()) { String column = e.getKey(); if ("ID".equals(column) || "type".equals(column)) continue; if (member && "DY_JBXX_GROUP_EMPLOYEE_CODE".equals(column)) continue; if (column.matches("[A-Z][A-Z0-9_]{1,63}")) values.put(column, e.getValue()); }
         if (member && values.get("DY_PARTY_ORGANIZATION_UNIQUE_ID") == null) throw new IllegalArgumentException("新增党员必须指定党组织");
         normalizeFormalTypes(values, member);
+        if (member) { applyMemberDefaults(values, id); } else { applyOrganizationDefaults(values); }
         validate(values, member ? memberLimits() : organizationLimits());
-        requireValues(values, member ? new String[]{"RYJBXX_GROUP_EMPLOYEE_COPE","DY_COMPANY_NAME","DY_PARTY_MEMBER_UNIQUE_ID","DY_NAME","DY_GENDER","DY_ID_NUMBER","DY_BIRTH_DATE","DY_EDUCATION_LEVEL","DY_DEGREE","DY_ETHNICITY","DY_JOB_POSITION","DY_NEW_SOCIAL_STRATUM_TYPE","DY_PROFESSIONAL_POSITION","DY_IS_MIGRANT_WORKER","DY_MOBILE_NUMBER","DY_AFFILIATED_BRANCH","DY_PARTY_ORGANIZATION_UNIQUE_ID","DY_HOUSEHOLD_LOCATION","DY_CURRENT_ADDRESS","DY_PARTY_ENTRY_DATE","DY_PARTY_REGULARIZATION_DATE","DY_PARTY_YEARS","DY_PARTY_YEARS_CORRECTION","DY_ENTRY_SYSTEM_TYPE","DY_ENTRY_SYSTEM_DATE","DY_ENTRY_SYSTEM_OPERATING_PARTY_ID","DY_EXIT_SYSTEM_TYPE","DY_EXIT_SYSTEM_DATE","DY_EXIT_SYSTEM_OPERATING_PARTY_ID","DY_UPDATE_TIMESTAMP","DY_OPERATING_PARTY_ORGANIZATION"} : new String[]{"DZZ_PARTY_ORGANIZATION_UNIQUE_ID","DZZ_COMPANY_NAME","DZZ_UPPER_PARTY_ORGANIZATION_UNIQUE_ID","DZZ_PARTY_ORGANIZATION_ENCODING","DZZ_PARTY_ORGANIZATION_FULL_NAME","DZZ_PARTY_ORGANIZATION_SHORT_NAME","DZZ_PARTY_ORGANIZATION_CATEGORY","DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE","DZZ_PARTY_ORGANIZATION_MEMBER_COUNT","DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE","DZZ_PARTY_ORGANIZATION_CONTACT_NAME","DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE","DZZ_PARTY_ORGANIZATION_UNIT_SITUATION","DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA","DZZ_DISPLAY_ORDER","DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME","DZZ_DELETE_FLAG"});
         upsert(table, key, values); return get(type, id, "", "");
     }
 
@@ -335,7 +340,18 @@ public class GroupFormalDataSyncService {
 
     private void writeExportRows(Sheet sheet, String[] fields, String[] headers, List<Map<String,Object>> rows) {
         Row header = sheet.createRow(0); for (int i=0;i<fields.length;i++) header.createCell(i).setCellValue(headers[i]);
-        for (int r=0;r<rows.size();r++) { Row row=sheet.createRow(r+1); for (int c=0;c<fields.length;c++) { Object value=rows.get(r).get(fields[c]); row.createCell(c).setCellValue(value == null ? "" : String.valueOf(value)); } }
+        for (int r=0;r<rows.size();r++) { Row row=sheet.createRow(r+1); for (int c=0;c<fields.length;c++) { String field=fields[c]; Object value=rows.get(r).get(field); row.createCell(c).setCellValue(exportValue(field, value)); } }
+    }
+
+    private String exportValue(String field, Object value) {
+        if (value == null) return "";
+        if (field.endsWith("_DATE") || field.endsWith("_TIMESTAMP")) {
+            if (value instanceof java.util.Date) return new SimpleDateFormat("yyyy-MM-dd").format((java.util.Date)value);
+            String text = String.valueOf(value); return text.length() >= 10 ? text.substring(0, 10) : text;
+        }
+        if ("DY_GENDER".equals(field)) { String v=String.valueOf(value); return "1".equals(v)?"男":("2".equals(v)?"女":v); }
+        if ("DY_IS_MIGRANT_WORKER".equals(field)) { String v=String.valueOf(value); return "1".equals(v)||"是".equals(v)?"是":"否"; }
+        return String.valueOf(value);
     }
 
     public Map<String,Object> importFile(MultipartFile file, String remoteIp) throws Exception {
@@ -375,15 +391,44 @@ public class GroupFormalDataSyncService {
     }
     private Map<String, Object> member(Map<String, Object> s, String employee, String org) {
         String company = text(s.get("COMPANY_NAME")); if (company.length() == 0) { company = text(s.get("PARTY_NAME")); }
-        Map<String, Object> t = new HashMap<String, Object>(); t.put("RYJBXX_GROUP_EMPLOYEE_COPE", employee); t.put("DY_COMPANY_NAME", company); t.put("DY_PARTY_MEMBER_UNIQUE_ID", text(s.get("ID"))); t.put("DY_NAME", text(s.get("USER_NAME"))); t.put("DY_GENDER", text(s.get("SEX"))); t.put("DY_ID_NUMBER", text(s.get("IDCARD"))); t.put("DY_BIRTH_DATE", s.get("BIRTHDAY")); t.put("DY_EDUCATION_LEVEL", text(s.get("EDUCATION_LEVEL"))); t.put("DY_DEGREE", text(s.get("EDUCATION_SECTOR"))); t.put("DY_ETHNICITY", text(s.get("NATION"))); t.put("DY_JOB_POSITION", text(s.get("POST"))); t.put("DY_NEW_SOCIAL_STRATUM_TYPE", text(s.get("CATEGORY"))); t.put("DY_PROFESSIONAL_POSITION", text(s.get("PROFESSIONAL_RANK"))); t.put("DY_IS_MIGRANT_WORKER", text(s.get("ATTRIBUTE_10"))); t.put("DY_MOBILE_NUMBER", text(s.get("TEL"))); t.put("DY_AFFILIATED_BRANCH", text(s.get("PARTY_NAME"))); t.put("DY_PARTY_ORGANIZATION_UNIQUE_ID", org); t.put("DY_JOINT_BRANCH_UNIT", text(s.get("JOINPARTY_DEPT"))); t.put("DY_HOUSEHOLD_LOCATION", text(s.get("REGISTER_ADDRESS"))); t.put("DY_CURRENT_ADDRESS", text(s.get("ADDRESS"))); t.put("DY_PARTY_ENTRY_DATE", s.get("JOIN_PARTY")); t.put("DY_PARTY_REGULARIZATION_DATE", s.get("REGULAR_DATE")); t.put("DY_PARTY_YEARS", s.get("PARTY_YEARS")); t.put("DY_PARTY_YEARS_CORRECTION", s.get("PARTY_YEARS_CORRECTION")); t.put("DY_ENTRY_SYSTEM_TYPE", text(s.get("JOINZG_TYPE"))); t.put("DY_ENTRY_SYSTEM_DATE", s.get("JOIN_SYSTEM_DATE")); t.put("DY_ENTRY_SYSTEM_OPERATING_PARTY_ID", text(s.get("JOIN_OPERATING_PARTY_ID"))); t.put("DY_EXIT_SYSTEM_TYPE", text(s.get("EXIT_SYSTEM_TYPE"))); t.put("DY_EXIT_SYSTEM_DATE", s.get("EXIT_SYSTEM_DATE")); t.put("DY_EXIT_SYSTEM_OPERATING_PARTY_ID", text(s.get("EXIT_SYSTEM_OPERATING_PARTY_ID"))); t.put("DY_UPDATE_TIMESTAMP", s.get("LAST_UPDATE_DATE")); t.put("DY_OPERATING_PARTY_ORGANIZATION", org); return t;
+        Map<String, Object> t = new HashMap<String, Object>(); t.put("RYJBXX_GROUP_EMPLOYEE_COPE", employee); t.put("DY_COMPANY_NAME", company); t.put("DY_PARTY_MEMBER_UNIQUE_ID", text(s.get("ID"))); t.put("DY_NAME", text(s.get("USER_NAME"))); t.put("DY_GENDER", text(s.get("SEX"))); t.put("DY_ID_NUMBER", text(s.get("IDCARD"))); t.put("DY_BIRTH_DATE", s.get("BIRTHDAY")); t.put("DY_EDUCATION_LEVEL", ""); t.put("DY_DEGREE", ""); t.put("DY_ETHNICITY", text(s.get("NATION"))); t.put("DY_JOB_POSITION", text(s.get("POST"))); t.put("DY_NEW_SOCIAL_STRATUM_TYPE", text(s.get("CATEGORY"))); t.put("DY_PROFESSIONAL_POSITION", text(s.get("PROFESSIONAL_RANK"))); t.put("DY_IS_MIGRANT_WORKER", text(s.get("ATTRIBUTE_10"))); t.put("DY_MOBILE_NUMBER", text(s.get("TEL"))); t.put("DY_AFFILIATED_BRANCH", text(s.get("PARTY_NAME"))); t.put("DY_PARTY_ORGANIZATION_UNIQUE_ID", org); t.put("DY_JOINT_BRANCH_UNIT", text(s.get("JOINPARTY_DEPT"))); t.put("DY_HOUSEHOLD_LOCATION", text(s.get("REGISTER_ADDRESS"))); t.put("DY_CURRENT_ADDRESS", text(s.get("ADDRESS"))); t.put("DY_PARTY_ENTRY_DATE", s.get("JOIN_PARTY")); t.put("DY_PARTY_REGULARIZATION_DATE", s.get("REGULAR_DATE")); t.put("DY_PARTY_YEARS", s.get("PARTY_YEARS")); t.put("DY_PARTY_YEARS_CORRECTION", s.get("PARTY_YEARS_CORRECTION")); t.put("DY_ENTRY_SYSTEM_TYPE", text(s.get("JOINZG_TYPE"))); t.put("DY_ENTRY_SYSTEM_DATE", s.get("JOIN_SYSTEM_DATE")); t.put("DY_ENTRY_SYSTEM_OPERATING_PARTY_ID", text(s.get("JOIN_OPERATING_PARTY_ID"))); t.put("DY_EXIT_SYSTEM_TYPE", null); t.put("DY_EXIT_SYSTEM_DATE", null); t.put("DY_EXIT_SYSTEM_OPERATING_PARTY_ID", null); t.put("DY_UPDATE_TIMESTAMP", s.get("LAST_UPDATE_DATE")); t.put("DY_OPERATING_PARTY_ORGANIZATION", org); return t;
     }
+    /** 从内网人事库取人员最新学历/学位；查不到或查询失败时保留空值。 */
+    private Map<String, String> educationAndDegree(String employeeCode) {
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("education", "");
+        result.put("degree", "");
+        if (employeeCode == null || employeeCode.trim().length() == 0 || "UNKNOWN".equalsIgnoreCase(employeeCode.trim())) {
+            return result;
+        }
+        try {
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                    "select t1.user_name, t1.user_id, "
+                    + "(select dict_s_name from RLZY.hr_dictionary_slave@ry where dict_m_id=? and dict_s_code=t2.degrees_code) as XL, "
+                    + "(select dict_s_name from RLZY.hr_dictionary_slave@ry where dict_m_id=? and dict_s_code=t2.academic) as XW "
+                    + "from RLZY.HR_USER@ry t1 "
+                    + "left join RLZY.HR_USER_EDUCATION@ry t2 on t2.user_id=t1.user_id "
+                    + "where t1.GROUP_USER_CODE=? "
+                    + "order by t2.graduation_date desc limit 1",
+                    EDUCATION_DICT_M_ID, DEGREE_DICT_M_ID, employeeCode);
+            if (!rows.isEmpty()) {
+                Map<String, Object> row = rows.get(0);
+                result.put("education", text(row.get("XL")));
+                result.put("degree", text(row.get("XW")));
+            }
+        } catch (RuntimeException ignored) {
+            // 内网人事库不可用或查不到时，不阻断党员同步。
+        }
+        return result;
+    }
+
     /** 将源表中的通用代码转换为平台字典名称；未配置或查不到时保留原值。 */
     private void translateLookupValues(Map<String, Object> target) {
         for (Map.Entry<String, String> entry : LOOKUP_TYPES.entrySet()) {
             String field = entry.getKey();
             String code = text(target.get(field)).trim();
             if (code.length() == 0 || "UNKNOWN".equalsIgnoreCase(code)) { continue; }
-            // 正式表 CHAR(1) 字段只能保留代码，中文名称会触发 DM8 字节截断。
+            // 标识字段按正式表字符类型保存代码，避免中文名称造成 DM8 字节截断。
             if ("DY_GENDER".equals(field) || "DY_IS_MIGRANT_WORKER".equals(field)) { continue; }
             try {
                 List<Map<String, Object>> rows = jdbcTemplate.queryForList(
@@ -400,16 +445,17 @@ public class GroupFormalDataSyncService {
     }
 
     private void applyMemberDefaults(Map<String, Object> target, String sourceId) {
-        String[] strings = new String[]{"DY_COMPANY_NAME","DY_NAME","DY_GENDER","DY_EDUCATION_LEVEL","DY_DEGREE","DY_ETHNICITY","DY_JOB_POSITION","DY_NEW_SOCIAL_STRATUM_TYPE","DY_PROFESSIONAL_POSITION","DY_MOBILE_NUMBER","DY_AFFILIATED_BRANCH","DY_JOINT_BRANCH_UNIT","DY_HOUSEHOLD_LOCATION","DY_CURRENT_ADDRESS","DY_ENTRY_SYSTEM_TYPE","DY_ENTRY_SYSTEM_OPERATING_PARTY_ID","DY_EXIT_SYSTEM_TYPE","DY_EXIT_SYSTEM_OPERATING_PARTY_ID","DY_OPERATING_PARTY_ORGANIZATION"};
+        String[] strings = new String[]{"DY_COMPANY_NAME","DY_NAME","DY_GENDER","DY_ETHNICITY","DY_JOB_POSITION","DY_NEW_SOCIAL_STRATUM_TYPE","DY_PROFESSIONAL_POSITION","DY_MOBILE_NUMBER","DY_AFFILIATED_BRANCH","DY_JOINT_BRANCH_UNIT","DY_HOUSEHOLD_LOCATION","DY_CURRENT_ADDRESS","DY_ENTRY_SYSTEM_TYPE","DY_ENTRY_SYSTEM_OPERATING_PARTY_ID","DY_OPERATING_PARTY_ORGANIZATION"};
         for (String field : strings) { Object value = target.get(field); if (value == null || text(value).trim().length() == 0) { target.put(field, "UNKNOWN"); } }
-        Object migrant = target.get("DY_IS_MIGRANT_WORKER");
-        if (migrant == null || text(migrant).trim().length() == 0) { target.put("DY_IS_MIGRANT_WORKER", "0"); }
+        if (target.get("DY_EDUCATION_LEVEL") == null) target.put("DY_EDUCATION_LEVEL", "");
+        if (target.get("DY_DEGREE") == null) target.put("DY_DEGREE", "");
+        target.put("DY_IS_MIGRANT_WORKER", yesNo(target.get("DY_IS_MIGRANT_WORKER")));
         if (target.get("DY_PARTY_YEARS") == null || text(target.get("DY_PARTY_YEARS")).trim().length() == 0) { target.put("DY_PARTY_YEARS", Integer.valueOf(0)); }
         if (target.get("DY_PARTY_YEARS_CORRECTION") == null || text(target.get("DY_PARTY_YEARS_CORRECTION")).trim().length() == 0) { target.put("DY_PARTY_YEARS_CORRECTION", Integer.valueOf(0)); }
         if (text(target.get("DY_PARTY_MEMBER_UNIQUE_ID")).trim().length() == 0) { target.put("DY_PARTY_MEMBER_UNIQUE_ID", "UNKNOWN_" + text(sourceId)); }
         if (text(target.get("DY_ID_NUMBER")).trim().length() == 0) { target.put("DY_ID_NUMBER", "000000000000000000"); }
         java.sql.Date defaultDate = java.sql.Date.valueOf("1970-01-01");
-        for (String field : new String[]{"DY_BIRTH_DATE","DY_PARTY_ENTRY_DATE","DY_PARTY_REGULARIZATION_DATE","DY_ENTRY_SYSTEM_DATE","DY_EXIT_SYSTEM_DATE"}) { if (target.get(field) == null || text(target.get(field)).trim().length() == 0) { target.put(field, defaultDate); } }
+        for (String field : new String[]{"DY_BIRTH_DATE","DY_PARTY_ENTRY_DATE","DY_ENTRY_SYSTEM_DATE"}) { if (target.get(field) == null || text(target.get(field)).trim().length() == 0) { target.put(field, defaultDate); } }
         if (target.get("DY_UPDATE_TIMESTAMP") == null || text(target.get("DY_UPDATE_TIMESTAMP")).trim().length() == 0) { target.put("DY_UPDATE_TIMESTAMP", java.sql.Timestamp.valueOf("1970-01-01 00:00:00")); }
     }
 
@@ -420,8 +466,16 @@ public class GroupFormalDataSyncService {
             String name = text(row.get("NAME")); if (name.length() == 0) { continue; }
             if (text(row.get("LOOKUP_NAME")).indexOf("副书记") < 0 && !result.containsKey("DZZ_PARTY_ORGANIZATION_CONTACT_NAME")) { result.put("DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE", text(row.get("LOGIN_NAME"))); result.put("DZZ_PARTY_ORGANIZATION_CONTACT_NAME", name); result.put("DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE", text(row.get("MOBILE"))); }
         }
-        if (!result.containsKey("DZZ_PARTY_ORGANIZATION_CONTACT_NAME")) { throw new IllegalArgumentException("党组织联系人缺失（PARTY_POST/有效组织成员）"); }
         return result;
+    }
+
+    private void applyOrganizationDefaults(Map<String, Object> target) {
+        String[] strings = new String[]{"DZZ_COMPANY_NAME","DZZ_PARTY_ORGANIZATION_ENCODING","DZZ_PARTY_ORGANIZATION_FULL_NAME","DZZ_PARTY_ORGANIZATION_SHORT_NAME","DZZ_PARTY_ORGANIZATION_CATEGORY","DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE","DZZ_PARTY_ORGANIZATION_CONTACT_NAME","DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE","DZZ_PARTY_ORGANIZATION_UNIT_SITUATION","DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA","DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME"};
+        for (String field : strings) { if (text(target.get(field)).trim().length() == 0) { target.put(field, "UNKNOWN"); } }
+        if (target.get("DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE") == null) { target.put("DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE", java.sql.Date.valueOf("1970-01-01")); }
+        if (target.get("DZZ_PARTY_ORGANIZATION_MEMBER_COUNT") == null) { target.put("DZZ_PARTY_ORGANIZATION_MEMBER_COUNT", Integer.valueOf(0)); }
+        if (target.get("DZZ_DISPLAY_ORDER") == null) { target.put("DZZ_DISPLAY_ORDER", Integer.valueOf(0)); }
+        if (text(target.get("DZZ_DELETE_FLAG")).trim().length() == 0) { target.put("DZZ_DELETE_FLAG", "0"); }
     }
 
     private String safeMessage(String value) {
@@ -461,10 +515,15 @@ public class GroupFormalDataSyncService {
     private void logAccess(String ip, String type) { jdbcTemplate.update("insert into DYN_GROUP_SYNC_LOG (ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,LAST_UPDATE_IP,VERSION,ORG_IDENTITY,BATCH_START_TIME,STATUS,TRIGGER_TYPE,EXECUTOR_ID,CALL_IP,ERROR_MESSAGE) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", java.util.UUID.randomUUID().toString().replace("-", ""), "REST", new Date(), "REST", new Date(), ip, 1, "REST", new Date(), "READ", type, "REST", ip, ""); }
     private String require(String v, String label) { if (v == null || v.trim().length() == 0) throw new IllegalArgumentException(label + "为空"); return v; }
     private String text(Object v) { return v == null ? "" : String.valueOf(v); }
+    private String yesNo(Object value) { String v = text(value).trim(); return "1".equals(v) || "Y".equalsIgnoreCase(v) || "YES".equalsIgnoreCase(v) || "是".equals(v) ? "1" : "0"; }
     private String join(List<String> v, String sep) { StringBuilder b = new StringBuilder(); for (String s : v) { if (b.length() > 0) b.append(sep); b.append(s); } return b.toString(); }
-    private Map<String, Integer> memberLimits() { Map<String, Integer> m = new HashMap<String, Integer>(); m.put("RYJBXX_GROUP_EMPLOYEE_COPE",8); for (String s : new String[]{"DY_COMPANY_NAME","DY_PARTY_MEMBER_UNIQUE_ID","DY_NAME","DY_GENDER","DY_EDUCATION_LEVEL","DY_DEGREE","DY_ETHNICITY","DY_JOB_POSITION","DY_NEW_SOCIAL_STRATUM_TYPE","DY_PROFESSIONAL_POSITION","DY_MOBILE_NUMBER","DY_AFFILIATED_BRANCH","DY_PARTY_ORGANIZATION_UNIQUE_ID","DY_JOINT_BRANCH_UNIT","DY_HOUSEHOLD_LOCATION","DY_CURRENT_ADDRESS","DY_ENTRY_SYSTEM_TYPE","DY_ENTRY_SYSTEM_OPERATING_PARTY_ID","DY_EXIT_SYSTEM_TYPE","DY_EXIT_SYSTEM_OPERATING_PARTY_ID","DY_OPERATING_PARTY_ORGANIZATION"}) m.put(s,50); return m; }
-    private Map<String, Integer> organizationLimits() { Map<String, Integer> m = new HashMap<String, Integer>(); m.put("DZZ_PARTY_ORGANIZATION_UNIQUE_ID",32); m.put("DZZ_COMPANY_NAME",50); m.put("DZZ_UPPER_PARTY_ORGANIZATION_UNIQUE_ID",32); m.put("DZZ_PARTY_ORGANIZATION_ENCODING",12); for (String s : new String[]{"DZZ_PARTY_ORGANIZATION_FULL_NAME","DZZ_PARTY_ORGANIZATION_SHORT_NAME","DZZ_PARTY_ORGANIZATION_CATEGORY","DZZ_PARTY_ORGANIZATION_CONTACT_NAME","DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE","DZZ_PARTY_ORGANIZATION_UNIT_SITUATION","DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA","DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME","DZZ_PARTY_BRANCH_STANDARDIZATION_CATEGORY","DZZ_OPERATING_PARTY_ORGANIZATION"}) m.put(s,50); m.put("DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE",10); return m; }
-    private void validate(Map<String, Object> row, Map<String, Integer> limits) { for (Map.Entry<String,Integer> e : limits.entrySet()) { String v = text(row.get(e.getKey())); if (v.length() == 0 && !optionalField(e.getKey())) throw new IllegalArgumentException(e.getKey() + "为空"); if (v.length() > e.getValue().intValue()) throw new IllegalArgumentException(e.getKey() + "超长"); } }
-    private boolean optionalField(String field) { return "DY_JOINT_BRANCH_UNIT".equals(field) || "DZZ_UPDATE_TIMESTAMP".equals(field) || "DZZ_PARTY_BRANCH_STANDARDIZATION_CATEGORY".equals(field) || "DZZ_OPERATING_PARTY_ORGANIZATION".equals(field); }
-    private void requireValues(Map<String, Object> row, String[] fields) { for (String field : fields) { Object value = row.get(field); if (value == null || text(value).trim().length() == 0) { throw new IllegalArgumentException(field + "为空"); } } }
+    private Map<String, Integer> memberLimits() { Map<String, Integer> m = new HashMap<String, Integer>(); m.put("RYJBXX_GROUP_EMPLOYEE_COPE",2000); for (String s : new String[]{"DY_COMPANY_NAME","DY_PARTY_MEMBER_UNIQUE_ID","DY_NAME","DY_GENDER","DY_EDUCATION_LEVEL","DY_DEGREE","DY_ETHNICITY","DY_JOB_POSITION","DY_NEW_SOCIAL_STRATUM_TYPE","DY_PROFESSIONAL_POSITION","DY_MOBILE_NUMBER","DY_AFFILIATED_BRANCH","DY_PARTY_ORGANIZATION_UNIQUE_ID","DY_JOINT_BRANCH_UNIT","DY_HOUSEHOLD_LOCATION","DY_CURRENT_ADDRESS","DY_ENTRY_SYSTEM_TYPE","DY_ENTRY_SYSTEM_OPERATING_PARTY_ID","DY_EXIT_SYSTEM_TYPE","DY_EXIT_SYSTEM_OPERATING_PARTY_ID","DY_OPERATING_PARTY_ORGANIZATION"}) m.put(s,2000); m.put("DY_ID_NUMBER",100); m.put("DY_IS_MIGRANT_WORKER",100); return m; }
+    private Map<String, Integer> organizationLimits() { Map<String, Integer> m = new HashMap<String, Integer>(); m.put("DZZ_PARTY_ORGANIZATION_UNIQUE_ID",2000); m.put("DZZ_COMPANY_NAME",2000); m.put("DZZ_UPPER_PARTY_ORGANIZATION_UNIQUE_ID",2000); m.put("DZZ_PARTY_ORGANIZATION_ENCODING",2000); for (String s : new String[]{"DZZ_PARTY_ORGANIZATION_FULL_NAME","DZZ_PARTY_ORGANIZATION_SHORT_NAME","DZZ_PARTY_ORGANIZATION_CATEGORY","DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE","DZZ_PARTY_ORGANIZATION_CONTACT_NAME","DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE","DZZ_PARTY_ORGANIZATION_UNIT_SITUATION","DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA","DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME","DZZ_PARTY_BRANCH_STANDARDIZATION_CATEGORY","DZZ_OPERATING_PARTY_ORGANIZATION"}) m.put(s,2000); m.put("DZZ_DELETE_FLAG",100); return m; }
+    private void validate(Map<String, Object> row, Map<String, Integer> limits) { for (Map.Entry<String,Integer> e : limits.entrySet()) { String v = text(row.get(e.getKey())); if (v.length() > e.getValue().intValue()) throw new IllegalArgumentException(e.getKey() + "超长"); } }
+
+    public void assertAdministrator(String userId) {
+        if (StringUtils.isBlank(userId)) { throw new IllegalArgumentException("只有管理员可以执行全量同步"); }
+        Integer count = jdbcTemplate.queryForObject("select count(1) from SYS_USER_ROLE ur join SYS_ROLE r on r.ID=ur.SYS_ROLE_ID where ur.SYS_USER_ID=? and r.ROLE_NAME in (?,?) and nvl(r.VALID_FLAG,'1')='1'", Integer.class, userId, PARTY_ADMIN_ROLE, PLATFORM_ADMIN_ROLE);
+        if (count == null || count.intValue() == 0) { throw new IllegalArgumentException("只有管理员可以执行全量同步"); }
+    }
 }

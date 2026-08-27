@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import avicit.pb.groupsync.service.GroupDataSyncService;
 import avicit.pb.groupsync.service.GroupFormalDataSyncService;
 import avicit.platform6.core.quartz.IBusinessJob;
 
@@ -19,9 +18,6 @@ import avicit.platform6.core.quartz.IBusinessJob;
 @Component
 public class GroupDataSyncJob implements IBusinessJob {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupDataSyncJob.class);
-
-    @Autowired
-    private GroupDataSyncService service;
 
     @Autowired
     private GroupFormalDataSyncService formalService;

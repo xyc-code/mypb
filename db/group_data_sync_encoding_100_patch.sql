@@ -1,0 +1,4 @@
+-- 将正式表中的党组织编码放宽到 2000 位。
+-- 执行前请确认目标库为集团正式表所在 schema，并先完成备份。
+ALTER TABLE PULL_D12_PTY_ORG_BASIC_INFO
+  MODIFY DZZ_PARTY_ORGANIZATION_ENCODING VARCHAR(2000);

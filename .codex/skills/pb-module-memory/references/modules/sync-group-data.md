@@ -181,3 +181,10 @@
 - Single and batch deletes now physically delete records. Deleting an organization also physically deletes its mirror members; sync cleanup physically deletes source rows missing from the current batch. The old delete-flag columns remain only for compatibility with existing data and SQL.
 - Organization ZIP exports no longer enable worksheet protection; visible exported cells are editable in Excel. Hidden technical columns remain hidden.
 - Intranet deployment must execute the base schema for fresh installs or the physical-delete/column-width patch for existing installs. Do not execute the patch without reviewing the destructive DELETE statements against the target database.
+
+## Intranet Education/Degree Lookup (2026-08-27)
+
+- During member sync, `group_user_code` is used to query the intranet HR tables `RLZY.HR_USER@ry` and `RLZY.HR_USER_EDUCATION@ry`.
+- The query selects the latest education record by `graduation_date desc`; dictionary IDs are fixed as education `HI000000000000000007` and degree `HI000000000000000008`.
+- Missing rows, empty dictionary values, unavailable remote HR tables, or lookup exceptions return empty education/degree values and do not fail the member sync row.
+- Updated source: `src/avicit/pb/groupsync/service/GroupFormalDataSyncService.java`; compiled into `WebRoot/WEB-INF/classes` and verified after Tomcat/Redis restart with `/pb/login` HTTP 200.

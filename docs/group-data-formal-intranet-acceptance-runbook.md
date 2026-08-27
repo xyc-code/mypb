@@ -22,11 +22,11 @@ select COLUMN_NAME,DATA_TYPE,DATA_LENGTH,NULLABLE
  order by TABLE_NAME,COLUMN_ID;
 ```
 
-`RYJBXX_GROUP_EMPLOYEE_COPE` 必须是 `VARCHAR(8)` 主键；组织编码必须是 `VARCHAR(12)`；不得把截图字段扩展为 200/500 等长度。
+`RYJBXX_GROUP_EMPLOYEE_COPE` 使用 `VARCHAR(2000)` 主键；组织编码使用 `VARCHAR(2000)`；其他字段按本模块正式表脚本核对。
 
 ### Upgrade
 
-1. 停止 Quartz 调度并备份旧 `DYN_DY_PARTY_MEMBER`、`DYN_DZZ_PARTY_ORGANIZATION`、`DYN_GROUP_SYNC_LOG`。
+1. 停止 Quartz 调度并备份 `DYN_GROUP_SYNC_LOG` 及同步元数据表。
 2. 执行 `db/group_data_sync.sql` 创建正式表和元数据表。
 3. 完成全量同步验收后，才允许人工重命名旧 DYN 业务表；不要直接 DROP。
 4. 回滚时停止正式同步，恢复备份表名称；正式表保留，不做破坏性删除。
