@@ -31,8 +31,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 /** 集团 FINEDB 正式表同步与只读分页服务。正式表不写入 PB 元数据。 */
 @Service
 public class GroupFormalDataSyncService {
-    private static final String MEMBER_TABLE = "FINEDB.PULL_D12_PTY_MBR_BASIC_INFO";
-    private static final String ORG_TABLE = "FINEDB.PULL_D12_PTY_ORG_BASIC_INFO";
+    // Formal tables are owned by the PB connection schema in the intranet (PT6).
+    // Keep identifiers unqualified so the same package follows the authenticated schema.
+    private static final String MEMBER_TABLE = "PULL_D12_PTY_MBR_BASIC_INFO";
+    private static final String ORG_TABLE = "PULL_D12_PTY_ORG_BASIC_INFO";
     private static final int MAX_PAGE_SIZE = 200;
     private static final String ROOT_PARENT_UID = "00000000000000000000000000000000";
     private static final Object SYNC_LOCK = new Object();

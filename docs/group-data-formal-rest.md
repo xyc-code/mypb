@@ -1,6 +1,6 @@
 # 集团正式表同步接口
 
-正式表：`FINEDB.PULL_D12_PTY_MBR_BASIC_INFO`、`FINEDB.PULL_D12_PTY_ORG_BASIC_INFO`。
+正式表：当前连接模式（内网为 `PT6`）下的 `PULL_D12_PTY_MBR_BASIC_INFO`、`PULL_D12_PTY_ORG_BASIC_INFO`。
 PB 只负责从 `PARTY_ORGANIZATION`、`PARTY_MEMBER` 写入正式表，组织先于党员；数据中心通过只读接口分页读取，PB 不主动向数据中心推送。
 
 ## 接口
@@ -22,3 +22,4 @@ PB 只负责从 `PARTY_ORGANIZATION`、`PARTY_MEMBER` 写入正式表，组织�
 空值、超长、非法码值、组织父级缺失、党员无组织整行拒绝并写入 `DYN_GROUP_SYNC_REJECT`；员工编码按字符串保留前导零。同步锁保证同一 JVM 内不并发执行；只有成功批次才允许后续实现缺失记录清理，当前正式同步不执行清理。
 
 截图中未提供正式表字段注释以外的集团码表和值域，代码不伪造默认码值；`PARTY_CODE`/源组织 `ID` 到正式组织唯一标识的映射假设需在内网联调时确认。
+
