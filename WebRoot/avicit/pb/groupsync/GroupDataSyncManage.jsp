@@ -195,14 +195,14 @@ String importlibs = "common,form";
     var logRows = [];
     var fields = {
         member: [
-            ['DY_JBXX_GROUP_EMPLOYEE_CODE','集团员工编码'],['DY_COMPANY_NAME','企业名称'],['DY_NAME','姓名'],['DY_GENDER','性别'],['DY_ID_NUMBER','公民身份号码'],['DY_BIRTH_DATE','出生日期'],['DY_EDUCATION_LEVEL','学历'],['DY_DEGREE','学位'],['DY_ETHNICITY','民族'],['DY_JOB_POSITION','工作岗位'],['DY_NEW_SOCIAL_STRATUM_TYPE','新社会阶层类型'],['DY_PROFESSIONAL_POSITION','从事专业技术职务'],['DY_IS_MIGRANT_WORKER','是否农民工'],['DY_MOBILE_NUMBER','手机号码'],['DY_AFFILIATED_BRANCH','组织关系所在党支部'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_JOINT_BRANCH_UNIT','联合支部所在单位'],['DY_HOUSEHOLD_LOCATION','户籍所在地'],['DY_CURRENT_ADDRESS','现居住地'],['DY_PARTY_ENTRY_DATE','入党日期'],['DY_PARTY_REGULARIZATION_DATE','转正日期'],['DY_PARTY_YEARS','党龄'],['DY_PARTY_YEARS_CORRECTION','党龄校正值'],['DY_ENTRY_SYSTEM_TYPE','进入本信息系统类型'],['DY_ENTRY_SYSTEM_DATE','进入本信息系统日期'],['DY_ENTRY_SYSTEM_OPERATING_PARTY_ID','进入本信息系统操作党组织唯一标识'],['DY_EXIT_SYSTEM_TYPE','离开本信息系统类型'],['DY_EXIT_SYSTEM_DATE','离开本信息系统日期'],['DY_EXIT_SYSTEM_OPERATING_PARTY_ID','离开本信息系统操作党组织唯一标识'],['DY_UPDATE_TIMESTAMP','更新时间戳'],['DY_OPERATING_PARTY_ORGANIZATION','操作党组织']
+            ['DY_JBXX_GROUP_EMPLOYEE_CODE','集团员工编码'],['DY_COMPANY_NAME','企业名称'],['DY_PARTY_MEMBER_UNIQUE_ID','党员唯一标识'],['DY_NAME','姓名'],['DY_GENDER','性别'],['DY_ID_NUMBER','公民身份号码'],['DY_BIRTH_DATE','出生日期'],['DY_EDUCATION_LEVEL','学历'],['DY_DEGREE','学位'],['DY_ETHNICITY','民族'],['DY_JOB_POSITION','工作岗位'],['DY_NEW_SOCIAL_STRATUM_TYPE','新社会阶层类型'],['DY_PROFESSIONAL_POSITION','从事专业技术职务'],['DY_IS_MIGRANT_WORKER','是否农民工'],['DY_MOBILE_NUMBER','手机号码'],['DY_AFFILIATED_BRANCH','组织关系所在党支部'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_JOINT_BRANCH_UNIT','联合支部所在单位'],['DY_HOUSEHOLD_LOCATION','户籍所在地'],['DY_CURRENT_ADDRESS','现居住地'],['DY_PARTY_ENTRY_DATE','入党日期'],['DY_PARTY_REGULARIZATION_DATE','转正日期'],['DY_PARTY_YEARS','党龄'],['DY_PARTY_YEARS_CORRECTION','党龄校正值'],['DY_ENTRY_SYSTEM_TYPE','进入本信息系统类型'],['DY_ENTRY_SYSTEM_DATE','进入本信息系统日期'],['DY_ENTRY_SYSTEM_OPERATING_PARTY_ID','进入本信息系统操作党组织唯一标识'],['DY_EXIT_SYSTEM_TYPE','离开本信息系统类型'],['DY_EXIT_SYSTEM_DATE','离开本信息系统日期'],['DY_EXIT_SYSTEM_OPERATING_PARTY_ID','离开本信息系统操作党组织唯一标识'],['DY_UPDATE_TIMESTAMP','更新时间戳'],['DY_OPERATING_PARTY_ORGANIZATION','操作党组织']
         ],
         organization: [
             ['DZZ_COMPANY_NAME','企业名称'],['DZZ_UPPER_PARTY_ORGANIZATION_UNIQUE_ID','上一级党组织唯一标识'],['DZZ_PARTY_ORGANIZATION_ENCODING','党组织编码'],['DZZ_PARTY_ORGANIZATION_FULL_NAME','党组织全称'],['DZZ_PARTY_ORGANIZATION_SHORT_NAME','党组织简称'],['DZZ_PARTY_ORGANIZATION_CATEGORY','组织类别'],['DZZ_PARTY_ORGANIZATION_ESTABLISHMENT_DATE','成立日期'],['DZZ_PARTY_ORGANIZATION_MEMBER_COUNT','党组织党员人数'],['DZZ_PARTY_ORGANIZATION_CONTACT_EMPLOYEE_CODE','联系人编码'],['DZZ_PARTY_ORGANIZATION_CONTACT_NAME','联系人'],['DZZ_PARTY_ORGANIZATION_CONTACT_MOBILE','联系电话'],['DZZ_PARTY_ORGANIZATION_UNIT_SITUATION','党组织所在单位情况'],['DZZ_PARTY_ORGANIZATION_ADMINISTRATIVE_AREA','所在行政区划'],['DZZ_DISPLAY_ORDER','显示排序'],['DZZ_UPPER_PARTY_ORGANIZATION_FULL_NAME','批准成立的上级党组织全称'],['DZZ_DELETE_FLAG','删除标识'],['DZZ_UPDATE_TIMESTAMP','更新时间戳'],['DZZ_PARTY_BRANCH_STANDARDIZATION_CATEGORY','党支部标准化规范化建设类别'],['DZZ_OPERATING_PARTY_ORGANIZATION','操作党组织']
         ]
     };
     var displayColumns = {
-        member: [['DY_NAME','姓名'],['DY_ID_NUMBER','身份证号'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_MOBILE_NUMBER','手机号']],
+        member: [['DY_PARTY_MEMBER_UNIQUE_ID','党员唯一标识'],['DY_NAME','姓名'],['DY_ID_NUMBER','身份证号'],['DY_PARTY_ORGANIZATION_UNIQUE_ID','党组织唯一标识'],['DY_MOBILE_NUMBER','手机号']],
         organization: [['DZZ_PARTY_ORGANIZATION_FULL_NAME','党组织全称'],['DZZ_PARTY_ORGANIZATION_ENCODING','组织编码'],['DZZ_PARTY_ORGANIZATION_CATEGORY','组织类别'],['DZZ_PARTY_ORGANIZATION_CONTACT_NAME','联系人'],['DZZ_DELETE_FLAG','删除标识']]
     };
 
@@ -294,17 +294,19 @@ String importlibs = "common,form";
     }
     function normalizeDate(value) {
         if (value == null || value === '') { return ''; }
-        if (/^\d{10,13}$/.test(String(value))) {
-            var timestamp = Number(value); if (String(value).length === 10) { timestamp *= 1000; }
+        var raw = String(value);
+        if (/^-?\d{9,13}$/.test(raw)) {
+            var timestamp = Number(raw), digits = raw.charAt(0) === '-' ? raw.length - 1 : raw.length;
+            if (digits <= 10) { timestamp *= 1000; }
             var date = new Date(timestamp); if (!isNaN(date.getTime())) { return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2); }
         }
-        var text = String(value); return text.length >= 10 ? text.substring(0, 10) : text;
+        return raw.length >= 10 ? raw.substring(0, 10) : raw;
     }
     function normalizeTimestamp(value) {
         if (value == null || value === '') { return ''; }
-        var numeric = /^\d{10,13}$/.test(String(value)) ? Number(value) : NaN;
-        if (!isNaN(numeric)) { if (String(value).length === 10) { numeric *= 1000; } }
-        var date = !isNaN(numeric) ? new Date(numeric) : new Date(String(value).replace(' ', 'T'));
+        var raw = String(value), numeric = /^-?\d{9,13}$/.test(raw) ? Number(raw) : NaN;
+        if (!isNaN(numeric)) { var digits = raw.charAt(0) === '-' ? raw.length - 1 : raw.length; if (digits <= 10) { numeric *= 1000; } }
+        var date = !isNaN(numeric) ? new Date(numeric) : new Date(raw.replace(' ', 'T'));
         if (isNaN(date.getTime())) { return String(value); }
         return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + ('0' + date.getSeconds()).slice(-2);
     }

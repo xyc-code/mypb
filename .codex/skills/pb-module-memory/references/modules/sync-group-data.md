@@ -188,3 +188,20 @@
 - The query selects the latest education record by `graduation_date desc`; dictionary IDs are fixed as education `HI000000000000000007` and degree `HI000000000000000008`.
 - Missing rows, empty dictionary values, unavailable remote HR tables, or lookup exceptions return empty education/degree values and do not fail the member sync row.
 - Updated source: `src/avicit/pb/groupsync/service/GroupFormalDataSyncService.java`; compiled into `WebRoot/WEB-INF/classes` and verified after Tomcat/Redis restart with `/pb/login` HTTP 200.
+
+## Organization Fixed Fields And Establishment Date (2026-08-28)
+
+- Organization sync always writes these fixed values: company `中国航发哈尔滨东安发动机有限公司`, organization encoding `ZGHFDADW`, administrative area `哈尔滨市`, unit situation `中国航发东安`, and approving upper organization full name `中国共产党中国航发哈尔滨发动机有限公司委员会`.
+- Establishment date uses the source organization ID to query `select zkdydh from DYN_PARTY_ORG_INFO where party_id=? order by CREATION_DATE limit 1`.
+- If `DYN_PARTY_ORG_INFO` is unavailable locally, the query fails, no row exists, or `zkdydh` is null, the formal establishment date stays null and the organization row continues syncing. The old `1970-01-01` fallback was removed.
+- Updated `GroupFormalDataSyncService.java`, compiled with JDK8 into `WebRoot/WEB-INF/classes`, restarted DM8/Redis/Tomcat, and verified `/pb/login` HTTP 200.
+
+## Member Fixed Fields, MDM Lookup And Date Display (2026-08-28)
+
+- Member sync always writes company `中国航发哈尔滨东安发动机有限公司`, job position `公有经济控制企业专业技术岗位`, and operating organization `中国航发东安党委`.
+- Member unique ID is concatenated without separators as `ZGHFDADW + source party organization name + group employee code`.
+- New social stratum type, entry-system operating party ID, and exit-system operating party ID remain empty; they are no longer replaced with `UNKNOWN`.
+- `DYN_MDM_RY` is queried by `JTYGBM` for `ZC` and `CJGZRQ`, mapped to professional position and entry-system date. Missing local table, no rows, null values, or query exceptions leave both fields empty and do not fail member sync. Entry-system date is no longer replaced with `1970-01-01`.
+- Member unique ID was added to both the list and edit dialog. Frontend/backend epoch conversion now accepts negative Unix seconds and distinguishes 10-digit seconds from 13-digit milliseconds; screenshot sample `-117878400` renders as `1966-04-08`.
+- Migrant-worker status is always stored directly as Chinese text `否`; source `ATTRIBUTE_10` is intentionally ignored. Manual/import normalization stores only `是` or `否` in the database.
+- Updated `GroupFormalDataSyncService.java` and `GroupDataSyncManage.jsp`; JDK8 compile, JSP JavaScript parse, frontend conflict scan (0 warnings), DM8/Redis/Tomcat restart, and `/pb/login` HTTP 200 all passed.
