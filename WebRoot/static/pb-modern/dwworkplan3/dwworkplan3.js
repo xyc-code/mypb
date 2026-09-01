@@ -834,12 +834,12 @@
       return;
     }
     if (payload.selfReceiver !== "Y" && (!payload.personNodeId || !payload.receiverId)) {
-      message("请选择接收对象");
+      message("请选择接收人员");
       return;
     }
     api("api/batch/create", currentNodeParams({ year: payload.year, quarter: payload.quarter })).done(function (res) {
       payload.batchId = res.id;
-      confirmBox("确定直接发送给选中接收对象吗？", function () {
+      confirmBox("确定直接发送给选中人员吗？", function () {
         api("api/task/directDispatchRoot", payload).done(function (saved) {
           uploadPlatformFiles("dwTaskAttachment", text(saved.id), TASK_ATTACHMENT_ELEMENT_ID, function () {
             closeModal("dwTaskModal");
@@ -1053,7 +1053,7 @@
     }
     payload.parentId = $("#dwTaskParentId").val();
     if (!payload.parentId || !payload.personNodeId) {
-      message("请选择接收对象");
+      message("请选择接收人员");
       return;
     }
     confirmBox("确定下发该任务吗？", function () {
@@ -1665,13 +1665,13 @@
       confirmBox("确定提交反馈给上级确认吗？", function () {
         var preparedId = $("#dwFeedbackPreparedId").val();
         uploadPlatformFiles("dwFeedbackAttachment", preparedId, FEEDBACK_ATTACHMENT_ELEMENT_ID, function () {
-          api("api/feedback/submit", {
+          api("api/feedback/submit", currentNodeParams({
             taskId: $("#dwFeedbackTaskId").val(),
             content: content,
             attachmentId: $("#dwFeedbackAttachmentId").val(),
             preparedId: preparedId,
             targetUserId: targetUserId
-          }).done(function () {
+          })).done(function () {
             closeModal("dwFeedbackModal");
             message("反馈已提交，请等待上级确认");
             afterTaskChanged();
@@ -1686,7 +1686,7 @@
       done();
       return;
     }
-    api("api/feedback/prepare", { taskId: $("#dwFeedbackTaskId").val() }).done(function (prepared) {
+    api("api/feedback/prepare", currentNodeParams({ taskId: $("#dwFeedbackTaskId").val() })).done(function (prepared) {
       $("#dwFeedbackPreparedId").val(text(prepared.id));
       resetPlatformUploader("dwFeedbackAttachment");
       initFeedbackUploader(text(prepared.id));
@@ -1746,7 +1746,7 @@
       message("任务不存在");
       return;
     }
-    api("api/feedback/list", { taskId: id }).done(function (res) {
+    api("api/feedback/list", currentNodeParams({ taskId: id })).done(function (res) {
       var html = '<div class="dw-detail-grid">';
       html += detailItem("任务标题", text(task.TITLE));
       html += detailItem("层级", levelLabel(text(task.TASK_LEVEL)));
@@ -1799,7 +1799,7 @@
     var id = $(this).attr("data-feedback-id");
     if (action === "confirm") {
       confirmBox("确定确认该反馈吗？确认后将回填到上级反馈内容。", function () {
-        api("api/feedback/confirm", { feedbackId: id }).done(function () {
+        api("api/feedback/confirm", currentNodeParams({ feedbackId: id })).done(function () {
           closeModal("dwDetailModal");
           message("反馈已确认");
           afterTaskChanged();
@@ -1812,7 +1812,7 @@
           return;
         }
         confirmBox("确定退回该反馈吗？", function () {
-          api("api/feedback/return", { feedbackId: id, reason: reason }).done(function () {
+          api("api/feedback/return", currentNodeParams({ feedbackId: id, reason: reason })).done(function () {
             closeModal("dwDetailModal");
             message("反馈已退回");
             afterTaskChanged();
@@ -2874,7 +2874,7 @@
     function openPreparedFeedback(preparedId) {
       $("#dwFeedbackPreparedId").val(text(preparedId));
       loadFeedbackTargets(id, function () {
-        api("api/feedback/list", { taskId: id }).done(function (res) {
+        api("api/feedback/list", currentNodeParams({ taskId: id })).done(function (res) {
           var rows = res.rows || [];
           $("#dwFeedbackHistory").html('<div class="dw-section-title">\u53cd\u9988\u94fe\u8def</div>' + feedbackHtml(rows, "feedbackModal"));
           initFeedbackAttachmentViews(rows, "feedbackModal");
@@ -2888,7 +2888,7 @@
       openPreparedFeedback(draftId);
       return;
     }
-    api("api/feedback/prepare", { taskId: id }).done(function (prepared) {
+    api("api/feedback/prepare", currentNodeParams({ taskId: id })).done(function (prepared) {
       openPreparedFeedback(text(prepared.id));
     }).fail(showError);
   }
@@ -2897,7 +2897,7 @@
     state.feedbackTargetRequired = false;
     $("#dwFeedbackTargetWrap").hide();
     $("#dwFeedbackTarget").html("");
-    return api("api/feedback/targets", { taskId: taskId }).done(function (res) {
+    return api("api/feedback/targets", currentNodeParams({ taskId: taskId })).done(function (res) {
       var rows = res.rows || [];
       state.feedbackTargetRequired = text(res.required) === "Y";
       if (state.feedbackTargetRequired) {
@@ -2928,7 +2928,7 @@
       message("\u4efb\u52a1\u4e0d\u5b58\u5728");
       return;
     }
-    api("api/feedback/list", { taskId: id }).done(function (res) {
+    api("api/feedback/list", currentNodeParams({ taskId: id })).done(function (res) {
       var rows = res.rows || [];
       var html = taskSummaryHtml(task);
       var parentTaskId = text(task.PARENT_TASK_ID) || text(task.PARENT_ID);
@@ -3205,7 +3205,7 @@
   }
 
   function prepareConfirmAndForward(row, content) {
-    api("api/feedback/targets", { taskId: text(row.TASK_PARENT_ID) }).done(function (res) {
+    api("api/feedback/targets", currentNodeParams({ taskId: text(row.TASK_PARENT_ID) })).done(function (res) {
       var targets = res.rows || [];
       if (!targets.length) {
         message("\u4e0a\u7ea7\u90e8\u95e8\u8282\u70b9\u672a\u7ed1\u5b9a\u786e\u8ba4\u4eba");
@@ -3262,7 +3262,7 @@
   }
 
   function submitFeedbackReview(url, payload, successMessage) {
-    api(url, payload).done(function () {
+    api(url, currentNodeParams(payload)).done(function () {
       closeModal("dwDetailModal");
       closeModal("dwFeedbackModal");
       message(successMessage);
@@ -3289,7 +3289,7 @@
           message("\u9000\u56de\u539f\u56e0\u4e0d\u80fd\u4e3a\u7a7a");
           return;
         }
-        api("api/feedback/return", { feedbackId: id, reason: reason }).done(function () {
+        api("api/feedback/return", currentNodeParams({ feedbackId: id, reason: reason })).done(function () {
           layer.close(index);
           closeModal("dwDetailModal");
           closeModal("dwFeedbackModal");

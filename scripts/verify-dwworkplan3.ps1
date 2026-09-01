@@ -68,6 +68,20 @@ if ($js -match 'rows\.slice\(\)\.reverse\(\)') {
   throw 'Feedback chain must render in API timeline order, not reverse the list in the browser.'
 }
 
+$feedbackRoleContracts = @(
+  'api("api/feedback/submit", currentNodeParams({',
+  'api("api/feedback/prepare", currentNodeParams({',
+  'api("api/feedback/list", currentNodeParams({',
+  'api("api/feedback/targets", currentNodeParams({',
+  'api("api/feedback/confirm", currentNodeParams({',
+  'api("api/feedback/return", currentNodeParams({'
+)
+foreach ($contract in $feedbackRoleContracts) {
+  if (-not $js.Contains($contract)) {
+    throw "Feedback API must carry the selected personnel role: $contract"
+  }
+}
+
 $staleReceiverTexts = @('接收部门', '选中部门', '接收对象')
 foreach ($text in $staleReceiverTexts) {
   if ($js.Contains($text) -or $jsp.Contains($text)) {

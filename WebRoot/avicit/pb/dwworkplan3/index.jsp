@@ -456,6 +456,6 @@ String importlibs = "common,form,fileupload";
   <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
 <script src="static/h5/echarts5.3.1/dist/echarts.min.js"></script>
-<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260810_global_view_self_task_entity_form_57"></script>
+<script src="static/pb-modern/dwworkplan3/dwworkplan3.js?v=20260831_feedback_role_58"></script>
 </body>
 </html>

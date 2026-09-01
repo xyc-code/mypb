@@ -764,3 +764,9 @@
 - Release source closure: `WebRoot/avicit/pb/dwworkplan3/index.jsp`, `WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`, `src/avicit/pb/dwworkplan3/service/DwWorkPlan3Service.java`, `src/avicit/pb/dwworkplan3/service/DwWorkPlan3PortalTodoService.java`, and `src/avicit/ims/oa/todo/service/PortalBusinessTodoService.java`.
 - No new 3.0 SQL or platform configuration is required for this incremental change. The intranet must already have the 3.0 tables and `PB_PORTAL_BUSINESS_TODO` from the prior release.
 - Delivery package: `D:\pb-release\内网部署-党委计划3.0-集团数据同步-通用消息接口-20260821-082500` and its same-name ZIP. Both coverage checks matched all 11 deployment candidates; no `.class` files were included.
+
+## 2026-09-01 Feedback Role Context Packaging
+
+- 多角色用户切换人员树角色后，反馈准备、目标查询、提交、查看、确认、退回和确认后上报请求必须携带当前 `currentNodeId`，使后端 `currentUserNode(request)` 按页面当前角色校验权限，不能回落到用户的默认顶层节点。
+- 受影响的增量运行文件仅为 `WebRoot/avicit/pb/dwworkplan3/index.jsp` 和 `WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`；缓存版本为 `20260831_feedback_role_58`，无 Java、SQL 或平台配置变更。
+- 接收人校验提示统一使用中性的“接收人员”，不得恢复静态校验禁止的“接收对象”旧文案。
