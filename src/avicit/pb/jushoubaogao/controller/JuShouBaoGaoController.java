@@ -117,10 +117,10 @@ public class JuShouBaoGaoController {
         Date end = Date.valueOf((year + 1) + "-01-01");
         if (TEMP_STATUS_MODE) {
             return jdbcTemplate.queryForList(
-                    "select ID, FSSJ, BGLX, SZDW, SFNM, JJLX, SFZG, SFFQLC, JBG_TEST_STATUS "
+                    "select ID, FSSJ, BGLX, SZDW, SFNM, cast(null as varchar2(50)) JJ_LX, SFZG, SFFQLC, JBG_TEST_STATUS "
                             + "from DYN_JSBG where FSSJ >= ? and FSSJ < ?", start, end);
         }
-        String sql = "select t.ID, t.FSSJ, t.BGLX, t.SZDW, t.SFNM, t.JJLX, t.SFZG, t.SFFQLC, v.BUSINESSSTATE_ "
+        String sql = "select t.ID, t.FSSJ, t.BGLX, t.SZDW, t.SFNM, t.JJ_LX, t.SFZG, t.SFFQLC, v.BUSINESSSTATE_ "
                 + "from DYN_JSBG t left join (select FORMID_, BUSINESSSTATE_, "
                 + "row_number() over(partition by FORMID_ order by LAST_UPDATE_DATE_ desc nulls last) rn "
                 + "from " + processTable + ") v on t.ID = v.FORMID_ and v.rn = 1 "
@@ -208,7 +208,7 @@ public class JuShouBaoGaoController {
                     }
                 }
             }
-            if ("紧急".equals(valueOr(row.get("JJLX"), "未填写")) && !"已完成".equals(state)) {
+            if ("紧急".equals(valueOr(row.get("JJ_LX"), "未填写")) && !"已完成".equals(state)) {
                 urgentPending++;
             }
         }

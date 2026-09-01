@@ -6,7 +6,7 @@
 - Memory file: .codex/skills/pb-module-memory/references/modules/ju-shou-bao-gao.md
 - Status: developing
 - Owner/requester: 用户
-- Last updated: 2026-08-31
+- Last updated: 2026-09-01
 
 ## Business
 
@@ -32,7 +32,7 @@
 - Required audit fields checked: JBG_TEST_ACCEPT_UNIT 包含 ID、CREATED_BY、CREATION_DATE、LAST_UPDATED_BY、LAST_UPDATE_DATE、LAST_UPDATE_IP、VERSION、ORG_IDENTITY 八个强制字段。
 - SQL/migration notes: 报告单位按 DYN_JSBG.SZDW 汇总；内网受理单位按 DYN_JSBG_YWCL.FK_COL_ID 关联主表，无子表记录时从最新 task21 的 ASSIGNEE_DEPT_ 关联 SYS_DEPT_V；本地只读取 JBG_TEST_ACCEPT_UNIT。
 - Data backfill or cleanup: none。
-- Risky DB assumptions: FSSJ 为 DATE；DYN_JSBG、BGLX 字段名称按平台配置使用大写；本地测试状态来自 DYN_JSBG.JBG_TEST_STATUS；内网正式模式才依赖 BPM_CLIENT_HIST_PROCINST_V。
+- Risky DB assumptions: FSSJ 为 DATE；紧急类型字段的真实列名为 `DYN_JSBG.JJ_LX`，不得写成 `JJLX`；DYN_JSBG、BGLX 字段名称按平台配置使用大写；`JBG_TEST_STATUS` 仅为本地 fixture 字段，内网不存在且正式 SQL 不得查询；内网正式模式依赖 BPM_CLIENT_HIST_PROCINST_V。
 
 ## Files
 
@@ -99,6 +99,7 @@
 - 发布源码的 `pb.jbg.tempStatusMode` 默认值已从 `true` 改为 `false`，防止内网漏配 JVM 参数时访问仅本地存在的 `JBG_TEST_STATUS` 和 `JBG_TEST_ACCEPT_UNIT`。
 - 正式查询只允许使用 `BPM_CLIENT_HIST_PROCINST_V`、`BPM_CLIENT_HIST_TASK_V`、`DYN_JSBG_YWCL` 和 `SYS_DEPT_V`。流程视图或真实子表查询失败时接口明确返回错误，不再降级到旧 `BPM_HIST_*` 表，更不会降级到本地测试表。
 - 本地回归如需测试数据，必须在本地 Tomcat 启动参数中显式添加 `-Dpb.jbg.tempStatusMode=true`；该本地参数和测试 SQL 不得进入内网包。
+- Schema correction (2026-09-01): 紧急类型使用真实字段 `DYN_JSBG.JJ_LX`。正式查询和聚合统一读取 `JJ_LX`；`JBG_TEST_STATUS` 不属于内网 DYN_JSBG 表，仅保留在显式本地测试分支，默认正式模式不会解析或查询该列。
 - Workflow design update (2026-08-25): 采用责任单位子表驱动的 foreach/join 结构；1 个主责单位、多个次责单位并行办理，全部完成后统一质量审核，审核退回只回到指定单位；质量分发和业务部门分发共用同一责任清单规则。
 - Intranet sync date: pending。
 - Baseline update status: pending。
