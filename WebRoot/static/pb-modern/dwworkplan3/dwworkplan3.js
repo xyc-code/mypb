@@ -3015,6 +3015,8 @@
       var returnReason = text(row.RETURN_REASON);
       var attachment = feedbackAttachmentButton(row);
       var reviewerName = text(row.CONFIRM_USER_NAME) || text(row.CONFIRM_USER_ID);
+      var pendingReviewerName = text(row.TARGET_USER_NAME) || text(row.TARGET_USER_ID) ||
+        text(row.TASK_SENDER_NAME) || text(row.TASK_SENDER_ID);
       var reviewTime = dateTime(row.CONFIRM_TIME);
       html += '<article class="dw-feedback-card ' + feedbackCardClass(result) + '">';
       html += '<div class="dw-feedback-rail"><span class="dw-feedback-index">' + (index + 1) + "</span></div>";
@@ -3031,6 +3033,8 @@
       if (reviewerName || reviewTime) {
         html += '<span class="dw-feedback-reviewer"><b>\u5ba1\u6838\u4eba</b>' + esc(reviewerName || "-") + "</span>";
         html += '<span class="dw-feedback-reviewer"><b>\u5ba1\u6838\u65f6\u95f4</b>' + esc(reviewTime || "-") + "</span>";
+      } else if (result === "PENDING") {
+        html += '<span class="dw-feedback-reviewer dw-feedback-pending-reviewer"><b>\u5f85\u5ba1\u6838\u4eba</b>' + esc(pendingReviewerName || "-") + "</span>";
       }
       html += "</div>";
       var editable = text(row.CONFIRM_RESULT) === "PENDING" && text(row.CAN_CONFIRM) === "Y" &&
@@ -3196,7 +3200,11 @@
         prepareConfirmAndForward(row, content);
       } else {
         confirmBox("\u786e\u5b9a\u901a\u8fc7\u8be5\u53cd\u9988\u5417\uff1f", function () {
-          submitFeedbackReview("api/feedback/confirm", { feedbackId: id, content: content }, "\u53cd\u9988\u5df2\u901a\u8fc7");
+          var payload = { feedbackId: id };
+          if ($editor.length) {
+            payload.content = content;
+          }
+          submitFeedbackReview("api/feedback/confirm", payload, "\u53cd\u9988\u5df2\u901a\u8fc7");
         });
       }
     } else if (action === "return") {
@@ -3366,6 +3374,9 @@
 
   function taskActions(task) {
     var id = esc(text(task.ID));
+    if (text(task.STATUS) === "PENDING_CONFIRM" && text(task.NOTICE_FLAG) === "Y") {
+      return actionBtn("view", id, "\u5ba1\u6838\u53cd\u9988", "dw-action-review");
+    }
     var html = actionBtn("view", id, "\u67e5\u770b", "dw-action-view");
     if (canEditRoot(task)) {
       html += actionBtn("edit", id, "\u7f16\u8f91", "dw-action-edit");

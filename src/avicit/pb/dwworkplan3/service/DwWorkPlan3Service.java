@@ -928,7 +928,7 @@ public class DwWorkPlan3Service {
         args.addAll(taskIds);
         args.add(DwWorkPlan3Constants.FEEDBACK_DRAFT);
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "select f.*,t.TITLE TASK_TITLE,t.TASK_LEVEL TASK_LEVEL,t.PARENT_ID TASK_PARENT_ID,t.SENDER_ID TASK_SENDER_ID,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
+                "select f.*,t.TITLE TASK_TITLE,t.TASK_LEVEL TASK_LEVEL,t.PARENT_ID TASK_PARENT_ID,t.SENDER_ID TASK_SENDER_ID,t.SENDER_NAME TASK_SENDER_NAME,t.RECEIVER_ID TASK_RECEIVER_ID,t.COMPLETE_TIME TASK_COMPLETE_TIME," +
                         "case when (t.PARENT_ID is null and t.TASK_LEVEL=? and ((f.TARGET_USER_ID is not null and f.TARGET_USER_ID=?) or (f.TARGET_USER_ID is null and exists(select 1 from DYN_DW_PLAN3_PERSON_TREE office_node join DYN_DW_PLAN3_PERSON_TREE dept_node on office_node.PARENT_ID=dept_node.ID where office_node.ID=t.PERSON_NODE_ID and " + userMatchSql("dept_node.USER_ID") + ")))) or (not (t.PARENT_ID is null and t.TASK_LEVEL=?) and t.SENDER_ID=?) then 'Y' else 'N' end CAN_CONFIRM," +
                         "case when t.TASK_LEVEL=? and t.SENDER_ID=? then 'Y' else 'N' end CAN_EDIT," +
                         "case when t.TASK_LEVEL='STAFF' and exists(select 1 from DYN_DW_PLAN3_TASK parent_task where parent_task.ID=t.PARENT_ID and parent_task.PARENT_ID is null and parent_task.TASK_LEVEL='OFFICE') then 'Y' else 'N' end CAN_FORWARD " +

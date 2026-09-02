@@ -6,14 +6,14 @@
 - Memory file: .codex/skills/pb-module-memory/references/modules/ju-shou-bao-gao.md
 - Status: developing
 - Owner/requester: 用户
-- Last updated: 2026-09-01
+- Last updated: 2026-09-02
 
 ## Business
 
 - Goal: 为领导提供举手报告流程数据的单页统计总览，直接呈现核心数量、流程状态占比和报告类型分布。
 - Users/roles: 领导查看全公司汇总；菜单和权限由用户在内网平台配置。
 - Main workflow: 低代码表单 DYN_JSBG 产生报告记录，统计页按流程状态 BUSINESSSTATE_ 汇总。
-- Important rules: 默认按当前年份统计；年份筛选使用 FSSJ（发生时间）；发布源码默认使用正式模式并读取 BPM_CLIENT_HIST_PROCINST_V.BUSINESSSTATE_，按 FORMID_=DYN_JSBG.ID 关联并取最新实例；本地测试必须显式设置 `-Dpb.jbg.tempStatusMode=true` 才读取 DYN_JSBG.JBG_TEST_STATUS；报告类型使用 BGLX。
+- Important rules: 默认按当前年份统计；年份筛选和月度归属统一使用 DYN_JSBG.CREATION_DATE（创建时间），FSSJ 不参与统计；发布源码默认使用正式模式并读取 BPM_CLIENT_HIST_PROCINST_V.BUSINESSSTATE_，按 FORMID_=DYN_JSBG.ID 关联并取最新实例；本地测试必须显式设置 `-Dpb.jbg.tempStatusMode=true` 才读取 DYN_JSBG.JBG_TEST_STATUS；报告类型使用 BGLX。
 - Out of scope: 不统计附件、密码、测试字段和质量处理环节字段；暂不新增业务统计表。
 
 ## PB Low-Code Surface
@@ -28,11 +28,11 @@
 
 ## Data
 
-- Tables: DYN_JSBG；内网受理单位子表 DYN_JSBG_YWCL；本地专用受理归属测试表 JBG_TEST_ACCEPT_UNIT。
-- Required audit fields checked: JBG_TEST_ACCEPT_UNIT 包含 ID、CREATED_BY、CREATION_DATE、LAST_UPDATED_BY、LAST_UPDATE_DATE、LAST_UPDATE_IP、VERSION、ORG_IDENTITY 八个强制字段。
-- SQL/migration notes: 报告单位按 DYN_JSBG.SZDW 汇总；内网受理单位按 DYN_JSBG_YWCL.FK_COL_ID 关联主表，无子表记录时从最新 task21 的 ASSIGNEE_DEPT_ 关联 SYS_DEPT_V；本地只读取 JBG_TEST_ACCEPT_UNIT。
+- Tables: DYN_JSBG；内网受理单位子表 DYN_JSBG_YWCL；内网节点轨迹子表 DYN_JSBGYJB；本地专用受理归属测试表 JBG_TEST_ACCEPT_UNIT；本地专用节点轨迹测试表 JBG_TEST_NODE_TRACE。
+- Required audit fields checked: JBG_TEST_ACCEPT_UNIT、JBG_TEST_NODE_TRACE 均包含 ID、CREATED_BY、CREATION_DATE、LAST_UPDATED_BY、LAST_UPDATE_DATE、LAST_UPDATE_IP、VERSION、ORG_IDENTITY 八个强制字段。
+- SQL/migration notes: 报告单位按 DYN_JSBG.SZDW 汇总；内网受理单位按 DYN_JSBG_YWCL.FK_COL_ID 关联主表，无子表记录时从最新 task21 的 ASSIGNEE_DEPT_ 关联 SYS_DEPT_V；正式效率指标读取 DYN_JSBGYJB.JD/JSSJ/DKSJ/CLSJ，并从 BPM_CLIENT_HIST_PROCINST_V.END_ 取流程结束时间；本地只读取 JBG_TEST_ACCEPT_UNIT 和 JBG_TEST_NODE_TRACE。
 - Data backfill or cleanup: none。
-- Risky DB assumptions: FSSJ 为 DATE；紧急类型字段的真实列名为 `DYN_JSBG.JJ_LX`，不得写成 `JJLX`；DYN_JSBG、BGLX 字段名称按平台配置使用大写；`JBG_TEST_STATUS` 仅为本地 fixture 字段，内网不存在且正式 SQL 不得查询；内网正式模式依赖 BPM_CLIENT_HIST_PROCINST_V。
+- Risky DB assumptions: CREATION_DATE 为 PB 标准创建时间且不能为空；紧急类型字段的真实列名为 `DYN_JSBG.JJ_LX`，不得写成 `JJLX`；DYN_JSBG、BGLX 字段名称按平台配置使用大写；`JBG_TEST_STATUS` 仅为本地 fixture 字段，内网不存在且正式 SQL 不得查询；内网正式模式依赖 BPM_CLIENT_HIST_PROCINST_V。
 
 ## Files
 
@@ -41,11 +41,11 @@
 - Mapper XML: none。
 - Properties/config touched: none。
 - Generated or uploaded assets: none。
-- Local-only test fixture: db/ju_shou_bao_gao_test_data.sql（包含 JBG_TEST_ACCEPT_UNIT，可重复执行，不得复制或运行到内网）。
+- Local-only test fixture: db/ju_shou_bao_gao_test_data.sql（包含 JBG_TEST_ACCEPT_UNIT、JBG_TEST_NODE_TRACE，可重复执行，不得复制或运行到内网）。
 
 ## Pitfalls And Decisions
 
-- Pitfalls: 不要把质量处理日期 ZL_FSRQ 误当作所有报告的发生时间；统计年份统一使用 FSSJ；本地测试不要依赖 BPM 流程状态；内网部署必须通过唯一开关切回 BPM 流程状态。
+- Pitfalls: 统计年份和月份只使用 CREATION_DATE，不使用 FSSJ 或质量处理日期 ZL_FSRQ；本地测试不要依赖 BPM 流程状态；内网部署必须通过唯一开关切回 BPM 流程状态。
 - Delivery gate: 只有进入“打包到内网”阶段才允许把交付源码切为默认读取 `BPM_CLIENT_HIST_PROCINST_V` 流程状态；本地开发、本地测试、本地验收必须显式设置 `-Dpb.jbg.tempStatusMode=true` 使用 `JBG_TEST_STATUS`。
 - Debug notes: 无数据年份仍需返回空数组和 0，页面不能因接口无记录报错。
 - Debug notes: JSP 页面使用 `<base href>` 时，模块静态资源必须使用 `request.getContextPath()` 绝对路径；相对 `static/...` 会解析到 `/avicit/pb/jushoubaogao/static/...` 并导致 CSS、JS、ECharts 全部 404，页面表现为改动未生效。
@@ -66,6 +66,10 @@
 - Intranet data decision (2026-08-31): 正式模式仅在报告完全没有 DYN_JSBG_YWCL 子表行时，取 BPM_CLIENT_HIST_TASK_V 中最新 TASK_NAME_='task21' 记录，使用 ASSIGNEE_DEPT_ 关联 SYS_DEPT_V.DEPT_NAME；有子表脏行不回退。真实表或 BPM 查询失败必须明确报错，不得回落到本地测试数据。
 - User delivery instruction (2026-08-31): 打包到内网时必须切换为正式模式。打包门禁必须确认内网 Tomcat JVM 参数包含 `-Dpb.jbg.tempStatusMode=false`，部署后完整重启 Tomcat，并通过接口返回的 `statusTemporary=false` 和 `statusBasis=BPM_CLIENT_HIST_PROCINST_V.BUSINESSSTATE_` 验证切换生效；未完成该检查不得交付。
 - Display decision (2026-08-31): 所有五项状态展示统一按“报告数、已完成、闭环率、处理中、未受理”排序，适用于顶部指标、工作进展图及摘要、月度悬浮提示和受理单位表；报告单位的业务类型列不属于状态排序。
+- Display decision (2026-09-02): 首页移除流程覆盖率、无流程实例、单位信息缺失、类型信息缺失、匿名字段异常整行；受理单位摘要将 `unresolvedReports`、`childRecords`、`task21Fallbacks` 依次显示为“本单位直接办理数量、分发其他单位办理数量、表单回退数量”。
+- Business rule correction (2026-09-01): 全部年度筛选、月度趋势、报告单位及受理单位统计统一按 DYN_JSBG.CREATION_DATE 归属年份和月份，FSSJ 不再参与任何统计时间口径。
+- Efficiency rule (2026-09-01): 受理单位“接收平均时间”取单份报告最早非空 `党建工作部.CLSJ` 到其后首条非空 `业务部门分发.DKSJ`；未到分发时计算到接口请求时间，缺少党建处理时间或负时长排除。
+- Efficiency rule (2026-09-01): “平均处理时长”取首条非空 `业务部门分发.DKSJ` 到最新流程实例 `END_`，未结束时计算到接口请求时间；“提交人力协办次数”按 `JD='人力复核'` 的轨迹行数统计，未经过按 0 次。三个平均指标按受理单位名下去重后的“单位+报告ID”计算，同单位重复受理子表行只影响受理总数，不重复影响平均。
 - Visual decision (2026-08-31): 完整移除“报告类型分布”图及前端 ECharts 初始化/渲染，保留接口 `typeBreakdowns` 供工作进展和月度趋势的类型标签使用；页面主标题改为“全业务域举手报告概览”。
 - Visual decisions (2026-08-24): ECharts 4.1.2 使用统一业务色板：深蓝 `#3F5AA9`、绿 `#68A844`、金黄 `#D3A43A`、砖红 `#B3434F`、青蓝 `#4B9BB5`；页头的本地模拟状态使用低干扰状态提示，不使用大块橙色边框。
 - Layout decisions (2026-08-24): 首屏突出总量、闭环率、待处理、紧急未完成；状态和月度趋势为主图；单位排行榜全宽放底部，单位列固定约 240px，数字列固定宽度，表格默认每页 10 条并可切换 20/50。
@@ -84,14 +88,17 @@
 - Verification note (2026-08-31): 单位排行榜分类改造通过 Controller + DM8 反射验证：年度报告 72、有效报告单位 4；质量部报告总数 15 且质量列 15；本地受理源为子表模拟记录 72、最新 task21 回退 1、未解析 1，最终受理记录 73；同报告同单位重复行保留，旧 task21 单位被排除。
 - Verification note (2026-08-31): JBG_TEST_ACCEPT_UNIT 建表审计字段 8/8 通过检查；fixture 重复执行后数据库恢复为已完成 21、流转中 30、拟稿中 16、未启动 5。执行 UTF-8 fixture 时 disql 会话必须先设置 `CHAR_CODE UTF8` 和 `LOCAL_CODE UTF8`。
 - Verification note (2026-08-31): 真实 jQuery 1.8.3、ECharts 4.1.2、模块 JS/CSS 浏览器验收确认报告单位 8 列与受理单位 7 列独立切换、闭环率固定两位小数；1366px 页面宽度与滚动宽度均为 1351，375px 视口下均为 360，表格仅在自身 275px 容器内横向滚动，标题、标签和分页不重叠。前端冲突扫描 3 文件、0 warnings。
+- Verification note (2026-09-01): 受理效率接口在本地测试模式实测 `ok=true`、`statusTemporary=true`；质量受理部总数 16（含同单位重复受理行），三个平均按 15 个唯一单位+报告样本计算，接收平均 60 分钟、人力复核平均 0.13 次；来源为子表记录 72、处理人节点回退 1、未解析 1。真实页面展示 10 列和“处理人节点回退”；受理表最小宽度压缩为 1120px，1366px 视口下 1276px 容器无需横向滚动且末列完整可见，375px 视口页面无横向溢出，表格仅在自身 305px 容器内滚动。
+- Verification note (2026-09-01): 本地 DM8 的 DATE 会丢失时分秒，JBG_TEST_NODE_TRACE 四个非审计业务时间列使用 TIMESTAMP；八个 PB 审计字段仍按规范保持 DATE/VARCHAR2/NUMBER。fixture 通过 DATEADD 构造分钟轨迹，重复执行后 147 条轨迹、基准接收间隔 60 分钟，SQL 错误数 0。
+- Verification note (2026-09-02): JS 语法、限定文件 `git diff --check`、旧文案/旧 DOM 扫描和 PB 前端冲突扫描（3 文件、0 warnings）通过；已登录 Chrome 打开真实 JSP，确认质量指标整行消失，切换受理单位后摘要按“本单位直接办理数量、分发其他单位办理数量、表单回退数量”顺序渲染且无布局重叠。本地正式模式接口因缺少可用 BPM_CLIENT_HIST 视图数据返回既有配置错误，故页面以 0 值完成本次前端验收。
 - Known gaps: 本地 DM8 没有真实 BPM 业务关联，临时模式只能验证演示聚合；开始打包到内网时才允许移除/改写 `pb.jbg.tempStatusMode` JVM 参数、切回 BPM 关联并做一次真实流程状态核对。单位排行榜需继续用 20+ 单位和 10 字单位名做分页截图验收。
 
 ## Intranet Handoff
 
-- Package path: 待用户要求打包时确定。
-- Files to copy: JSP、jushoubaogao.js、jushoubaogao.css、JuShouBaoGaoController.java、模块记忆文件；按当前 PB 内网发布规范不打包 `.class`，由内网测试环境使用 JDK 8 编译源码。
-- SQL/platform config to migrate: 不迁移本地测试表 SQL；手工新增菜单并配置访问权限，部署前只读核验 DYN_JSBG_YWCL、task21 和 SYS_DEPT_V 关联。
-- Files/config not to copy: db/ju_shou_bao_gao_test_data.sql、JBG_TEST_ACCEPT_UNIT、本地 Tomcat/Redis/DM 配置和测试缓存。
+- Package path: `D:\pb-release\内网部署-举手报告统计-党委计划3.0-20260902-134653` 及同名 ZIP。
+- Files to copy: `JuShouBaoGaoStatistics.jsp`、`jushoubaogao.js`、`jushoubaogao.css`、`JuShouBaoGaoController.java`；按当前 PB 内网发布规范不打包 `.class`，由内网测试环境使用 JDK 8 编译源码。
+- SQL/platform config to migrate: 无举手报告建表 SQL；手工新增菜单并配置访问权限，部署前只读核验 DYN_JSBG、DYN_JSBG_YWCL、DYN_JSBGYJB、BPM_CLIENT_HIST_PROCINST_V、BPM_CLIENT_HIST_TASK_V 和 SYS_DEPT_V；内网 Tomcat JVM 参数必须为 `-Dpb.jbg.tempStatusMode=false` 或不设置该参数。
+- Files/config not to copy: 模块记忆、`db/ju_shou_bao_gao_test_data.sql`、`db/ju_shou_bao_gao_invalid_anonymous_fixture.sql`、JBG_TEST_ACCEPT_UNIT、JBG_TEST_NODE_TRACE、本地 Tomcat/Redis/DM 配置、截图和测试缓存。
 - Mandatory delivery rule: 内网包中的源码必须默认使用真实 BPM 流程状态，且不得包含启用测试模式的环境配置；打包清单记录不得设置 `-Dpb.jbg.tempStatusMode=true`，建议显式设置 `false`，重启后核验 `statusTemporary=false`，否则阻止上线。本地测试必须显式启用测试模式。
 
 ## 2026-09-01 Intranet Packaging Mode Gate

@@ -27,6 +27,9 @@ import java.util.Map;
 public class JuShouBaoGaoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(JuShouBaoGaoController.class);
     private static final String[] REPORT_TYPES = {"质量", "安全", "生产", "技术", "其他"};
+    private static final String PARTY_WORK_NODE = "党建工作部";
+    private static final String BUSINESS_DISTRIBUTION_NODE = "业务部门分发";
+    private static final String HR_REVIEW_NODE = "人力复核";
     /** Formal mode is the safe default; local fixture testing must opt in explicitly. */
     private static final boolean TEMP_STATUS_MODE = Boolean.parseBoolean(System.getProperty("pb.jbg.tempStatusMode", "false"));
 
@@ -50,7 +53,7 @@ public class JuShouBaoGaoController {
                 result.put("year", year);
                 List<Map<String, Object>> rows = baseRows(year, null);
                 result.putAll(aggregate(rows));
-                result.putAll(acceptUnitData(rows, year, null));
+                result.putAll(acceptUnitData(rows, year, null, null));
                 result.put("ok", true);
                 return result;
             } catch (Exception ex) {
@@ -70,13 +73,13 @@ public class JuShouBaoGaoController {
             result.put("year", year);
             List<Map<String, Object>> rows = baseRows(year, "BPM_CLIENT_HIST_PROCINST_V");
             result.putAll(aggregate(rows));
-            result.putAll(acceptUnitData(rows, year, "BPM_CLIENT_HIST_TASK_V"));
+            result.putAll(acceptUnitData(rows, year, "BPM_CLIENT_HIST_TASK_V", "BPM_CLIENT_HIST_PROCINST_V"));
             result.put("ok", true);
             return result;
         } catch (Exception ex) {
             LOGGER.error("举手报告正式统计查询失败", ex);
             result.put("ok", false);
-            result.put("message", "统计数据暂时无法读取，请检查报告表、受理子表和 BPM_CLIENT_HIST 流程视图配置。");
+            result.put("message", "统计数据暂时无法读取，请检查报告表、受理子表、节点轨迹表和 BPM_CLIENT_HIST 流程视图配置。");
             result.put("years", new ArrayList<Integer>());
             result.put("year", Calendar.getInstance().get(Calendar.YEAR));
             result.putAll(emptyAggregate());
@@ -86,7 +89,7 @@ public class JuShouBaoGaoController {
 
     private List<Integer> availableYears() {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "select distinct extract(year from FSSJ) YEAR from DYN_JSBG where FSSJ is not null order by YEAR desc");
+                "select distinct extract(year from CREATION_DATE) YEAR from DYN_JSBG where CREATION_DATE is not null order by YEAR desc");
         List<Integer> years = new ArrayList<Integer>();
         for (Map<String, Object> row : rows) {
             Object value = row.get("YEAR");
@@ -117,14 +120,14 @@ public class JuShouBaoGaoController {
         Date end = Date.valueOf((year + 1) + "-01-01");
         if (TEMP_STATUS_MODE) {
             return jdbcTemplate.queryForList(
-                    "select ID, FSSJ, BGLX, SZDW, SFNM, cast(null as varchar2(50)) JJ_LX, SFZG, SFFQLC, JBG_TEST_STATUS "
-                            + "from DYN_JSBG where FSSJ >= ? and FSSJ < ?", start, end);
+                    "select ID, CREATION_DATE, BGLX, SZDW, SFNM, cast(null as varchar2(50)) JJ_LX, SFZG, SFFQLC, JBG_TEST_STATUS "
+                            + "from DYN_JSBG where CREATION_DATE >= ? and CREATION_DATE < ?", start, end);
         }
-        String sql = "select t.ID, t.FSSJ, t.BGLX, t.SZDW, t.SFNM, t.JJ_LX, t.SFZG, t.SFFQLC, v.BUSINESSSTATE_ "
+        String sql = "select t.ID, t.CREATION_DATE, t.BGLX, t.SZDW, t.SFNM, t.JJ_LX, t.SFZG, t.SFFQLC, v.BUSINESSSTATE_ "
                 + "from DYN_JSBG t left join (select FORMID_, BUSINESSSTATE_, "
                 + "row_number() over(partition by FORMID_ order by LAST_UPDATE_DATE_ desc nulls last) rn "
                 + "from " + processTable + ") v on t.ID = v.FORMID_ and v.rn = 1 "
-                + "where t.FSSJ >= ? and t.FSSJ < ?";
+                + "where t.CREATION_DATE >= ? and t.CREATION_DATE < ?";
         return jdbcTemplate.queryForList(sql, start, end);
     }
 
@@ -196,7 +199,7 @@ public class JuShouBaoGaoController {
             if (typeName.equals("未填写")) {
                 typeMissing++;
             }
-            Object date = row.get("FSSJ");
+            Object date = row.get("CREATION_DATE");
             if (date instanceof java.util.Date) {
                 int month = ((java.util.Date) date).getMonth();
                 if (month >= 0 && month < 12) {
@@ -266,8 +269,98 @@ public class JuShouBaoGaoController {
         return result;
     }
 
-    private Map<String, Object> acceptUnitData(List<Map<String, Object>> reportRows, int year, String taskTable) {
-        return aggregateAcceptUnits(reportRows, acceptChildRows(year), latestTask21Rows(year, taskTable));
+    private Map<String, Object> acceptUnitData(List<Map<String, Object>> reportRows, int year,
+            String taskTable, String processTable) {
+        java.util.Date requestTime = new java.util.Date();
+        Map<String, Map<String, Object>> reportMetrics = reportEfficiencyMetrics(reportRows,
+                nodeTraceRows(year), processEndRows(year, processTable), requestTime);
+        return aggregateAcceptUnits(reportRows, acceptChildRows(year), latestTask21Rows(year, taskTable), reportMetrics);
+    }
+
+    private List<Map<String, Object>> nodeTraceRows(int year) {
+        Date start = Date.valueOf(year + "-01-01");
+        Date end = Date.valueOf((year + 1) + "-01-01");
+        if (TEMP_STATUS_MODE) {
+            return jdbcTemplate.queryForList(
+                    "select n.REPORT_ID, n.NODE_NAME, n.RECEIVE_TIME, n.OPEN_TIME, n.PROCESS_TIME "
+                            + "from JBG_TEST_NODE_TRACE n join DYN_JSBG r on r.ID = n.REPORT_ID "
+                            + "where r.CREATION_DATE >= ? and r.CREATION_DATE < ?",
+                    start, end);
+        }
+        return jdbcTemplate.queryForList(
+                "select n.FK_COL_ID REPORT_ID, n.JD NODE_NAME, n.JSSJ RECEIVE_TIME, "
+                        + "n.DKSJ OPEN_TIME, n.CLSJ PROCESS_TIME "
+                        + "from DYN_JSBGYJB n join DYN_JSBG r on r.ID = n.FK_COL_ID "
+                        + "where r.CREATION_DATE >= ? and r.CREATION_DATE < ?",
+                start, end);
+    }
+
+    private List<Map<String, Object>> processEndRows(int year, String processTable) {
+        Date start = Date.valueOf(year + "-01-01");
+        Date end = Date.valueOf((year + 1) + "-01-01");
+        if (TEMP_STATUS_MODE) {
+            return jdbcTemplate.queryForList(
+                    "select REPORT_ID, max(PROCESS_END_TIME) PROCESS_END_TIME from JBG_TEST_NODE_TRACE n "
+                            + "join DYN_JSBG r on r.ID = n.REPORT_ID "
+                            + "where r.CREATION_DATE >= ? and r.CREATION_DATE < ? group by REPORT_ID",
+                    start, end);
+        }
+        String sql = "select REPORT_ID, PROCESS_END_TIME from (select v.FORMID_ REPORT_ID, "
+                + "v.END_ PROCESS_END_TIME, row_number() over(partition by v.FORMID_ "
+                + "order by v.LAST_UPDATE_DATE_ desc nulls last) rn "
+                + "from " + processTable + " v join DYN_JSBG r on r.ID = v.FORMID_ "
+                + "where r.CREATION_DATE >= ? and r.CREATION_DATE < ?) where rn = 1";
+        return jdbcTemplate.queryForList(sql, start, end);
+    }
+
+    private Map<String, Map<String, Object>> reportEfficiencyMetrics(List<Map<String, Object>> reportRows,
+            List<Map<String, Object>> traceRows, List<Map<String, Object>> endRows, java.util.Date requestTime) {
+        Map<String, Map<String, Object>> metrics = new LinkedHashMap<String, Map<String, Object>>();
+        for (Map<String, Object> report : reportRows) {
+            Map<String, Object> metric = new LinkedHashMap<String, Object>();
+            metric.put("hrReviewCount", 0);
+            metrics.put(text(report.get("ID")), metric);
+        }
+        for (Map<String, Object> endRow : endRows) {
+            Map<String, Object> metric = metrics.get(text(endRow.get("REPORT_ID")));
+            if (metric != null) metric.put("processEndTime", dateValue(endRow.get("PROCESS_END_TIME")));
+        }
+        for (Map<String, Object> trace : traceRows) {
+            Map<String, Object> metric = metrics.get(text(trace.get("REPORT_ID")));
+            if (metric == null) continue;
+            String nodeName = text(trace.get("NODE_NAME"));
+            if (PARTY_WORK_NODE.equals(nodeName)) {
+                putEarlier(metric, "partyHandledAt", dateValue(trace.get("PROCESS_TIME")));
+            } else if (HR_REVIEW_NODE.equals(nodeName)) {
+                increment(metric, "hrReviewCount");
+            }
+        }
+        for (Map<String, Object> trace : traceRows) {
+            Map<String, Object> metric = metrics.get(text(trace.get("REPORT_ID")));
+            if (metric == null || !BUSINESS_DISTRIBUTION_NODE.equals(text(trace.get("NODE_NAME")))) continue;
+            java.util.Date openedAt = dateValue(trace.get("OPEN_TIME"));
+            java.util.Date partyHandledAt = dateValue(metric.get("partyHandledAt"));
+            putEarlier(metric, "handlingStartedAt", openedAt);
+            if (openedAt != null && partyHandledAt != null && !openedAt.before(partyHandledAt)) {
+                putEarlier(metric, "distributionOpenedAt", openedAt);
+            }
+        }
+        for (Map<String, Object> metric : metrics.values()) {
+            java.util.Date partyHandledAt = dateValue(metric.get("partyHandledAt"));
+            java.util.Date distributionOpenedAt = dateValue(metric.get("distributionOpenedAt"));
+            java.util.Date handlingStartedAt = dateValue(metric.get("handlingStartedAt"));
+            if (partyHandledAt != null) {
+                java.util.Date receiveEnd = distributionOpenedAt == null ? requestTime : distributionOpenedAt;
+                Long minutes = elapsedMinutes(partyHandledAt, receiveEnd);
+                if (minutes != null) metric.put("receiveMinutes", minutes);
+            }
+            if (handlingStartedAt != null) {
+                java.util.Date processEnd = dateValue(metric.get("processEndTime"));
+                Long minutes = elapsedMinutes(handlingStartedAt, processEnd == null ? requestTime : processEnd);
+                if (minutes != null) metric.put("handlingMinutes", minutes);
+            }
+        }
+        return metrics;
     }
 
     private List<Map<String, Object>> acceptChildRows(int year) {
@@ -277,13 +370,13 @@ public class JuShouBaoGaoController {
             return jdbcTemplate.queryForList(
                     "select a.REPORT_ID, a.UNIT_NAME from JBG_TEST_ACCEPT_UNIT a "
                             + "join DYN_JSBG r on r.ID = a.REPORT_ID "
-                            + "where a.SOURCE_KIND = 'CHILD' and r.FSSJ >= ? and r.FSSJ < ?",
+                            + "where a.SOURCE_KIND = 'CHILD' and r.CREATION_DATE >= ? and r.CREATION_DATE < ?",
                     start, end);
         }
         return jdbcTemplate.queryForList(
                 "select c.FK_COL_ID REPORT_ID, c.ZRDWMC UNIT_NAME from DYN_JSBG_YWCL c "
                         + "join DYN_JSBG r on r.ID = c.FK_COL_ID "
-                        + "where r.FSSJ >= ? and r.FSSJ < ?",
+                        + "where r.CREATION_DATE >= ? and r.CREATION_DATE < ?",
                 start, end);
     }
 
@@ -296,7 +389,7 @@ public class JuShouBaoGaoController {
                             + "row_number() over(partition by a.REPORT_ID order by a.EVENT_TIME desc nulls last, "
                             + "a.CREATION_DATE desc nulls last, a.ID desc) rn "
                             + "from JBG_TEST_ACCEPT_UNIT a join DYN_JSBG r on r.ID = a.REPORT_ID "
-                            + "where a.SOURCE_KIND = 'TASK21' and r.FSSJ >= ? and r.FSSJ < ?) where rn = 1",
+                            + "where a.SOURCE_KIND = 'TASK21' and r.CREATION_DATE >= ? and r.CREATION_DATE < ?) where rn = 1",
                     start, end);
         }
         String sql = "select REPORT_ID, UNIT_NAME from (select h.TASK_B_ID_ REPORT_ID, d.DEPT_NAME UNIT_NAME, "
@@ -304,12 +397,13 @@ public class JuShouBaoGaoController {
                 + "h.END_ desc nulls last, h.DBID_ desc) rn "
                 + "from " + taskTable + " h join DYN_JSBG r on r.ID = h.TASK_B_ID_ "
                 + "left join SYS_DEPT_V d on d.ID = h.ASSIGNEE_DEPT_ "
-                + "where h.TASK_NAME_ = 'task21' and r.FSSJ >= ? and r.FSSJ < ?) where rn = 1";
+                + "where h.TASK_NAME_ = 'task21' and r.CREATION_DATE >= ? and r.CREATION_DATE < ?) where rn = 1";
         return jdbcTemplate.queryForList(sql, start, end);
     }
 
     private Map<String, Object> aggregateAcceptUnits(List<Map<String, Object>> reportRows,
-            List<Map<String, Object>> childRows, List<Map<String, Object>> taskRows) {
+            List<Map<String, Object>> childRows, List<Map<String, Object>> taskRows,
+            Map<String, Map<String, Object>> reportMetrics) {
         Map<String, Map<String, Object>> reports = new LinkedHashMap<String, Map<String, Object>>();
         for (Map<String, Object> row : reportRows) reports.put(text(row.get("ID")), row);
 
@@ -317,6 +411,7 @@ public class JuShouBaoGaoController {
         Map<String, Boolean> assignedReports = new LinkedHashMap<String, Boolean>();
         Map<String, Map<String, Object>> details = new LinkedHashMap<String, Map<String, Object>>();
         Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
+        Map<String, Boolean> metricAssignments = new LinkedHashMap<String, Boolean>();
         int childRecordCount = 0;
         int task21FallbackCount = 0;
         int invalidUnitCount = 0;
@@ -330,7 +425,7 @@ public class JuShouBaoGaoController {
                 invalidUnitCount++;
                 continue;
             }
-            addAcceptUnit(details, counts, report, unitName);
+            addAcceptUnit(details, counts, report, reportId, unitName, reportMetrics, metricAssignments);
             assignedReports.put(reportId, Boolean.TRUE);
             childRecordCount++;
         }
@@ -344,7 +439,7 @@ public class JuShouBaoGaoController {
             if (reportsWithChildren.containsKey(reportId)) continue;
             String unitName = latestTaskUnits.get(reportId);
             if (unitName == null || unitName.length() == 0) continue;
-            addAcceptUnit(details, counts, entry.getValue(), unitName);
+            addAcceptUnit(details, counts, entry.getValue(), reportId, unitName, reportMetrics, metricAssignments);
             assignedReports.put(reportId, Boolean.TRUE);
             task21FallbackCount++;
         }
@@ -359,6 +454,7 @@ public class JuShouBaoGaoController {
             int total = ((Integer) detail.get("total")).intValue();
             int completed = ((Integer) detail.get("已完成")).intValue();
             detail.put("closureRate", total == 0 ? 0 : Math.round(completed * 10000.0 / total) / 100.0);
+            finishEfficiencyMetrics(detail);
         }
 
         Map<String, Object> sourceCounts = new LinkedHashMap<String, Object>();
@@ -375,7 +471,8 @@ public class JuShouBaoGaoController {
     }
 
     private void addAcceptUnit(Map<String, Map<String, Object>> details, Map<String, Integer> counts,
-            Map<String, Object> report, String unitName) {
+            Map<String, Object> report, String reportId, String unitName,
+            Map<String, Map<String, Object>> reportMetrics, Map<String, Boolean> metricAssignments) {
         add(counts, unitName);
         Map<String, Object> detail = details.get(unitName);
         if (detail == null) {
@@ -385,6 +482,12 @@ public class JuShouBaoGaoController {
             detail.put("已完成", 0);
             detail.put("流转中", 0);
             detail.put("拟稿中", 0);
+            detail.put("receiveMinutesTotal", 0L);
+            detail.put("receiveSampleCount", 0);
+            detail.put("handlingMinutesTotal", 0L);
+            detail.put("handlingSampleCount", 0);
+            detail.put("hrReviewCountTotal", 0L);
+            detail.put("hrReviewSampleCount", 0);
             details.put(unitName, detail);
         }
         increment(detail, "total");
@@ -392,6 +495,40 @@ public class JuShouBaoGaoController {
         String simulatedStatus = text(report.get("JBG_TEST_STATUS"));
         String state = TEMP_STATUS_MODE ? valueOr(simulatedStatus, "未启动") : mapStatus(rawStatus);
         if (detail.containsKey(state)) increment(detail, state);
+        String metricKey = unitName + "\u0000" + reportId;
+        if (!metricAssignments.containsKey(metricKey)) {
+            metricAssignments.put(metricKey, Boolean.TRUE);
+            addEfficiencyMetrics(detail, reportMetrics.get(reportId));
+        }
+    }
+
+    private void addEfficiencyMetrics(Map<String, Object> detail, Map<String, Object> metric) {
+        if (metric == null) return;
+        Number receiveMinutes = (Number) metric.get("receiveMinutes");
+        if (receiveMinutes != null) {
+            addLong(detail, "receiveMinutesTotal", receiveMinutes.longValue());
+            increment(detail, "receiveSampleCount");
+        }
+        Number handlingMinutes = (Number) metric.get("handlingMinutes");
+        if (handlingMinutes != null) {
+            addLong(detail, "handlingMinutesTotal", handlingMinutes.longValue());
+            increment(detail, "handlingSampleCount");
+        }
+        Number hrReviewCount = (Number) metric.get("hrReviewCount");
+        addLong(detail, "hrReviewCountTotal", hrReviewCount == null ? 0L : hrReviewCount.longValue());
+        increment(detail, "hrReviewSampleCount");
+    }
+
+    private void finishEfficiencyMetrics(Map<String, Object> detail) {
+        long receiveTotal = ((Number) detail.remove("receiveMinutesTotal")).longValue();
+        int receiveSamples = ((Number) detail.get("receiveSampleCount")).intValue();
+        long handlingTotal = ((Number) detail.remove("handlingMinutesTotal")).longValue();
+        int handlingSamples = ((Number) detail.get("handlingSampleCount")).intValue();
+        long hrReviewTotal = ((Number) detail.remove("hrReviewCountTotal")).longValue();
+        int hrReviewSamples = ((Number) detail.get("hrReviewSampleCount")).intValue();
+        detail.put("averageReceiveMinutes", receiveSamples == 0 ? null : Math.round(receiveTotal * 1.0 / receiveSamples));
+        detail.put("averageHandlingMinutes", handlingSamples == 0 ? null : Math.round(handlingTotal * 1.0 / handlingSamples));
+        detail.put("averageHrReviewCount", hrReviewSamples == 0 ? null : Math.round(hrReviewTotal * 100.0 / hrReviewSamples) / 100.0);
     }
 
     private void sortUnitDetails(List<Map<String, Object>> rows) {
@@ -406,8 +543,29 @@ public class JuShouBaoGaoController {
     private Map<String, Object> emptyAggregate() {
         Map<String, Object> result = aggregate(Collections.<Map<String, Object>>emptyList());
         result.putAll(aggregateAcceptUnits(Collections.<Map<String, Object>>emptyList(),
-                Collections.<Map<String, Object>>emptyList(), Collections.<Map<String, Object>>emptyList()));
+                Collections.<Map<String, Object>>emptyList(), Collections.<Map<String, Object>>emptyList(),
+                Collections.<String, Map<String, Object>>emptyMap()));
         return result;
+    }
+
+    private java.util.Date dateValue(Object value) {
+        return value instanceof java.util.Date ? (java.util.Date) value : null;
+    }
+
+    private void putEarlier(Map<String, Object> values, String key, java.util.Date candidate) {
+        if (candidate == null) return;
+        java.util.Date current = dateValue(values.get(key));
+        if (current == null || candidate.before(current)) values.put(key, candidate);
+    }
+
+    private Long elapsedMinutes(java.util.Date start, java.util.Date end) {
+        if (start == null || end == null || end.before(start)) return null;
+        return Long.valueOf(Math.round((end.getTime() - start.getTime()) / 60000.0));
+    }
+
+    private void addLong(Map<String, Object> values, String key, long amount) {
+        Number current = (Number) values.get(key);
+        values.put(key, Long.valueOf((current == null ? 0L : current.longValue()) + amount));
     }
 
     private String mapStatus(String raw) {

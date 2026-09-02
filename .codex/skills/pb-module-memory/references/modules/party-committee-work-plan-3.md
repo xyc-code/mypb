@@ -125,10 +125,10 @@
 
 ## Intranet Handoff
 
-- Package path:
-- Files to copy:
-- SQL/platform config to migrate:
-- Files/config not to copy:
+- Package path: `D:\pb-release\内网部署-举手报告统计-党委计划3.0-20260902-134653` 及同名 ZIP。
+- Files to copy: 3.0 的 JSP/JS/CSS、Controller、Service、PortalTodoService、Constants；门户待办的 PortalBusinessTodoService、PortalTaskService、PortalTaskDao、PortalTaskMapper 源码/运行时 XML、PortalUnionTaskController；SQL 包含当前基础建表脚本、门户待办表和既有环境升级补丁。全部保留项目相对路径，不打包 `.class`。
+- SQL/platform config to migrate: 新装环境执行 `db/dw_work_plan_3.sql` 与 `db/portal_business_todo.sql`；既有 3.0 环境由 DBA 按实际列/表选择日期补丁，不得重复执行非幂等 `ADD/CREATE TABLE` 脚本。菜单 URL 配置为 `platform/avicit/pb/dwworkplan3/dwWorkPlan3Controller/toIndex`，并授予普通业务用户资源权限；门户继续使用 `/ims/oa/todo/uniontask/pendingWork`。
+- Files/config not to copy: 模块记忆、本地测试/造数脚本、`db/dw_work_plan_3_full_rebuild.sql`、`db/dw_work_plan_3_import_person_tree.sql`、`.class`、环境配置、截图和测试缓存。完整重建脚本会删除现有 3.0 与门户待办数据，因此本次部署明确排除。
 - Intranet sync date:
 - Baseline update status:
 
@@ -770,3 +770,13 @@
 - 多角色用户切换人员树角色后，反馈准备、目标查询、提交、查看、确认、退回和确认后上报请求必须携带当前 `currentNodeId`，使后端 `currentUserNode(request)` 按页面当前角色校验权限，不能回落到用户的默认顶层节点。
 - 受影响的增量运行文件仅为 `WebRoot/avicit/pb/dwworkplan3/index.jsp` 和 `WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`；缓存版本为 `20260831_feedback_role_58`，无 Java、SQL 或平台配置变更。
 - 接收人校验提示统一使用中性的“接收人员”，不得恢复静态校验禁止的“接收对象”旧文案。
+
+## 2026-09-02 Feedback Review Entry And Permission Fix
+
+- 非编辑角色（如部长）确认反馈时，前端只提交 `feedbackId`，不回传正文，避免正文空白/编码差异被误判为修改科员反馈而触发直属室主任权限拦截；授权编辑者仍提交修改后的正文。
+- 待确认且属于当前用户的任务行增加醒目的“审核反馈”快捷入口，直接打开反馈链详情，减少在详情底部寻找通过/退回按钮的操作成本。
+- 受影响文件：`WebRoot/avicit/pb/dwworkplan3/index.jsp`、`WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.js`、`WebRoot/static/pb-modern/dwworkplan3/dwworkplan3.css`；缓存版本 `20260902_feedback_review_59`。验证：JS 语法、模块检查、前端冲突扫描均通过。
+
+## 2026-09-02 Pending Reviewer Display
+
+- 反馈链待确认卡片显示待审核人：优先使用反馈目标人员，历史数据缺少目标时回退任务下发人；后端 listFeedback 补充 TASK_SENDER_NAME。前端资源版本 20260902_feedback_reviewer_61。审核人对应的待确认任务操作列只显示“审核反馈”。

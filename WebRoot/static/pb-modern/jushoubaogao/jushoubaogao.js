@@ -107,9 +107,17 @@
             $(this).toggleClass('is-active', selected).attr('aria-selected', selected ? 'true' : 'false');
         });
     }
+    function formatDurationMinutes(value) {
+        if (value === undefined || value === null || value === '' || isNaN(Number(value))) { return '-'; }
+        var totalMinutes = Math.max(0, Math.round(Number(value)));
+        var days = Math.floor(totalMinutes / 1440);
+        var hours = Math.floor((totalMinutes % 1440) / 60);
+        var minutes = totalMinutes % 60;
+        return days + '天' + hours + '小时' + minutes + '分钟';
+    }
     function renderUnitHeader() {
         var reportMode = activeUnitMode === 'report';
-        var headings = reportMode ? ['排名', '报告单位', '报告总数', '质量', '安全', '生产', '技术', '其他'] : ['排名', '受理部门', '受理总数', '已完成', '闭环率', '处理中', '未受理'];
+        var headings = reportMode ? ['排名', '报告单位', '报告总数', '质量', '安全', '生产', '技术', '其他'] : ['排名', '受理部门', '受理总数', '已完成', '闭环率', '处理中', '未受理', '接收平均时间', '平均处理时长', '提交人力协办次数'];
         $(root + ' .jbg-unit-table-head').html('<tr>' + $.map(headings, function (heading) { return '<th>' + heading + '</th>'; }).join('') + '</tr>');
         $(root + ' .jbg-unit-table').toggleClass('is-accept-mode', !reportMode);
         $(root + ' .jbg-unit-sort-label').text(reportMode ? '按报告总数降序' : '按受理总数降序');
@@ -134,11 +142,13 @@
                 html += '<td>' + value('质量') + '</td><td>' + value('安全') + '</td><td>' + value('生产') + '</td><td>' + value('技术') + '</td><td>' + value('其他') + '</td>';
             } else {
                 var rate = item.closureRate === undefined || item.closureRate === null ? '0.00' : Number(item.closureRate).toFixed(2);
+                var hrReviewAverage = item.averageHrReviewCount === undefined || item.averageHrReviewCount === null ? '-' : Number(item.averageHrReviewCount).toFixed(2) + '次';
                 html += '<td>' + value('已完成') + '</td><td>' + rate + '%</td><td>' + value('流转中') + '</td><td>' + value('拟稿中') + '</td>';
+                html += '<td>' + formatDurationMinutes(item.averageReceiveMinutes) + '</td><td>' + formatDurationMinutes(item.averageHandlingMinutes) + '</td><td>' + hrReviewAverage + '</td>';
             }
             html += '</tr>';
         });
-        var columnCount = activeUnitMode === 'report' ? 8 : 7;
+        var columnCount = activeUnitMode === 'report' ? 8 : 10;
         var emptyText = activeUnitMode === 'report' ? '本年度暂无报告单位数据。' : '本年度暂无受理单位数据。';
         $(root + ' .jbg-unit-table-body').html(html || '<tr><td colspan="' + columnCount + '">' + emptyText + '</td></tr>');
         $(root + ' .jbg-unit-page-info').text(unitRows.length ? (start + 1) + '-' + Math.min(start + unitPageSize, unitRows.length) + '/' + unitRows.length : '1-0/0');
@@ -158,7 +168,7 @@
         } else {
             var source = data.acceptUnitSourceCounts || {};
             var text = top ? '“' + top.name + '”受理记录最多，共 ' + top.total + ' 条。' : '本年度暂无受理单位数据。';
-            text += ' 子表记录 ' + (Number(source.childRecords) || 0) + ' 条，task21回退 ' + (Number(source.task21Fallbacks) || 0) + ' 条，未解析报告 ' + (Number(source.unresolvedReports) || 0) + ' 条。';
+            text += ' 本单位直接办理数量 ' + (Number(source.unresolvedReports) || 0) + ' 条，分发其他单位办理数量 ' + (Number(source.childRecords) || 0) + ' 条，表单回退数量 ' + (Number(source.task21Fallbacks) || 0) + ' 条。';
             $(root + ' .jbg-unit-summary').text(text);
         }
         renderUnitHeader();
@@ -178,15 +188,7 @@
         $(root + ' .jbg-completed-count').text(Number(data.closedCount) || 0);
         $(root + ' .jbg-processing-count').text(Number(data.processingCount) || 0);
         $(root + ' .jbg-closure-rate').text(Number(data.closureRate) || 0);
-        $(root + ' .jbg-flow-coverage').text((Number(data.flowCoverageRate) || 0) + '%');
-        $(root + ' .jbg-flow-unlinked').text(Number(data.flowUnlinkedCount) || 0);
-        $(root + ' .jbg-unit-missing').text(Number(data.unitMissingCount) || 0);
-        $(root + ' .jbg-type-missing').text(Number(data.typeMissingCount) || 0);
-        $(root + ' .jbg-anonymous-invalid').text(Number(data.anonymousInvalidCount) || 0);
         var temporary = !!data.statusTemporary;
-        $(root + ' .jbg-flow-coverage-label').text(temporary ? '测试状态覆盖率' : '流程覆盖率');
-        $(root + ' .jbg-flow-unlinked-label').text(temporary ? '缺少测试状态' : '无流程实例');
-        $(root + ' .jbg-quality').toggleClass('jbg-quality-warning', !temporary && Number(data.flowCoverageRate) < 100 && total > 0);
         $(root + ' .jbg-data-alert').toggle(!temporary && Number(data.flowCoverageRate) < 100 && total > 0);
         $(root + ' .jbg-simulation-badge').css('display', data.statusTemporary ? 'inline-flex' : 'none');
         $(root + ' .jbg-unit-count').text(units.length ? units[0].value : 0);

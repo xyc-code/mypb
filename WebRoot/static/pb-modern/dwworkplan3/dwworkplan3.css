@@ -1584,6 +1584,18 @@
   color: #334155;
 }
 
+.pb-dwworkplan3-page .dw-task-action-btn.dw-action-review {
+  border-color: #c4b5fd;
+  background: #f5f3ff;
+  color: #6d28d9;
+  font-weight: 700;
+}
+
+.pb-dwworkplan3-page .dw-feedback-pending-reviewer {
+  color: #6d28d9;
+  font-weight: 700;
+}
+
 .pb-dwworkplan3-page .dw-task-action-btn.dw-action-edit,
 .pb-dwworkplan3-page .dw-task-action-btn.dw-action-dispatch {
   border-color: #bfdbfe;
