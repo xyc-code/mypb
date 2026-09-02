@@ -131,6 +131,7 @@
 - Files/config not to copy: 模块记忆、本地测试/造数脚本、`db/dw_work_plan_3_full_rebuild.sql`、`db/dw_work_plan_3_import_person_tree.sql`、`.class`、环境配置、截图和测试缓存。完整重建脚本会删除现有 3.0 与门户待办数据，因此本次部署明确排除。
 - Intranet sync date:
 - Baseline update status:
+- Packaging verification (2026-09-02): 两模块联合目录包和 ZIP 均通过 26/26 候选覆盖检查、0 缺失，3.0 模块目录包含 21 个运行/SQL文件，ZIP SHA256 为 `45D3E0C7931A97437CBC68C89C10D2DC06A34E280445253B020FB3FB7270E1B2`。JDK 8 完整闭包编译、`verify-dwworkplan3.ps1`、SQL 审计、`DWWORKPLAN3_BUSINESS_OK`（含 cleanup）、Tomcat/Redis 重启、PB 健康检查、Spring POST 路由映射和静态资源 200 通过；前端扫描唯一 INFO 为复用 PB 自带 `.layui-layer`，无新增框架/CDN/npm。重启后浏览器会话失效，登录态 JSON 冒烟检查必须由有账号人员在内网部署前后完成。
 
 ## Next Time
 

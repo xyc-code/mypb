@@ -100,6 +100,7 @@
 - SQL/platform config to migrate: 无举手报告建表 SQL；手工新增菜单并配置访问权限，部署前只读核验 DYN_JSBG、DYN_JSBG_YWCL、DYN_JSBGYJB、BPM_CLIENT_HIST_PROCINST_V、BPM_CLIENT_HIST_TASK_V 和 SYS_DEPT_V；内网 Tomcat JVM 参数必须为 `-Dpb.jbg.tempStatusMode=false` 或不设置该参数。
 - Files/config not to copy: 模块记忆、`db/ju_shou_bao_gao_test_data.sql`、`db/ju_shou_bao_gao_invalid_anonymous_fixture.sql`、JBG_TEST_ACCEPT_UNIT、JBG_TEST_NODE_TRACE、本地 Tomcat/Redis/DM 配置、截图和测试缓存。
 - Mandatory delivery rule: 内网包中的源码必须默认使用真实 BPM 流程状态，且不得包含启用测试模式的环境配置；打包清单记录不得设置 `-Dpb.jbg.tempStatusMode=true`，建议显式设置 `false`，重启后核验 `statusTemporary=false`，否则阻止上线。本地测试必须显式启用测试模式。
+- Packaging verification (2026-09-02): 两模块联合目录包和 ZIP 均通过 26/26 候选覆盖检查、0 缺失，复制文件哈希与测试工作区一致，ZIP SHA256 为 `45D3E0C7931A97437CBC68C89C10D2DC06A34E280445253B020FB3FB7270E1B2`。JDK 8 编译、Tomcat/Redis 重启、PB 健康检查、Spring GET 路由映射、静态资源 200 和正式模式源码门禁通过；重启后浏览器会话失效，登录态 JSON 冒烟检查必须由有账号人员在内网部署前后完成，完成前不标记正式上线完成。
 
 ## 2026-09-01 Intranet Packaging Mode Gate
 
