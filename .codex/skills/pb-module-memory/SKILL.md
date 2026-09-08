@@ -11,6 +11,7 @@ Use this project-local skill to keep module knowledge reusable without creating 
 
 - When the user asks to create a new PB module or substantial feature, ask once whether to create module memory for it.
 - When the user mentions an existing module, search `references/modules/` for a matching memory before changing files, SQL, low-code forms, views, workflows, menus, or permissions.
+- Before creating, changing, reviewing, or debugging any Excel import in the PB project, read and enforce `references/pb-excel-import-guardrails.md`. These rules apply to every existing and future module.
 - During development, append only useful facts: business rules, decisions, pitfalls, changed files, changed tables, SQL/config migration notes, and user preferences.
 - After changing PB backend Java code, compile the touched Java sources into `WebRoot/WEB-INF/classes`, then restart the local PB/Tomcat project before final verification or handoff unless the user explicitly says not to.
 - Before intranet packaging or handoff, update the module memory with the final handoff summary, then use `pb-intranet-packager`.
