@@ -205,3 +205,25 @@
 - Member unique ID was added to both the list and edit dialog. Frontend/backend epoch conversion now accepts negative Unix seconds and distinguishes 10-digit seconds from 13-digit milliseconds; screenshot sample `-117878400` renders as `1966-04-08`.
 - Migrant-worker status is always stored directly as Chinese text `否`; source `ATTRIBUTE_10` is intentionally ignored. Manual/import normalization stores only `是` or `否` in the database.
 - Updated `GroupFormalDataSyncService.java` and `GroupDataSyncManage.jsp`; JDK8 compile, JSP JavaScript parse, frontend conflict scan (0 warnings), DM8/Redis/Tomcat restart, and `/pb/login` HTTP 200 all passed.
+
+## Import Failure Diagnostics (2026-09-08)
+
+- Workbook-level Excel import exceptions previously used only `ex.getMessage()` and replaced blank exception messages with `导入失败`, so the intranet response could not identify the actual cause and no stack trace was recorded.
+- `GroupFormalDataSyncService.importFile` now generates an error ID for each failed workbook, returns that ID with the existing user-facing error, and logs the complete exception with prefix `[GROUP_SYNC_IMPORT]`, the same error ID, and the workbook filename. Cell values and other workbook business data are not logged.
+- Verification: JDK 8 compilation into `WebRoot/WEB-INF/classes` passed; `javap -verbose` confirmed the compiled class contains the log prefix; local DM8, Redis, and Tomcat were restarted; `/pb/login` returned HTTP 200 and the unauthenticated module entry returned HTTP 302.
+
+## Excel Native Date Import Fix (2026-09-08)
+
+- Excel may convert entered dates into native numeric date cells whose display text follows the workbook style, such as `2026/9/8`. The previous import path passed that display text to `java.sql.Date.valueOf`, which only accepts the database-oriented hyphen format and therefore failed.
+- Import now detects POI-native date cells before generic text formatting. Business dates are normalized to `yyyy-MM-dd`; update timestamps are normalized to `yyyy-MM-dd HH:mm:ss`. Non-date cells continue through the existing `DataFormatter` path.
+- Verification: an in-memory `.xlsx` date cell formatted as `yyyy/m/d` reproduced the old `IllegalArgumentException`; the updated reader returned and parsed `2026-09-08`. JDK 8 compilation passed, and local DM8/Redis/Tomcat restart completed with `/pb/login` HTTP 200.
+- Actual workbook verification: the provided workbook had valid sheet names, headers, row counts, and nonblank formal keys. Member cells `U2` and `V2` were native Excel dates; POI 3.9 returned old display strings `7/1/20` and `10/1/03`, both rejected by `java.sql.Date.valueOf`. The updated reader normalized them to `2020-07-01` and `2003-10-01`, both accepted. The workbook itself was not modified.
+- Follow-up correction: POI 3.9 `DateUtil.isCellDateFormatted` calls `getNumericCellValue` and throws `IllegalStateException` when invoked on ordinary text cells. The first actual-file failure was `党组织信息!A2` (`CELL_TYPE_STRING`). Date detection now runs only for numeric cells or formulas with numeric cached results; all 1,140 populated data cells in the actual workbook passed the corrected reader, while `U2` and `V2` retained their normalized dates. JDK 8 compilation and the local DM8/Redis/Tomcat restart passed.
+
+## Intranet Patch Handoff (2026-09-08)
+
+- Patch output: `D:\pb-release\内网补丁-集团数据同步-Excel日期导入与错误日志-20260908-100958` and the same-name ZIP archive.
+- Deployment scope is one runtime source file: `src/avicit/pb/groupsync/service/GroupFormalDataSyncService.java`. There are no JSP, controller route, SQL, menu, role, or configuration changes in this patch.
+- The intranet baseline manifest is not available locally. This is therefore an incremental patch on the confirmed assumption that the existing group-data-sync module is already deployed in the intranet environment.
+- Deployment procedure: copy the contents of `按模块分开\同步集团数据` to the PB project root with relative paths preserved, compile the Java source with JDK 8 into `WebRoot/WEB-INF/classes`, restart Tomcat, and retry the supplied workbook. If an import still fails, match the returned error ID against `[GROUP_SYNC_IMPORT]` in the server log.
+- The patch intentionally excludes compiled `.class` files, sample workbooks, test fixtures, logs, local screenshots, and unrelated working-tree changes.

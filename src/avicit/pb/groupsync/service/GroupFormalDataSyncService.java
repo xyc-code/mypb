@@ -24,14 +24,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** 集团 FINEDB 正式表同步与只读分页服务。正式表不写入 PB 元数据。 */
 @Service
 public class GroupFormalDataSyncService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupFormalDataSyncService.class);
     // Formal tables are owned by the PB connection schema in the intranet (PT6).
     // Keep identifiers unqualified so the same package follows the authenticated schema.
     private static final String MEMBER_TABLE = "PULL_D12_PTY_MBR_BASIC_INFO";
@@ -377,14 +382,37 @@ public class GroupFormalDataSyncService {
             while ((entry = zin.getNextEntry()) != null) { if (entry.isDirectory() || !entry.getName().toLowerCase().endsWith(".xlsx")) continue; ByteArrayOutputStream b = new ByteArrayOutputStream(); int n; while ((n=zin.read(buf)) >= 0) b.write(buf,0,n); workbooks.add(b.toByteArray()); names.add(entry.getName()); } zin.close();
         } else { ByteArrayOutputStream b = new ByteArrayOutputStream(); InputStream in=file.getInputStream(); byte[] buf=new byte[8192]; int n; while((n=in.read(buf))>=0)b.write(buf,0,n); in.close(); workbooks.add(b.toByteArray()); names.add(filename); }
         int imported=0; List<String> errors=new ArrayList<String>();
-        for (int i=0;i<workbooks.size();i++) try { imported += importWorkbook(workbooks.get(i), names.get(i), remoteIp); } catch (Exception ex) { errors.add(names.get(i)+"："+StringUtils.defaultIfBlank(ex.getMessage(), "导入失败")); }
+        for (int i=0;i<workbooks.size();i++) {
+            try {
+                imported += importWorkbook(workbooks.get(i), names.get(i), remoteIp);
+            } catch (Exception ex) {
+                String errorId = java.util.UUID.randomUUID().toString().replace("-", "");
+                LOGGER.error("[GROUP_SYNC_IMPORT] import failed, errorId=" + errorId + ", file=" + names.get(i), ex);
+                errors.add(names.get(i) + "：" + StringUtils.defaultIfBlank(ex.getMessage(), "导入失败") + "（错误编号：" + errorId + "）");
+            }
+        }
         Map<String,Object> result=new HashMap<String,Object>(); result.put("files", workbooks.size()); result.put("imported", imported); result.put("failedFiles", errors.size()); result.put("errors", errors); return result;
     }
 
     private int importWorkbook(byte[] bytes, String filename, String remoteIp) throws Exception {
         XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(bytes)); int count=0;
-        try { for (int s=0;s<workbook.getNumberOfSheets();s++) { Sheet sheet=workbook.getSheetAt(s); String type=sheet.getSheetName().contains("党员") ? "member" : (sheet.getSheetName().contains("组织") ? "organization" : null); if (type==null) continue; Row header=sheet.getRow(0); if(header==null) continue; Map<String,Integer> columns=new HashMap<String,Integer>(); for(int c=0;c<header.getLastCellNum();c++) columns.put(new DataFormatter().formatCellValue(header.getCell(c)).trim().toUpperCase(), c); String[] fields="member".equals(type)?MEMBER_EXPORT_FIELDS:ORG_EXPORT_FIELDS; String[] headers="member".equals(type)?MEMBER_EXPORT_HEADERS:ORG_EXPORT_HEADERS; for(int r=1;r<=sheet.getLastRowNum();r++){ Row row=sheet.getRow(r); if(row==null) continue; Map<String,String> params=new HashMap<String,String>(); DataFormatter f=new DataFormatter(); for(int i=0;i<fields.length;i++){ Integer c=columns.get(fields[i]); if(c==null) c=columns.get(headers[i].toUpperCase()); if(c!=null && row.getCell(c)!=null) params.put(fields[i],f.formatCellValue(row.getCell(c))); } String id="member".equals(type)?params.get("RYJBXX_GROUP_EMPLOYEE_COPE"):params.get("DZZ_PARTY_ORGANIZATION_UNIQUE_ID"); if(StringUtils.isBlank(id)) throw new IllegalArgumentException("缺少正式表主键"); params.put("ID",id); save(type,params,null); count++; } } } finally { } return count;
+        try { for (int s=0;s<workbook.getNumberOfSheets();s++) { Sheet sheet=workbook.getSheetAt(s); String type=sheet.getSheetName().contains("党员") ? "member" : (sheet.getSheetName().contains("组织") ? "organization" : null); if (type==null) continue; Row header=sheet.getRow(0); if(header==null) continue; Map<String,Integer> columns=new HashMap<String,Integer>(); for(int c=0;c<header.getLastCellNum();c++) columns.put(new DataFormatter().formatCellValue(header.getCell(c)).trim().toUpperCase(), c); String[] fields="member".equals(type)?MEMBER_EXPORT_FIELDS:ORG_EXPORT_FIELDS; String[] headers="member".equals(type)?MEMBER_EXPORT_HEADERS:ORG_EXPORT_HEADERS; for(int r=1;r<=sheet.getLastRowNum();r++){ Row row=sheet.getRow(r); if(row==null) continue; Map<String,String> params=new HashMap<String,String>(); DataFormatter f=new DataFormatter(); for(int i=0;i<fields.length;i++){ Integer c=columns.get(fields[i]); if(c==null) c=columns.get(headers[i].toUpperCase()); if(c!=null && row.getCell(c)!=null) params.put(fields[i],importCellText(row.getCell(c),fields[i],f)); } String id="member".equals(type)?params.get("RYJBXX_GROUP_EMPLOYEE_COPE"):params.get("DZZ_PARTY_ORGANIZATION_UNIQUE_ID"); if(StringUtils.isBlank(id)) throw new IllegalArgumentException("缺少正式表主键"); params.put("ID",id); save(type,params,null); count++; } } } finally { } return count;
     }
+
+    private String importCellText(Cell cell, String field, DataFormatter formatter) {
+        int cellType = cell.getCellType();
+        boolean numeric = cellType == Cell.CELL_TYPE_NUMERIC
+                || (cellType == Cell.CELL_TYPE_FORMULA && cell.getCachedFormulaResultType() == Cell.CELL_TYPE_NUMERIC);
+        if (numeric && DateUtil.isCellDateFormatted(cell)) {
+            Date value = cell.getDateCellValue();
+            if (value != null) {
+                String pattern = field.endsWith("_UPDATE_TIMESTAMP") ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd";
+                return new SimpleDateFormat(pattern).format(value);
+            }
+        }
+        return formatter.formatCellValue(cell);
+    }
+
     public Map<String, Object> logs(String orgIdentity, int limit) {
         ensureFormalSchemaReady();
         int safeLimit = Math.min(Math.max(1, limit), 100);
