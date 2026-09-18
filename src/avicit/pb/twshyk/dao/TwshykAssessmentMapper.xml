@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.twshyk.dao.TwshykAssessmentDAO">
+    <resultMap id="organization" type="avicit.pb.twshyk.dto.TwshykAssessment$Organization">
+        <id property="id" column="ID"/>
+        <result property="name" column="LEAGUE_NAME"/>
+    </resultMap>
+    <resultMap id="meetingCount" type="avicit.pb.twshyk.dto.TwshykAssessment$MeetingCount">
+        <result property="leagueId" column="LEAGUE_ID"/>
+        <result property="type" column="HYLX"/>
+        <result property="month" column="MEETING_MONTH"/>
+        <result property="count" column="MEETING_COUNT"/>
+    </resultMap>
+    <select id="findYears" resultType="java.lang.Integer">
+        SELECT DISTINCT CAST(TO_CHAR(HYRQ, 'YYYY') AS INTEGER) AS MEETING_YEAR
+        FROM DYN_TWSHYK
+        WHERE ORG_IDENTITY = #{orgIdentity} AND HYRQ IS NOT NULL
+        ORDER BY MEETING_YEAR DESC
+    </select>
+    <select id="countOrganizations" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM LEAGUE_ORGANIZATION
+        WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+    </select>
+    <select id="findOrganizationPage" resultMap="organization">
+        SELECT ID, LEAGUE_NAME FROM (
+            SELECT ID, LEAGUE_NAME, ROW_NUMBER() OVER (ORDER BY TREE_SORTS, TREE_SORT, ID) AS RN
+            FROM LEAGUE_ORGANIZATION
+            WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+        ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit}
+        ORDER BY RN
+    </select>
+    <select id="findOrganizations" resultMap="organization">
+        SELECT ID, LEAGUE_NAME FROM LEAGUE_ORGANIZATION
+        WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+        <if test="leagueId != null">AND ID = #{leagueId}</if>
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
+    <select id="findCounts" resultMap="meetingCount">
+        SELECT LEAGUE_ID, HYLX, TO_CHAR(HYRQ, 'YYYY-MM') AS MEETING_MONTH, COUNT(*) AS MEETING_COUNT
+        FROM DYN_TWSHYK
+        WHERE ORG_IDENTITY = #{orgIdentity}
+          AND HYRQ &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+          AND HYRQ &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')
+          AND HYLX IN ('支部委员会', '团课', '支部大会')
+        <if test="leagueId != null">AND LEAGUE_ID = #{leagueId}</if>
+        <if test="leagueIds != null">
+            AND LEAGUE_ID IN
+            <foreach collection="leagueIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        </if>
+        GROUP BY LEAGUE_ID, HYLX, TO_CHAR(HYRQ, 'YYYY-MM')
+    </select>
+</mapper>
