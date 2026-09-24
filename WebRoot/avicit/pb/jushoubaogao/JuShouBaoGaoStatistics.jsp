@@ -11,7 +11,7 @@
     <script src="<%=request.getContextPath()%>/static/h5/echarts/dist/echarts-4.1.2.js" type="text/javascript"></script>
 </head>
 <body>
-<main id="pb-jushoubaogao" class="pb-modern-page pb-jushoubaogao-page" data-statistics-url="<%=request.getContextPath()%>/platform/avicit/pb/jushoubaogao/juShouBaoGaoController/statistics">
+<main id="pb-jushoubaogao" class="pb-modern-page pb-jushoubaogao-page" data-statistics-url="<%=request.getContextPath()%>/platform/avicit/pb/jushoubaogao/juShouBaoGaoController/statistics" data-detail-url="<%=request.getContextPath()%>/platform/eform/bpmsCRUDClient/toViewJsp/jsbg_lcc">
     <div class="jbg-header">
         <div class="jbg-header-copy"><div class="jbg-title-line"><h1>全业务域举手报告概览</h1><span class="jbg-simulation-badge"><i></i>本地测试数据 · 使用测试状态</span></div><p class="jbg-subtitle">快速查看报告规模、处理进度和问题分布</p></div>
         <label class="jbg-filter">统计年份 <select class="jbg-year" aria-label="统计年份"></select></label>
@@ -32,6 +32,7 @@
     <span class="jbg-loading" style="display:none">正在读取...</span>
 </main>
 <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-js.jsp"><jsp:param value="<%=importlibs%>" name="importlibs"/></jsp:include>
-<script src="<%=request.getContextPath()%>/static/pb-modern/jushoubaogao/jushoubaogao.js?v=20260902-1"></script>
+<script src="<%=request.getContextPath()%>/static/pb-modern/jushoubaogao/jushoubaogao-drilldown.js?v=20260924-1"></script>
+<script src="<%=request.getContextPath()%>/static/pb-modern/jushoubaogao/jushoubaogao.js?v=20260924-1"></script>
 </body>
 </html>

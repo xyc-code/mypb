@@ -15,8 +15,25 @@
         return $('<div>').text(value === undefined || value === null ? '' : String(value)).html();
     }
     function chart(id) {
-        if (!charts[id]) { charts[id] = echarts.init(document.getElementById(id)); }
+        if (!charts[id]) {
+            charts[id] = echarts.init(document.getElementById(id));
+            if (id === 'jbgStatusChart') { charts[id].on('click', openStatusView); }
+        }
         return charts[id];
+    }
+    function openStatusView(item) {
+        if (!statisticsData || statisticsData.ok === false || $(root + ' .jbg-loading').is(':visible')) { return; }
+        var metric = item.componentType === 'yAxis' ? item.value : item.name;
+        var url = window.JbgDrilldown.link($(root).data('detail-url'), statisticsData.year, activeStatusReportType, metric);
+        if (!url) { return; }
+        var title = '举手报告-' + statisticsData.year + '-' + activeStatusReportType + '-' + metric;
+        var host = window;
+        while (true) {
+            if (typeof host.addTab === 'function') { host.addTab(title, url); return; }
+            if (host === host.parent) { break; }
+            host = host.parent;
+        }
+        window.open(url, '_blank');
     }
     function progressOption(data) {
         var names = $.map(data || [], function (item) { return item.name; });
@@ -77,7 +94,9 @@
         if (!data.statusTemporary && Number(data.flowCoverageRate) < 100 && Number(data.total) > 0) {
             $(root + ' .jbg-status-summary').append(' 流程数据不完整，闭环率仅供排查参考。');
         }
-        chart('jbgStatusChart').setOption(selectedTotal ? progressOption(metrics) : emptyOption(), true);
+        var option = progressOption(metrics);
+        option.yAxis.triggerEvent = true;
+        chart('jbgStatusChart').setOption(option, true);
     }
     function renderMonthlyBreakdown(data) {
         var breakdown = activeBreakdown(data, activeMonthlyReportType);

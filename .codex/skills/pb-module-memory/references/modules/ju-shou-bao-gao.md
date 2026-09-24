@@ -6,7 +6,7 @@
 - Memory file: .codex/skills/pb-module-memory/references/modules/ju-shou-bao-gao.md
 - Status: developing
 - Owner/requester: 用户
-- Last updated: 2026-09-02
+- Last updated: 2026-09-24
 
 ## Business
 
@@ -113,6 +113,11 @@
 - Baseline update status: pending。
 
 ## Next Time
+
+- Interaction update (2026-09-24): 工作进展图支持柱条、数值标签及指标名称下钻；报告数→all，已完成/闭环率→ended，处理中→active，未受理→start。目标为内网标准视图 `jsbg_lcc`，入口 `platform/eform/bpmsCRUDClient/toViewJsp/jsbg_lcc`，系统内新页签保留统计页。条件使用已渲染的统计年份、工作进展图独立类型标签；总体不限制类型，安全同时精确匹配两个历史值。零数据仍展示可点击的五项名称。
+- Implementation update (2026-09-24): 修改统计 JSP 与 `jushoubaogao.js`，新增 `jushoubaogao-drilldown.js`。同一扩展脚本通过内网视图“JS文件扩展”接入；只在 jsbg_lcc 且带 jbgDrilldown=1 时向标准列表请求 param 注入条件，首次请求、分页、排序及重置均保留范围，普通菜单请求不改写。下钻禁用独立后端分支的快捷关键词查询，保留其他高级查询项。
+- Deployment prerequisite (2026-09-24): 内网视图须增加主表 CREATION_DATE 的 dateTime 查询项（formFiledID=JBG_CREATION_DATE）和主表 BGLX 的 checkbox 查询项（formFiledID=JBG_REPORT_TYPES）。当前设计器隐藏 checkbox 选项，需在备份的视图 XML 中调整该专用项后重新导入发布；不能只改生成 HTML。脚本检测缺项后中止查询，避免显示全部记录。日期按 PB DATE 秒级精度传当年 01-01 00:00:00 至 12-31 23:59:59。完整步骤见 `docs/jsbg-lcc-drilldown.md`。
+- Verification (2026-09-24): `scripts/test-jbg-drilldown.py` 使用系统 Edge、真实 jQuery 1.8.3/jqGrid 5.2.0/ECharts 4.1.2 与模拟数据接口，通过 30 组列表条件、30 组坐标轴实际点击及柱条点击、月度标签独立性、切换零值年份、年度边界、安全别名、分页/排序/重置、普通菜单及错误配置阻断测试，无浏览器错误；JS 语法与限定文件 diff 检查通过。未改 Java，无编译重启需求。内网真实视图尚未配置/联调，不得将本地模拟列表回归描述为内网对账完成。
 
 - Read first: 本文件及 JuShouBaoGaoController.java。
 - Likely change points: 统计维度、年份筛选、页面图表配置和单位排行榜分页；单位明细通过 unitDetails 返回全部有效单位，前端默认每页 10 条。
