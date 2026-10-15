@@ -8,6 +8,8 @@ import avicit.pb.twshyk.dto.TwshykAssessment.Organization;
 
 @MyBatisRepository
 public interface TwshykAssessmentDAO {
+    List<String> findOrgIdentities();
+    List<Organization> findMonthlyOrganizations(@Param("orgIdentity") String orgIdentity);
     List<Integer> findYears(@Param("orgIdentity") String orgIdentity);
     long countOrganizations(@Param("orgIdentity") String orgIdentity);
     List<Organization> findOrganizationPage(@Param("orgIdentity") String orgIdentity,

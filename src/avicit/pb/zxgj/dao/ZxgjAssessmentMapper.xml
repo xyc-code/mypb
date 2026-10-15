@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.zxgj.dao.ZxgjAssessmentDAO">
+    <resultMap id="mainRecord" type="avicit.pb.zxgj.dto.ZxgjAssessmentDTO$MainRecord">
+        <id property="id" column="ID"/>
+        <result property="projectName" column="XM"/>
+        <result property="formNumber" column="BDBH"/>
+        <result property="partyId" column="PARTY_ID"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+        <result property="penaltyFlag" column="NDZJKF"/>
+    </resultMap>
+    <resultMap id="milestone" type="avicit.pb.zxgj.dto.ZxgjAssessmentDTO$Milestone">
+        <id property="id" column="ID"/>
+        <result property="mainId" column="WJ"/>
+        <result property="plan" column="JTXM"/>
+        <result property="content" column="JTNR"/>
+        <result property="plannedDate" column="PLANNED_DATE"/>
+        <result property="sequence" column="XH"/>
+        <result property="penaltyFlag" column="KHSFKF"/>
+    </resultMap>
+    <resultMap id="organization" type="avicit.pb.zxgj.dto.ZxgjAssessmentDTO$Organization">
+        <id property="id" column="ID"/>
+        <result property="name" column="PARTY_NAME"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+        <result property="departmentId" column="ATTRIBUTE_02"/>
+        <result property="departmentName" column="ATTRIBUTE_03"/>
+    </resultMap>
+    <resultMap id="attachmentCount" type="avicit.pb.zxgj.dto.ZxgjAssessmentDTO$AttachmentCount">
+        <id property="parentId" column="PARENT_REGISTER_ID"/>
+        <result property="count" column="ATTACHMENT_COUNT"/>
+    </resultMap>
+    <select id="findOrgIdentities" resultType="java.lang.String">
+        SELECT DISTINCT P.ORG_IDENTITY FROM PARTY_ORGANIZATION P
+        WHERE LENGTH(TRIM(P.ORG_IDENTITY)) &gt; 0
+        AND EXISTS (SELECT 1 FROM DYN_ZHUXINGJ M WHERE M.PARTY_ID = P.ID)
+        ORDER BY P.ORG_IDENTITY
+    </select>
+    <select id="findYears" resultType="java.lang.String">
+        SELECT DISTINCT SUBSTR(TRIM(BDBH), 1, 4) AS BUSINESS_YEAR FROM DYN_ZHUXINGJ
+        WHERE LENGTH(TRIM(BDBH)) &gt;= 4 ORDER BY BUSINESS_YEAR DESC
+    </select>
+    <sql id="annualFilter">
+        SUBSTR(TRIM(M.BDBH), 1, 4) = #{year}
+        <if test="partyName != null">AND P.PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+    </sql>
+    <select id="countProjects" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM DYN_ZHUXINGJ M LEFT JOIN PARTY_ORGANIZATION P ON P.ID = M.PARTY_ID
+        WHERE <include refid="annualFilter"/>
+    </select>
+    <select id="findProjectPage" resultType="java.lang.String">
+        SELECT ID FROM (
+            SELECT M.ID, ROW_NUMBER() OVER (ORDER BY P.TREE_SORTS, P.TREE_SORT, P.ID, M.BDBH, M.ID) AS RN
+            FROM DYN_ZHUXINGJ M LEFT JOIN PARTY_ORGANIZATION P ON P.ID = M.PARTY_ID
+            WHERE <include refid="annualFilter"/>
+        ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
+    </select>
+    <select id="findMonthlyProjectIds" resultType="java.lang.String">
+        SELECT M.ID FROM DYN_ZHUXINGJ M JOIN PARTY_ORGANIZATION P ON P.ID = M.PARTY_ID
+        WHERE P.ORG_IDENTITY = #{orgIdentity} ORDER BY M.ID
+    </select>
+    <select id="lockMainRecords" resultMap="mainRecord">
+        SELECT ID, XM, BDBH, PARTY_ID, ORG_IDENTITY, NDZJKF FROM DYN_ZHUXINGJ WHERE ID IN
+        <foreach collection="mainIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY ID FOR UPDATE
+    </select>
+    <select id="lockMilestones" resultMap="milestone">
+        SELECT ID, WJ, JTXM, JTNR, TO_CHAR(SJJD, 'YYYY-MM-DD') AS PLANNED_DATE, XH, KHSFKF
+        FROM DYN_ZXGJZB WHERE WJ IN
+        <foreach collection="mainIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY ID FOR UPDATE
+    </select>
+    <select id="findOrganizations" resultMap="organization">
+        SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03 FROM PARTY_ORGANIZATION
+        WHERE ID IN
+        <foreach collection="partyIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY ID
+    </select>
+    <select id="countAttachments" resultMap="attachmentCount">
+        SELECT PARENT_REGISTER_ID, COUNT(*) AS ATTACHMENT_COUNT FROM SYS_ATTACHMENT
+        WHERE PARENT_REGISTER_ID IN
+        <foreach collection="parentIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        GROUP BY PARENT_REGISTER_ID
+    </select>
+    <update id="markMilestonePenalty">
+        UPDATE DYN_ZXGJZB SET KHSFKF = '是'
+        WHERE ID = #{id} AND (KHSFKF IS NULL OR KHSFKF &lt;&gt; '是')
+    </update>
+    <update id="markSummaryPenalty">
+        UPDATE DYN_ZHUXINGJ SET NDZJKF = '是'
+        WHERE ID = #{id} AND (NDZJKF IS NULL OR NDZJKF &lt;&gt; '是')
+    </update>
+</mapper>

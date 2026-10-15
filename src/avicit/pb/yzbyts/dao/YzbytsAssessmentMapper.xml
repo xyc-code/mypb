@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.yzbyts.dao.YzbytsAssessmentDAO">
+    <resultMap id="organization" type="avicit.pb.yzbyts.dto.YzbytsAssessmentDTO$Organization">
+        <id property="id" column="ID"/>
+        <result property="name" column="PARTY_NAME"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+        <result property="departmentId" column="ATTRIBUTE_02"/>
+        <result property="departmentName" column="ATTRIBUTE_03"/>
+    </resultMap>
+    <resultMap id="mainRecord" type="avicit.pb.yzbyts.dto.YzbytsAssessmentDTO$MainRecord">
+        <id property="id" column="ID"/>
+        <result property="partyId" column="PARTY_ID"/>
+        <result property="year" column="NF"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+    </resultMap>
+    <resultMap id="milestone" type="avicit.pb.yzbyts.dto.YzbytsAssessmentDTO$Milestone">
+        <id property="id" column="ID"/>
+        <result property="mainId" column="FK_COL_ID"/>
+        <result property="plan" column="LCBJH"/>
+        <result property="plannedDate" column="PLANNED_DATE"/>
+        <result property="sourceStatus" column="ZT"/>
+        <result property="evidence" column="ZZCL"/>
+        <result property="sequence" column="XH"/>
+        <result property="penaltyFlag" column="KHSFKF"/>
+    </resultMap>
+    <resultMap id="configuration" type="avicit.pb.yzbyts.dto.YzbytsAssessmentDTO$Configuration">
+        <result property="month" column="KH_MONTH"/>
+        <result property="day" column="KH_DAY"/>
+    </resultMap>
+    <sql id="eligibleOrganization">
+        (PARTY_NAME IS NULL OR (PARTY_NAME NOT LIKE '%党委%'
+        AND PARTY_NAME NOT LIKE '%离休%' AND PARTY_NAME NOT LIKE '%总支%'))
+    </sql>
+    <select id="findOrgIdentities" resultType="java.lang.String">
+        SELECT DISTINCT ORG_IDENTITY FROM PARTY_ORGANIZATION
+        WHERE <include refid="eligibleOrganization"/> AND LENGTH(TRIM(ORG_IDENTITY)) &gt; 0
+        ORDER BY ORG_IDENTITY
+    </select>
+    <select id="findYears" resultType="java.lang.String">
+        SELECT DISTINCT TRIM(NF) AS NF FROM DYN_D_YZBYTS
+        WHERE LENGTH(TRIM(NF)) &gt; 0 ORDER BY NF DESC
+    </select>
+    <select id="findConfigurations" resultMap="configuration">
+        SELECT KH_MONTH, KH_DAY FROM DYN_YZBYTSKHRQ
+    </select>
+    <select id="countOrganizations" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+        <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+    </select>
+    <select id="findOrganizationPage" resultMap="organization">
+        SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03 FROM (
+            SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03,
+                ROW_NUMBER() OVER (ORDER BY TREE_SORTS, TREE_SORT, ID) AS RN
+            FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+            <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+        ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
+    </select>
+    <select id="findOrganizations" resultMap="organization">
+        SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03
+        FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+        <if test="orgIdentity != null">AND ORG_IDENTITY = #{orgIdentity}</if>
+        <if test="partyId != null">AND ID = #{partyId}</if>
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
+    <select id="lockMainRecords" resultMap="mainRecord">
+        SELECT ID, PARTY_ID, NF, ORG_IDENTITY FROM DYN_D_YZBYTS
+        WHERE PARTY_ID IN
+        <foreach collection="partyIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        <if test="year != null">AND TRIM(NF) = #{year}</if>
+        ORDER BY ID FOR UPDATE
+    </select>
+    <select id="lockMilestones" resultMap="milestone">
+        SELECT ID, FK_COL_ID, LCBJH, TO_CHAR(JHWCSJ, 'YYYY-MM-DD HH24:MI:SS') AS PLANNED_DATE,
+            ZT, ZZCL, XH, KHSFKF FROM DYN_YZBYTS_LCB WHERE FK_COL_ID IN
+        <foreach collection="mainIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY ID FOR UPDATE
+    </select>
+    <update id="markPenalty">
+        UPDATE DYN_YZBYTS_LCB SET KHSFKF = '是'
+        WHERE ID = #{id} AND (KHSFKF IS NULL OR KHSFKF &lt;&gt; '是')
+    </update>
+</mapper>

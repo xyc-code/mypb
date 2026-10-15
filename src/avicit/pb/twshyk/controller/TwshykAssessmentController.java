@@ -49,17 +49,26 @@ public class TwshykAssessmentController {
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> list(@RequestParam("year") int year,
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "rows", defaultValue = "20") int rows, HttpServletResponse response) {
-        return assess(year, null, page, rows, response);
+    public Map<String, Object> list(@RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "page", defaultValue = "1") String page,
+            @RequestParam(value = "rows", defaultValue = "20") String rows, HttpServletResponse response) {
+        try {
+            return assess(integer(year, "year"), null, integer(page, "page"), integer(rows, "rows"), response);
+        } catch (Exception ex) {
+            return failure(ex, response);
+        }
     }
 
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> detail(@RequestParam("year") int year,
-            @RequestParam("leagueId") String leagueId, HttpServletResponse response) {
-        return assess(year, leagueId, 1, 20, response);
+    public Map<String, Object> detail(@RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "leagueId", required = false) String leagueId, HttpServletResponse response) {
+        try {
+            if (leagueId == null || leagueId.trim().isEmpty()) throw new IllegalArgumentException("请选择团组织");
+            return assess(integer(year, "year"), leagueId, 1, 20, response);
+        } catch (Exception ex) {
+            return failure(ex, response);
+        }
     }
 
     private Map<String, Object> assess(int year, String leagueId, int page, int rows, HttpServletResponse response) {
@@ -102,5 +111,13 @@ public class TwshykAssessmentController {
         result.put("flag", "failure");
         result.put("message", ex instanceof IllegalArgumentException ? ex.getMessage() : "考核查询失败，请联系管理员");
         return result;
+    }
+
+    private static int integer(String value, String name) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException(name + "须提供有效整数", ex);
+        }
     }
 }

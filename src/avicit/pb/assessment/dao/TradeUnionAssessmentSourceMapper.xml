@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.assessment.dao.TradeUnionAssessmentSourceDAO">
+    <select id="findOrgIdentities" resultType="java.lang.String">
+        SELECT DISTINCT ORG_IDENTITY
+        FROM DYN_TRADE_UNION_ORGANIZA
+        WHERE ORG_IDENTITY IS NOT NULL
+          AND TRIM(ORG_IDENTITY) &lt;&gt; ''
+        ORDER BY ORG_IDENTITY
+    </select>
+</mapper>

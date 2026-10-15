@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.ztdr.dao.ZtdrAssessmentDAO">
+    <resultMap id="organization" type="avicit.pb.ztdr.dto.ZtdrAssessmentDTO$Organization">
+        <id property="id" column="ID"/>
+        <result property="name" column="PARTY_NAME"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+        <result property="departmentId" column="ATTRIBUTE_02"/>
+        <result property="departmentName" column="ATTRIBUTE_03"/>
+        <result property="creationDate" column="CREATED_DATE"/>
+    </resultMap>
+    <resultMap id="mainRecord" type="avicit.pb.ztdr.dto.ZtdrAssessmentDTO$MainRecord">
+        <id property="id" column="ID"/>
+        <result property="partyId" column="PARTY_ID"/>
+        <result property="year" column="NF"/>
+    </resultMap>
+    <resultMap id="activity" type="avicit.pb.ztdr.dto.ZtdrAssessmentDTO$Activity">
+        <id property="id" column="ID"/>
+        <result property="mainId" column="FK_CLO_ID"/>
+        <result property="plan" column="DATA_5"/>
+        <result property="plannedDate" column="PLANNED_DATE"/>
+        <result property="actualDate" column="ACTUAL_DATE"/>
+        <result property="adjustmentReason" column="DATA_12"/>
+        <result property="participants" column="DATA_13"/>
+        <result property="completionStatus" column="WCQK"/>
+        <result property="sequence" column="XH"/>
+    </resultMap>
+    <sql id="eligibleOrganization">
+        (PARTY_NAME IS NULL OR (PARTY_NAME NOT LIKE '%党委%'
+        AND PARTY_NAME NOT LIKE '%离休%' AND PARTY_NAME NOT LIKE '%总支%'))
+    </sql>
+    <select id="findOrgIdentities" resultType="java.lang.String">
+        SELECT DISTINCT ORG_IDENTITY FROM PARTY_ORGANIZATION
+        WHERE <include refid="eligibleOrganization"/> AND LENGTH(TRIM(ORG_IDENTITY)) &gt; 0
+        ORDER BY ORG_IDENTITY
+    </select>
+    <select id="findYears" resultType="java.lang.String">
+        SELECT DISTINCT TRIM(NF) AS NF FROM DYN_ZTDR
+        WHERE LENGTH(TRIM(NF)) &gt; 0 ORDER BY NF DESC
+    </select>
+    <select id="countOrganizations" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+        <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+    </select>
+    <select id="findOrganizationPage" resultMap="organization">
+        SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03, CREATED_DATE FROM (
+            SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03,
+                TO_CHAR(CREATION_DATE, 'YYYY-MM-DD') AS CREATED_DATE,
+                ROW_NUMBER() OVER (ORDER BY TREE_SORTS, TREE_SORT, ID) AS RN
+            FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+            <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+        ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
+    </select>
+    <select id="findOrganizations" resultMap="organization">
+        SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03,
+            TO_CHAR(CREATION_DATE, 'YYYY-MM-DD') AS CREATED_DATE
+        FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+        <if test="orgIdentity != null">AND ORG_IDENTITY = #{orgIdentity}</if>
+        <if test="partyId != null">AND ID = #{partyId}</if>
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
+    <select id="findMainRecords" resultMap="mainRecord">
+        SELECT ID, PARTY_ID, NF FROM DYN_ZTDR WHERE TRIM(NF) = #{year} AND PARTY_ID IN
+        <foreach collection="partyIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY ID
+    </select>
+    <select id="findActivities" resultMap="activity">
+        SELECT ID, FK_CLO_ID, DATA_5, TO_CHAR(DATA_4, 'YYYY-MM-DD') AS PLANNED_DATE,
+            TO_CHAR(DATA_7, 'YYYY-MM-DD') AS ACTUAL_DATE, DATA_12, DATA_13, WCQK, XH
+        FROM DYN_ZZDR_INFO WHERE FK_CLO_ID IN
+        <foreach collection="mainIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY DATA_4, XH, ID
+    </select>
+</mapper>

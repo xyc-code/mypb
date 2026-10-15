@@ -2,6 +2,7 @@ package avicit.pb.twshyk.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,13 @@ public final class TwshykAssessmentCalculator {
     private static final BigDecimal PENALTY = new BigDecimal("0.2");
 
     private TwshykAssessmentCalculator() { }
+
+    /** 自然月结果与年度页面共用周期判定，只考核支部委员会。 */
+    public static Period calculateMonth(YearMonth month, LocalDate today,
+            Organization organization, List<MeetingCount> meetings) {
+        return period("支部委员会", month.atDay(1), month.plusMonths(1).atDay(1),
+                today, organization.id, meetings);
+    }
 
     public static TwshykAssessment calculate(int year, LocalDate today,
             Organization organization, List<MeetingCount> meetings) {

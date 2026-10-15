@@ -5,12 +5,27 @@
         <id property="id" column="ID"/>
         <result property="name" column="LEAGUE_NAME"/>
     </resultMap>
+    <resultMap id="monthlyOrganization" type="avicit.pb.twshyk.dto.TwshykAssessment$Organization" extends="organization">
+        <result property="departmentId" column="DEPT_ID"/>
+        <result property="departmentName" column="DEPT_NAME"/>
+    </resultMap>
     <resultMap id="meetingCount" type="avicit.pb.twshyk.dto.TwshykAssessment$MeetingCount">
         <result property="leagueId" column="LEAGUE_ID"/>
         <result property="type" column="HYLX"/>
         <result property="month" column="MEETING_MONTH"/>
         <result property="count" column="MEETING_COUNT"/>
     </resultMap>
+    <select id="findOrgIdentities" resultType="java.lang.String">
+        SELECT DISTINCT ORG_IDENTITY FROM LEAGUE_ORGANIZATION
+        WHERE LENGTH(TRIM(ORG_IDENTITY)) &gt; 0 AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+        ORDER BY ORG_IDENTITY
+    </select>
+    <select id="findMonthlyOrganizations" resultMap="monthlyOrganization">
+        SELECT ID, LEAGUE_NAME, ATTRIBUTE_02 AS DEPT_ID, ATTRIBUTE_01 AS DEPT_NAME
+        FROM LEAGUE_ORGANIZATION
+        WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
     <select id="findYears" resultType="java.lang.Integer">
         SELECT DISTINCT CAST(TO_CHAR(HYRQ, 'YYYY') AS INTEGER) AS MEETING_YEAR
         FROM DYN_TWSHYK

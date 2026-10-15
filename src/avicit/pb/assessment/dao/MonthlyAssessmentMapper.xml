@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.assessment.dao.MonthlyAssessmentDAO">
+    <resultMap id="result" type="avicit.pb.assessment.dto.MonthlyAssessmentResult">
+        <id property="id" column="ID"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+        <result property="categoryCode" column="CATEGORY_CODE"/>
+        <result property="moduleCode" column="MODULE_CODE"/>
+        <result property="moduleName" column="MODULE_NAME"/>
+        <result property="ruleVersion" column="RULE_VERSION"/>
+        <result property="assessmentOrgId" column="ASSESS_ORG_ID"/>
+        <result property="assessmentOrgName" column="ASSESS_ORG_NAME"/>
+        <result property="departmentId" column="DEPT_ID"/>
+        <result property="departmentName" column="DEPT_NAME"/>
+        <result property="year" column="ASSESS_YEAR"/>
+        <result property="month" column="ASSESS_MONTH"/>
+        <result property="resultKind" column="RESULT_KIND"/>
+        <result property="resultScore" column="RESULT_SCORE"/>
+        <result property="reasonDetail" column="REASON_DETAIL" jdbcType="CLOB" javaType="String"/>
+        <result property="calculatedAt" column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP"/>
+        <result property="version" column="VERSION"/>
+    </resultMap>
+    <resultMap id="resultWithDepartments" type="avicit.pb.assessment.dto.MonthlyAssessmentResult" extends="result">
+        <collection property="departments" column="{orgIdentity=ORG_IDENTITY,resultId=ID}"
+                select="findDepartments"/>
+    </resultMap>
+    <resultMap id="department" type="avicit.pb.assessment.dto.MonthlyAssessmentResult$Department">
+        <id property="id" column="DEPT_ID"/>
+        <result property="name" column="DEPT_NAME"/>
+    </resultMap>
+    <select id="findStoredOrgIdentities" resultType="java.lang.String">
+        SELECT DISTINCT ORG_IDENTITY FROM PB_ASSESS_MONTH_RESULT
+        WHERE MODULE_CODE = #{moduleCode} ORDER BY ORG_IDENTITY
+    </select>
+    <select id="lockResults" resultMap="resultWithDepartments" flushCache="true" useCache="false">
+        SELECT * FROM PB_ASSESS_MONTH_RESULT
+        WHERE ORG_IDENTITY = #{orgIdentity} AND MODULE_CODE = #{moduleCode}
+          AND ASSESS_YEAR = #{year} AND ASSESS_MONTH = #{month}
+        ORDER BY ASSESS_ORG_ID FOR UPDATE
+    </select>
+    <insert id="insertResult">
+        INSERT INTO PB_ASSESS_MONTH_RESULT
+        (ID, CREATED_BY, CREATION_DATE, LAST_UPDATED_BY, LAST_UPDATE_DATE, LAST_UPDATE_IP, VERSION,
+         ORG_IDENTITY, CATEGORY_CODE, MODULE_CODE, MODULE_NAME, RULE_VERSION,
+         ASSESS_ORG_ID, ASSESS_ORG_NAME, DEPT_ID, DEPT_NAME, ASSESS_YEAR, ASSESS_MONTH,
+         RESULT_KIND, RESULT_SCORE, REASON_DETAIL)
+        VALUES
+        (#{id}, 'MONTH_ASSESS_JOB', #{calculatedAt,jdbcType=TIMESTAMP}, 'MONTH_ASSESS_JOB',
+         #{calculatedAt,jdbcType=TIMESTAMP}, '127.0.0.1', 1,
+         #{orgIdentity}, #{categoryCode}, #{moduleCode}, #{moduleName}, #{ruleVersion},
+         #{assessmentOrgId}, #{assessmentOrgName,jdbcType=VARCHAR}, #{departmentId,jdbcType=VARCHAR},
+         #{departmentName,jdbcType=VARCHAR}, #{year}, #{month}, #{resultKind}, #{resultScore},
+         #{reasonDetail,jdbcType=CLOB})
+    </insert>
+    <update id="updateResult">
+        UPDATE PB_ASSESS_MONTH_RESULT SET
+            CATEGORY_CODE = #{categoryCode}, MODULE_NAME = #{moduleName}, RULE_VERSION = #{ruleVersion},
+            ASSESS_ORG_NAME = #{assessmentOrgName,jdbcType=VARCHAR}, DEPT_ID = #{departmentId,jdbcType=VARCHAR},
+            DEPT_NAME = #{departmentName,jdbcType=VARCHAR}, RESULT_KIND = #{resultKind},
+            RESULT_SCORE = #{resultScore}, REASON_DETAIL = #{reasonDetail,jdbcType=CLOB},
+            LAST_UPDATED_BY = 'MONTH_ASSESS_JOB', LAST_UPDATE_DATE = #{calculatedAt,jdbcType=TIMESTAMP},
+            LAST_UPDATE_IP = '127.0.0.1', VERSION = VERSION + 1
+        WHERE ID = #{id} AND ORG_IDENTITY = #{orgIdentity} AND VERSION = #{version}
+    </update>
+    <select id="findDepartments" resultMap="department">
+        SELECT DEPT_ID, DEPT_NAME FROM PB_ASSESS_RESULT_DEPT
+        WHERE ORG_IDENTITY = #{orgIdentity} AND RESULT_ID = #{resultId}
+        ORDER BY DEPT_ID
+    </select>
+    <insert id="insertDepartment">
+        INSERT INTO PB_ASSESS_RESULT_DEPT
+        (ID, CREATED_BY, CREATION_DATE, LAST_UPDATED_BY, LAST_UPDATE_DATE, LAST_UPDATE_IP,
+         VERSION, ORG_IDENTITY, RESULT_ID, DEPT_ID, DEPT_NAME)
+        VALUES
+        (#{id}, 'MONTH_ASSESS_JOB', #{result.calculatedAt,jdbcType=TIMESTAMP}, 'MONTH_ASSESS_JOB',
+         #{result.calculatedAt,jdbcType=TIMESTAMP}, '127.0.0.1', 1, #{result.orgIdentity},
+         #{result.id}, #{department.id}, #{department.name,jdbcType=VARCHAR})
+    </insert>
+    <select id="findModuleOptions" resultMap="result">
+        SELECT CATEGORY_CODE, MODULE_CODE, MODULE_NAME FROM (
+            SELECT CATEGORY_CODE, MODULE_CODE, MODULE_NAME,
+                ROW_NUMBER() OVER (PARTITION BY MODULE_CODE ORDER BY LAST_UPDATE_DATE DESC, ID DESC) RN
+            FROM PB_ASSESS_MONTH_RESULT WHERE ORG_IDENTITY = #{orgIdentity}
+        ) WHERE RN = 1 ORDER BY CATEGORY_CODE, MODULE_CODE
+    </select>
+    <select id="findDepartmentOptions" resultMap="result">
+        SELECT DEPT_ID, DEPT_NAME FROM (
+            SELECT DEPT_ID, DEPT_NAME,
+                ROW_NUMBER() OVER (PARTITION BY DEPT_ID ORDER BY LAST_UPDATE_DATE DESC, ID DESC) RN
+            FROM PB_ASSESS_RESULT_DEPT
+            WHERE ORG_IDENTITY = #{orgIdentity}
+        ) WHERE RN = 1 ORDER BY DEPT_NAME, DEPT_ID
+    </select>
+    <sql id="filter">
+        R.ORG_IDENTITY = #{orgIdentity} AND R.ASSESS_YEAR = #{year} AND R.ASSESS_MONTH = #{month}
+        <if test="departmentId != null">
+            AND EXISTS (SELECT 1 FROM PB_ASSESS_RESULT_DEPT D
+                WHERE D.ORG_IDENTITY = R.ORG_IDENTITY AND D.RESULT_ID = R.ID AND D.DEPT_ID = #{departmentId})
+        </if>
+        <if test="categoryCode != null">AND R.CATEGORY_CODE = #{categoryCode}</if>
+        <if test="moduleCode != null">AND R.MODULE_CODE = #{moduleCode}</if>
+    </sql>
+    <select id="countResults" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM PB_ASSESS_MONTH_RESULT R WHERE <include refid="filter"/>
+    </select>
+    <select id="findPage" resultMap="resultWithDepartments">
+        SELECT * FROM (
+            SELECT R.*, ROW_NUMBER() OVER (ORDER BY CATEGORY_CODE, MODULE_CODE, ASSESS_ORG_ID, ID) RN
+            FROM PB_ASSESS_MONTH_RESULT R WHERE <include refid="filter"/>
+        ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
+    </select>
+</mapper>

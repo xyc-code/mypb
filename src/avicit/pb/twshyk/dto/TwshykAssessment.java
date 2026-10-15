@@ -24,6 +24,8 @@ public class TwshykAssessment {
     public static class Organization {
         public String id;
         public String name;
+        public String departmentId;
+        public String departmentName;
     }
 
     public static class MeetingCount {

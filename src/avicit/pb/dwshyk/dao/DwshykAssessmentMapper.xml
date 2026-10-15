@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.dwshyk.dao.DwshykAssessmentDAO">
+    <resultMap id="organization" type="avicit.pb.dwshyk.dto.DwshykAssessmentDTO$Organization">
+        <id property="id" column="ID"/>
+        <result property="name" column="PARTY_NAME"/>
+        <result property="parentId" column="PARENT_ID"/>
+        <result property="typeCode" column="ATTRIBUTE_01"/>
+        <result property="orgIdentity" column="ORG_IDENTITY"/>
+        <result property="departmentId" column="ATTRIBUTE_02"/>
+        <result property="departmentName" column="ATTRIBUTE_03"/>
+    </resultMap>
+    <resultMap id="meeting" type="avicit.pb.dwshyk.dto.DwshykAssessmentDTO$Meeting">
+        <id property="id" column="ID"/>
+        <result property="partyIds" column="PARTY_ID"/>
+        <result property="typeCode" column="MEET_TYPE"/>
+        <result property="meetDate" column="MEET_DATE" jdbcType="TIMESTAMP"/>
+        <result property="creationDate" column="CREATION_DATE" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="findOrganizations" resultMap="organization">
+        SELECT ID, PARTY_NAME, PARENT_ID, ATTRIBUTE_01, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03
+        FROM PARTY_ORGANIZATION
+        <if test="orgIdentity != null">WHERE ORG_IDENTITY = #{orgIdentity}</if>
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
+    <select id="findYears" resultType="java.lang.Integer">
+        SELECT DISTINCT CAST(TO_CHAR(MEET_DATE, 'YYYY') AS INTEGER)
+            + CASE WHEN TO_CHAR(MEET_DATE, 'MM') &gt;= '10' THEN 1 ELSE 0 END AS ASSESSMENT_YEAR
+        FROM DYN_THREE_FOUR WHERE MEET_DATE IS NOT NULL
+        ORDER BY ASSESSMENT_YEAR DESC
+    </select>
+    <select id="findMeetings" resultMap="meeting">
+        SELECT ID, PARTY_ID, MEET_TYPE, MEET_DATE, CREATION_DATE
+        FROM DYN_THREE_FOUR
+        WHERE MEET_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+          AND MEET_DATE &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')
+          AND MEET_TYPE IN ('0', '1', '2', '3', '4', '5', '6')
+        ORDER BY MEET_DATE, ID
+    </select>
+</mapper>

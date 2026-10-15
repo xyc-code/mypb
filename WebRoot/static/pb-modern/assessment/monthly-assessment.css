@@ -1,0 +1,78 @@
+.pb-monthly-assessment-page { box-sizing: border-box; min-height: 100vh; padding: 20px 24px; background: #edf2f8; color: #18324f; font: 14px/1.6 "Microsoft YaHei", "PingFang SC", sans-serif; }
+.pb-monthly-assessment-page .assessment-shell { max-width: 1600px; margin: 0 auto; }
+.pb-monthly-assessment-page .assessment-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 22px; margin-bottom: 16px; background: #fff; border: 1px solid #d2deed; border-top: 4px solid #245ad6; border-radius: 8px; }
+.pb-monthly-assessment-page h1 { margin: 0; color: #132e50; font-size: 23px; line-height: 1.4; font-weight: 700; letter-spacing: .5px; }
+.pb-monthly-assessment-page .assessment-subtitle { margin: 5px 0 0; color: #546780; font-size: 12px; }
+.pb-monthly-assessment-page .assessment-subtitle span { margin: 0 8px; color: #a5b4c7; }
+.pb-monthly-assessment-page .assessment-header-badge { padding: 5px 12px; border: 1px solid #c6d8f5; border-radius: 5px; background: #f1f6ff; color: #245ad6; font-size: 12px; white-space: nowrap; }
+.pb-monthly-assessment-page .assessment-filters { padding: 16px 20px; margin-bottom: 18px; background: #fff; border: 1px solid #d2deed; border-radius: 8px; }
+.pb-monthly-assessment-page #monthlyFilters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; margin: 0; }
+.pb-monthly-assessment-page .assessment-filter-field { flex: 1 1 175px; min-width: 0; }
+.pb-monthly-assessment-page .assessment-year-field { flex: 0 1 110px; }
+.pb-monthly-assessment-page .assessment-month-field { flex: 0 1 100px; }
+.pb-monthly-assessment-page .assessment-category-field { flex: 0 1 120px; }
+.pb-monthly-assessment-page .assessment-filter-field label { display: block; margin: 0 0 6px; color: #304966; font-size: 13px; font-weight: 600; }
+.pb-monthly-assessment-page .form-control { width: 100%; box-sizing: border-box; height: 38px; padding: 7px 10px; border: 1px solid #afc3df; border-radius: 5px; background: #fff; color: #18324f; box-shadow: none; font-size: 14px; }
+.pb-monthly-assessment-page .assessment-filter-actions { display: flex; gap: 8px; }
+.pb-monthly-assessment-page .assessment-filter-actions button { height: 38px; min-width: 72px; border-radius: 5px; font-size: 14px; }
+.pb-monthly-assessment-page .btn-primary { border-color: #245ad6; background: #245ad6; font-weight: 600; }
+.pb-monthly-assessment-page .btn-primary:hover { background: #1748b5; }
+.pb-monthly-assessment-page .btn-default { border-color: #afc3df; background: #fff; color: #304966; }
+.pb-monthly-assessment-page .assessment-options-message { margin: 10px 0 0; color: #c53030; font-size: 12px; }
+.pb-monthly-assessment-page .assessment-results { min-width: 0; background: #fff; border: 1px solid #cbd8e8; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 12px #18324f06; }
+.pb-monthly-assessment-page .assessment-results-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; }
+.pb-monthly-assessment-page .assessment-results-heading > div:first-child { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 14px; }
+.pb-monthly-assessment-page h2 { margin: 0; color: #18324f; font-size: 17px; font-weight: 700; line-height: 1.5; }
+.pb-monthly-assessment-page #monthlyMessage { min-height: 18px; margin: 0; color: #546780; font-size: 12px; }
+.pb-monthly-assessment-page #monthlyMessage.assessment-error { color: #c53030; }
+.pb-monthly-assessment-page .assessment-legend { display: flex; align-items: center; flex-shrink: 0; color: #546780; font-size: 12px; }
+.pb-monthly-assessment-page .assessment-dot { width: 7px; height: 7px; margin: 0 6px 0 16px; border-radius: 50%; }
+.pb-monthly-assessment-page .assessment-dot-negative { background: #c53030; }
+.pb-monthly-assessment-page .assessment-dot-positive { background: #087f72; }
+.pb-monthly-assessment-page .assessment-grid-scroll { overflow-x: auto; }
+.pb-monthly-assessment-page .ui-jqgrid { border: 0; border-radius: 0; font-family: inherit; color: #18324f; }
+.pb-monthly-assessment-page .ui-jqgrid .ui-jqgrid-hdiv { border: 0; background: #e8effb; }
+.pb-monthly-assessment-page .ui-jqgrid .ui-jqgrid-htable th { height: 43px; padding: 0 10px; border: 0; border-top: 1px solid #d1def1; border-bottom: 1px solid #c4d5ef; background: #e8effb; color: #244a80; font-size: 13px; font-weight: 700; }
+.pb-monthly-assessment-page .ui-jqgrid tr.jqgrow td { height: 48px; padding: 7px 10px; border: 0; border-bottom: 1px solid #e1e8f2; background: #fff; color: #18324f; font-size: 13px; }
+.pb-monthly-assessment-page .ui-jqgrid tr.jqgrow:nth-child(odd) td { background: #f8fafd; }
+.pb-monthly-assessment-page .ui-jqgrid tr.jqgrow td[aria-describedby="monthlyGrid_assessmentOrgName"] { font-weight: 600; }
+.pb-monthly-assessment-page .ui-jqgrid tr.jqgrow:hover td, .pb-monthly-assessment-page .ui-jqgrid tr.ui-state-highlight td { background: #edf3ff; }
+.pb-monthly-assessment-page #monthlyPager { box-sizing: border-box; height: 38px; padding: 4px 16px; border: 0; background: #fff; color: #546780; font-size: 12px; }
+.pb-monthly-assessment-page .assessment-score { display: inline-block; min-width: 46px; padding: 2px 8px; border: 1px solid #d4dfeb; border-radius: 4px; background: #eef2f7; color: #536781; font: 600 16px/1.6 "Bahnschrift", "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; }
+.pb-monthly-assessment-page .assessment-score-negative { border-color: #f1bfc0; background: #ffeded; color: #bf252c; }
+.pb-monthly-assessment-page .assessment-score-positive { border-color: #b9ddcf; background: #eaf7f0; color: #136948; }
+.pb-monthly-assessment-page .assessment-unlinked { display: inline-block; padding: 2px 7px; border: 1px solid #edd3a9; border-radius: 4px; background: #fffaf1; color: #83500b; font-size: 12px; }
+.pb-monthly-assessment-page .assessment-departments { display: block; white-space: normal; line-height: 1.7; overflow-wrap: anywhere; }
+.pb-monthly-assessment-page .assessment-departments > span { display: block; }
+.pb-monthly-assessment-page .assessment-detail-button { padding: 5px 10px; border: 1px solid #a8c3ef; border-radius: 4px; background: #f1f6ff; color: #1c55c5; font-size: 12px; cursor: pointer; }
+.pb-monthly-assessment-page .assessment-detail-button:hover { border-color: #245ad6; background: #245ad6; color: #fff; }
+.pb-monthly-assessment-page .assessment-empty { padding: 40px 20px; text-align: center; color: #546780; }
+.pb-monthly-assessment-page .assessment-empty strong { font-size: 16px; color: #304966; }
+.pb-monthly-assessment-page .assessment-empty p { margin: 8px 0 4px; }
+.pb-monthly-assessment-page .assessment-empty span { font-size: 12px; }
+.pb-monthly-assessment-page .assessment-table-footer { display: flex; justify-content: space-between; gap: 8px; padding: 10px 20px; border-top: 1px solid #dbe5f1; color: #546780; font-size: 12px; background: #fafbfd; }
+.pb-monthly-assessment-page .assessment-hint { margin: 11px 2px 0; color: #546780; font-size: 12px; line-height: 1.8; }
+.pb-monthly-assessment-page.assessment-dialog { min-height: 0; padding: 20px; background: #fff; }
+.pb-monthly-assessment-page .assessment-detail-meta { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 12px 0 18px; color: #546780; font-size: 13px; }
+.pb-monthly-assessment-page .assessment-detail-meta span { overflow-wrap: anywhere; }
+.pb-monthly-assessment-page .assessment-detail { overflow-x: auto; border: 1px solid #cbd8e8; border-radius: 5px; }
+.pb-monthly-assessment-page .assessment-detail table { width: 100%; min-width: 480px; border-collapse: collapse; margin: 0; }
+.pb-monthly-assessment-page .assessment-detail th { background: #e8effb; color: #244a80; font-weight: 600; }
+.pb-monthly-assessment-page .assessment-detail th, .pb-monthly-assessment-page .assessment-detail td { padding: 10px 12px; border-bottom: 1px solid #dbe5f1; font-size: 13px; text-align: left; vertical-align: top; }
+.pb-monthly-assessment-page .assessment-detail th:first-child { width: 150px; }
+.pb-monthly-assessment-page .assessment-detail th:nth-child(2) { width: 90px; }
+.pb-monthly-assessment-page .assessment-detail td:last-child { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.pb-monthly-assessment-page .assessment-detail-zero { padding: 25px; border: 1px solid #d4dfeb; border-radius: 5px; background: #f8fafd; color: #536781; }
+.pb-monthly-assessment-page button:focus-visible, .pb-monthly-assessment-page select:focus-visible, .pb-monthly-assessment-page input:focus-visible { outline: 2px solid #245ad6; outline-offset: 3px; }
+.pb-monthly-assessment-page [hidden] { display: none !important; }
+@media (max-width: 760px) {
+    .pb-monthly-assessment-page { padding: 12px; }
+    .pb-monthly-assessment-page .assessment-header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+    .pb-monthly-assessment-page h1 { font-size: 20px; }
+    .pb-monthly-assessment-page .assessment-filters { padding: 14px 16px; }
+    .pb-monthly-assessment-page .assessment-filter-field { flex: 1 1 calc(50% - 14px); }
+    .pb-monthly-assessment-page .assessment-filter-actions { flex: 1 1 100%; }
+    .pb-monthly-assessment-page .assessment-filter-actions button { flex: 1; }
+    .pb-monthly-assessment-page .assessment-results-heading { padding: 13px 16px; flex-wrap: wrap; }
+    .pb-monthly-assessment-page .assessment-table-footer { padding: 10px 16px; flex-direction: column; }
+}
