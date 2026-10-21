@@ -26,4 +26,6 @@ public interface MonthlyAssessmentDAO {
             @Param("year") int year, @Param("month") int month,
             @Param("departmentId") String departmentId, @Param("categoryCode") String categoryCode,
             @Param("moduleCode") String moduleCode, @Param("offset") long offset, @Param("limit") long limit);
+    List<MonthlyAssessmentResult> findAllForBsc(@Param("orgIdentity") String orgIdentity,
+            @Param("year") int year, @Param("month") int month);
 }

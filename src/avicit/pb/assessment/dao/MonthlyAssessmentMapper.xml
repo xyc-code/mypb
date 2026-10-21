@@ -109,4 +109,11 @@
             FROM PB_ASSESS_MONTH_RESULT R WHERE <include refid="filter"/>
         ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
     </select>
+    <select id="findAllForBsc" resultMap="resultWithDepartments">
+        SELECT * FROM PB_ASSESS_MONTH_RESULT
+        WHERE ORG_IDENTITY = #{orgIdentity}
+          AND ASSESS_YEAR = #{year}
+          AND ASSESS_MONTH = #{month}
+        ORDER BY MODULE_CODE, ASSESS_ORG_ID, ID
+    </select>
 </mapper>
