@@ -24,6 +24,8 @@ $(function () {
 
 当前本地“固定资产领用”视图的表格 ID 是 `tablef1f0c65863e3da4379c91ae7e130a6a58e75`，toolbar ID 是 `tableToolbartablef1f0c65863e3da4379c91ae7e130a6a58e75`。
 
+当前本地固定资产流程的 `task4` 有 `to task5`、`to task6`、`to end1` 三个出口，属于多分支流程；按安全规则会整批拒绝，不会替用户猜选分支。要办理该流程，需要先明确业务上固定使用哪个出口，再单独增加该流程的规则。
+
 ## 手工验证
 
 1. 先复制 JS 和两个 Java 源文件到对应项目路径。
