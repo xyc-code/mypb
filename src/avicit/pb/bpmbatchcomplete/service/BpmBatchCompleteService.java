@@ -143,42 +143,52 @@ public class BpmBatchCompleteService {
                         + "join BPM_LOB l on l.DEPLOYMENT_=d.DEPLOYMENT_ "
                         + "where p.DBID_=?",
                 procInstId);
-        if (rows.isEmpty()) {
-            return "";
+        Set<String> outcomes = new LinkedHashSet<String>();
+        for (Map<String, Object> row : rows) {
+            Object value = row.get("BLOB_VALUE_");
+            if (value == null) {
+                continue;
+            }
+            try {
+                String outcome = parseTask4Outcome(blobBytes(value));
+                if (StringUtils.isNotBlank(outcome)) {
+                    outcomes.add(outcome);
+                }
+            } catch (Exception ignored) {
+                // BPM_LOB can contain non-XML BLOB rows; keep looking for the XML row.
+            }
         }
-        Object value = rows.get(0).get("BLOB_VALUE_");
-        try {
-            byte[] xml = blobBytes(value);
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            factory.setExpandEntityReferences(false);
-            Document document = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml));
-            NodeList tasks = document.getElementsByTagName("task");
-            for (int i = 0; i < tasks.getLength(); i++) {
-                Node node = tasks.item(i);
-                if (!(node instanceof Element) || !"task4".equals(((Element) node).getAttribute("name"))) {
+        return outcomes.size() == 1 ? outcomes.iterator().next() : "";
+    }
+
+    private String parseTask4Outcome(byte[] xml) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setExpandEntityReferences(false);
+        Document document = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml));
+        NodeList tasks = document.getElementsByTagName("task");
+        for (int i = 0; i < tasks.getLength(); i++) {
+            Node node = tasks.item(i);
+            if (!(node instanceof Element) || !"task4".equals(((Element) node).getAttribute("name"))) {
+                continue;
+            }
+            NodeList children = node.getChildNodes();
+            String outcome = "";
+            int transitionCount = 0;
+            for (int j = 0; j < children.getLength(); j++) {
+                Node child = children.item(j);
+                if (!(child instanceof Element) || !"transition".equals(child.getNodeName())) {
                     continue;
                 }
-                NodeList children = node.getChildNodes();
-                String outcome = "";
-                int transitionCount = 0;
-                for (int j = 0; j < children.getLength(); j++) {
-                    Node child = children.item(j);
-                    if (!(child instanceof Element) || !"transition".equals(child.getNodeName())) {
-                        continue;
-                    }
-                    String name = ((Element) child).getAttribute("name");
-                    if (StringUtils.isNotBlank(name)) {
-                        outcome = name;
-                        transitionCount++;
-                    }
+                String name = ((Element) child).getAttribute("name");
+                if (StringUtils.isNotBlank(name)) {
+                    outcome = name;
+                    transitionCount++;
                 }
-                return transitionCount == 1 ? outcome : "";
             }
-        } catch (Exception ignored) {
-            // A malformed or unavailable definition must fail closed.
+            return transitionCount == 1 ? outcome : "";
         }
         return "";
     }
