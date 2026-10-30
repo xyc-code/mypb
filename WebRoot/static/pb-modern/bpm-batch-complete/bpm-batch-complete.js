@@ -21,8 +21,7 @@
   }
 
   function post(url, data, done) {
-    var ajax = window.avicAjax && avicAjax.ajax ? avicAjax.ajax : $.ajax;
-    ajax({
+    var request = {
       url: url,
       type: "POST",
       dataType: "json",
@@ -31,7 +30,12 @@
       error: function () {
         message("批量办理请求失败，请检查服务日志");
       }
-    });
+    };
+    if (window.avicAjax && typeof window.avicAjax.ajax === "function") {
+      window.avicAjax.ajax(request);
+    } else {
+      $.ajax(request);
+    }
   }
 
   window.PbBpmBatchComplete = {
