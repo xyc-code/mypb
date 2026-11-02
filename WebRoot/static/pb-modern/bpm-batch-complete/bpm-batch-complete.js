@@ -66,6 +66,9 @@
               $("#" + gridId).trigger("reloadGrid");
             } else {
               message((result && (result.errorMsg || result.error)) || "批量办理失败");
+              if (result && result.completed > 0) {
+                $("#" + gridId).trigger("reloadGrid");
+              }
             }
           });
         });

@@ -1,0 +1,63 @@
+<%@ page contentType="application/json; charset=UTF-8" import="java.util.*,avicit.platform6.core.spring.SpringFactory,avicit.platform6.api.session.SessionHelper,avicit.platform6.api.sysuser.dto.SysUser,org.springframework.jdbc.core.JdbcTemplate,avicit.platform6.bpm.api.*,com.fasterxml.jackson.databind.ObjectMapper" %><%
+// Local acceptance fixture only. The runner removes this JSP in its finally block.
+if (!"127.0.0.1".equals(request.getRemoteAddr()) || !"__TOKEN__".equals(request.getParameter("token"))) {response.sendError(404);return;}
+Map<String,Object> result=new LinkedHashMap<String,Object>();
+try {
+ JdbcTemplate jdbc=SpringFactory.getBean(JdbcTemplate.class);
+ String uid=request.getParameter("user");if(uid==null)uid="JSBG_TEST_START";
+ if(!"JSBG_TEST_START".equals(uid)&&!"JSBG_TEST_OFFICE".equals(uid))throw new IllegalArgumentException("Existing local fixture people only");
+ SysUser user=new SysUser();user.setId(uid);user.setName(jdbc.queryForObject("select NAME from SYS_USER where ID=?",String.class,uid));
+ String dept=jdbc.queryForObject("select DEPT_ID from SYS_USER_DEPT_POSITION where USER_ID=? and rownum=1",String.class,uid);
+ session.setAttribute(SessionHelper.SESSION_CURRENT_USER,user);session.setAttribute(SessionHelper.SESSION_CURRENT_USER_ID,uid);
+ session.setAttribute("CURRENT_ORG_IDENTITY","ORG_ROOT");session.setAttribute(SessionHelper.SESSION_CURRENT_DEPT_ID,dept);
+ avicit.platform6.api.session.dto.SecurityUser securityUser=new avicit.platform6.api.session.dto.SecurityUser(user);
+ session.setAttribute("CURRENT_LOGINUSER_SECURITY",securityUser);
+ avicit.platform6.api.sysshirolog.context.ContextHolder.getContext().setLoginUser(securityUser);
+ org.springframework.web.context.request.RequestContextHolder.setRequestAttributes(new org.springframework.web.context.request.ServletRequestAttributes(request,response));
+ ProcessEngine engine=SpringFactory.getBean(ProcessEngine.class);
+ List<String> deployments=(List<String>)session.getAttribute("BPM_BATCH_TEST_DEPLOYMENTS");
+ if(deployments==null){deployments=new ArrayList<String>();session.setAttribute("BPM_BATCH_TEST_DEPLOYMENTS",deployments);}
+ List<String> processes=(List<String>)session.getAttribute("BPM_BATCH_TEST_PROCESSES");
+ if(processes==null){processes=new ArrayList<String>();session.setAttribute("BPM_BATCH_TEST_PROCESSES",processes);}
+ String action=request.getParameter("action");
+ if("deploy".equals(action)) {
+  String xml=request.getParameter("xml"),key=request.getParameter("key");
+  if(key==null||!key.startsWith("pbbatchtest__TOKEN__"))throw new IllegalArgumentException("Local test workflow only");
+  NewDeployment deployment=engine.getRepositoryService().createDeployment().setName(key);
+  deployment.setDeployer(uid);deployment.setDesigner(uid);
+  deployment.addResourceFromInputStream(key+".png",new java.io.ByteArrayInputStream(java.util.Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a9WQAAAAASUVORK5CYII=")));
+  String deployed=deployment.addResourceFromString(key+".jpdl.xml",xml).deploy();deployments.add(deployed);
+  ProcessDefinition definition=engine.getRepositoryService().findProcessDefinitionByKey(key);
+  result.put("deployment",deployed);result.put("definition",definition.getId());
+ } else if("start".equals(action)) {
+  String formId="PB_BATCH_TEST_"+UUID.randomUUID().toString().replace("-","");
+  Map<String,Object> variables=new HashMap<String,Object>();variables.put("id",formId);variables.put("ID",formId);
+  String process=SpringFactory.getBean(avicit.platform6.bpmclient.bpm.service.BpmOperateService.class).startProcessInstanceById(request.getParameter("definition"),"JSBG_AWARD",uid,dept,variables);
+  processes.add(process);result.put("process",process);result.put("formId",formId);
+ } else if("state".equals(action)) {
+  String process=request.getParameter("process");if(!processes.contains(process))throw new IllegalArgumentException("Local test instance only");
+  result.put("process",jdbc.queryForList("select DBID_,STATE_,END_,ENDACTIVITY_ from BPM_HIST_PROCINST where DBID_=?",process));
+  result.put("tasks",jdbc.queryForList("select DBID_,TASK_NAME_,TASK_B_ID_,TASK_FINISHED_,TASK_STATE_,ASSIGNEE_,END_,OUTCOME_ from BPM_HIST_TASK_V where PROCINST_=? order by CREATE_,DBID_",process));
+  result.put("definitionBlobCount",jdbc.queryForObject("select count(*) from BPM_HIST_PROCINST p join BPM_DEPLOYPROP d on d.STRINGVAL_=p.PROCDEFID_ and d.KEY_='pdid' join BPM_LOB l on l.DEPLOYMENT_=d.DEPLOYMENT_ where p.DBID_=?",Integer.class,process));
+ } else if("rows".equals(action)) {
+  List<Map<String,Object>> rows=new ArrayList<Map<String,Object>>();
+  for(String process:processes)rows.addAll(jdbc.queryForList("select TASK_B_ID_ as ID,TASK_NAME_,TASK_TITLE_ from BPM_HIST_TASK_V where PROCINST_=? and END_ is null and TASK_FINISHED_='0'",process));
+  result.put("rows",rows);result.put("page",1);result.put("total",1);result.put("records",rows.size());
+ } else if("cleanup".equals(action)) {
+  int remainingProcesses=0,remainingDeployments=0;
+  List<String> testedProcesses=new ArrayList<String>(processes),testedDeployments=new ArrayList<String>(deployments);
+  for(String process:testedProcesses)engine.getExecutionService().deleteProcessInstanceCascade(process);
+  for(String deployment:testedDeployments)engine.getRepositoryService().deleteDeploymentCascade(deployment);
+  for(String process:testedProcesses)remainingProcesses+=jdbc.queryForObject("select count(*) from BPM_HIST_PROCINST where DBID_=?",Integer.class,process);
+  for(String deployment:testedDeployments)remainingDeployments+=jdbc.queryForObject("select count(*) from BPM_DEPLOYMENT where DBID_=?",Integer.class,deployment);
+  processes.clear();deployments.clear();
+  result.put("remainingProcesses",remainingProcesses);result.put("remainingDeployments",remainingDeployments);
+ } else if(!"session".equals(action))throw new IllegalArgumentException("Unknown action");
+ session.setAttribute("BPM_BATCH_TEST_DEPLOYMENTS",deployments);session.setAttribute("BPM_BATCH_TEST_PROCESSES",processes);
+ session.setAttribute(org.apache.shiro.subject.support.DefaultSubjectContext.PRINCIPALS_SESSION_KEY,new org.apache.shiro.subject.SimplePrincipalCollection(securityUser,"dbAuthRealm"));
+ session.setAttribute(org.apache.shiro.subject.support.DefaultSubjectContext.AUTHENTICATED_SESSION_KEY,Boolean.TRUE);
+ session.setAttribute("__FRAMEWORK_CONTEXT_KEY",avicit.platform6.api.sysshirolog.context.ContextHolder.getContext());
+ result.put("ok",true);
+} catch(Throwable e) {result.put("ok",false);result.put("error",e.toString());java.io.StringWriter sw=new java.io.StringWriter();e.printStackTrace(new java.io.PrintWriter(sw));result.put("stack",sw.toString());}
+out.print(new ObjectMapper().writeValueAsString(result));
+%>

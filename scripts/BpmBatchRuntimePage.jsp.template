@@ -1,0 +1,25 @@
+<%@ page contentType="text/html; charset=UTF-8" %><%
+if (!"127.0.0.1".equals(request.getRemoteAddr()) || !"__TOKEN__".equals(request.getParameter("token"))) {response.sendError(404);return;}
+%><!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><base href="/pb/">
+<title>流程批量办理本地验收</title>
+<link rel="stylesheet" href="static/h5/bootstrap/3.3.4/css_default/bootstrap.min.css">
+<link rel="stylesheet" href="static/h5/jqGrid-5.2.0/css/ui.jqgrid-bootstrap.css">
+<script src="static/h5/jquery/jquery-1.9.1.js"></script>
+<script src="static/h5/layer-v2.3/layer/layer.js"></script>
+<script src="static/h5/jqGrid-5.2.0/js/i18n/grid.locale-cn.js"></script>
+<script src="static/h5/jqGrid-5.2.0/js/jquery.jqGrid.js"></script>
+<script src="static/h5/common-ext/avic.ajax.js"></script>
+<script src="static/pb-modern/bpm-batch-complete/bpm-batch-complete.js?v=20261102"></script>
+</head><body style="padding:24px"><h3>流程批量办理本地验收</h3>
+<div id="batch-toolbar" class="toolbar"><div class="toolbar-left"></div></div>
+<table id="batch-grid"></table>
+<script>
+$(function () {
+  $('#batch-grid').jqGrid({url:'login/__BRIDGE__?token=__TOKEN__&action=rows',datatype:'json',mtype:'POST',
+    styleUI:'Bootstrap',height:400,width:1250,multiselect:true,rowNum:100,
+    colModel:[{name:'ID',label:'测试记录',key:true,width:550},{name:'TASK_NAME_',label:'当前节点'},{name:'TASK_TITLE_',label:'标题'}],
+    jsonReader:{root:'rows',repeatitems:false,id:'ID'},
+    loadComplete:function(){$('#batch-grid').attr('data-load-count',Number($('#batch-grid').attr('data-load-count')||0)+1);}});
+  PbBpmBatchComplete.attach({gridId:'batch-grid',toolbarId:'batch-toolbar'});
+});
+</script></body></html>

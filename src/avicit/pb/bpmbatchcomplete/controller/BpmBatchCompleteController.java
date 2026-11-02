@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /** 通用 BPM task4 批量办理接口。 */
 @Controller
 @Scope("prototype")
-@RequestMapping("/platform/pb/bpm/batchComplete")
+@RequestMapping("/pb/bpm/batchComplete")
 public class BpmBatchCompleteController {
 
     @Autowired
