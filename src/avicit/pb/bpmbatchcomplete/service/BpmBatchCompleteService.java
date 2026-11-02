@@ -31,8 +31,8 @@ import org.w3c.dom.NodeList;
 /**
  * 通用 BPM task4 批量办理服务。
  *
- * <p>服务只办理当前用户仍在 task4 的有效待办，并从当前流程定义读取 task4 的唯一下一跳，
- * 因此不假定 task4 一定直接指向结束节点。</p>
+ * <p>服务只办理当前用户仍在 task4 的有效待办；多个出口时选择唯一直接连接结束节点的出口，
+ * 单出口流程沿用原有下一跳。</p>
  */
 @Service
 public class BpmBatchCompleteService {
@@ -88,7 +88,7 @@ public class BpmBatchCompleteService {
                 outcomeCache.put(procInstId, outcome);
             }
             if (StringUtils.isBlank(outcome)) {
-                return failure("流程 " + procInstId + " 的 task4 存在多个或不存在下一节点，无法安全批量办理；未执行任何办理");
+                return failure("流程 " + procInstId + " 的 task4 无法确定办理出口（多出口时须有唯一直接连接结束节点的出口），未执行任何办理");
             }
             outcomeByFormId.put(formId, outcome);
         }
@@ -168,6 +168,11 @@ public class BpmBatchCompleteService {
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setExpandEntityReferences(false);
         Document document = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml));
+        Set<String> endNames = new LinkedHashSet<String>();
+        NodeList ends = document.getElementsByTagName("end");
+        for (int i = 0; i < ends.getLength(); i++) {
+            endNames.add(((Element) ends.item(i)).getAttribute("name"));
+        }
         NodeList tasks = document.getElementsByTagName("task");
         for (int i = 0; i < tasks.getLength(); i++) {
             Node node = tasks.item(i);
@@ -176,7 +181,9 @@ public class BpmBatchCompleteService {
             }
             NodeList children = node.getChildNodes();
             String outcome = "";
+            String endOutcome = "";
             int transitionCount = 0;
+            int endTransitionCount = 0;
             for (int j = 0; j < children.getLength(); j++) {
                 Node child = children.item(j);
                 if (!(child instanceof Element) || !"transition".equals(child.getNodeName())) {
@@ -186,9 +193,13 @@ public class BpmBatchCompleteService {
                 if (StringUtils.isNotBlank(name)) {
                     outcome = name;
                     transitionCount++;
+                    if (endNames.contains(((Element) child).getAttribute("to"))) {
+                        endOutcome = name;
+                        endTransitionCount++;
+                    }
                 }
             }
-            return transitionCount == 1 ? outcome : "";
+            return endTransitionCount == 1 ? endOutcome : (transitionCount == 1 ? outcome : "");
         }
         return "";
     }

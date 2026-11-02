@@ -34,12 +34,16 @@ async function run(){
   if(kind==='multiple')transitions+='<transition name="to end2" to="end2"/>';
   if(kind==='noexit')transitions='';
   if(kind==='next')transitions='<transition name="to task5" to="task5"/>';
+  if(kind==='branchend')transitions='<transition name="to end1" to="task5"/><transition name="approved" to="finishApproved"/>';
+  if(kind==='noendbranch')transitions='<transition name="notify" to="task5"/><transition name="review" to="task6"/>';
   const fail=kind==='fail'?'<on event="end"><event-listener class="BpmBatchFixtureFailure"/></on>':'';
   const user=kind==='otheruser'?'JSBG_TEST_OFFICE':'JSBG_TEST_START';
   const xml='<process name="'+key+'" key="'+key+'" globalformid="JSBG_AWARD" useNewDesigner="true" isUflow="1">'+
    '<meta name="processInstanceTitle">本地批量验收</meta><start name="start1"><transition name="to '+node+'" to="'+node+'"/></start>'+
    '<task name="'+node+'" alias="批量验收" assignee="'+user+'" dealtype="3" taskFormId="JSBG_AWARD"><meta name="isNeedIdea">no</meta>'+fail+transitions+'</task>'+
-   (kind==='next'?'<task name="task5" alias="后续办理" candidate-users="testActors" dealtype="3"><meta name="isNeedIdea">no</meta><meta name="userSelectType">auto</meta><meta name="isAutoGetUser">yes</meta><actors id="testActors"><actor type="user"><id>JSBG_TEST_START</id><name>本地测试人</name></actor></actors><transition name="to end1" to="end1"/></task>':'')+
+   (['next','branchend','noendbranch'].includes(kind)?'<task name="task5" alias="后续阅知" candidate-users="testActors" dealtype="3"><meta name="isNeedIdea">no</meta><meta name="userSelectType">auto</meta><meta name="isAutoGetUser">yes</meta><actors id="testActors"><actor type="user"><id>JSBG_TEST_START</id><name>本地测试人</name></actor></actors><transition name="to end1" to="end1"/></task>':'')+
+   (kind==='noendbranch'?'<task name="task6"><transition name="finish" to="end1"/></task>':'')+
+   (kind==='branchend'?'<end name="finishApproved"/>':'')+
    '<end name="end1"/>'+(kind==='multiple'?'<end name="end2"/>':'')+'</process>';
   return(await api('deploy',{key,xml})).definition;
  }
@@ -66,7 +70,7 @@ async function run(){
   const anonymous=await browser.newContext(),denied=await anonymous.request.post(endpoint,{form:{ids:''},maxRedirects:0});
   check(denied.status()===302||denied.status()===403,'existing anonymous filter remains effective');await anonymous.close();
   await api('session');const definitions={};
-  for(const kind of ['single','othernode','multiple','noexit','next','otheruser','fail'])definitions[kind]=await deploy(kind);
+  for(const kind of ['single','othernode','multiple','noexit','next','otheruser','fail','branchend','noendbranch'])definitions[kind]=await deploy(kind);
   const one=await start(definitions.single),before=await state(one);
   check(active(before).length===1&&active(before)[0].TASK_NAME_==='task4','fixture has real pending task4');
   check(before.definitionBlobCount>=2,'real deployment contains XML plus non-XML BLOB resources');
@@ -89,7 +93,7 @@ async function run(){
   const mixed=await post(good.formId+','+wrong.formId);
   check(mixed.flag==='failure'&&JSON.stringify(await Promise.all([good,wrong].map(state)))===JSON.stringify(mixedBefore),'mixed non-task4 selection leaves both records unchanged');
   evidence.push({scenario:'mixed',before:mixedBefore,result:mixed,after:await Promise.all([good,wrong].map(state))});
-  for(const kind of ['multiple','noexit','otheruser']){
+  for(const kind of ['multiple','noexit','otheruser','noendbranch']){
    const record=await start(definitions[kind]),original=await state(record);
    if(kind==='otheruser')await api('session',{user:'JSBG_TEST_OFFICE'});
    const result=await post(record.formId);
@@ -100,6 +104,15 @@ async function run(){
   const next=await start(definitions.next),nextResult=await post(next.formId),nextState=await state(next);
   evidence.push({scenario:'nextTask',result:nextResult,after:nextState});
   check(nextResult.flag==='success'&&nextResult.completed===1&&nextState.process[0].STATE_==='active'&&active(nextState).length===1&&active(nextState)[0].TASK_NAME_==='task5','unique next task advances to task5 without force-ending the process');
+  const directEnded=s=>s.process[0].STATE_==='ended'&&s.process[0].END_&&s.process[0].ENDACTIVITY_==='finishApproved'&&active(s).length===0&&s.tasks.every(t=>t.TASK_NAME_!=='task5')&&s.tasks.some(t=>t.TASK_NAME_==='task4'&&t.OUTCOME_==='approved');
+  for(const count of [1,2]){
+   const records=[];for(let i=0;i<count;i++)records.push(await start(definitions.branchend));
+   const originals=await Promise.all(records.map(state)),result=await browserComplete(records),states=await Promise.all(records.map(state));
+   check(result.flag==='success'&&result.completed===count&&states.every(directEnded),'branched task4 directly ends '+count+' selected records without creating notification tasks');
+   evidence.push({scenario:'directEndBranch'+count,before:originals,result,after:states});
+   await page.waitForFunction(()=>Number(document.querySelector('#batch-grid').getAttribute('data-load-count'))>=2);
+   check((await Promise.all(records.map(r=>page.locator('[id="'+r.formId+'"]').count()))).every(n=>n===0),'direct-end branch reload removes '+count+' completed records');
+  }
   const duplicate=await start(definitions.single),deduped=await post(duplicate.formId+','+duplicate.formId);
   check(deduped.flag==='success'&&deduped.completed===1&&ended(await state(duplicate)),'duplicate selected IDs complete only once');
   const partial=[await start(definitions.single),await start(definitions.fail),await start(definitions.single)];
