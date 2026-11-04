@@ -17,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import avicit.pb.zxgj.dto.ZxgjAssessmentDTO;
 import avicit.pb.zxgj.service.ZxgjAssessmentCalculator;
 import avicit.pb.zxgj.service.ZxgjAssessmentService;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission.Page;
 
 @Controller
 @RequestMapping("avicit/pb/zxgj/assessment")
@@ -25,6 +27,8 @@ public class ZxgjAssessmentController {
     private static final ZoneId TIME_ZONE = ZoneId.of("Asia/Shanghai");
     @Autowired
     private ZxgjAssessmentService service;
+    @Autowired
+    private AssessmentOrganizationPermission permissions;
 
     @RequestMapping(value = "toManage", method = RequestMethod.GET)
     public ModelAndView toManage() {
@@ -52,7 +56,8 @@ public class ZxgjAssessmentController {
             LocalDateTime now = LocalDateTime.now(TIME_ZONE);
             int selectedYear = year == null || year.trim().isEmpty() ? now.getYear() : integer(year, "year");
             ZxgjAssessmentDTO.Page data = service.page(selectedYear, partyName,
-                    integer(page, "page"), integer(rows, "rows"), now);
+                    integer(page, "page"), integer(rows, "rows"), now,
+                    permissions.visibleOrganizationSql(Page.ZXGJ));
             Map<String, Object> result = success(data.data, now, response);
             result.put("page", data.page);
             result.put("total", data.total);
@@ -69,7 +74,7 @@ public class ZxgjAssessmentController {
         try {
             LocalDateTime now = LocalDateTime.now(TIME_ZONE);
             int selectedYear = year == null || year.trim().isEmpty() ? now.getYear() : integer(year, "year");
-            ZxgjAssessmentDTO data = service.detail(selectedYear, projectId, now);
+            ZxgjAssessmentDTO data = service.detail(selectedYear, projectId, now, permissions.visibleOrganizationSql(Page.ZXGJ));
             Map<String, Object> result = success(data, now, response);
             result.put("year", selectedYear);
             return result;

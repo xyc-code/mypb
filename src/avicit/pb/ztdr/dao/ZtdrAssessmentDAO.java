@@ -11,9 +11,11 @@ import avicit.pb.ztdr.dto.ZtdrAssessmentDTO.Organization;
 public interface ZtdrAssessmentDAO {
     List<String> findOrgIdentities();
     List<String> findYears();
-    long countOrganizations(@Param("partyName") String partyName);
+    long countOrganizations(@Param("partyName") String partyName, @Param("visibleSql") String visibleSql);
     List<Organization> findOrganizationPage(@Param("partyName") String partyName,
-            @Param("offset") long offset, @Param("limit") long limit);
+            @Param("offset") long offset, @Param("limit") long limit, @Param("visibleSql") String visibleSql);
+    List<Organization> findVisibleOrganizations(@Param("partyId") String partyId,
+            @Param("visibleSql") String visibleSql);
     List<Organization> findOrganizations(@Param("orgIdentity") String orgIdentity,
             @Param("partyId") String partyId);
     List<MainRecord> findMainRecords(@Param("partyIds") List<String> partyIds, @Param("year") String year);

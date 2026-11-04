@@ -9,6 +9,8 @@ import avicit.pb.dwshyk.dto.DwshykAssessmentDTO.Organization;
 @MyBatisRepository
 public interface DwshykAssessmentDAO {
     List<Organization> findOrganizations(@Param("orgIdentity") String orgIdentity);
+    List<String> findVisibleOrganizationIds(@Param("partyName") String partyName,
+            @Param("visibleSql") String visibleSql);
     List<Integer> findYears();
     List<Meeting> findMeetings(@Param("startDate") String startDate, @Param("endDate") String endDate);
 }

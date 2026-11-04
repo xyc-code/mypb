@@ -11,9 +11,13 @@ public interface TwshykAssessmentDAO {
     List<String> findOrgIdentities();
     List<Organization> findMonthlyOrganizations(@Param("orgIdentity") String orgIdentity);
     List<Integer> findYears(@Param("orgIdentity") String orgIdentity);
-    long countOrganizations(@Param("orgIdentity") String orgIdentity);
+    long countOrganizations(@Param("orgIdentity") String orgIdentity,
+            @Param("leagueName") String leagueName, @Param("visibleSql") String visibleSql);
     List<Organization> findOrganizationPage(@Param("orgIdentity") String orgIdentity,
-            @Param("offset") long offset, @Param("limit") long limit);
+            @Param("leagueName") String leagueName,
+            @Param("offset") long offset, @Param("limit") long limit, @Param("visibleSql") String visibleSql);
+    List<Organization> findVisibleOrganizations(@Param("orgIdentity") String orgIdentity,
+            @Param("leagueId") String leagueId, @Param("visibleSql") String visibleSql);
     List<Organization> findOrganizations(@Param("orgIdentity") String orgIdentity,
             @Param("leagueId") String leagueId);
     List<MeetingCount> findCounts(@Param("orgIdentity") String orgIdentity,

@@ -5,6 +5,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,21 @@ public class DwshykAssessmentService {
 
     @Transactional(value = "transactionManagerMybatis", readOnly = true)
     public DwshykAssessmentDTO.Page page(int year, int page, int rows, LocalDate today) {
+        return page(year, null, page, rows, today, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", readOnly = true)
+    public DwshykAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDate today, String visibleSql) {
         validateYear(year);
         if (page < 1 || rows < 1 || rows > 100) {
             throw new IllegalArgumentException("页码须大于0，每页条数须在1至100之间");
         }
         List<Organization> tree = dao.findOrganizations(null);
-        List<Organization> organizations = eligible(tree);
+        Set<String> visibleIds = new HashSet<String>(dao.findVisibleOrganizationIds(escapeLike(partyName), visibleSql));
+        List<Organization> organizations = new ArrayList<Organization>();
+        for (Organization organization : eligible(tree)) {
+            if (visibleIds.contains(organization.id)) organizations.add(organization);
+        }
         DwshykAssessmentDTO.Page result = new DwshykAssessmentDTO.Page();
         result.records = organizations.size();
         result.total = (organizations.size() + rows - 1) / rows;
@@ -56,11 +66,17 @@ public class DwshykAssessmentService {
 
     @Transactional(value = "transactionManagerMybatis", readOnly = true)
     public DwshykAssessmentDTO detail(int year, String partyId, LocalDate today) {
+        return detail(year, partyId, today, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", readOnly = true)
+    public DwshykAssessmentDTO detail(int year, String partyId, LocalDate today, String visibleSql) {
         validateYear(year);
         if (partyId == null || partyId.trim().isEmpty()) throw new IllegalArgumentException("请选择党组织");
         List<Organization> tree = dao.findOrganizations(null);
         for (Organization organization : tree) {
-            if (partyId.trim().equals(organization.id) && DwshykAssessmentCalculator.eligible(organization)) {
+            if (partyId.trim().equals(organization.id) && DwshykAssessmentCalculator.eligible(organization)
+                    && dao.findVisibleOrganizationIds(null, visibleSql).contains(organization.id)) {
                 return calculate(year, Collections.singletonList(organization), tree, today, null).get(0);
             }
         }
@@ -102,6 +118,11 @@ public class DwshykAssessmentService {
             if (DwshykAssessmentCalculator.eligible(organization)) result.add(organization);
         }
         return result;
+    }
+
+    private String escapeLike(String value) {
+        if (value == null || value.trim().isEmpty()) return null;
+        return value.trim().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     private void validateYear(int year) {

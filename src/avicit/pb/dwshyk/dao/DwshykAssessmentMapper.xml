@@ -37,4 +37,9 @@
           AND MEET_TYPE IN ('0', '1', '2', '3', '4', '5', '6')
         ORDER BY MEET_DATE, ID
     </select>
+    <select id="findVisibleOrganizationIds" resultType="java.lang.String">
+        SELECT ID FROM PARTY_ORGANIZATION WHERE 1 = 1
+        <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+        <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
+    </select>
 </mapper>

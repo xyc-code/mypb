@@ -34,25 +34,35 @@ public class ZtdrAssessmentService {
 
     @Transactional(value = "transactionManagerMybatis", readOnly = true)
     public ZtdrAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDate today) {
+        return page(year, partyName, page, rows, today, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", readOnly = true)
+    public ZtdrAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDate today, String visibleSql) {
         validateYear(year, today);
         if (page < 1 || rows < 1 || rows > 100) {
             throw new IllegalArgumentException("页码须大于0，每页条数须在1至100之间");
         }
         String query = escapeLike(partyName);
         ZtdrAssessmentDTO.Page result = new ZtdrAssessmentDTO.Page();
-        result.records = dao.countOrganizations(query);
+        result.records = dao.countOrganizations(query, visibleSql);
         result.total = (int) ((result.records + rows - 1) / rows);
         result.page = Math.min(page, Math.max(1, result.total));
         long offset = (long) (result.page - 1) * rows;
-        result.data = calculate(year, dao.findOrganizationPage(query, offset, offset + rows), today, null);
+        result.data = calculate(year, dao.findOrganizationPage(query, offset, offset + rows, visibleSql), today, null);
         return result;
     }
 
     @Transactional(value = "transactionManagerMybatis", readOnly = true)
     public ZtdrAssessmentDTO detail(int year, String partyId, LocalDate today) {
+        return detail(year, partyId, today, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", readOnly = true)
+    public ZtdrAssessmentDTO detail(int year, String partyId, LocalDate today, String visibleSql) {
         validateYear(year, today);
         if (partyId == null || partyId.trim().isEmpty()) throw new IllegalArgumentException("请选择党组织");
-        List<Organization> organizations = dao.findOrganizations(null, partyId.trim());
+        List<Organization> organizations = dao.findVisibleOrganizations(partyId.trim(), visibleSql);
         if (organizations.isEmpty()) throw new IllegalArgumentException("党组织不存在或不在考核范围内");
         return calculate(year, organizations, today, null).get(0);
     }

@@ -1,10 +1,12 @@
 .pb-twshyk-page { box-sizing: border-box; min-height: 100vh; padding: 20px 24px; background: #edf2f8; color: #18324f; font: 14px/1.6 "Microsoft YaHei", "PingFang SC", sans-serif; }
 .pb-twshyk-page .assessment-shell { max-width: 1600px; margin: 0 auto; }
-.pb-twshyk-page .assessment-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 22px; margin-bottom: 16px; background: #fff; border: 1px solid #d2deed; border-top: 4px solid #245ad6; border-radius: 8px; }
+.pb-twshyk-page .assessment-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 22px; margin-bottom: 16px; background: #fff; border: 1px solid #d2deed; border-top: 4px solid #245ad6; border-radius: 8px; }
 .pb-twshyk-page h1 { margin: 0; color: #132e50; font-size: 23px; line-height: 1.4; font-weight: 700; letter-spacing: .5px; }
 .pb-twshyk-page .assessment-subtitle { margin: 5px 0 0; color: #546780; font-size: 12px; }
 .pb-twshyk-page .assessment-subtitle span { margin: 0 6px; color: #8295ad; }
-.pb-twshyk-page .assessment-filter-controls { display: flex; align-items: center; flex-shrink: 0; }
+.pb-twshyk-page .assessment-filter-controls { display: flex; flex-wrap: wrap; row-gap: 8px; align-items: center; }
+.pb-twshyk-page .assessment-filter-controls .assessment-name-label { margin-left: 12px; }
+.pb-twshyk-page #assessmentOrganizationName { width: 190px; height: 38px; padding: 7px 12px; border: 1px solid #afc3df; border-radius: 5px; box-shadow: none; }
 .pb-twshyk-page .assessment-filter-controls label { margin: 0 12px 0 0; color: #304966; font-size: 13px; font-weight: 600; }
 .pb-twshyk-page #assessmentYear { width: 128px; height: 38px; padding: 7px 12px; border: 1px solid #afc3df; border-radius: 5px; background: #fff; color: #18324f; box-shadow: none; font-size: 14px; }
 .pb-twshyk-page #assessmentSearch { height: 38px; min-width: 80px; margin-left: 10px; border: 1px solid #245ad6; border-radius: 5px; background: #245ad6; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 2px 4px #245ad61a; }
@@ -80,7 +82,10 @@
     .pb-twshyk-page { padding: 12px; }
     .pb-twshyk-page .assessment-header { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 14px; }
     .pb-twshyk-page h1 { font-size: 20px; }
-    .pb-twshyk-page .assessment-filter-controls { width: 100%; }
+    .pb-twshyk-page .assessment-filter-controls { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+    .pb-twshyk-page .assessment-filter-controls .assessment-name-label { margin-left: 0; }
+    .pb-twshyk-page #assessmentOrganizationName { width: 100%; }
+    .pb-twshyk-page #assessmentSearch { grid-column: 2; justify-self: start; margin-left: 0; }
     .pb-twshyk-page .assessment-filter-controls label { margin-right: 8px; }
     .pb-twshyk-page #assessmentYear { flex: 1; min-width: 90px; max-width: 170px; }
     .pb-twshyk-page .assessment-rules { flex-direction: column; gap: 9px; }

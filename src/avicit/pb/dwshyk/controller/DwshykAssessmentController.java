@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import avicit.pb.dwshyk.dto.DwshykAssessmentDTO;
 import avicit.pb.dwshyk.service.DwshykAssessmentService;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission.Page;
 
 @Controller
 @RequestMapping("avicit/pb/dwshyk/assessment")
@@ -24,6 +26,8 @@ public class DwshykAssessmentController {
     private static final ZoneId ZONE = ZoneId.of("Asia/Shanghai");
     @Autowired
     private DwshykAssessmentService service;
+    @Autowired
+    private AssessmentOrganizationPermission permissions;
 
     @RequestMapping(value = "toManage", method = RequestMethod.GET)
     public ModelAndView toManage() {
@@ -48,12 +52,14 @@ public class DwshykAssessmentController {
     @RequestMapping(value = "list", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "partyName", required = false) String partyName,
             @RequestParam(value = "page", defaultValue = "1") String page,
             @RequestParam(value = "rows", defaultValue = "20") String rows, HttpServletResponse response) {
         try {
             int selectedYear = integer(year, "year");
             LocalDate today = LocalDate.now(ZONE);
-            DwshykAssessmentDTO.Page data = service.page(selectedYear, integer(page, "page"), integer(rows, "rows"), today);
+            DwshykAssessmentDTO.Page data = service.page(selectedYear, partyName, integer(page, "page"), integer(rows, "rows"), today,
+                    permissions.visibleOrganizationSql(Page.DWSHYK));
             Map<String, Object> result = success(data.data, selectedYear, today, response);
             result.put("page", data.page);
             result.put("total", data.total);
@@ -71,7 +77,7 @@ public class DwshykAssessmentController {
         try {
             int selectedYear = integer(year, "year");
             LocalDate today = LocalDate.now(ZONE);
-            return success(service.detail(selectedYear, partyId, today), selectedYear, today, response);
+            return success(service.detail(selectedYear, partyId, today, permissions.visibleOrganizationSql(Page.DWSHYK)), selectedYear, today, response);
         } catch (Exception ex) {
             return failure(ex, response);
         }

@@ -2,6 +2,7 @@
     'use strict';
     var base = 'platform/avicit/pb/dwshyk/assessment/';
     var displayedYear = null;
+    var submittedFilters = null;
     var requestVersion = 0;
     var detailVersion = 0;
     var grid = $('#assessmentGrid');
@@ -75,7 +76,7 @@
     }
 
     function controls(disabled) {
-        $('#assessmentYear, #assessmentSearch').prop('disabled', disabled);
+        $('#assessmentYear, #assessmentOrganizationName, #assessmentSearch').prop('disabled', disabled);
         $('.assessment-results').attr('aria-busy', disabled ? 'true' : 'false');
     }
 
@@ -84,11 +85,12 @@
     }
 
     function load() {
+        submittedFilters = { year: $('#assessmentYear').val(), name: $.trim($('#assessmentOrganizationName').val()) };
         grid.jqGrid('setGridParam', { page: 1, datatype: requestPage }).trigger('reloadGrid');
     }
 
     function requestPage(parameters) {
-        var year = $('#assessmentYear').val();
+        var year = submittedFilters && submittedFilters.year;
         if (!year) return;
         var version = ++requestVersion;
         displayedYear = null;
@@ -98,7 +100,7 @@
         $('#assessmentAsOf').text('正在读取考核日期');
         $('#assessmentRange').text('正在加载考核区间…');
         message('正在计算…');
-        $.ajax({ url: base + 'list', type: 'POST', data: { year: year, page: parameters.page, rows: parameters.rows },
+        $.ajax({ url: base + 'list', type: 'POST', data: { year: year, partyName: submittedFilters.name, page: parameters.page, rows: parameters.rows },
             dataType: 'json', cache: false }).done(function (result) {
             if (version !== requestVersion) return;
             if (!result || result.flag !== 'success' || !$.isArray(result.data) || numeric(result.records) === null) {
@@ -198,6 +200,9 @@
         if ($('#assessmentYear').val()) load(); else loadYears();
     });
     $('#assessmentYear').on('change', load);
+    $('#assessmentOrganizationName').on('keydown', function (event) {
+        if (event.which === 13) { event.preventDefault(); $('#assessmentSearch').trigger('click'); }
+    });
 
     function loadYears() {
         var version = ++requestVersion;

@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 import avicit.pb.yzbyts.dto.YzbytsAssessmentDTO;
 import avicit.pb.yzbyts.service.YzbytsAssessmentCalculator;
 import avicit.pb.yzbyts.service.YzbytsAssessmentService;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission.Page;
 
 @Controller
 @RequestMapping("avicit/pb/yzbyts/assessment")
@@ -26,6 +28,8 @@ public class YzbytsAssessmentController {
     private static final ZoneId TIME_ZONE = ZoneId.of("Asia/Shanghai");
     @Autowired
     private YzbytsAssessmentService service;
+    @Autowired
+    private AssessmentOrganizationPermission permissions;
 
     @RequestMapping(value = "toManage", method = RequestMethod.GET)
     public ModelAndView toManage() {
@@ -55,7 +59,8 @@ public class YzbytsAssessmentController {
             LocalDateTime now = LocalDateTime.now(TIME_ZONE);
             int selectedYear = integer(year, "year");
             YzbytsAssessmentDTO.Page data = service.page(selectedYear, partyName,
-                    integer(page, "page"), integer(rows, "rows"), now);
+                    integer(page, "page"), integer(rows, "rows"), now,
+                    permissions.visibleOrganizationSql(Page.YZBYTS));
             Map<String, Object> result = success(data.data, now, response);
             result.put("page", data.page);
             result.put("total", data.total);
@@ -73,7 +78,7 @@ public class YzbytsAssessmentController {
         try {
             LocalDateTime now = LocalDateTime.now(TIME_ZONE);
             int selectedYear = integer(year, "year");
-            YzbytsAssessmentDTO data = service.detail(selectedYear, partyId, now);
+            YzbytsAssessmentDTO data = service.detail(selectedYear, partyId, now, permissions.visibleOrganizationSql(Page.YZBYTS));
             Map<String, Object> result = success(data, now, response);
             result.put("year", selectedYear);
             result.put("assessmentStart", data.assessmentStart);

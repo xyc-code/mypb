@@ -19,12 +19,29 @@ public class TwshykAssessmentService {
 
     public List<Integer> years(String orgIdentity) {
         requireDomain(orgIdentity);
-        return dao.findYears(orgIdentity);
+        List<Integer> years = new ArrayList<Integer>();
+        for (Integer year : dao.findYears(orgIdentity)) {
+            if (year >= 2027) {
+                years.add(year);
+            }
+        }
+        LocalDate today = LocalDate.now();
+        int currentYear = Math.max(2027,
+                today.getMonthValue() >= 11 ? today.getYear() + 1 : today.getYear());
+        if (!years.contains(currentYear)) {
+            years.add(currentYear);
+        }
+        java.util.Collections.sort(years, java.util.Collections.reverseOrder());
+        return years;
     }
 
     public List<TwshykAssessment> assess(int year, String orgIdentity, String leagueId, LocalDate today) {
+        return assess(year, orgIdentity, leagueId, today, "");
+    }
+
+    public List<TwshykAssessment> assess(int year, String orgIdentity, String leagueId, LocalDate today, String visibleSql) {
         validateYear(year, orgIdentity);
-        List<Organization> organizations = dao.findOrganizations(orgIdentity, leagueId);
+        List<Organization> organizations = dao.findVisibleOrganizations(orgIdentity, leagueId, visibleSql);
         if (leagueId != null && organizations.isEmpty()) {
             throw new IllegalArgumentException("团组织不存在或不在当前考核范围内");
         }
@@ -32,23 +49,29 @@ public class TwshykAssessmentService {
     }
 
     public TwshykAssessment.Page page(int year, String orgIdentity, int page, int rows, LocalDate today) {
+        return page(year, orgIdentity, null, page, rows, today, "");
+    }
+
+    public TwshykAssessment.Page page(int year, String orgIdentity, String leagueName, int page, int rows,
+            LocalDate today, String visibleSql) {
         validateYear(year, orgIdentity);
         if (page < 1 || rows < 1 || rows > 100) {
             throw new IllegalArgumentException("页码须大于0，每页条数须在1至100之间");
         }
         TwshykAssessment.Page result = new TwshykAssessment.Page();
-        result.records = dao.countOrganizations(orgIdentity);
+        String query = escapeLike(leagueName);
+        result.records = dao.countOrganizations(orgIdentity, query, visibleSql);
         result.total = (int) ((result.records + rows - 1) / rows);
         result.page = Math.min(page, Math.max(1, result.total));
         long offset = (long) (result.page - 1) * rows;
         result.data = calculate(year, orgIdentity,
-                dao.findOrganizationPage(orgIdentity, offset, offset + rows), today, false);
+                dao.findOrganizationPage(orgIdentity, query, offset, offset + rows, visibleSql), today, false);
         return result;
     }
 
     private void validateYear(int year, String orgIdentity) {
         if (year < 2 || year > 9998 || !years(orgIdentity).contains(year)) {
-            throw new IllegalArgumentException("请选择会议记录中存在的年份");
+            throw new IllegalArgumentException("请选择有效的考核年度，最早为2027年度");
         }
     }
 
@@ -77,6 +100,11 @@ public class TwshykAssessmentService {
             results.add(result);
         }
         return results;
+    }
+
+    private String escapeLike(String value) {
+        if (value == null || value.trim().isEmpty()) return null;
+        return value.trim().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     private void requireDomain(String orgIdentity) {

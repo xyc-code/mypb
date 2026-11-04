@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.assessment.dao.AssessmentOrganizationPermissionMapper">
+    <select id="selectTwshykOrganizationIds" resultType="java.lang.String">
+        SELECT LEAGUE_ORGANIZATION.ID FROM LEAGUE_ORGANIZATION
+    </select>
+    <select id="selectDwshykOrganizationIds" resultType="java.lang.String">
+        SELECT PARTY_ORGANIZATION.ID FROM PARTY_ORGANIZATION
+    </select>
+    <select id="selectYzbytsOrganizationIds" resultType="java.lang.String">
+        SELECT PARTY_ORGANIZATION.ID FROM PARTY_ORGANIZATION
+    </select>
+    <select id="selectZtdrOrganizationIds" resultType="java.lang.String">
+        SELECT PARTY_ORGANIZATION.ID FROM PARTY_ORGANIZATION
+    </select>
+    <select id="selectZxgjOrganizationIds" resultType="java.lang.String">
+        SELECT PARTY_ORGANIZATION.ID FROM PARTY_ORGANIZATION
+    </select>
+</mapper>

@@ -35,12 +35,16 @@
     <select id="countOrganizations" resultType="java.lang.Long">
         SELECT COUNT(*) FROM LEAGUE_ORGANIZATION
         WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+        <if test="leagueName != null">AND LEAGUE_NAME LIKE '%' || #{leagueName} || '%' ESCAPE '\'</if>
+        <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
     </select>
     <select id="findOrganizationPage" resultMap="organization">
         SELECT ID, LEAGUE_NAME FROM (
             SELECT ID, LEAGUE_NAME, ROW_NUMBER() OVER (ORDER BY TREE_SORTS, TREE_SORT, ID) AS RN
             FROM LEAGUE_ORGANIZATION
             WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+            <if test="leagueName != null">AND LEAGUE_NAME LIKE '%' || #{leagueName} || '%' ESCAPE '\'</if>
+            <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
         ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit}
         ORDER BY RN
     </select>
@@ -48,6 +52,13 @@
         SELECT ID, LEAGUE_NAME FROM LEAGUE_ORGANIZATION
         WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
         <if test="leagueId != null">AND ID = #{leagueId}</if>
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
+    <select id="findVisibleOrganizations" resultMap="organization">
+        SELECT ID, LEAGUE_NAME FROM LEAGUE_ORGANIZATION
+        WHERE ORG_IDENTITY = #{orgIdentity} AND (PARENT_ID IS NULL OR PARENT_ID &lt;&gt; '-1')
+        <if test="leagueId != null">AND ID = #{leagueId}</if>
+        <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
         ORDER BY TREE_SORTS, TREE_SORT, ID
     </select>
     <select id="findCounts" resultMap="meetingCount">

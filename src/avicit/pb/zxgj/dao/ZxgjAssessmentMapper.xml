@@ -31,7 +31,8 @@
     </resultMap>
     <select id="findOrgIdentities" resultType="java.lang.String">
         SELECT DISTINCT P.ORG_IDENTITY FROM PARTY_ORGANIZATION P
-        WHERE LENGTH(TRIM(P.ORG_IDENTITY)) &gt; 0
+        WHERE (P.PARTY_NAME IS NULL OR P.PARTY_NAME NOT LIKE '%党小组%')
+        AND LENGTH(TRIM(P.ORG_IDENTITY)) &gt; 0
         AND EXISTS (SELECT 1 FROM DYN_ZHUXINGJ M WHERE M.PARTY_ID = P.ID)
         ORDER BY P.ORG_IDENTITY
     </select>
@@ -39,24 +40,36 @@
         SELECT DISTINCT SUBSTR(TRIM(BDBH), 1, 4) AS BUSINESS_YEAR FROM DYN_ZHUXINGJ
         WHERE LENGTH(TRIM(BDBH)) &gt;= 4 ORDER BY BUSINESS_YEAR DESC
     </select>
+    <sql id="visibleOrganization">
+        <if test="visibleSql != null and visibleSql != ''">AND M.PARTY_ID IN (${visibleSql})</if>
+    </sql>
     <sql id="annualFilter">
         SUBSTR(TRIM(M.BDBH), 1, 4) = #{year}
+        AND (P.PARTY_NAME IS NULL OR P.PARTY_NAME NOT LIKE '%党小组%')
         <if test="partyName != null">AND P.PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
     </sql>
     <select id="countProjects" resultType="java.lang.Long">
         SELECT COUNT(*) FROM DYN_ZHUXINGJ M LEFT JOIN PARTY_ORGANIZATION P ON P.ID = M.PARTY_ID
         WHERE <include refid="annualFilter"/>
+        <include refid="visibleOrganization"/>
     </select>
     <select id="findProjectPage" resultType="java.lang.String">
         SELECT ID FROM (
             SELECT M.ID, ROW_NUMBER() OVER (ORDER BY P.TREE_SORTS, P.TREE_SORT, P.ID, M.BDBH, M.ID) AS RN
             FROM DYN_ZHUXINGJ M LEFT JOIN PARTY_ORGANIZATION P ON P.ID = M.PARTY_ID
             WHERE <include refid="annualFilter"/>
+            <include refid="visibleOrganization"/>
         ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
+    </select>
+    <select id="countVisibleProject" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM DYN_ZHUXINGJ M WHERE M.ID = #{projectId}
+        <include refid="visibleOrganization"/>
     </select>
     <select id="findMonthlyProjectIds" resultType="java.lang.String">
         SELECT M.ID FROM DYN_ZHUXINGJ M JOIN PARTY_ORGANIZATION P ON P.ID = M.PARTY_ID
-        WHERE P.ORG_IDENTITY = #{orgIdentity} ORDER BY M.ID
+        WHERE P.ORG_IDENTITY = #{orgIdentity}
+        AND (P.PARTY_NAME IS NULL OR P.PARTY_NAME NOT LIKE '%党小组%')
+        ORDER BY M.ID
     </select>
     <select id="lockMainRecords" resultMap="mainRecord">
         SELECT ID, XM, BDBH, PARTY_ID, ORG_IDENTITY, NDZJKF FROM DYN_ZHUXINGJ WHERE ID IN
@@ -73,6 +86,7 @@
         SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03 FROM PARTY_ORGANIZATION
         WHERE ID IN
         <foreach collection="partyIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        AND (PARTY_NAME IS NULL OR PARTY_NAME NOT LIKE '%党小组%')
         ORDER BY ID
     </select>
     <select id="countAttachments" resultMap="attachmentCount">

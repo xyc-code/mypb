@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import avicit.pb.ztdr.dto.ZtdrAssessmentDTO;
 import avicit.pb.ztdr.service.ZtdrAssessmentService;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission.Page;
 
 @Controller
 @RequestMapping("avicit/pb/ztdr/assessment")
@@ -24,6 +26,8 @@ public class ZtdrAssessmentController {
     private static final ZoneId TIME_ZONE = ZoneId.of("Asia/Shanghai");
     @Autowired
     private ZtdrAssessmentService service;
+    @Autowired
+    private AssessmentOrganizationPermission permissions;
 
     @RequestMapping(value = "toManage", method = RequestMethod.GET)
     public ModelAndView toManage() {
@@ -51,7 +55,8 @@ public class ZtdrAssessmentController {
             LocalDate today = LocalDate.now(TIME_ZONE);
             int selectedYear = integer(year, "year");
             ZtdrAssessmentDTO.Page data = service.page(selectedYear, partyName,
-                    integer(page, "page"), integer(rows, "rows"), today);
+                    integer(page, "page"), integer(rows, "rows"), today,
+                    permissions.visibleOrganizationSql(Page.ZTDR));
             Map<String, Object> result = success(data.data, today, response);
             result.put("page", data.page);
             result.put("total", data.total);
@@ -68,7 +73,7 @@ public class ZtdrAssessmentController {
         try {
             LocalDate today = LocalDate.now(TIME_ZONE);
             int selectedYear = integer(year, "year");
-            Map<String, Object> result = success(service.detail(selectedYear, partyId, today), today, response);
+            Map<String, Object> result = success(service.detail(selectedYear, partyId, today, permissions.visibleOrganizationSql(Page.ZTDR)), today, response);
             result.put("year", selectedYear);
             return result;
         } catch (Exception ex) { return failure(ex, response); }

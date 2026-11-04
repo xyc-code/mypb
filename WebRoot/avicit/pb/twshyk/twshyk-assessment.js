@@ -2,6 +2,7 @@
     'use strict';
     var base = 'platform/avicit/pb/twshyk/assessment/';
     var displayedYear = null;
+    var submittedFilters = null;
     var requestVersion = 0;
     var grid = $('#assessmentGrid');
 
@@ -25,18 +26,19 @@
     }
 
     function load() {
+        submittedFilters = { year: $('#assessmentYear').val(), name: $.trim($('#assessmentOrganizationName').val()) };
         grid.jqGrid('setGridParam', { page: 1, datatype: requestPage }).trigger('reloadGrid');
     }
 
     function requestPage(parameters) {
-        var year = $('#assessmentYear').val();
+        var year = submittedFilters && submittedFilters.year;
         if (!year) return;
         var version = ++requestVersion;
         displayedYear = null;
         grid.jqGrid('clearGridData');
-        $('#assessmentYear, #assessmentSearch').prop('disabled', true);
+        $('#assessmentYear, #assessmentOrganizationName, #assessmentSearch').prop('disabled', true);
         message('正在计算…');
-        $.ajax({ url: base + 'list', data: { year: year, page: parameters.page, rows: parameters.rows }, dataType: 'json', cache: false }).done(function (result) {
+        $.ajax({ url: base + 'list', data: { year: year, leagueName: submittedFilters.name, page: parameters.page, rows: parameters.rows }, dataType: 'json', cache: false }).done(function (result) {
             if (version !== requestVersion) return;
             if (result.flag !== 'success') { message('查询失败，请重新登录后重试。', true); return; }
             displayedYear = result.year;
@@ -46,9 +48,9 @@
             $('#assessmentAnnualNote').text(result.year + '-11-01起考核 · 缺会扣0.2分');
             grid[0].addJSONData(result);
             $('#assessmentPager .ui-pg-input').attr('aria-label', '页码');
-            message(result.records ? '共 ' + result.records + ' 个团组织，扣分单位：分。' : '当前组织域暂无可考核的非根团组织。');
+            message(result.records ? '共 ' + result.records + ' 个团组织，扣分单位：分。' : '当前查询条件下暂无可考核的团组织。');
         }).fail(function (xhr) { if (version === requestVersion) message(failure(xhr), true); }).always(function () {
-            if (version === requestVersion) $('#assessmentYear, #assessmentSearch').prop('disabled', false);
+            if (version === requestVersion) $('#assessmentYear, #assessmentOrganizationName, #assessmentSearch').prop('disabled', false);
         });
     }
 
@@ -114,6 +116,9 @@
         if ($('#assessmentYear').val()) load(); else loadYears();
     });
     $('#assessmentYear').on('change', load);
+    $('#assessmentOrganizationName').on('keydown', function (event) {
+        if (event.which === 13) { event.preventDefault(); $('#assessmentSearch').trigger('click'); }
+    });
 
     function loadYears() {
         $('#assessmentSearch').prop('disabled', true);

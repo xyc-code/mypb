@@ -11,7 +11,7 @@
     <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-css.jsp">
         <jsp:param value="<%=importlibs%>" name="importlibs"/>
     </jsp:include>
-    <link rel="stylesheet" href="avicit/pb/twshyk/twshyk-assessment.css?v=20260917e">
+    <link rel="stylesheet" href="avicit/pb/twshyk/twshyk-assessment.css?v=20261104a">
 </head>
 <body>
 <main class="pb-twshyk-page">
@@ -24,6 +24,8 @@
             <div class="assessment-filter-controls">
                 <label for="assessmentYear">考核年份</label>
                 <select id="assessmentYear" class="form-control" disabled></select>
+                <label for="assessmentOrganizationName" class="assessment-name-label">团组织名称</label>
+                <input id="assessmentOrganizationName" class="form-control" type="text" placeholder="请输入团组织名称" autocomplete="off">
                 <button id="assessmentSearch" type="button" class="btn btn-primary" disabled>查询</button>
             </div>
         </header>
@@ -67,6 +69,6 @@
 <jsp:include page="/avicit/platform6/h5component/common/h5uiinclude-js.jsp">
     <jsp:param value="<%=importlibs%>" name="importlibs"/>
 </jsp:include>
-<script src="avicit/pb/twshyk/twshyk-assessment.js?v=20260917e"></script>
+<script src="avicit/pb/twshyk/twshyk-assessment.js?v=20261104a"></script>
 </body>
 </html>

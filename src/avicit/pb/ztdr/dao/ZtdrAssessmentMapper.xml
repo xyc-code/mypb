@@ -27,7 +27,8 @@
     </resultMap>
     <sql id="eligibleOrganization">
         (PARTY_NAME IS NULL OR (PARTY_NAME NOT LIKE '%党委%'
-        AND PARTY_NAME NOT LIKE '%离休%' AND PARTY_NAME NOT LIKE '%总支%'))
+        AND PARTY_NAME NOT LIKE '%离休%' AND PARTY_NAME NOT LIKE '%总支%'
+        AND PARTY_NAME NOT LIKE '%党小组%'))
     </sql>
     <select id="findOrgIdentities" resultType="java.lang.String">
         SELECT DISTINCT ORG_IDENTITY FROM PARTY_ORGANIZATION
@@ -41,6 +42,7 @@
     <select id="countOrganizations" resultType="java.lang.Long">
         SELECT COUNT(*) FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
         <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+        <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
     </select>
     <select id="findOrganizationPage" resultMap="organization">
         SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03, CREATED_DATE FROM (
@@ -49,6 +51,7 @@
                 ROW_NUMBER() OVER (ORDER BY TREE_SORTS, TREE_SORT, ID) AS RN
             FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
             <if test="partyName != null">AND PARTY_NAME LIKE '%' || #{partyName} || '%' ESCAPE '\'</if>
+            <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
         ) WHERE RN &gt; #{offset} AND RN &lt;= #{limit} ORDER BY RN
     </select>
     <select id="findOrganizations" resultMap="organization">
@@ -57,6 +60,14 @@
         FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
         <if test="orgIdentity != null">AND ORG_IDENTITY = #{orgIdentity}</if>
         <if test="partyId != null">AND ID = #{partyId}</if>
+        ORDER BY TREE_SORTS, TREE_SORT, ID
+    </select>
+    <select id="findVisibleOrganizations" resultMap="organization">
+        SELECT ID, PARTY_NAME, ORG_IDENTITY, ATTRIBUTE_02, ATTRIBUTE_03,
+            TO_CHAR(CREATION_DATE, 'YYYY-MM-DD') AS CREATED_DATE
+        FROM PARTY_ORGANIZATION WHERE <include refid="eligibleOrganization"/>
+        <if test="partyId != null">AND ID = #{partyId}</if>
+        <if test="visibleSql != null and visibleSql != ''">AND ID IN (${visibleSql})</if>
         ORDER BY TREE_SORTS, TREE_SORT, ID
     </select>
     <select id="findMainRecords" resultMap="mainRecord">

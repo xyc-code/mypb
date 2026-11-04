@@ -12,9 +12,11 @@ import avicit.pb.zxgj.dto.ZxgjAssessmentDTO.Organization;
 public interface ZxgjAssessmentDAO {
     List<String> findOrgIdentities();
     List<String> findYears();
-    long countProjects(@Param("year") String year, @Param("partyName") String partyName);
+    long countProjects(@Param("year") String year, @Param("partyName") String partyName,
+            @Param("visibleSql") String visibleSql);
+    long countVisibleProject(@Param("projectId") String projectId, @Param("visibleSql") String visibleSql);
     List<String> findProjectPage(@Param("year") String year, @Param("partyName") String partyName,
-            @Param("offset") long offset, @Param("limit") long limit);
+            @Param("offset") long offset, @Param("limit") long limit, @Param("visibleSql") String visibleSql);
     List<String> findMonthlyProjectIds(@Param("orgIdentity") String orgIdentity);
     List<MainRecord> lockMainRecords(@Param("mainIds") List<String> mainIds);
     List<Milestone> lockMilestones(@Param("mainIds") List<String> mainIds);

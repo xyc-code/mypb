@@ -42,6 +42,11 @@ public class YzbytsAssessmentService {
 
     @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
     public YzbytsAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDateTime now) {
+        return page(year, partyName, page, rows, now, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
+    public YzbytsAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDateTime now, String visibleSql) {
         validateYear(year, now);
         if (page < 1 || rows < 1 || rows > 100) {
             throw new IllegalArgumentException("页码须大于0，每页条数须在1至100之间");
@@ -51,19 +56,24 @@ public class YzbytsAssessmentService {
         YzbytsAssessmentDTO.Page result = new YzbytsAssessmentDTO.Page();
         result.assessmentStart = YzbytsAssessmentCalculator.DATE_TIME.format(
                 YzbytsAssessmentCalculator.assessmentStart(year, config));
-        result.records = dao.countOrganizations(query);
+        result.records = dao.countOrganizations(query, visibleSql);
         result.total = (int) ((result.records + rows - 1) / rows);
         result.page = Math.min(page, Math.max(1, result.total));
         long offset = (long) (result.page - 1) * rows;
-        result.data = annual(year, dao.findOrganizationPage(query, offset, offset + rows), config, now);
+        result.data = annual(year, dao.findOrganizationPage(query, offset, offset + rows, visibleSql), config, now);
         return result;
     }
 
     @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
     public YzbytsAssessmentDTO detail(int year, String partyId, LocalDateTime now) {
+        return detail(year, partyId, now, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
+    public YzbytsAssessmentDTO detail(int year, String partyId, LocalDateTime now, String visibleSql) {
         validateYear(year, now);
         if (partyId == null || partyId.trim().isEmpty()) throw new IllegalArgumentException("请选择党组织");
-        List<Organization> organizations = dao.findOrganizations(null, partyId);
+        List<Organization> organizations = dao.findVisibleOrganizations(partyId, visibleSql);
         if (organizations.isEmpty()) throw new IllegalArgumentException("党组织不存在或不在考核范围内");
         return annual(year, organizations, configuration(), now).get(0);
     }

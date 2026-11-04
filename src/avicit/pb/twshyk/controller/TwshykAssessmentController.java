@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import avicit.platform6.api.session.SessionHelper;
 import avicit.pb.twshyk.service.TwshykAssessmentService;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission;
+import avicit.pb.assessment.service.AssessmentOrganizationPermission.Page;
 import avicit.pb.twshyk.dto.TwshykAssessment;
 
 @Controller
@@ -24,6 +26,8 @@ public class TwshykAssessmentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwshykAssessmentController.class);
     @Autowired
     private TwshykAssessmentService service;
+    @Autowired
+    private AssessmentOrganizationPermission permissions;
 
     @RequestMapping(value = "toManage", method = RequestMethod.GET)
     public ModelAndView toManage() {
@@ -37,8 +41,10 @@ public class TwshykAssessmentController {
             LocalDate today = LocalDate.now();
             List<Integer> years = service.years(SessionHelper.getCurrentOrgIdentity());
             Map<String, Object> result = success(years, today);
+            int currentYear = today.getMonthValue() >= 11
+                    ? today.getYear() + 1 : today.getYear();
             Integer defaultYear = years.isEmpty() ? null : years.get(0);
-            if (years.contains(today.getYear())) defaultYear = today.getYear();
+            if (years.contains(currentYear)) defaultYear = currentYear;
             result.put("defaultYear", defaultYear);
             response.setHeader("Cache-Control", "no-store");
             return result;
@@ -50,10 +56,11 @@ public class TwshykAssessmentController {
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "leagueName", required = false) String leagueName,
             @RequestParam(value = "page", defaultValue = "1") String page,
             @RequestParam(value = "rows", defaultValue = "20") String rows, HttpServletResponse response) {
         try {
-            return assess(integer(year, "year"), null, integer(page, "page"), integer(rows, "rows"), response);
+            return assess(integer(year, "year"), null, leagueName, integer(page, "page"), integer(rows, "rows"), response);
         } catch (Exception ex) {
             return failure(ex, response);
         }
@@ -65,24 +72,25 @@ public class TwshykAssessmentController {
             @RequestParam(value = "leagueId", required = false) String leagueId, HttpServletResponse response) {
         try {
             if (leagueId == null || leagueId.trim().isEmpty()) throw new IllegalArgumentException("请选择团组织");
-            return assess(integer(year, "year"), leagueId, 1, 20, response);
+            return assess(integer(year, "year"), leagueId, null, 1, 20, response);
         } catch (Exception ex) {
             return failure(ex, response);
         }
     }
 
-    private Map<String, Object> assess(int year, String leagueId, int page, int rows, HttpServletResponse response) {
+    private Map<String, Object> assess(int year, String leagueId, String leagueName, int page, int rows, HttpServletResponse response) {
         try {
             LocalDate today = LocalDate.now();
+            String visibleSql = permissions.visibleOrganizationSql(Page.TWSHYK);
             Map<String, Object> result;
             if (leagueId == null) {
-                TwshykAssessment.Page paged = service.page(year, SessionHelper.getCurrentOrgIdentity(), page, rows, today);
+                TwshykAssessment.Page paged = service.page(year, SessionHelper.getCurrentOrgIdentity(), leagueName, page, rows, today, visibleSql);
                 result = success(paged.data, today);
                 result.put("page", paged.page);
                 result.put("total", paged.total);
                 result.put("records", paged.records);
             } else {
-                result = success(service.assess(year, SessionHelper.getCurrentOrgIdentity(), leagueId, today), today);
+                result = success(service.assess(year, SessionHelper.getCurrentOrgIdentity(), leagueId, today, visibleSql), today);
             }
             result.put("year", year);
             result.put("cycleStart", LocalDate.of(year - 1, 11, 1).toString());

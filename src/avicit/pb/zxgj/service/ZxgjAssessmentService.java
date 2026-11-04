@@ -41,6 +41,11 @@ public class ZxgjAssessmentService {
 
     @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
     public ZxgjAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDateTime now) {
+        return page(year, partyName, page, rows, now, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
+    public ZxgjAssessmentDTO.Page page(int year, String partyName, int page, int rows, LocalDateTime now, String visibleSql) {
         validateYear(year);
         if (page < 1 || rows < 1 || rows > 100) {
             throw new IllegalArgumentException("页码须大于0，每页条数须在1至100之间");
@@ -48,11 +53,11 @@ public class ZxgjAssessmentService {
         String query = escapeLike(partyName);
         String yearText = String.format("%04d", year);
         ZxgjAssessmentDTO.Page result = new ZxgjAssessmentDTO.Page();
-        result.records = dao.countProjects(yearText, query);
+        result.records = dao.countProjects(yearText, query, visibleSql);
         result.total = (int) ((result.records + rows - 1) / rows);
         result.page = Math.min(page, Math.max(1, result.total));
         long offset = (long) (result.page - 1) * rows;
-        List<String> ids = dao.findProjectPage(yearText, query, offset, offset + rows);
+        List<String> ids = dao.findProjectPage(yearText, query, offset, offset + rows, visibleSql);
         Source source = source(ids);
         List<Calculation> calculations = new ArrayList<Calculation>();
         for (String id : ids) {
@@ -69,9 +74,17 @@ public class ZxgjAssessmentService {
 
     @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
     public ZxgjAssessmentDTO detail(int year, String projectId, LocalDateTime now) {
+        return detail(year, projectId, now, "");
+    }
+
+    @Transactional(value = "transactionManagerMybatis", rollbackFor = Exception.class)
+    public ZxgjAssessmentDTO detail(int year, String projectId, LocalDateTime now, String visibleSql) {
         validateYear(year);
         if (projectId == null || projectId.trim().isEmpty()) {
             throw new IllegalArgumentException("请选择共建项目");
+        }
+        if (dao.countVisibleProject(projectId.trim(), visibleSql) == 0) {
+            throw new IllegalArgumentException("共建项目不存在：" + projectId);
         }
         Source source = source(Collections.singletonList(projectId.trim()));
         MainRecord main = source.mains.get(projectId.trim());
