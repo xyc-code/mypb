@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import avicit.platform6.api.session.SessionHelper;
 import avicit.pb.assessment.service.MonthlyAssessmentService;
+import avicit.pb.assessment.service.MonthlyAssessmentDataPermission;
 
 @Controller
 @RequestMapping("avicit/pb/assessment")
@@ -23,6 +24,8 @@ public class MonthlyAssessmentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyAssessmentController.class);
     @Autowired
     private MonthlyAssessmentService service;
+    @Autowired
+    private MonthlyAssessmentDataPermission dataPermission;
 
     @RequestMapping(value = "toManage", method = RequestMethod.GET)
     public ModelAndView toManage() {
@@ -38,7 +41,7 @@ public class MonthlyAssessmentController {
     public Map<String, Object> options(HttpServletResponse response) {
         response.setHeader("Cache-Control", "no-store");
         try {
-            return service.options(SessionHelper.getCurrentOrgIdentity());
+            return service.options(SessionHelper.getCurrentOrgIdentity(), dataPermission.visibleResultSql());
         } catch (Exception ex) {
             LOGGER.error("月度考核筛选项查询失败", ex);
             response.setStatus(ex instanceof IllegalArgumentException ? 400 : 500);
@@ -62,7 +65,8 @@ public class MonthlyAssessmentController {
         response.setHeader("Cache-Control", "no-store");
         try {
             return service.page(SessionHelper.getCurrentOrgIdentity(), integer(year, "year"), integer(month, "month"),
-                    departmentId, categoryCode, moduleCode, integer(page, "page"), integer(pageSize, "pageSize"));
+                    departmentId, categoryCode, moduleCode, integer(page, "page"), integer(pageSize, "pageSize"),
+                    dataPermission.visibleResultSql());
         } catch (Exception ex) {
             LOGGER.error("月度考核结果查询失败", ex);
             response.setStatus(ex instanceof IllegalArgumentException ? 400 : 500);

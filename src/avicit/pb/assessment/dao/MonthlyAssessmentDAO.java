@@ -17,15 +17,19 @@ public interface MonthlyAssessmentDAO {
             @Param("resultId") String resultId);
     int insertDepartment(@Param("result") MonthlyAssessmentResult result,
             @Param("department") Department department, @Param("id") String id);
-    List<MonthlyAssessmentResult> findModuleOptions(@Param("orgIdentity") String orgIdentity);
-    List<MonthlyAssessmentResult> findDepartmentOptions(@Param("orgIdentity") String orgIdentity);
+    List<MonthlyAssessmentResult> findModuleOptions(@Param("orgIdentity") String orgIdentity,
+            @Param("permissionSql") String permissionSql);
+    List<MonthlyAssessmentResult> findDepartmentOptions(@Param("orgIdentity") String orgIdentity,
+            @Param("permissionSql") String permissionSql);
     long countResults(@Param("orgIdentity") String orgIdentity, @Param("year") int year,
             @Param("month") int month, @Param("departmentId") String departmentId,
-            @Param("categoryCode") String categoryCode, @Param("moduleCode") String moduleCode);
+            @Param("categoryCode") String categoryCode, @Param("moduleCode") String moduleCode,
+            @Param("permissionSql") String permissionSql);
     List<MonthlyAssessmentResult> findPage(@Param("orgIdentity") String orgIdentity,
             @Param("year") int year, @Param("month") int month,
             @Param("departmentId") String departmentId, @Param("categoryCode") String categoryCode,
-            @Param("moduleCode") String moduleCode, @Param("offset") long offset, @Param("limit") long limit);
+            @Param("moduleCode") String moduleCode, @Param("offset") long offset, @Param("limit") long limit,
+            @Param("permissionSql") String permissionSql);
     List<MonthlyAssessmentResult> findAllForBsc(@Param("orgIdentity") String orgIdentity,
             @Param("year") int year, @Param("month") int month);
 }

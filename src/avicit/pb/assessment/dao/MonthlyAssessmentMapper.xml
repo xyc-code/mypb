@@ -80,7 +80,8 @@
         SELECT CATEGORY_CODE, MODULE_CODE, MODULE_NAME FROM (
             SELECT CATEGORY_CODE, MODULE_CODE, MODULE_NAME,
                 ROW_NUMBER() OVER (PARTITION BY MODULE_CODE ORDER BY LAST_UPDATE_DATE DESC, ID DESC) RN
-            FROM PB_ASSESS_MONTH_RESULT WHERE ORG_IDENTITY = #{orgIdentity}
+            FROM PB_ASSESS_MONTH_RESULT R WHERE ORG_IDENTITY = #{orgIdentity}
+            <include refid="rowPermission"/>
         ) WHERE RN = 1 ORDER BY CATEGORY_CODE, MODULE_CODE
     </select>
     <select id="findDepartmentOptions" resultMap="result">
@@ -89,8 +90,17 @@
                 ROW_NUMBER() OVER (PARTITION BY DEPT_ID ORDER BY LAST_UPDATE_DATE DESC, ID DESC) RN
             FROM PB_ASSESS_RESULT_DEPT
             WHERE ORG_IDENTITY = #{orgIdentity}
+            <if test="permissionSql != null and permissionSql != ''">
+                AND RESULT_ID IN (${permissionSql})
+            </if>
         ) WHERE RN = 1 ORDER BY DEPT_NAME, DEPT_ID
     </select>
+    <sql id="rowPermission">
+        <!-- Server-generated SQL from PB's permission engine; never a request parameter. -->
+        <if test="permissionSql != null and permissionSql != ''">
+            AND R.ID IN (${permissionSql})
+        </if>
+    </sql>
     <sql id="filter">
         R.ORG_IDENTITY = #{orgIdentity} AND R.ASSESS_YEAR = #{year} AND R.ASSESS_MONTH = #{month}
         <if test="departmentId != null">
@@ -99,6 +109,7 @@
         </if>
         <if test="categoryCode != null">AND R.CATEGORY_CODE = #{categoryCode}</if>
         <if test="moduleCode != null">AND R.MODULE_CODE = #{moduleCode}</if>
+        <include refid="rowPermission"/>
     </sql>
     <select id="countResults" resultType="java.lang.Long">
         SELECT COUNT(*) FROM PB_ASSESS_MONTH_RESULT R WHERE <include refid="filter"/>

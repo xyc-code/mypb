@@ -109,10 +109,14 @@ public class MonthlyAssessmentService {
     }
 
     public Map<String, Object> options(String orgIdentity) {
+        return options(orgIdentity, "");
+    }
+
+    public Map<String, Object> options(String orgIdentity, String permissionSql) {
         if (trimToNull(orgIdentity) == null) throw new IllegalArgumentException("未获取到当前组织域，请重新登录");
         Map<String, Map<String, String>> categories = new LinkedHashMap<String, Map<String, String>>();
         List<Map<String, String>> modules = new ArrayList<Map<String, String>>();
-        for (MonthlyAssessmentResult row : dao.findModuleOptions(orgIdentity)) {
+        for (MonthlyAssessmentResult row : dao.findModuleOptions(orgIdentity, permissionSql)) {
             Map<String, String> module = new LinkedHashMap<String, String>();
             module.put("code", row.moduleCode);
             module.put("name", trimToNull(row.moduleName) == null ? row.moduleCode : row.moduleName);
@@ -128,7 +132,7 @@ public class MonthlyAssessmentService {
             }
         }
         List<Map<String, String>> departments = new ArrayList<Map<String, String>>();
-        for (MonthlyAssessmentResult row : dao.findDepartmentOptions(orgIdentity)) {
+        for (MonthlyAssessmentResult row : dao.findDepartmentOptions(orgIdentity, permissionSql)) {
             Map<String, String> department = new LinkedHashMap<String, String>();
             department.put("id", row.departmentId);
             department.put("name", trimToNull(row.departmentName) == null ? row.departmentId : row.departmentName);
@@ -144,6 +148,12 @@ public class MonthlyAssessmentService {
 
     public Map<String, Object> page(String orgIdentity, int year, int month,
             String departmentId, String categoryCode, String moduleCode, int page, int pageSize) throws Exception {
+        return page(orgIdentity, year, month, departmentId, categoryCode, moduleCode, page, pageSize, "");
+    }
+
+    public Map<String, Object> page(String orgIdentity, int year, int month,
+            String departmentId, String categoryCode, String moduleCode, int page, int pageSize,
+            String permissionSql) throws Exception {
         if (trimToNull(orgIdentity) == null) throw new IllegalArgumentException("未获取到当前组织域，请重新登录");
         month(year, month);
         if (page < 1 || pageSize < 1 || pageSize > 100) {
@@ -152,11 +162,11 @@ public class MonthlyAssessmentService {
         departmentId = trimToNull(departmentId);
         categoryCode = trimToNull(categoryCode);
         moduleCode = trimToNull(moduleCode);
-        long total = dao.countResults(orgIdentity, year, month, departmentId, categoryCode, moduleCode);
+        long total = dao.countResults(orgIdentity, year, month, departmentId, categoryCode, moduleCode, permissionSql);
         long offset = ((long) page - 1) * pageSize;
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
         for (MonthlyAssessmentResult result : dao.findPage(orgIdentity, year, month,
-                departmentId, categoryCode, moduleCode, offset, offset + pageSize)) {
+                departmentId, categoryCode, moduleCode, offset, offset + pageSize, permissionSql)) {
             Map<String, Object> row = new LinkedHashMap<String, Object>();
             row.put("id", result.id);
             row.put("orgIdentity", result.orgIdentity);
