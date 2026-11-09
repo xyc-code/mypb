@@ -46,6 +46,7 @@ public class MonthlyAssessmentWriter {
         if (results == null) throw new IllegalStateException("模块未返回计算结果：" + moduleCode);
         Set<String> seen = new HashSet<String>();
         Date calculatedAt = new Date();
+        int collected = 0;
         for (MonthlyAssessmentResult row : results) {
             if (row == null) throw new IllegalStateException("模块返回了空结果行：" + moduleCode);
             requireText(row.assessmentOrgId, "被考核组织ID");
@@ -78,18 +79,17 @@ public class MonthlyAssessmentWriter {
             boolean hasStoredDepartments = old != null && !old.departments.isEmpty();
             if (hasStoredDepartments) {
                 row.departments = old.departments;
-            } else {
-                row.departments = MonthlyAssessmentResult.normalizeDepartments(row.departments);
-                if (row.departments.isEmpty()) {
-                    row.departments = MonthlyAssessmentResult.parseDepartments(row.departmentId, row.departmentName);
-                }
+            } else if (row.departments == null || row.departments.isEmpty()) {
+                row.departments = MonthlyAssessmentResult.parseDepartments(row.departmentId, row.departmentName);
             }
+            if (!MonthlyAssessmentResult.hasCompleteDepartments(row.departments)) {
+                LOGGER.warn("跳过月度考核组织，部门ID或名称不完整：domain={}, module={}, month={}, organization={}",
+                        orgIdentity, moduleCode, month, row.assessmentOrgId);
+                continue;
+            }
+            row.departments = MonthlyAssessmentResult.normalizeDepartments(row.departments);
             row.departmentId = row.departments.size() == 1 ? row.departments.get(0).id : null;
             row.departmentName = row.departments.size() == 1 ? row.departments.get(0).name : null;
-            if (row.departments.isEmpty()) {
-                LOGGER.warn("月度考核组织未关联部门：domain={}, module={}, month={}, organization={}",
-                        orgIdentity, moduleCode, month, row.assessmentOrgId);
-            }
             if (old == null) {
                 row.id = UUID.randomUUID().toString().replace("-", "");
                 dao.insertResult(row);
@@ -107,14 +107,15 @@ public class MonthlyAssessmentWriter {
                     }
                 }
             }
+            collected++;
         }
         for (MonthlyAssessmentResult old : oldResults.values()) {
             LOGGER.warn("保留无法重新计算的历史组织结果：domain={}, module={}, month={}, organization={}",
                     orgIdentity, moduleCode, month, old.assessmentOrgId);
         }
         LOGGER.info("月度考核收集成功：domain={}, module={}, month={}, rows={}",
-                orgIdentity, moduleCode, month, results.size());
-        return results.size();
+                orgIdentity, moduleCode, month, collected);
+        return collected;
     }
 
     private static void requireText(String value, String name) {

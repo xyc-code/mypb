@@ -60,6 +60,15 @@ public class MonthlyAssessmentResult {
         return new ArrayList<Department>(result.values());
     }
 
+    public static boolean hasCompleteDepartments(List<Department> departments) {
+        if (departments == null || departments.isEmpty()) return false;
+        for (Department department : departments) {
+            if (department == null || department.id == null || department.id.trim().isEmpty()
+                    || department.name == null || department.name.trim().isEmpty()) return false;
+        }
+        return true;
+    }
+
     public static class Department {
         public String id;
         public String name;
