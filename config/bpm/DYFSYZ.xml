@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<process name="党员发送阅知" key="dyfsyz" globalformid="DYFSYZ" globalformname="党员发送阅知" useNewDesigner="true" iconType="2" isUflow="1">
+  <meta name="processInstanceTitle">#{NOTICE_TITLE}</meta>
+  <meta name="showTrackInForm">yes</meta>
+  <start name="start1" label="开始" alias="开始" id="2" g="100,200,55,50">
+    <mxCell style="symbol;image=avicit/platform6/bpmreform/bpmdesigner/editors/images/48/start_event_empty.png;" parent="1" vertex="1">
+      <mxGeometry x="100" y="200" width="55" height="50" as="geometry" />
+    </mxCell>
+    <transition _id="22" name="to taskDraft" to="taskDraft" alias="提交" g="-5,-22">
+      <mxCell id="22" parent="1" source="2" target="3" edge="1">
+        <mxGeometry as="geometry" relative="1" />
+      </mxCell>
+    </transition>
+  </start>
+  <task name="taskDraft" label="发送阅知" alias="发送阅知" id="3" g="250,200,55,50" dealtype="3" taskFormId="DYFSYZ" taskFormName="党员发送阅知">
+    <mxCell style="symbol;image=avicit/platform6/bpmreform/bpmdesigner/editors/images/48/task_human.png;" parent="1" vertex="1">
+      <mxGeometry x="250" y="200" width="55" height="50" as="geometry" />
+    </mxCell>
+    <meta name="ideaType">notmust</meta>
+    <meta name="isNeedIdea">no</meta>
+    <meta name="isMustUser">yes</meta>
+    <meta name="isSelectUser">yes</meta>
+    <meta name="userSelectType">manual</meta>
+    <meta name="isAutoGetUser">no</meta>
+    <meta name="isWorkHandUser">no</meta>
+    <meta name="taskMobileApproval">no</meta>
+    <meta name="isReadTodo">no</meta>
+    <meta name="isSendReaderTodo">no</meta>
+    <meta name="isSecret">no</meta>
+    <transition _id="23" name="to taskSecretary" to="taskSecretary" alias="发送书记阅知" g="-5,-22">
+      <mxCell id="23" parent="1" source="3" target="4" edge="1">
+        <mxGeometry as="geometry" relative="1" />
+      </mxCell>
+    </transition>
+  </task>
+  <task name="taskSecretary" label="书记阅知" alias="书记阅知" id="4" g="420,200,55,50" dealtype="3" taskFormId="DYFSYZ" taskFormName="党员发送阅知" candidate-users="notice-secretary">
+    <mxCell style="symbol;image=avicit/platform6/bpmreform/bpmdesigner/editors/images/48/task_human.png;" parent="1" vertex="1">
+      <mxGeometry x="420" y="200" width="55" height="50" as="geometry" />
+    </mxCell>
+    <meta name="ideaType">notmust</meta>
+    <meta name="isNeedIdea">no</meta>
+    <meta name="isMustUser">yes</meta>
+    <meta name="isSelectUser">no</meta>
+    <meta name="userSelectType">manual</meta>
+    <meta name="isAutoGetUser">yes</meta>
+    <meta name="isWorkHandUser">no</meta>
+    <meta name="taskMobileApproval">no</meta>
+    <meta name="isReadTodo">no</meta>
+    <meta name="isSendReaderTodo">no</meta>
+    <meta name="isSecret">no</meta>
+    <transition _id="24" name="to end1" to="end1" alias="阅知" g="-5,-22">
+      <mxCell id="24" parent="1" source="4" target="5" edge="1">
+        <mxGeometry as="geometry" relative="1" />
+      </mxCell>
+    </transition>
+    <actors id="notice-secretary">
+      <actor type="relation">
+        <id>customfunction</id>
+        <name>自定义函数</name>
+        <customfunction>
+          <id>avicit.pb.membernotice.NoticeActors</id>
+          <name>接收党组织书记</name>
+        </customfunction>
+      </actor>
+    </actors>
+  </task>
+  <end name="end1" label="结束" alias="结束" id="5" g="600,200,55,50">
+    <mxCell style="symbol;image=avicit/platform6/bpmreform/bpmdesigner/editors/images/48/end_event_terminate.png;" parent="1" vertex="1">
+      <mxGeometry x="600" y="200" width="55" height="50" as="geometry" />
+    </mxCell>
+    <on event="start">
+      <event-listener class="avicit.pb.membernotice.NoticeWriteback" name="更新党员库" />
+    </on>
+  </end>
+</process>

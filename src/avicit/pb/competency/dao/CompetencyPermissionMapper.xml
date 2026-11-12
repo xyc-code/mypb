@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="avicit.pb.competency.dao.CompetencyPermissionMapper">
+    <!-- A PARTY_ID projection also permits new-batch roster filtering before score rows exist. -->
+    <select id="selectVisiblePartyIds" resultType="java.lang.String">
+        SELECT DYN_SJ_COMP_SCORE.PARTY_ID FROM
+        (SELECT ID AS PARTY_ID FROM PARTY_ORGANIZATION
+         UNION SELECT PARTY_ID FROM DYN_SJ_COMP_SCORE) DYN_SJ_COMP_SCORE
+    </select>
+</mapper>
